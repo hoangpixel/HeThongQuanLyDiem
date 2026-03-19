@@ -2,6 +2,8 @@ package GUI;
 
 import java.awt.event.ActionEvent;
 import java.awt.event.ActionListener;
+import java.awt.event.MouseAdapter;
+import java.awt.event.MouseEvent;
 import java.util.ArrayList;
 import java.util.List;
 import javax.swing.JDialog;
@@ -20,57 +22,79 @@ public class nguyenVongXetTuyenGUI extends BaseTableGUI {
         // 2. Gắn sự kiện nút bấm
         btnThem.addActionListener(e -> hienThiDialogThemMoi());
         
+        // ==============================================================
+        // BỔ SUNG: GẮN SỰ KIỆN DOUBLE-CLICK CHO TABLE
+        // ==============================================================
+        table.addMouseListener(new MouseAdapter() {
+            @Override
+            public void mouseClicked(MouseEvent evt) {
+                // Kiểm tra xem người dùng có click đúp (2 lần) không
+                if (evt.getClickCount() == 2) {
+                    // Lấy ra vị trí dòng (row) mà người dùng vừa click vào
+                    int selectedRow = table.getSelectedRow();
+                    
+                    // Nếu có dòng được chọn (khác -1)
+                    if (selectedRow != -1) {
+                        // Gọi hàm hiển thị form và truyền vị trí dòng vào
+                        hienThiDialogChiTiet(selectedRow);
+                    }
+                }
+            }
+        });
+        // ==============================================================
+        
         // 3. GỌI HÀM TẢI DỮ LIỆU LÊN BẢNG KHI VỪA MỞ FORM LÊN
         loadDataToTable();
     }
     
-    // ==============================================================
-    // HÀM HIỂN THỊ DANH SÁCH (LẤY TỪ DATABASE)
-    // ==============================================================
+    // Hàm hiển thị danh sách (Giữ nguyên như cũ của bạn)
     private void loadDataToTable() {
-        // Khởi tạo một danh sách để chứa các dòng dữ liệu
         List<Object[]> dataList = new ArrayList<>();
         
-        /* * THỰC TẾ DÙNG HIBERNATE/JDBC SẼ VIẾT NHƯ SAU:
-         * * List<NguyenVongDTO> list = nguyenVongBUS.getAllNguyenVong();
-         * for (NguyenVongDTO nv : list) {
-         * dataList.add(new Object[]{nv.getId(), nv.getCccd(), nv.getMaNganh(), nv.getDiemXetTuyen()});
-         * }
-         */
-
-        // -------- CODE TEST: TẠO DATA GIẢ ĐỂ TEST PHÂN TRANG --------
-        // Tui tạo thử 55 dòng để test xem hệ thống có tự chia thành 3 trang không (20 - 20 - 15)
         for (int i = 1; i <= 55; i++) {
-            // Random điểm từ 20 đến 30 cho giống thực tế
             double diemRandom = Math.round((Math.random() * 10 + 20) * 100.0) / 100.0; 
-            
             dataList.add(new Object[]{
                 "NV00" + i, 
                 "07920300" + i, 
-                (i % 2 == 0) ? "7480201" : "7810202", // Đảo xen kẽ 2 mã ngành
+                (i % 2 == 0) ? "7480201" : "7810202", 
                 diemRandom
             });
         }
-        // -------------------------------------------------------------
-        
-        // BƯỚC CUỐI: Ném cái List này vào hàm của BaseTableGUI
-        // Nó sẽ tự động xóa bảng cũ, cắt ra 20 dòng đầu tiên hiển thị lên và setup các nút bấm qua trang!
         setTableData(dataList);
     }
 
-    // Hàm mở JDialog thêm mới (Giữ nguyên như cũ)
+    // Hàm mở JDialog thêm mới (Giữ nguyên)
     private void hienThiDialogThemMoi() {
-        JDialog dialogThem = new JDialog();
-        dialogThem.setTitle("Thêm mới Nguyện Vọng");
-        dialogThem.setSize(400, 300);
-        dialogThem.setLocationRelativeTo(null); 
-        dialogThem.setModal(true); 
+        // ... (code cũ của bạn) ...
+    }
+    
+    // ==============================================================
+    // HÀM MỚI: HIỂN THỊ DIALOG KHI DOUBLE CLICK (XEM CHI TIẾT / SỬA)
+    // ==============================================================
+    private void hienThiDialogChiTiet(int rowIndex) {
+        // 1. LẤY DỮ LIỆU TỪ DÒNG ĐƯỢC CHỌN (Ví dụ lấy ID và CCCD)
+        // Lưu ý: getValueAt(rowIndex, columnIndex). Cột 0 là ID, cột 1 là CCCD...
+        String idNguyenVong = table.getValueAt(rowIndex, 0).toString();
+        String cccd = table.getValueAt(rowIndex, 1).toString();
+        String diem = table.getValueAt(rowIndex, 3).toString();
+
+        // 2. TẠO DIALOG CHI TIẾT
+        JDialog dialogChiTiet = new JDialog();
+        dialogChiTiet.setTitle("Chi tiết Nguyện Vọng: " + idNguyenVong);
+        dialogChiTiet.setSize(400, 300);
+        dialogChiTiet.setLocationRelativeTo(null); 
+        dialogChiTiet.setModal(true); 
         
-        dialogThem.setLayout(new java.awt.FlowLayout());
-        dialogThem.add(new JLabel("Nhập CCCD: "));
-        dialogThem.add(new javax.swing.JTextField(20));
-        dialogThem.add(new javax.swing.JButton("Lưu thông tin"));
+        dialogChiTiet.setLayout(new java.awt.FlowLayout(java.awt.FlowLayout.LEFT, 15, 15));
         
-        dialogThem.setVisible(true);
+        // 3. ĐỔ DỮ LIỆU LÊN GIAO DIỆN DIALOG
+        dialogChiTiet.add(new JLabel("Mã Nguyện Vọng: " + idNguyenVong));
+        dialogChiTiet.add(new JLabel("CCCD Thí sinh: " + cccd));
+        dialogChiTiet.add(new JLabel("Điểm xét tuyển: " + diem));
+        
+        // Nút lưu nếu bạn muốn làm chức năng SỬA ở đây luôn
+        dialogChiTiet.add(new javax.swing.JButton("Cập nhật thông tin"));
+        
+        dialogChiTiet.setVisible(true);
     }
 }

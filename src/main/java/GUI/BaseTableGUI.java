@@ -6,12 +6,14 @@ import java.util.List;
 import javax.swing.*;
 import javax.swing.border.EmptyBorder;
 import javax.swing.border.TitledBorder;
+import javax.swing.table.DefaultTableCellRenderer;
 import javax.swing.table.DefaultTableModel;
+import javax.swing.table.JTableHeader;
 
 public class BaseTableGUI extends JPanel {
 
     // Khai báo các components
-    public JButton btnThem, btnSua, btnXoa, btnExcel, btnThongKe, btnTimKiem;
+    public JButton btnThem, btnSua, btnXoa, btnExcel, btnThongKe, btnTimKiem, btnChiTiet;
     public JComboBox<String> cbxTimKiem;
     public JTextField txtTimKiem;
     public JTable table;
@@ -61,12 +63,14 @@ public class BaseTableGUI extends JPanel {
         btnThem = new JButton("THÊM");
         btnSua = new JButton("SỬA");
         btnXoa = new JButton("XÓA");
+        btnChiTiet = new JButton("CHI TIẾT");
         btnExcel = new JButton("EXCEL");
         btnThongKe = new JButton("THỐNG KÊ");
         
         pnlActions.add(btnThem);
         pnlActions.add(btnSua);
         pnlActions.add(btnXoa);
+        pnlActions.add(btnChiTiet);
         pnlActions.add(btnExcel);
         pnlActions.add(btnThongKe);
 
@@ -94,7 +98,15 @@ public class BaseTableGUI extends JPanel {
         pnlTop.add(pnlSearch, BorderLayout.EAST);    
 
         // ==================== VÙNG GIỮA (CENTER): TABLE ====================
-        tableModel = new DefaultTableModel(new Object[][]{}, new String[]{"Cột 1", "Cột 2", "Cột 3", "Cột 4"});
+        tableModel = new DefaultTableModel(
+    new Object[][]{},
+    new String[]{"Cột 1", "Cột 2", "Cột 3", "Cột 4"}
+) {
+    @Override
+    public boolean isCellEditable(int row, int column) {
+        return false; // ❌ không cho sửa bất kỳ ô nào
+    }
+};
         table = new JTable(tableModel);
         table.setRowHeight(30); 
         table.setShowGrid(true);
@@ -107,12 +119,12 @@ public class BaseTableGUI extends JPanel {
         JPanel pnlBottom = new JPanel(new FlowLayout(FlowLayout.CENTER, 15, 10));
         pnlBottom.setBackground(Color.WHITE);
         
-        btnFirst = new JButton("|<");
+        btnFirst = new JButton("<<");
         btnPrev = new JButton("<");
         lblPageInfo = new JLabel("Trang 1 / 1");
         lblPageInfo.setFont(new Font("Segoe UI", Font.BOLD, 14));
         btnNext = new JButton(">");
-        btnLast = new JButton(">|");
+        btnLast = new JButton(">>");
         
         pnlBottom.add(btnFirst);
         pnlBottom.add(btnPrev);
@@ -192,25 +204,146 @@ public class BaseTableGUI extends JPanel {
         pnlActions.repaint(); 
     }
 
-    private void styleComponents() {
-        Font mainFont = new Font("Segoe UI", Font.PLAIN, 14);
-        
-        JButton[] btns = {btnThem, btnSua, btnXoa, btnExcel, btnThongKe, btnTimKiem, btnFirst, btnPrev, btnNext, btnLast};
-        for (JButton btn : btns) {
-            btn.setFont(mainFont);
-            btn.setFocusPainted(false);
-            btn.setCursor(new Cursor(Cursor.HAND_CURSOR));
+private void styleComponents() {
+    Font mainFont = new Font("Segoe UI", Font.PLAIN, 14);
+
+    // ==========================================
+    // ===== BỔ SUNG: SET ICON CHO BUTTONS ======
+    // ==========================================
+    
+    // Hàm phụ trợ để load icon an toàn (tránh văng lỗi nếu lỡ quên chép hình vào)
+    java.util.function.Function<String, ImageIcon> loadIcon = (path) -> {
+        try {
+            // SỬA ĐƯỜNG DẪN Ở DÒNG NÀY: Đổi "/icons/" thành "/IMG/"
+            java.net.URL imgURL = getClass().getResource("/IMG/" + path);
+            
+            if (imgURL != null) {
+                return new ImageIcon(imgURL);
+            } else {
+                System.err.println("Không tìm thấy file icon: " + path);
+                return null;
+            }
+        } catch (Exception e) {
+            return null;
         }
+    };
 
-        btnXoa.setBackground(new Color(231, 76, 60));
-        btnXoa.setForeground(Color.WHITE);
+    int iconSize = 45;
+    
+    // Gắn icon vào các nút tương ứng
+    btnThem.setIcon(loadAndScaleIcon("add.png", iconSize));
+    btnSua.setIcon(loadAndScaleIcon("edit.png", iconSize));
+    btnXoa.setIcon(loadAndScaleIcon("delete.png", iconSize));
+    btnExcel.setIcon(loadAndScaleIcon("excel.png", iconSize));
+    btnThongKe.setIcon(loadAndScaleIcon("chart.png", iconSize));
+    btnChiTiet.setIcon(loadAndScaleIcon("information.png", iconSize));
+    btnTimKiem.setIcon(loadAndScaleIcon("search.png", 24));
 
-        txtTimKiem.setFont(mainFont);
-        txtTimKiem.setPreferredSize(new Dimension(200, 32));
-        cbxTimKiem.setFont(mainFont);
-        cbxTimKiem.setPreferredSize(new Dimension(150, 32));
-        
-        table.getTableHeader().setFont(new Font("Segoe UI", Font.BOLD, 14));
-        table.getTableHeader().setPreferredSize(new Dimension(100, 35));
+    // Ép chữ nằm phía DƯỚI icon và căn giữa cho 5 nút chức năng
+    JButton[] actionBtns = {btnThem, btnSua, btnXoa, btnExcel, btnThongKe,btnChiTiet};
+    for (JButton btn : actionBtns) {
+        if (btn.getIcon() != null) {
+            btn.setVerticalTextPosition(SwingConstants.BOTTOM);   // Chữ nằm dưới hình
+            btn.setHorizontalTextPosition(SwingConstants.CENTER); // Căn giữa chữ
+            // Mở rộng viền nút ra 1 chút để hình không bị ép sát lề
+            btn.setBorder(BorderFactory.createEmptyBorder(5, 15, 5, 15)); 
+        }
+    }
+    
+    // Riêng nút Tìm Kiếm thì để chữ ngang hàng với Icon cho đỡ tốn diện tích
+    if (btnTimKiem.getIcon() != null) {
+        btnTimKiem.setVerticalTextPosition(SwingConstants.CENTER);
+        btnTimKiem.setHorizontalTextPosition(SwingConstants.RIGHT);
+    }
+
+    // ===== STYLE BUTTON CHUNG =====
+    JButton[] allBtns = {btnThem, btnSua, btnXoa, btnExcel, btnThongKe, btnTimKiem, btnFirst, btnPrev, btnNext, btnLast, btnChiTiet};
+    for (JButton btn : allBtns) {
+        btn.setFont(mainFont);
+        btn.setFocusPainted(false);
+        btn.setCursor(new Cursor(Cursor.HAND_CURSOR));
+    }
+
+    // Nút Xóa vẫn để màu đỏ cho cảnh báo nguy hiểm
+    btnXoa.setBackground(new Color(231, 76, 60));
+    btnXoa.setForeground(Color.WHITE);
+
+    // ===== INPUT =====
+    txtTimKiem.setFont(mainFont);
+    txtTimKiem.setPreferredSize(new Dimension(200, 32));
+
+    cbxTimKiem.setFont(mainFont);
+    cbxTimKiem.setPreferredSize(new Dimension(150, 32));
+
+    // ===== HEADER TABLE =====
+    JTableHeader header = table.getTableHeader();
+    header.setFont(new Font("Segoe UI", Font.BOLD, 14));
+    header.setPreferredSize(new Dimension(100, 35));
+    header.setBackground(new Color(52, 73, 94)); // xanh đậm
+    header.setForeground(Color.WHITE);
+
+    // Căn giữa header
+    DefaultTableCellRenderer headerRenderer = (DefaultTableCellRenderer) header.getDefaultRenderer();
+    headerRenderer.setHorizontalAlignment(JLabel.CENTER);
+
+    // Không cho kéo + resize cột
+    header.setReorderingAllowed(false);
+    header.setResizingAllowed(false);
+
+    // ===== TABLE =====
+    table.setFont(mainFont);
+    table.setRowHeight(32);
+    table.setSelectionBackground(new Color(52, 152, 219));
+    table.setSelectionForeground(Color.WHITE);
+
+    // Bỏ grid cho đẹp (Bạn đã làm rất chuẩn chỗ này)
+    table.setShowGrid(false);
+    table.setIntercellSpacing(new Dimension(0, 0));
+
+    // ===== RENDERER (CĂN GIỮA + ZEBRA STRIPE) =====
+    table.setDefaultRenderer(Object.class, new DefaultTableCellRenderer() {
+        @Override
+        public Component getTableCellRendererComponent(JTable table, Object value,
+                                                       boolean isSelected, boolean hasFocus,
+                                                       int row, int column) {
+
+            Component c = super.getTableCellRendererComponent(
+                    table, value, isSelected, hasFocus, row, column
+            );
+
+            // Căn giữa nội dung các ô
+            setHorizontalAlignment(JLabel.CENTER);
+
+            // Màu xen kẽ ngựa vằn (Zebra stripe)
+            if (!isSelected) {
+                if (row % 2 == 0) {
+                    c.setBackground(Color.WHITE);
+                } else {
+                    c.setBackground(new Color(245, 245, 245));
+                }
+            }
+            return c;
+        }
+    });
+}
+
+// BỔ SUNG: Hàm phụ trợ để load và tự động thay đổi kích thước icon (chống bể hình)
+    private ImageIcon loadAndScaleIcon(String path, int size) {
+        try {
+            java.net.URL imgURL = getClass().getResource("/IMG/" + path);
+            if (imgURL != null) {
+                ImageIcon originalIcon = new ImageIcon(imgURL);
+                Image img = originalIcon.getImage();
+                
+                // Thuật toán SCALE_SMOOTH giúp hình to lên/nhỏ đi mà không bị mờ hay răng cưa
+                Image scaledImg = img.getScaledInstance(size, size, Image.SCALE_SMOOTH);
+                return new ImageIcon(scaledImg);
+            } else {
+                System.err.println("Không tìm thấy file icon: " + path);
+                return null;
+            }
+        } catch (Exception e) {
+            return null;
+        }
     }
 }

@@ -1,10 +1,13 @@
 GUI\testGUI.class
+GUI\nguyenVongXetTuyenGUI$1.class
+GUI\BaseTableGUI$2.class
+DTO\nguyenVongXetTuyenDTO.class
+GUI\navbarGUI$1.class
 GUI\contentGUI.class
 BUS\nguyenVongXetTuyenBUS.class
 DAO\nguyenVongXetTuyenDAO.class
-DTO\nguyenVongXetTuyenDTO.class
 GUI\BaseTableGUI.class
+GUI\BaseTableGUI$1.class
 MAIN\main.class
-GUI\navbarGUI$1.class
 GUI\nguyenVongXetTuyenGUI.class
 GUI\navbarGUI.class
