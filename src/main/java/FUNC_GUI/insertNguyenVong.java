@@ -17,6 +17,7 @@ public class insertNguyenVong extends javax.swing.JDialog {
     private static final java.util.logging.Logger logger = java.util.logging.Logger.getLogger(insertNguyenVong.class.getName());
     public boolean xacNhan = false;
     public nguyenVongXetTuyenETT ct;
+    nguyenVongXetTuyenBUS bus = new nguyenVongXetTuyenBUS();
     /**
      * Creates new form insertNguyenVong
      */
@@ -71,12 +72,14 @@ public class insertNguyenVong extends javax.swing.JDialog {
 
         btnChonCCCThiSinh.setText("...");
         btnChonCCCThiSinh.setToolTipText("");
+        btnChonCCCThiSinh.setCursor(new java.awt.Cursor(java.awt.Cursor.HAND_CURSOR));
 
         jLabel2.setFont(new java.awt.Font("Segoe UI", 0, 14)); // NOI18N
         jLabel2.setText("Mã ngành (*) : ");
 
         btnChonMaNganh.setText("...");
         btnChonMaNganh.setToolTipText("");
+        btnChonMaNganh.setCursor(new java.awt.Cursor(java.awt.Cursor.HAND_CURSOR));
 
         jLabel3.setFont(new java.awt.Font("Segoe UI", 0, 14)); // NOI18N
         jLabel3.setText("Thứ tự NV :");
@@ -86,6 +89,7 @@ public class insertNguyenVong extends javax.swing.JDialog {
 
         btnChonToHop.setText("...");
         btnChonToHop.setToolTipText("");
+        btnChonToHop.setCursor(new java.awt.Cursor(java.awt.Cursor.HAND_CURSOR));
 
         jLabel5.setFont(new java.awt.Font("Segoe UI", 0, 14)); // NOI18N
         jLabel5.setText("Phương thức : ");
@@ -199,10 +203,12 @@ public class insertNguyenVong extends javax.swing.JDialog {
         btnThoat.setBackground(new java.awt.Color(255, 102, 102));
         btnThoat.setFont(new java.awt.Font("Segoe UI", 1, 14)); // NOI18N
         btnThoat.setText("Thoát");
+        btnThoat.setCursor(new java.awt.Cursor(java.awt.Cursor.HAND_CURSOR));
         btnThoat.addActionListener(this::btnThoatActionPerformed);
 
         btnThem.setFont(new java.awt.Font("Segoe UI", 1, 14)); // NOI18N
         btnThem.setText("Thêm");
+        btnThem.setCursor(new java.awt.Cursor(java.awt.Cursor.HAND_CURSOR));
         btnThem.addActionListener(this::btnThemActionPerformed);
 
         javax.swing.GroupLayout jPanel2Layout = new javax.swing.GroupLayout(jPanel2);
@@ -291,7 +297,37 @@ public class insertNguyenVong extends javax.swing.JDialog {
            return;
         }
         
+        String cccd = txtCCCD.getText().trim();
+        String maNganh = txtMaNganh.getText().trim();
+        int thuTuNV = Integer.valueOf(txtThuTuNV.getText().trim());
+        double diemTHXT = Double.valueOf(txtDiemTHXT.getText().trim());
+        double diemUTQD = Double.valueOf(txtDiemUuTien.getText().trim());
+        double diemCong = Double.valueOf(txtDiemCong.getText().trim());
+        double diemXetTuyen = diemTHXT + diemUTQD + diemCong;
+        String ketQuaNV = "Chờ xét";
+        String key = cccd + "_" + txtThuTuNV.getText().trim();
+        String phuongThuc = cboPT.getSelectedItem().toString();
+        String toHopMon = txtToHopMon.getText().trim();
         
+        nguyenVongXetTuyenETT ct = new nguyenVongXetTuyenETT();
+        ct.setNnCccd(cccd);
+        ct.setNvMaNganh(maNganh);
+        ct.setNvTt(thuTuNV);
+        ct.setDiemThxt(diemTHXT);
+        ct.setDiemUtqd(diemUTQD);
+        ct.setDiemCong(diemCong);
+        ct.setDiemXetTuyen(diemXetTuyen);
+        ct.setNvKetQua(ketQuaNV);
+        ct.setNvKeys(key);
+        ct.setTtPhuongThuc(phuongThuc);
+        ct.setTtThm(toHopMon);
+        
+        if(bus.themNguyenVong(ct))
+        {
+            xacNhan = true;
+            JOptionPane.showMessageDialog(this, "Thêm nguyện vọng thành công");
+            dispose();
+        }
     }//GEN-LAST:event_btnThemActionPerformed
 
     public boolean xacNhanThem()
