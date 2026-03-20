@@ -3,6 +3,7 @@ package GUI;
 import java.awt.*;
 import java.util.ArrayList;
 import java.util.List;
+import java.util.Vector;
 import javax.swing.*;
 import javax.swing.border.EmptyBorder;
 import javax.swing.border.TitledBorder;
@@ -31,7 +32,8 @@ public class BaseTableGUI extends JPanel {
     private int currentPage = 1;
     private final int rowsPerPage = 20; // CHỐT HIỂN THỊ 20 DÒNG 1 TRANG
     private int totalPages = 1;
-    private List<Object[]> fullDataList = new ArrayList<>(); // Biến lưu trữ toàn bộ dữ liệu
+//    private List<Object[]> fullDataList = new ArrayList<>(); // Biến lưu trữ toàn bộ dữ liệu
+    private List<Vector> fullDataList = new ArrayList<>();
 
     public BaseTableGUI() {
         initComponents();
@@ -98,15 +100,25 @@ public class BaseTableGUI extends JPanel {
         pnlTop.add(pnlSearch, BorderLayout.EAST);    
 
         // ==================== VÙNG GIỮA (CENTER): TABLE ====================
-        tableModel = new DefaultTableModel(
-    new Object[][]{},
-    new String[]{"Cột 1", "Cột 2", "Cột 3", "Cột 4"}
-) {
-    @Override
-    public boolean isCellEditable(int row, int column) {
-        return false; // ❌ không cho sửa bất kỳ ô nào
-    }
-};
+//        tableModel = new DefaultTableModel(
+//    new Object[][]{},
+//    new String[]{"Cột 1", "Cột 2", "Cột 3", "Cột 4"}
+//) {
+//    @Override
+//    public boolean isCellEditable(int row, int column) {
+//        return false; // ❌ không cho sửa bất kỳ ô nào
+//    }
+//};
+
+        String[] columns = {"Cột 1", "Cột 2", "Cột 3", "Cột 4"};
+
+        tableModel = new DefaultTableModel(columns, 0) {
+            @Override
+            public boolean isCellEditable(int row, int column) {
+                return false;
+            }
+        };
+        
         table = new JTable(tableModel);
         table.setRowHeight(30); 
         table.setShowGrid(true);
@@ -140,30 +152,57 @@ public class BaseTableGUI extends JPanel {
     // ================== LOGIC PHÂN TRANG 20 DÒNG ==================
     
     // Gọi hàm này ở form con để ném dữ liệu vào. Form sẽ tự cắt 20 dòng.
-    public void setTableData(List<Object[]> data) {
-        this.fullDataList = data;
-        this.totalPages = (int) Math.ceil((double) fullDataList.size() / rowsPerPage);
-        if (this.totalPages == 0) this.totalPages = 1; // Mặc định luôn có ít nhất 1 trang
-        this.currentPage = 1; // Về trang đầu tiên
-        renderCurrentPage();
-    }
+//    public void setTableData(List<Object[]> data) {
+//        this.fullDataList = data;
+//        this.totalPages = (int) Math.ceil((double) fullDataList.size() / rowsPerPage);
+//        if (this.totalPages == 0) this.totalPages = 1; // Mặc định luôn có ít nhất 1 trang
+//        this.currentPage = 1; // Về trang đầu tiên
+//        renderCurrentPage();
+//    }
+    public void setTableData(List<Vector> data) {
+    this.fullDataList = data != null ? data : new ArrayList<>();
+
+    totalPages = (int) Math.ceil((double) fullDataList.size() / rowsPerPage);
+    if (totalPages == 0) totalPages = 1;
+
+    currentPage = 1;
+    renderCurrentPage();
+}
 
     // Hàm chịu trách nhiệm vẽ đúng 20 dòng của trang hiện tại lên Table
-    private void renderCurrentPage() {
-        tableModel.setRowCount(0); // Xóa data cũ trên bảng
-        
-        int startIndex = (currentPage - 1) * rowsPerPage;
-        int endIndex = Math.min(startIndex + rowsPerPage, fullDataList.size());
-        
-        // Đổ 20 dòng vào table
-        for (int i = startIndex; i < endIndex; i++) {
+//    private void renderCurrentPage() {
+//        tableModel.setRowCount(0); // Xóa data cũ trên bảng
+//        
+//        int startIndex = (currentPage - 1) * rowsPerPage;
+//        int endIndex = Math.min(startIndex + rowsPerPage, fullDataList.size());
+//        
+//        // Đổ 20 dòng vào table
+//        for (int i = startIndex; i < endIndex; i++) {
+//            tableModel.addRow(fullDataList.get(i));
+//        }
+//        
+//        // Cập nhật text hiển thị trang
+//        lblPageInfo.setText("Trang " + currentPage + " / " + totalPages);
+//        
+//        // Bật/tắt các nút cho hợp lý
+//        btnFirst.setEnabled(currentPage > 1);
+//        btnPrev.setEnabled(currentPage > 1);
+//        btnNext.setEnabled(currentPage < totalPages);
+//        btnLast.setEnabled(currentPage < totalPages);
+//    }
+    
+        private void renderCurrentPage() {
+        tableModel.setRowCount(0); // clear table
+
+        int start = (currentPage - 1) * rowsPerPage;
+        int end = Math.min(start + rowsPerPage, fullDataList.size());
+
+        for (int i = start; i < end; i++) {
             tableModel.addRow(fullDataList.get(i));
         }
-        
-        // Cập nhật text hiển thị trang
+
         lblPageInfo.setText("Trang " + currentPage + " / " + totalPages);
-        
-        // Bật/tắt các nút cho hợp lý
+
         btnFirst.setEnabled(currentPage > 1);
         btnPrev.setEnabled(currentPage > 1);
         btnNext.setEnabled(currentPage < totalPages);
