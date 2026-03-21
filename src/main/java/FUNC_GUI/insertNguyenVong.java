@@ -16,7 +16,7 @@ public class insertNguyenVong extends javax.swing.JDialog {
     
     private static final java.util.logging.Logger logger = java.util.logging.Logger.getLogger(insertNguyenVong.class.getName());
     public boolean xacNhan = false;
-    public nguyenVongXetTuyenETT ct;
+    public nguyenVongXetTuyenETT nguyenVong;
     nguyenVongXetTuyenBUS bus = new nguyenVongXetTuyenBUS();
     /**
      * Creates new form insertNguyenVong
@@ -44,7 +44,6 @@ public class insertNguyenVong extends javax.swing.JDialog {
         txtMaNganh = new javax.swing.JTextField();
         btnChonMaNganh = new javax.swing.JButton();
         jLabel3 = new javax.swing.JLabel();
-        txtThuTuNV = new javax.swing.JTextField();
         jLabel4 = new javax.swing.JLabel();
         txtToHopMon = new javax.swing.JTextField();
         btnChonToHop = new javax.swing.JButton();
@@ -56,6 +55,7 @@ public class insertNguyenVong extends javax.swing.JDialog {
         txtDiemUuTien = new javax.swing.JTextField();
         jLabel8 = new javax.swing.JLabel();
         txtDiemCong = new javax.swing.JTextField();
+        txtThuTuNV = new javax.swing.JSpinner();
         jPanel2 = new javax.swing.JPanel();
         btnThoat = new javax.swing.JButton();
         btnThem = new javax.swing.JButton();
@@ -63,6 +63,7 @@ public class insertNguyenVong extends javax.swing.JDialog {
         jLabel9 = new javax.swing.JLabel();
 
         setDefaultCloseOperation(javax.swing.WindowConstants.DISPOSE_ON_CLOSE);
+        setTitle("Thêm nguyện vọng");
 
         jPanel1.setBackground(new java.awt.Color(255, 255, 255));
         jPanel1.setBorder(javax.swing.BorderFactory.createTitledBorder(null, "Thêm nguyện vọng", javax.swing.border.TitledBorder.DEFAULT_JUSTIFICATION, javax.swing.border.TitledBorder.DEFAULT_POSITION, new java.awt.Font("Segoe UI", 1, 14))); // NOI18N
@@ -94,7 +95,7 @@ public class insertNguyenVong extends javax.swing.JDialog {
         jLabel5.setFont(new java.awt.Font("Segoe UI", 0, 14)); // NOI18N
         jLabel5.setText("Phương thức : ");
 
-        cboPT.setModel(new javax.swing.DefaultComboBoxModel<>(new String[] { "Item 1", "Item 2", "Item 3", "Item 4" }));
+        cboPT.setModel(new javax.swing.DefaultComboBoxModel<>(new String[] { "Xét THPT", "Xét Học Bạ", "ĐGNL HCM", "Tuyển Thẳng" }));
 
         jLabel6.setFont(new java.awt.Font("Segoe UI", 0, 14)); // NOI18N
         jLabel6.setText("Điểm THXT : ");
@@ -127,7 +128,7 @@ public class insertNguyenVong extends javax.swing.JDialog {
                     .addGroup(jPanel1Layout.createSequentialGroup()
                         .addComponent(jLabel3, javax.swing.GroupLayout.PREFERRED_SIZE, 123, javax.swing.GroupLayout.PREFERRED_SIZE)
                         .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED)
-                        .addComponent(txtThuTuNV, javax.swing.GroupLayout.PREFERRED_SIZE, 188, javax.swing.GroupLayout.PREFERRED_SIZE))
+                        .addComponent(txtThuTuNV, javax.swing.GroupLayout.PREFERRED_SIZE, 80, javax.swing.GroupLayout.PREFERRED_SIZE))
                     .addGroup(jPanel1Layout.createSequentialGroup()
                         .addGroup(jPanel1Layout.createParallelGroup(javax.swing.GroupLayout.Alignment.TRAILING, false)
                             .addGroup(javax.swing.GroupLayout.Alignment.LEADING, jPanel1Layout.createSequentialGroup()
@@ -289,23 +290,21 @@ public class insertNguyenVong extends javax.swing.JDialog {
 
     private void btnThemActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_btnThemActionPerformed
         // TODO add your handling code here:
-        if(txtCCCD.getText().isEmpty())
+
+        if(!kiemTraHopLe())
         {
-           JLabel lbTBnull = new JLabel("Không được để trống!");
-           lbTBnull.setFont(new Font("Segoe UI",Font.BOLD,16));
-           JOptionPane.showMessageDialog(this, lbTBnull,"Thông báo",JOptionPane.ERROR_MESSAGE);
-           return;
+            return;
         }
         
         String cccd = txtCCCD.getText().trim();
         String maNganh = txtMaNganh.getText().trim();
-        int thuTuNV = Integer.valueOf(txtThuTuNV.getText().trim());
+        int thuTuNV = (int) txtThuTuNV.getValue();
         double diemTHXT = Double.valueOf(txtDiemTHXT.getText().trim());
         double diemUTQD = Double.valueOf(txtDiemUuTien.getText().trim());
         double diemCong = Double.valueOf(txtDiemCong.getText().trim());
         double diemXetTuyen = diemTHXT + diemUTQD + diemCong;
         String ketQuaNV = "Chờ xét";
-        String key = cccd + "_" + txtThuTuNV.getText().trim();
+        String key = cccd + "_" + (int) txtThuTuNV.getValue();
         String phuongThuc = cboPT.getSelectedItem().toString();
         String toHopMon = txtToHopMon.getText().trim();
         
@@ -322,18 +321,125 @@ public class insertNguyenVong extends javax.swing.JDialog {
         ct.setTtPhuongThuc(phuongThuc);
         ct.setTtThm(toHopMon);
         
+        if(!kiemTraTrungNguyenVong(cccd, thuTuNV, maNganh, phuongThuc, toHopMon)) 
+        {
+            return;
+        }
+        
         if(bus.themNguyenVong(ct))
         {
             xacNhan = true;
             JOptionPane.showMessageDialog(this, "Thêm nguyện vọng thành công");
+            nguyenVong = ct;
             dispose();
         }
     }//GEN-LAST:event_btnThemActionPerformed
 
+    public boolean kiemTraHopLe()
+    {
+        if(bus.kiemTraRong(txtCCCD.getText()))
+        {
+            JOptionPane.showMessageDialog(this, "Không được để trống CCCD");
+            txtCCCD.requestFocus();
+            return false;
+        }
+        if(bus.kiemTraRong(txtMaNganh.getText()))
+        {
+            JOptionPane.showMessageDialog(this, "Không được để trống Mã ngành");
+            txtMaNganh.requestFocus();
+            return false; 
+        }
+        
+        if(((Number)txtThuTuNV.getValue()).intValue() <= 0)
+        {
+            JOptionPane.showMessageDialog(this, "Không được để trống Thứ tự nguyện vọng");
+            txtThuTuNV.requestFocus();
+            return false; 
+        }
+        
+       if(bus.kiemTraRong(txtToHopMon.getText()))
+        {
+            JOptionPane.showMessageDialog(this, "Không được để trống Tổ hợp môn");
+            txtToHopMon.requestFocus();
+            return false; 
+        }
+       if(bus.kiemTraRong(txtDiemTHXT.getText()))
+        {
+            JOptionPane.showMessageDialog(this, "Không được để trống Điểm tổ hợp xét tuyển");
+            txtDiemTHXT.requestFocus();
+            return false; 
+        } 
+       if(bus.kiemTraRong(txtDiemUuTien.getText()))
+        {
+            JOptionPane.showMessageDialog(this, "Không được để trống Điểm ưu tiên");
+            txtDiemUuTien.requestFocus();
+            return false; 
+        } 
+       if(bus.kiemTraRong(txtDiemCong.getText()))
+        {
+            JOptionPane.showMessageDialog(this, "Không được để trống Điểm cộng");
+            txtDiemCong.requestFocus();
+            return false; 
+        }  
+       if(!bus.kiemTraSoThuc(txtDiemTHXT.getText().trim()))
+       {
+            JOptionPane.showMessageDialog(this, "Điểm tổ hợp xét tuyển phải là số thực");
+            txtDiemTHXT.requestFocus();
+            return false; 
+       }
+       if(!bus.kiemTraSoThuc(txtDiemUuTien.getText().trim()))
+       {
+            JOptionPane.showMessageDialog(this, "Điểm ưu tiên phải là số thực");
+            txtDiemUuTien.requestFocus();
+            return false; 
+       }
+       if(!bus.kiemTraSoThuc(txtDiemCong.getText().trim()))
+       {
+            JOptionPane.showMessageDialog(this, "Điểm cộng phải là số thực");
+            txtDiemCong.requestFocus();
+            return false; 
+       }
+       return true;
+    }
+    
+    public boolean kiemTraTrungNguyenVong(String cccd, int thuTu, String maNganh, String phuongThuc, String toHop) {
+        if (bus.ds == null) return true;
+
+        for(nguyenVongXetTuyenETT ct : bus.ds) {
+            // Chỉ kiểm tra đối với cùng 1 thí sinh (cùng CCCD)
+            if (ct.getNnCccd().equals(cccd)) {
+                
+                // 1. Cấm trùng Thứ Tự NV (Ví dụ: Thí sinh này đã có NV 1 rồi thì cấm nhập thêm NV 1 nữa)
+                if(ct.getNvTt() == thuTu) {
+                    javax.swing.JOptionPane.showMessageDialog(this, "Thí sinh này đã có Nguyện vọng " + thuTu + " rồi!");
+                    return false;
+                }
+                
+                // 2. Cấm trùng Y Hệt (Cùng Ngành + Cùng Phương thức + Cùng Tổ hợp)
+                if(ct.getNvMaNganh().equals(maNganh) && 
+                   ct.getTtPhuongThuc().equals(phuongThuc) && 
+                   ct.getTtThm().equals(toHop)) {
+                    
+                    javax.swing.JOptionPane.showMessageDialog(this, 
+                        "Thí sinh đã đăng ký ngành này với cùng Phương thức và Tổ hợp môn rồi!\n" +
+                        "Vui lòng chọn Tổ hợp môn hoặc Phương thức khác.");
+                    return false;
+                }
+            }
+        }
+        return true;
+    }
+    
     public boolean xacNhanThem()
     {
         return xacNhan;
     }
+    
+    public nguyenVongXetTuyenETT getNguyenVong()
+    {
+        return nguyenVong;
+    }
+    
     /**
      * @param args the command line arguments
      */
@@ -362,7 +468,7 @@ public class insertNguyenVong extends javax.swing.JDialog {
     private javax.swing.JTextField txtDiemTHXT;
     private javax.swing.JTextField txtDiemUuTien;
     private javax.swing.JTextField txtMaNganh;
-    private javax.swing.JTextField txtThuTuNV;
+    private javax.swing.JSpinner txtThuTuNV;
     private javax.swing.JTextField txtToHopMon;
     // End of variables declaration//GEN-END:variables
 }

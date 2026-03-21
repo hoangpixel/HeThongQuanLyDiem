@@ -24,25 +24,44 @@ public class nguyenVongXetTuyenBUS {
         return ds;
     }
     
+    public boolean kiemTraRong(String text)
+    {
+        if(text == null || text.trim().isEmpty())
+        {
+            return true;
+        }
+        return false;
+    }
+    
+    public boolean kiemTraSo(String text) 
+    {
+        try 
+        {
+            Integer.parseInt(text);
+            return true;
+        } catch (NumberFormatException e) 
+        {
+            return false;
+        }
+    }
+    
+    public boolean kiemTraSoThuc(String text) 
+    {
+    try {
+        Double.parseDouble(text);
+        return true;
+    } catch (NumberFormatException e) 
+    {
+        return false;
+    }
+}
+    
     public boolean themNguyenVong(nguyenVongXetTuyenETT nv) {
-        // 1. Kiểm tra logic (như cũ)
-        if (nv.getNnCccd() == null || nv.getNnCccd().trim().isEmpty()) {
-            System.out.println("Lỗi: CCCD không được để trống!");
-            return false;
-        }
-        
-        if (nv.getNvMaNganh() == null || nv.getNvMaNganh().trim().isEmpty()) {
-            System.out.println("Lỗi: Mã ngành không được để trống!");
-            return false;
-        }
-
-        // 2. Gọi DAO lưu xuống MySQL và hứng kết quả
         boolean isSuccess = data.saveNguyenVong(nv);
-        
-        // 3. ĐỒNG BỘ DỮ LIỆU: Nếu MySQL đã lưu thành công, thì nhét luôn vào static ds
         if (isSuccess) {
-            if (ds != null) {
-                ds.add(nv); // Thêm vào list tĩnh. GUI gọi lại layDanhSach() sẽ thấy luôn!
+            if (ds != null) 
+            {
+                ds.add(nv);
             }
         }
 

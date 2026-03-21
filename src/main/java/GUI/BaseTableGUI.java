@@ -29,11 +29,11 @@ public class BaseTableGUI extends JPanel {
     private TitledBorder actionBorder;
 
     // ================== BIẾN QUẢN LÝ PHÂN TRANG ==================
-    private int currentPage = 1;
-    private final int rowsPerPage = 20; // CHỐT HIỂN THỊ 20 DÒNG 1 TRANG
-    private int totalPages = 1;
+    public int currentPage = 1;
+    public final int rowsPerPage = 3; // CHỐT HIỂN THỊ 20 DÒNG 1 TRANG
+    public int totalPages = 1;
 //    private List<Object[]> fullDataList = new ArrayList<>(); // Biến lưu trữ toàn bộ dữ liệu
-    private List<Vector> fullDataList = new ArrayList<>();
+    public List<Vector> fullDataList = new ArrayList<>();
 
     public BaseTableGUI() {
         initComponents();
@@ -69,6 +69,10 @@ public class BaseTableGUI extends JPanel {
         btnExcel = new JButton("EXCEL");
         btnThongKe = new JButton("THỐNG KÊ");
         
+        btnSua.setEnabled(false);
+        btnXoa.setEnabled(false);
+        btnChiTiet.setEnabled(false);
+        
         pnlActions.add(btnThem);
         pnlActions.add(btnSua);
         pnlActions.add(btnXoa);
@@ -100,15 +104,6 @@ public class BaseTableGUI extends JPanel {
         pnlTop.add(pnlSearch, BorderLayout.EAST);    
 
         // ==================== VÙNG GIỮA (CENTER): TABLE ====================
-//        tableModel = new DefaultTableModel(
-//    new Object[][]{},
-//    new String[]{"Cột 1", "Cột 2", "Cột 3", "Cột 4"}
-//) {
-//    @Override
-//    public boolean isCellEditable(int row, int column) {
-//        return false; // ❌ không cho sửa bất kỳ ô nào
-//    }
-//};
 
         String[] columns = {"Cột 1", "Cột 2", "Cột 3", "Cột 4"};
 
@@ -120,6 +115,38 @@ public class BaseTableGUI extends JPanel {
         };
         
         table = new JTable(tableModel);
+        table.setSelectionMode(ListSelectionModel.SINGLE_SELECTION);
+        // Click vô dòng thêm 1 lần nữa là bỏ chọn dòng đó kaka
+        int[] lastSelectedRow = {-1};
+
+        table.addMouseListener(new java.awt.event.MouseAdapter() {
+            @Override
+            public void mouseClicked(java.awt.event.MouseEvent e) {
+                int row = table.rowAtPoint(e.getPoint());
+
+                if (row == lastSelectedRow[0]) {
+                    table.clearSelection();
+                    table.transferFocus();
+                    // 🔥 FIX TRIỆT ĐỂ BORDER
+                    table.getSelectionModel().clearSelection();
+                    table.getColumnModel().getSelectionModel().clearSelection();
+
+                    lastSelectedRow[0] = -1;
+                } else {
+                    lastSelectedRow[0] = row;
+                }
+            }
+        });
+        table.getSelectionModel().addListSelectionListener(e -> {
+    // tránh trigger 2 lần
+    if (!e.getValueIsAdjusting()) {
+        boolean isSelected = table.getSelectedRow() != -1;
+
+        btnSua.setEnabled(isSelected);
+        btnXoa.setEnabled(isSelected);
+        btnChiTiet.setEnabled(isSelected);
+    }
+});
         table.setRowHeight(30); 
         table.setShowGrid(true);
         table.setGridColor(new Color(230, 230, 230));
@@ -151,62 +178,59 @@ public class BaseTableGUI extends JPanel {
 
     // ================== LOGIC PHÂN TRANG 20 DÒNG ==================
     
-    // Gọi hàm này ở form con để ném dữ liệu vào. Form sẽ tự cắt 20 dòng.
-//    public void setTableData(List<Object[]> data) {
-//        this.fullDataList = data;
-//        this.totalPages = (int) Math.ceil((double) fullDataList.size() / rowsPerPage);
-//        if (this.totalPages == 0) this.totalPages = 1; // Mặc định luôn có ít nhất 1 trang
-//        this.currentPage = 1; // Về trang đầu tiên
-//        renderCurrentPage();
-//    }
-    public void setTableData(List<Vector> data) {
+    public void setTableData(List<Vector> data)
+    {
     this.fullDataList = data != null ? data : new ArrayList<>();
 
     totalPages = (int) Math.ceil((double) fullDataList.size() / rowsPerPage);
     if (totalPages == 0) totalPages = 1;
 
+    // 🔥 FIX: reset + đảm bảo không vượt
     currentPage = 1;
-    renderCurrentPage();
-}
 
-    // Hàm chịu trách nhiệm vẽ đúng 20 dòng của trang hiện tại lên Table
-//    private void renderCurrentPage() {
-//        tableModel.setRowCount(0); // Xóa data cũ trên bảng
-//        
-//        int startIndex = (currentPage - 1) * rowsPerPage;
-//        int endIndex = Math.min(startIndex + rowsPerPage, fullDataList.size());
-//        
-//        // Đổ 20 dòng vào table
-//        for (int i = startIndex; i < endIndex; i++) {
-//            tableModel.addRow(fullDataList.get(i));
-//        }
-//        
-//        // Cập nhật text hiển thị trang
-//        lblPageInfo.setText("Trang " + currentPage + " / " + totalPages);
-//        
-//        // Bật/tắt các nút cho hợp lý
-//        btnFirst.setEnabled(currentPage > 1);
-//        btnPrev.setEnabled(currentPage > 1);
-//        btnNext.setEnabled(currentPage < totalPages);
-//        btnLast.setEnabled(currentPage < totalPages);
-//    }
-    
-        private void renderCurrentPage() {
-        tableModel.setRowCount(0); // clear table
+    renderCurrentPage();
+    }
+
+    public void renderCurrentPage() {
+        // 🔥 1. Chặn page vượt giới hạn
+        if (currentPage < 1) currentPage = 1;
+        if (currentPage > totalPages) currentPage = totalPages;
+
+        // 🔥 2. Clear table
+        tableModel.setRowCount(0);
 
         int start = (currentPage - 1) * rowsPerPage;
         int end = Math.min(start + rowsPerPage, fullDataList.size());
 
-        for (int i = start; i < end; i++) {
-            tableModel.addRow(fullDataList.get(i));
+        // 🔥 3. Nếu vượt thì KHÔNG return sớm (vì sẽ skip disable nút)
+        if (start < fullDataList.size()) {
+            for (int i = start; i < end; i++) {
+                tableModel.addRow(fullDataList.get(i));
+            }
         }
 
+        // 🔥 4. Update label
         lblPageInfo.setText("Trang " + currentPage + " / " + totalPages);
 
+        // 🔥 5. Disable/Enable đúng chuẩn
         btnFirst.setEnabled(currentPage > 1);
         btnPrev.setEnabled(currentPage > 1);
         btnNext.setEnabled(currentPage < totalPages);
         btnLast.setEnabled(currentPage < totalPages);
+
+        // 🔥 6. Nếu chỉ có 1 trang → ẩn luôn
+        boolean multiPage = totalPages > 1;
+
+        btnFirst.setVisible(multiPage);
+        btnPrev.setVisible(multiPage);
+        btnNext.setVisible(multiPage);
+        btnLast.setVisible(multiPage);
+        lblPageInfo.setVisible(multiPage);
+
+        // 🔥 DEBUG (tuỳ bạn giữ hay xoá)
+        System.out.println("Rows: " + fullDataList.size());
+        System.out.println("Pages: " + totalPages);
+        System.out.println("Current: " + currentPage);
     }
 
     // Gắn sự kiện click cho 4 nút chuyển trang
