@@ -1,8 +1,8 @@
--- MySQL dump 10.13  Distrib 8.0.44, for macos15 (arm64)
+-- MySQL dump 10.13  Distrib 8.0.45, for Win64 (x86_64)
 --
--- Host: localhost    Database: xettuyen2026
+-- Host: localhost    Database: hethongquanlydiem
 -- ------------------------------------------------------
--- Server version	8.0.42
+-- Server version	9.6.0
 
 /*!40101 SET @OLD_CHARACTER_SET_CLIENT=@@CHARACTER_SET_CLIENT */;
 /*!40101 SET @OLD_CHARACTER_SET_RESULTS=@@CHARACTER_SET_RESULTS */;
@@ -14,6 +14,14 @@
 /*!40014 SET @OLD_FOREIGN_KEY_CHECKS=@@FOREIGN_KEY_CHECKS, FOREIGN_KEY_CHECKS=0 */;
 /*!40101 SET @OLD_SQL_MODE=@@SQL_MODE, SQL_MODE='NO_AUTO_VALUE_ON_ZERO' */;
 /*!40111 SET @OLD_SQL_NOTES=@@SQL_NOTES, SQL_NOTES=0 */;
+SET @MYSQLDUMP_TEMP_LOG_BIN = @@SESSION.SQL_LOG_BIN;
+SET @@SESSION.SQL_LOG_BIN= 0;
+
+--
+-- GTID state at the beginning of the backup 
+--
+
+SET @@GLOBAL.GTID_PURGED=/*!80000 '+'*/ '424fbbe1-2261-11f1-a5e1-047c16aa0506:1-96';
 
 --
 -- Table structure for table `xt_bangquydoi`
@@ -60,14 +68,14 @@ CREATE TABLE `xt_diemcongxetuyen` (
   `manganh` varchar(20) DEFAULT '0.00',
   `matohop` varchar(10) DEFAULT '0.00',
   `phuongthuc` varchar(45) DEFAULT NULL,
-  `diemCC` decimal(6,2) DEFAULT NULL,
-  `diemUtxt` decimal(6,2) DEFAULT NULL,
-  `diemTong` decimal(6,2) DEFAULT '0.00',
+  `diemCC` double DEFAULT NULL,
+  `diemUtxt` double DEFAULT NULL,
+  `diemTong` double DEFAULT NULL,
   `ghichu` text,
   `dc_keys` varchar(45) NOT NULL,
   PRIMARY KEY (`iddiemcong`),
   UNIQUE KEY `dc_keys_UNIQUE` (`dc_keys`)
-) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_0900_ai_ci;
+) ENGINE=InnoDB AUTO_INCREMENT=3 DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_0900_ai_ci;
 /*!40101 SET character_set_client = @saved_cs_client */;
 
 --
@@ -76,6 +84,7 @@ CREATE TABLE `xt_diemcongxetuyen` (
 
 LOCK TABLES `xt_diemcongxetuyen` WRITE;
 /*!40000 ALTER TABLE `xt_diemcongxetuyen` DISABLE KEYS */;
+INSERT INTO `xt_diemcongxetuyen` VALUES (1,'079203001111','7480201','A00','Xét THPT',1.5,0.75,2.25,'Chứng chỉ Tiếng Anh + KV1','079203001111_7480201_A00_Xét THPT'),(2,'001207008593','7810202','D01','Xét Học Bạ',0,0.25,0.25,'Chỉ có điểm ưu tiên KV2','001207008593_7810202_D01_Xét Học Bạ');
 /*!40000 ALTER TABLE `xt_diemcongxetuyen` ENABLE KEYS */;
 UNLOCK TABLES;
 
@@ -91,25 +100,25 @@ CREATE TABLE `xt_diemthixettuyen` (
   `cccd` varchar(20) CHARACTER SET utf8mb4 COLLATE utf8mb4_unicode_ci NOT NULL,
   `sobaodanh` varchar(45) CHARACTER SET utf8mb3 COLLATE utf8mb3_general_ci DEFAULT NULL,
   `d_phuongthuc` varchar(10) DEFAULT NULL,
-  `TO` decimal(8,2) DEFAULT '0.00',
-  `LI` decimal(8,2) DEFAULT '0.00',
-  `HO` decimal(8,2) DEFAULT '0.00',
-  `SI` decimal(8,2) DEFAULT '0.00',
-  `SU` decimal(8,2) DEFAULT '0.00',
-  `DI` decimal(8,2) DEFAULT '0.00',
-  `VA` decimal(8,2) DEFAULT '0.00',
-  `N1_THI` decimal(8,2) DEFAULT NULL COMMENT 'Điểm thi gốc',
-  `N1_CC` decimal(8,2) DEFAULT '0.00' COMMENT 'max(N1_Thi, N1_QD)',
-  `CNCN` decimal(8,2) DEFAULT '0.00',
-  `CNNN` decimal(8,2) DEFAULT '0.00',
-  `TI` decimal(8,2) DEFAULT '0.00',
-  `KTPL` decimal(8,2) DEFAULT '0.00',
-  `NL1` decimal(8,2) DEFAULT NULL,
-  `NK1` decimal(8,2) DEFAULT NULL,
-  `NK2` decimal(8,2) DEFAULT NULL,
+  `TO` double DEFAULT NULL,
+  `LI` double DEFAULT NULL,
+  `HO` double DEFAULT NULL,
+  `SI` double DEFAULT NULL,
+  `SU` double DEFAULT NULL,
+  `DI` double DEFAULT NULL,
+  `VA` double DEFAULT NULL,
+  `N1_THI` double DEFAULT NULL,
+  `N1_CC` double DEFAULT NULL,
+  `CNCN` double DEFAULT NULL,
+  `CNNN` double DEFAULT NULL,
+  `TI` double DEFAULT NULL,
+  `KTPL` double DEFAULT NULL,
+  `NL1` double DEFAULT NULL,
+  `NK1` double DEFAULT NULL,
+  `NK2` double DEFAULT NULL,
   PRIMARY KEY (`iddiemthi`),
   UNIQUE KEY `cccd_UNIQUE` (`cccd`)
-) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_0900_ai_ci;
+) ENGINE=InnoDB AUTO_INCREMENT=4 DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_0900_ai_ci;
 /*!40101 SET character_set_client = @saved_cs_client */;
 
 --
@@ -118,6 +127,7 @@ CREATE TABLE `xt_diemthixettuyen` (
 
 LOCK TABLES `xt_diemthixettuyen` WRITE;
 /*!40000 ALTER TABLE `xt_diemthixettuyen` DISABLE KEYS */;
+INSERT INTO `xt_diemthixettuyen` VALUES (1,'079203001111',NULL,NULL,8,8.5,9,0,0,0,6.5,7,0,0,0,0,0,NULL,NULL,NULL),(2,'079203002222',NULL,NULL,7.5,6,8,0,0,0,9,8.5,0,0,0,0,0,NULL,NULL,NULL),(3,'001207008593',NULL,NULL,4.38,6.03,0,0,0,0,7.59,7,0,0,0,0,0,NULL,NULL,NULL);
 /*!40000 ALTER TABLE `xt_diemthixettuyen` ENABLE KEYS */;
 UNLOCK TABLES;
 
@@ -136,14 +146,14 @@ CREATE TABLE `xt_nganh` (
   `n_chitieu` int NOT NULL DEFAULT '0',
   `n_diemsan` decimal(10,2) DEFAULT NULL,
   `n_diemtrungtuyen` decimal(10,2) DEFAULT NULL,
-  `n_tuyenthang` varchar(1) COLLATE utf8mb3_unicode_ci DEFAULT NULL,
-  `n_dgnl` varchar(1) COLLATE utf8mb3_unicode_ci DEFAULT NULL,
-  `n_thpt` varchar(1) COLLATE utf8mb3_unicode_ci DEFAULT NULL,
-  `n_vsat` varchar(1) COLLATE utf8mb3_unicode_ci DEFAULT NULL,
+  `n_tuyenthang` varchar(1) CHARACTER SET utf8mb3 COLLATE utf8mb3_unicode_ci DEFAULT NULL,
+  `n_dgnl` varchar(1) CHARACTER SET utf8mb3 COLLATE utf8mb3_unicode_ci DEFAULT NULL,
+  `n_thpt` varchar(1) CHARACTER SET utf8mb3 COLLATE utf8mb3_unicode_ci DEFAULT NULL,
+  `n_vsat` varchar(1) CHARACTER SET utf8mb3 COLLATE utf8mb3_unicode_ci DEFAULT NULL,
   `sl_xtt` int DEFAULT NULL,
   `sl_dgnl` int DEFAULT NULL,
   `sl_vsat` int DEFAULT NULL,
-  `sl_thpt` varchar(45) COLLATE utf8mb3_unicode_ci DEFAULT NULL,
+  `sl_thpt` varchar(45) CHARACTER SET utf8mb3 COLLATE utf8mb3_unicode_ci DEFAULT NULL,
   PRIMARY KEY (`idnganh`)
 ) ENGINE=InnoDB DEFAULT CHARSET=utf8mb3 COLLATE=utf8mb3_unicode_ci;
 /*!40101 SET character_set_client = @saved_cs_client */;
@@ -213,17 +223,17 @@ CREATE TABLE `xt_nguyenvongxettuyen` (
   `nn_cccd` varchar(45) CHARACTER SET utf8mb3 COLLATE utf8mb3_general_ci NOT NULL,
   `nv_manganh` varchar(45) CHARACTER SET utf8mb3 COLLATE utf8mb3_general_ci NOT NULL,
   `nv_tt` int NOT NULL,
-  `diem_thxt` decimal(10,5) DEFAULT NULL COMMENT 'đã cộng điểm môn chính',
-  `diem_utqd` decimal(10,5) DEFAULT NULL COMMENT 'Điểm UTQD theo tổ họp sẽ khác nhau.',
-  `diem_cong` decimal(6,2) DEFAULT NULL COMMENT 'Tong 3 mon chua tinh mon chinh + diem uu tien\\\\\\\\n',
-  `diem_xettuyen` decimal(10,5) DEFAULT NULL COMMENT 'đã cộng điểm ưu tiên',
+  `diem_thxt` double DEFAULT NULL,
+  `diem_utqd` double DEFAULT NULL,
+  `diem_cong` double DEFAULT NULL,
+  `diem_xettuyen` double DEFAULT NULL,
   `nv_ketqua` varchar(45) CHARACTER SET utf8mb3 COLLATE utf8mb3_general_ci DEFAULT NULL,
   `nv_keys` varchar(45) CHARACTER SET utf8mb3 COLLATE utf8mb3_general_ci DEFAULT NULL,
   `tt_phuongthuc` varchar(45) DEFAULT NULL,
   `tt_thm` varchar(45) DEFAULT NULL,
   PRIMARY KEY (`idnv`),
   UNIQUE KEY `nv_keys_UNIQUE` (`nv_keys`)
-) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_0900_ai_ci;
+) ENGINE=InnoDB AUTO_INCREMENT=2 DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_0900_ai_ci;
 /*!40101 SET character_set_client = @saved_cs_client */;
 
 --
@@ -232,6 +242,7 @@ CREATE TABLE `xt_nguyenvongxettuyen` (
 
 LOCK TABLES `xt_nguyenvongxettuyen` WRITE;
 /*!40000 ALTER TABLE `xt_nguyenvongxettuyen` DISABLE KEYS */;
+INSERT INTO `xt_nguyenvongxettuyen` VALUES (1,'079203001111','7480201',1,25.5,0.75,1.5,27.75,'Chờ xét','079203001111_1','Xét THPT','A00');
 /*!40000 ALTER TABLE `xt_nguyenvongxettuyen` ENABLE KEYS */;
 UNLOCK TABLES;
 
@@ -254,12 +265,12 @@ CREATE TABLE `xt_thisinhxettuyen25` (
   `gioi_tinh` varchar(10) CHARACTER SET utf8mb3 COLLATE utf8mb3_general_ci DEFAULT NULL,
   `email` varchar(100) CHARACTER SET utf8mb3 COLLATE utf8mb3_unicode_ci DEFAULT NULL,
   `noi_sinh` varchar(45) CHARACTER SET utf8mb3 COLLATE utf8mb3_general_ci DEFAULT NULL,
-  `updated_at` date DEFAULT NULL,
+  `updated_at` datetime(6) DEFAULT NULL,
   `doi_tuong` varchar(45) CHARACTER SET utf8mb3 COLLATE utf8mb3_general_ci DEFAULT NULL,
   `khu_vuc` varchar(45) CHARACTER SET utf8mb3 COLLATE utf8mb3_general_ci DEFAULT NULL,
   PRIMARY KEY (`idthisinh`),
   UNIQUE KEY `cccd_UNIQUE` (`cccd`)
-) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_0900_ai_ci;
+) ENGINE=InnoDB AUTO_INCREMENT=9 DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_0900_ai_ci;
 /*!40101 SET character_set_client = @saved_cs_client */;
 
 --
@@ -268,6 +279,7 @@ CREATE TABLE `xt_thisinhxettuyen25` (
 
 LOCK TABLES `xt_thisinhxettuyen25` WRITE;
 /*!40000 ALTER TABLE `xt_thisinhxettuyen25` DISABLE KEYS */;
+INSERT INTO `xt_thisinhxettuyen25` VALUES (1,'012345678901','SBD001','Nguyen','An','2005-03-15','0901234567','123456','Nam','an.nguyen@gmail.com','HCM','2026-03-21 20:30:45.000000','0','KV1'),(2,'012345678902','SBD002','Tran','Binh','2005-07-20','0912345678','123456','Nam','binh.tran@gmail.com','Ha Noi','2026-03-21 20:30:45.000000','1','KV2'),(3,'012345678903','SBD003','Le','Chi','2005-01-10','0923456789','123456','Nu','chi.le@gmail.com','Da Nang','2026-03-21 20:30:45.000000','0','KV1'),(4,'012345678904','SBD004','Pham','Dung','2005-12-05','0934567890','123456','Nu','dung.pham@gmail.com','Can Tho','2026-03-21 20:30:45.000000','2','KV3'),(5,'012345678905','SBD005','Hoang','Em','2005-09-09','0945678901','123456','Nam','em.hoang@gmail.com','Hue','2026-03-21 20:30:45.000000','1','KV2'),(6,'079203001111',NULL,'Nguyễn Văn','An',NULL,NULL,NULL,NULL,NULL,NULL,NULL,NULL,NULL),(7,'079203002222',NULL,'Trần Thị','Bình',NULL,NULL,NULL,NULL,NULL,NULL,NULL,NULL,NULL),(8,'001207008593',NULL,'Lê Hoàng','Cường',NULL,NULL,NULL,NULL,NULL,NULL,NULL,NULL,NULL);
 /*!40000 ALTER TABLE `xt_thisinhxettuyen25` ENABLE KEYS */;
 UNLOCK TABLES;
 
@@ -287,7 +299,7 @@ CREATE TABLE `xt_tohop_monthi` (
   `tentohop` varchar(100) CHARACTER SET utf8mb3 COLLATE utf8mb3_general_ci DEFAULT NULL,
   PRIMARY KEY (`idtohop`),
   UNIQUE KEY `matohop_UNIQUE` (`matohop`)
-) ENGINE=InnoDB DEFAULT CHARSET=utf8mb3 COLLATE=utf8mb3_unicode_ci;
+) ENGINE=InnoDB AUTO_INCREMENT=4 DEFAULT CHARSET=utf8mb3 COLLATE=utf8mb3_unicode_ci;
 /*!40101 SET character_set_client = @saved_cs_client */;
 
 --
@@ -296,8 +308,10 @@ CREATE TABLE `xt_tohop_monthi` (
 
 LOCK TABLES `xt_tohop_monthi` WRITE;
 /*!40000 ALTER TABLE `xt_tohop_monthi` DISABLE KEYS */;
+INSERT INTO `xt_tohop_monthi` VALUES (1,'A00','TO','LI','HO','Toán, Vật lý, Hóa học'),(2,'A01','TO','LI','N1','Toán, Vật lý, Tiếng Anh'),(3,'D01','TO','VA','N1','Toán, Ngữ văn, Tiếng Anh');
 /*!40000 ALTER TABLE `xt_tohop_monthi` ENABLE KEYS */;
 UNLOCK TABLES;
+SET @@SESSION.SQL_LOG_BIN = @MYSQLDUMP_TEMP_LOG_BIN;
 /*!40103 SET TIME_ZONE=@OLD_TIME_ZONE */;
 
 /*!40101 SET SQL_MODE=@OLD_SQL_MODE */;
@@ -308,4 +322,4 @@ UNLOCK TABLES;
 /*!40101 SET COLLATION_CONNECTION=@OLD_COLLATION_CONNECTION */;
 /*!40111 SET SQL_NOTES=@OLD_SQL_NOTES */;
 
--- Dump completed on 2026-03-11 16:08:42
+-- Dump completed on 2026-03-21 21:31:38

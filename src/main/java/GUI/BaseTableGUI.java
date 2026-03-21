@@ -30,7 +30,7 @@ public class BaseTableGUI extends JPanel {
 
     // ================== BIẾN QUẢN LÝ PHÂN TRANG ==================
     public int currentPage = 1;
-    public final int rowsPerPage = 3; // CHỐT HIỂN THỊ 20 DÒNG 1 TRANG
+    public final int rowsPerPage = 10; // CHỐT HIỂN THỊ 20 DÒNG 1 TRANG
     public int totalPages = 1;
 //    private List<Object[]> fullDataList = new ArrayList<>(); // Biến lưu trữ toàn bộ dữ liệu
     public List<Vector> fullDataList = new ArrayList<>();

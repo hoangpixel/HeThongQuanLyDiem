@@ -4,10 +4,20 @@
  */
 package FUNC_GUI;
 import Entity.nguyenVongXetTuyenETT;
+import Entity.thiSinhETT;
+import Entity.toHopETT;
+import Entity.diemCongETT;
+import Entity.diemThiETT;
 import BUS.nguyenVongXetTuyenBUS;
+import BUS.diemThiBUS;
+import BUS.diemCongBUS;
 import java.awt.Font;
+import javax.swing.JFrame;
 import javax.swing.JLabel;
 import javax.swing.JOptionPane;
+import javax.swing.SwingUtilities;
+import SELECT_GUI.selectThiSinh;
+import SELECT_GUI.selectToHop;
 /**
  *
  * @author mhoang
@@ -18,6 +28,10 @@ public class insertNguyenVong extends javax.swing.JDialog {
     public boolean xacNhan = false;
     public nguyenVongXetTuyenETT nguyenVong;
     nguyenVongXetTuyenBUS bus = new nguyenVongXetTuyenBUS();
+    public String cccd;
+    public String toHopMon;
+    
+    public Entity.toHopETT toHopMonDaChon = null;
     /**
      * Creates new form insertNguyenVong
      */
@@ -25,6 +39,7 @@ public class insertNguyenVong extends javax.swing.JDialog {
         super(parent, modal);
         initComponents();
         setLocationRelativeTo(parent);
+        btnChonToHop.setEnabled(false);
     }
 
     /**
@@ -71,9 +86,12 @@ public class insertNguyenVong extends javax.swing.JDialog {
         jLabel1.setFont(new java.awt.Font("Segoe UI", 0, 14)); // NOI18N
         jLabel1.setText("CCCD Thí sinh (*) : ");
 
+        txtCCCD.setEditable(false);
+
         btnChonCCCThiSinh.setText("...");
         btnChonCCCThiSinh.setToolTipText("");
         btnChonCCCThiSinh.setCursor(new java.awt.Cursor(java.awt.Cursor.HAND_CURSOR));
+        btnChonCCCThiSinh.addActionListener(this::btnChonCCCThiSinhActionPerformed);
 
         jLabel2.setFont(new java.awt.Font("Segoe UI", 0, 14)); // NOI18N
         jLabel2.setText("Mã ngành (*) : ");
@@ -91,11 +109,13 @@ public class insertNguyenVong extends javax.swing.JDialog {
         btnChonToHop.setText("...");
         btnChonToHop.setToolTipText("");
         btnChonToHop.setCursor(new java.awt.Cursor(java.awt.Cursor.HAND_CURSOR));
+        btnChonToHop.addActionListener(this::btnChonToHopActionPerformed);
 
         jLabel5.setFont(new java.awt.Font("Segoe UI", 0, 14)); // NOI18N
         jLabel5.setText("Phương thức : ");
 
         cboPT.setModel(new javax.swing.DefaultComboBoxModel<>(new String[] { "Xét THPT", "Xét Học Bạ", "ĐGNL HCM", "Tuyển Thẳng" }));
+        cboPT.addActionListener(this::cboPTActionPerformed);
 
         jLabel6.setFont(new java.awt.Font("Segoe UI", 0, 14)); // NOI18N
         jLabel6.setText("Điểm THXT : ");
@@ -296,7 +316,7 @@ public class insertNguyenVong extends javax.swing.JDialog {
             return;
         }
         
-        String cccd = txtCCCD.getText().trim();
+        
         String maNganh = txtMaNganh.getText().trim();
         int thuTuNV = (int) txtThuTuNV.getValue();
         double diemTHXT = Double.valueOf(txtDiemTHXT.getText().trim());
@@ -306,7 +326,6 @@ public class insertNguyenVong extends javax.swing.JDialog {
         String ketQuaNV = "Chờ xét";
         String key = cccd + "_" + (int) txtThuTuNV.getValue();
         String phuongThuc = cboPT.getSelectedItem().toString();
-        String toHopMon = txtToHopMon.getText().trim();
         
         nguyenVongXetTuyenETT ct = new nguyenVongXetTuyenETT();
         ct.setNnCccd(cccd);
@@ -335,6 +354,108 @@ public class insertNguyenVong extends javax.swing.JDialog {
         }
     }//GEN-LAST:event_btnThemActionPerformed
 
+    private void btnChonCCCThiSinhActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_btnChonCCCThiSinhActionPerformed
+        // TODO add your handling code here:
+        JFrame topFrame = (JFrame) SwingUtilities.getWindowAncestor(this);
+        selectThiSinh dialog = new selectThiSinh(topFrame, true);
+        dialog.setVisible(true);
+        if(dialog.getXacNhan())
+        {
+            thiSinhETT thiSinh = dialog.getThiSinh();
+            cccd = thiSinh.getCccd();
+            txtCCCD.setText(cccd);
+            btnChonToHop.setEnabled(true);
+        }
+    }//GEN-LAST:event_btnChonCCCThiSinhActionPerformed
+
+    private void btnChonToHopActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_btnChonToHopActionPerformed
+        // TODO add your handling code here:
+        JFrame topFrame = (JFrame) SwingUtilities.getWindowAncestor(this);
+        selectToHop dialog = new selectToHop(topFrame, true);
+        dialog.setVisible(true);
+        if(dialog.getXacNhan())
+        {
+            toHopMonDaChon = dialog.getToHopETT();
+            toHopMon = toHopMonDaChon.getMatohop();
+            txtToHopMon.setText(toHopMonDaChon.getMatohop());
+            capNhatDiemTuDong();
+        }
+    }//GEN-LAST:event_btnChonToHopActionPerformed
+
+    private void cboPTActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_cboPTActionPerformed
+        // TODO add your handling code here:
+        capNhatDiemTuDong();
+    }//GEN-LAST:event_cboPTActionPerformed
+
+// Bạn cần khai báo thêm một biến toàn cục ở đầu class để lưu Tổ hợp vừa chọn
+    // public toHopETT toHopMonDaChon;
+
+    public void capNhatDiemTuDong() {
+        
+        String maNganh = txtMaNganh.getText().trim();
+        String phuongThuc = cboPT.getSelectedItem().toString();
+try {
+            // --- 1. XỬ LÝ ĐIỂM THI (THXT) ---
+            diemThiBUS dtBus = new diemThiBUS();
+            diemThiETT diemThi = dtBus.layDiemTheoCCCD(cccd);
+
+            if (diemThi != null && toHopMonDaChon != null) {
+                String mon1 = toHopMonDaChon.getMon1(); 
+                String mon2 = toHopMonDaChon.getMon2();
+                String mon3 = toHopMonDaChon.getMon3();
+
+                double diem1 = layDiemTheoMaMon(diemThi, mon1);
+                double diem2 = layDiemTheoMaMon(diemThi, mon2);
+                double diem3 = layDiemTheoMaMon(diemThi, mon3);
+
+                double tongDiem = diem1 + diem2 + diem3;
+                txtDiemTHXT.setText(String.valueOf(tongDiem));
+                txtDiemTHXT.setEditable(false); 
+            }
+
+            // --- 2. XỬ LÝ ĐIỂM CỘNG VÀ ĐIỂM ƯU TIÊN ---
+            diemCongBUS dcBus = new diemCongBUS();
+            diemCongETT diemCong = dcBus.layDiemCongChinhXac(cccd, maNganh, toHopMon, phuongThuc);
+
+            if (diemCong != null) {
+                // Có dữ liệu thì móc điểm ra điền vào form
+                txtDiemUuTien.setText(String.valueOf(diemCong.getDiemUtxt()));
+                txtDiemCong.setText(String.valueOf(diemCong.getDiemCC()));
+            } else {
+                // Không có thì mặc định là 0
+                txtDiemUuTien.setText("0.0");
+                txtDiemCong.setText("0.0");
+            }
+            
+            // Khóa 2 ô này lại không cho nhập tay
+            txtDiemUuTien.setEditable(false);
+            txtDiemCong.setEditable(false);
+
+        } catch (Exception e) {
+            e.printStackTrace();
+        }
+    }
+
+    // =====================================================================
+    // HÀM PHỤ TRỢ: Lấy điểm chính xác dựa vào mã môn (TO, LI, HO, VA...)
+    // =====================================================================
+    private double layDiemTheoMaMon(diemThiETT dt, String maMon) {
+        if (maMon == null || maMon.trim().isEmpty()) return 0.0;
+        
+        switch (maMon.toUpperCase()) {
+            case "TO": return dt.getTo();     // Toán
+            case "LI": return dt.getLi();     // Lý
+            case "HO": return dt.getHo();     // Hóa
+            case "SI": return dt.getSi();     // Sinh
+            case "VA": return dt.getVa();     // Văn
+            case "SU": return dt.getSu();     // Sử
+            case "DI": return dt.getDi();     // Địa
+            case "N1": return dt.getN1Thi();  // Tiếng Anh
+            // Thêm các môn khác (Năng khiếu, ĐGNL) tương ứng với các cột trong DB của bạn
+            default: return 0.0;
+        }
+    }
+    
     public boolean kiemTraHopLe()
     {
         if(bus.kiemTraRong(txtCCCD.getText()))
