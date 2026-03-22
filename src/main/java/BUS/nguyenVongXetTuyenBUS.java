@@ -67,4 +67,43 @@ public class nguyenVongXetTuyenBUS {
 
         return isSuccess;
     }
+    
+    public boolean suaNguyenVong(Entity.nguyenVongXetTuyenETT nvMoi) {
+        // 1. Lưu xuống Database trước
+        if (data.suaNguyenVong(nvMoi)) {
+            
+            // 2. Nếu Database OK, tiến hành cập nhật lại biến ds tĩnh
+            if (ds != null) {
+                for (int i = 0; i < ds.size(); i++) {
+                    // Dùng nv_keys để dò tìm vì nó là duy nhất (Unique)
+                    // (Hồi nãy mình đã khóa ô CCCD và Thứ tự lại nên nv_keys chắc chắn không bị đổi)
+                    if (ds.get(i).getNvKeys().equals(nvMoi.getNvKeys())) {
+                        ds.set(i, nvMoi); // Đè đối tượng mới vào vị trí cũ
+                        break;
+                    }
+                }
+            }
+            return true;
+        }
+        return false; // Lưu DB thất bại
+    }
+    
+    public boolean xoaNguyenVong(Entity.nguyenVongXetTuyenETT nv) {
+        // 1. Kêu DAO xóa dưới MySQL
+        if (data.xoaNguyenVong(nv)) {
+            
+            // 2. Nếu MySQL xóa thành công, xóa luôn trong RAM
+            if (ds != null) {
+                for (int i = 0; i < ds.size(); i++) {
+                    // Dò đúng cái ID đó thì gạch tên khỏi danh sách
+                    if (ds.get(i).getIdNv() == nv.getIdNv()) {
+                        ds.remove(i); 
+                        break;
+                    }
+                }
+            }
+            return true;
+        }
+        return false; // Xóa thất bại
+    }
 }

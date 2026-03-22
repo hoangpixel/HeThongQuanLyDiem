@@ -24,29 +24,42 @@ import SELECT_GUI.selectNganh;
  *
  * @author mhoang
  */
-public class insertNguyenVong extends javax.swing.JDialog {
+public class updateNguyenVong extends javax.swing.JDialog {
     
-    private static final java.util.logging.Logger logger = java.util.logging.Logger.getLogger(insertNguyenVong.class.getName());
+    private static final java.util.logging.Logger logger = java.util.logging.Logger.getLogger(updateNguyenVong.class.getName());
     public boolean xacNhan = false;
     public nguyenVongXetTuyenETT nguyenVong;
     nguyenVongXetTuyenBUS bus = new nguyenVongXetTuyenBUS();
     public String cccd;
     public String toHopMon;
     public String maNganh;
+    private String key;
+    private int idNV;
     
     public Entity.toHopETT toHopMonDaChon = null;
     /**
      * Creates new form insertNguyenVong
      */
-    public insertNguyenVong(java.awt.Frame parent, boolean modal) {
+    public updateNguyenVong(java.awt.Frame parent, boolean modal, nguyenVongXetTuyenETT data) {
         super(parent, modal);
         initComponents();
         setLocationRelativeTo(parent);
-        btnChonToHop.setEnabled(false);
-        txtDiemCong.setText("0.0");
-        txtDiemTHXT.setText("0.0");
-        txtDiemUuTien.setText("0.0");
+        cccd = data.getNnCccd();
+        key = data.getNvKeys();
+        idNV = data.getIdNv();
+        maNganh = data.getNvMaNganh();
+        toHopMon = data.getTtThm();
+        
+        txtCCCD.setText(data.getNnCccd());
+        txtMaNganh.setText(data.getNvMaNganh());
+        txtThuTuNV.setValue(data.getNvTt());
+        txtToHopMon.setText(data.getTtThm());
+        cboPT.setSelectedItem(data.getTtPhuongThuc());
+        txtDiemCong.setText(data.getDiemCong().toString());
+        txtDiemTHXT.setText(data.getDiemThxt().toString());
+        txtDiemUuTien.setText(data.getDiemUtqd().toString());
     }
+
 
     /**
      * This method is called from within the constructor to initialize the form.
@@ -60,7 +73,6 @@ public class insertNguyenVong extends javax.swing.JDialog {
         jPanel1 = new javax.swing.JPanel();
         jLabel1 = new javax.swing.JLabel();
         txtCCCD = new javax.swing.JTextField();
-        btnChonCCCThiSinh = new javax.swing.JButton();
         jLabel2 = new javax.swing.JLabel();
         txtMaNganh = new javax.swing.JTextField();
         btnChonMaNganh = new javax.swing.JButton();
@@ -93,11 +105,6 @@ public class insertNguyenVong extends javax.swing.JDialog {
         jLabel1.setText("CCCD Thí sinh (*) : ");
 
         txtCCCD.setEditable(false);
-
-        btnChonCCCThiSinh.setText("...");
-        btnChonCCCThiSinh.setToolTipText("");
-        btnChonCCCThiSinh.setCursor(new java.awt.Cursor(java.awt.Cursor.HAND_CURSOR));
-        btnChonCCCThiSinh.addActionListener(this::btnChonCCCThiSinhActionPerformed);
 
         jLabel2.setFont(new java.awt.Font("Segoe UI", 0, 14)); // NOI18N
         jLabel2.setText("Mã ngành (*) : ");
@@ -143,6 +150,8 @@ public class insertNguyenVong extends javax.swing.JDialog {
 
         txtDiemCong.setEditable(false);
 
+        txtThuTuNV.setEnabled(false);
+
         javax.swing.GroupLayout jPanel1Layout = new javax.swing.GroupLayout(jPanel1);
         jPanel1.setLayout(jPanel1Layout);
         jPanel1Layout.setHorizontalGroup(
@@ -153,9 +162,7 @@ public class insertNguyenVong extends javax.swing.JDialog {
                     .addGroup(jPanel1Layout.createSequentialGroup()
                         .addComponent(jLabel1, javax.swing.GroupLayout.PREFERRED_SIZE, 123, javax.swing.GroupLayout.PREFERRED_SIZE)
                         .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED)
-                        .addComponent(txtCCCD, javax.swing.GroupLayout.PREFERRED_SIZE, 188, javax.swing.GroupLayout.PREFERRED_SIZE)
-                        .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED)
-                        .addComponent(btnChonCCCThiSinh, javax.swing.GroupLayout.PREFERRED_SIZE, 40, javax.swing.GroupLayout.PREFERRED_SIZE))
+                        .addComponent(txtCCCD, javax.swing.GroupLayout.PREFERRED_SIZE, 188, javax.swing.GroupLayout.PREFERRED_SIZE))
                     .addGroup(jPanel1Layout.createSequentialGroup()
                         .addComponent(jLabel2, javax.swing.GroupLayout.PREFERRED_SIZE, 123, javax.swing.GroupLayout.PREFERRED_SIZE)
                         .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED)
@@ -198,8 +205,7 @@ public class insertNguyenVong extends javax.swing.JDialog {
                 .addGap(14, 14, 14)
                 .addGroup(jPanel1Layout.createParallelGroup(javax.swing.GroupLayout.Alignment.BASELINE)
                     .addComponent(jLabel1)
-                    .addComponent(txtCCCD, javax.swing.GroupLayout.PREFERRED_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.PREFERRED_SIZE)
-                    .addComponent(btnChonCCCThiSinh))
+                    .addComponent(txtCCCD, javax.swing.GroupLayout.PREFERRED_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.PREFERRED_SIZE))
                 .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.UNRELATED)
                 .addGroup(jPanel1Layout.createParallelGroup(javax.swing.GroupLayout.Alignment.BASELINE)
                     .addComponent(jLabel2)
@@ -245,7 +251,7 @@ public class insertNguyenVong extends javax.swing.JDialog {
         btnThoat.addActionListener(this::btnThoatActionPerformed);
 
         btnThem.setFont(new java.awt.Font("Segoe UI", 1, 14)); // NOI18N
-        btnThem.setText("Thêm");
+        btnThem.setText("Sửa");
         btnThem.setCursor(new java.awt.Cursor(java.awt.Cursor.HAND_CURSOR));
         btnThem.addActionListener(this::btnThemActionPerformed);
 
@@ -270,26 +276,27 @@ public class insertNguyenVong extends javax.swing.JDialog {
                 .addContainerGap(javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE))
         );
 
-        jPanel3.setBackground(new java.awt.Color(153, 255, 153));
+        jPanel3.setBackground(new java.awt.Color(204, 204, 255));
 
         jLabel9.setFont(new java.awt.Font("Segoe UI", 1, 24)); // NOI18N
-        jLabel9.setText("Thêm Nguyện Vọng");
+        jLabel9.setForeground(new java.awt.Color(0, 0, 0));
+        jLabel9.setText("Sửa Nguyện Vọng");
 
         javax.swing.GroupLayout jPanel3Layout = new javax.swing.GroupLayout(jPanel3);
         jPanel3.setLayout(jPanel3Layout);
         jPanel3Layout.setHorizontalGroup(
             jPanel3Layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
             .addGroup(jPanel3Layout.createSequentialGroup()
-                .addGap(78, 78, 78)
+                .addGap(86, 86, 86)
                 .addComponent(jLabel9)
                 .addContainerGap(javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE))
         );
         jPanel3Layout.setVerticalGroup(
             jPanel3Layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
-            .addGroup(jPanel3Layout.createSequentialGroup()
-                .addGap(18, 18, 18)
+            .addGroup(javax.swing.GroupLayout.Alignment.TRAILING, jPanel3Layout.createSequentialGroup()
+                .addContainerGap(21, Short.MAX_VALUE)
                 .addComponent(jLabel9)
-                .addContainerGap(23, Short.MAX_VALUE))
+                .addGap(20, 20, 20))
         );
 
         javax.swing.GroupLayout layout = new javax.swing.GroupLayout(getContentPane());
@@ -340,10 +347,10 @@ public class insertNguyenVong extends javax.swing.JDialog {
         double diemCong = Double.valueOf(txtDiemCong.getText().trim());
         double diemXetTuyen = diemTHXT + diemUTQD + diemCong;
         String ketQuaNV = "Chờ xét";
-        String key = cccd + "_" + (int) txtThuTuNV.getValue();
         String phuongThuc = cboPT.getSelectedItem().toString();
         
         nguyenVongXetTuyenETT ct = new nguyenVongXetTuyenETT();
+        ct.setIdNv(idNV);
         ct.setNnCccd(cccd);
         ct.setNvMaNganh(maNganh);
         ct.setNvTt(thuTuNV);
@@ -356,36 +363,22 @@ public class insertNguyenVong extends javax.swing.JDialog {
         ct.setTtPhuongThuc(phuongThuc);
         ct.setTtThm(toHopMon);
         
-        if(!kiemTraTrungNguyenVong(cccd, thuTuNV, maNganh, phuongThuc, toHopMon)) 
-        {
-            return;
-        }
+//        if(!kiemTraTrungNguyenVong(cccd, thuTuNV, maNganh, phuongThuc, toHopMon)) 
+//        {
+//            return;
+//        }
         
-        if(bus.themNguyenVong(ct))
+        if(bus.suaNguyenVong(ct))
         {
             xacNhan = true;
-            JOptionPane.showMessageDialog(this, "Thêm nguyện vọng thành công");
+            JOptionPane.showMessageDialog(this, "Sửa nguyện vọng thành công");
             nguyenVong = ct;
             dispose();
         }else
         {
-            JOptionPane.showMessageDialog(this, "Thêm nguyện vọng thất bại");
+            JOptionPane.showMessageDialog(this, "Sửa nguyện vọng thất bại");
         }
     }//GEN-LAST:event_btnThemActionPerformed
-
-    private void btnChonCCCThiSinhActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_btnChonCCCThiSinhActionPerformed
-        // TODO add your handling code here:
-        JFrame topFrame = (JFrame) SwingUtilities.getWindowAncestor(this);
-        selectThiSinh dialog = new selectThiSinh(topFrame, true);
-        dialog.setVisible(true);
-        if(dialog.getXacNhan())
-        {
-            thiSinhETT thiSinh = dialog.getThiSinh();
-            cccd = thiSinh.getCccd();
-            txtCCCD.setText(cccd);
-            btnChonToHop.setEnabled(true);
-        }
-    }//GEN-LAST:event_btnChonCCCThiSinhActionPerformed
 
     private void btnChonToHopActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_btnChonToHopActionPerformed
         // TODO add your handling code here:
@@ -556,34 +549,6 @@ try {
        return true;
     }
     
-    public boolean kiemTraTrungNguyenVong(String cccd, int thuTu, String maNganh, String phuongThuc, String toHop) {
-        if (bus.ds == null) return true;
-
-        for(nguyenVongXetTuyenETT ct : bus.ds) {
-            // Chỉ kiểm tra đối với cùng 1 thí sinh (cùng CCCD)
-            if (ct.getNnCccd().equals(cccd)) {
-                
-                // 1. Cấm trùng Thứ Tự NV (Ví dụ: Thí sinh này đã có NV 1 rồi thì cấm nhập thêm NV 1 nữa)
-                if(ct.getNvTt() == thuTu) {
-                    javax.swing.JOptionPane.showMessageDialog(this, "Thí sinh này đã có Nguyện vọng " + thuTu + " rồi!");
-                    return false;
-                }
-                
-                // 2. Cấm trùng Y Hệt (Cùng Ngành + Cùng Phương thức + Cùng Tổ hợp)
-                if(ct.getNvMaNganh().equals(maNganh) && 
-                   ct.getTtPhuongThuc().equals(phuongThuc) && 
-                   ct.getTtThm().equals(toHop)) {
-                    
-                    javax.swing.JOptionPane.showMessageDialog(this, 
-                        "Thí sinh đã đăng ký ngành này với cùng Phương thức và Tổ hợp môn rồi!\n" +
-                        "Vui lòng chọn Tổ hợp môn hoặc Phương thức khác.");
-                    return false;
-                }
-            }
-        }
-        return true;
-    }
-    
     public boolean xacNhanThem()
     {
         return xacNhan;
@@ -599,7 +564,6 @@ try {
      */
 
     // Variables declaration - do not modify//GEN-BEGIN:variables
-    private javax.swing.JButton btnChonCCCThiSinh;
     private javax.swing.JButton btnChonMaNganh;
     private javax.swing.JButton btnChonToHop;
     private javax.swing.JButton btnThem;

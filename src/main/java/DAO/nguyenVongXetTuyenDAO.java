@@ -54,4 +54,47 @@ public ArrayList<nguyenVongXetTuyenETT> layDanhSach() {
             return false; // Báo lưu thất bại
         }
     }
+    
+    public boolean suaNguyenVong(Entity.nguyenVongXetTuyenETT nv) {
+        org.hibernate.Transaction transaction = null;
+        try (org.hibernate.Session session = CONFIG.HibernateUtil.getSessionFactory().openSession()) {
+            transaction = session.beginTransaction();
+            
+            // Dùng merge() để cập nhật dòng dữ liệu
+            session.merge(nv); 
+            
+            transaction.commit();
+            return true;
+        } catch (Exception e) {
+            if (transaction != null) {
+                transaction.rollback(); // Lỗi thì quay xe, không lưu bậy bạ
+            }
+            e.printStackTrace();
+            return false;
+        }
+    }
+    
+    public boolean xoaNguyenVong(Entity.nguyenVongXetTuyenETT nv) {
+        org.hibernate.Transaction transaction = null;
+        try (org.hibernate.Session session = CONFIG.HibernateUtil.getSessionFactory().openSession()) {
+            transaction = session.beginTransaction();
+            
+            // 1. Tìm đối tượng dưới DB dựa vào ID
+            Entity.nguyenVongXetTuyenETT nvToDelete = session.get(Entity.nguyenVongXetTuyenETT.class, nv.getIdNv());
+            
+            // 2. Nếu tìm thấy thì đem đi hủy
+            if (nvToDelete != null) {
+                session.remove(nvToDelete); 
+            }
+            
+            transaction.commit();
+            return true;
+        } catch (Exception e) {
+            if (transaction != null) {
+                transaction.rollback(); // Lỗi thì quay xe
+            }
+            e.printStackTrace();
+            return false;
+        }
+    }
 }
