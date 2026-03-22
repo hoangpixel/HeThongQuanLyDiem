@@ -90,4 +90,6 @@ public class nguyenVongXetTuyenETT {
 
     public String getTtThm() { return ttThm; }
     public void setTtThm(String ttThm) { this.ttThm = ttThm; }
+    
+    
 }

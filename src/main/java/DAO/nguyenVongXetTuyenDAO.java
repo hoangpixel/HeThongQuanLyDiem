@@ -33,7 +33,7 @@ public ArrayList<nguyenVongXetTuyenETT> layDanhSach() {
             e.printStackTrace();
         }
         
-        return ds; // Trả về ArrayList ngon lành
+        return ds;
     }
 
     public boolean saveNguyenVong(nguyenVongXetTuyenETT nv) {
@@ -51,7 +51,7 @@ public ArrayList<nguyenVongXetTuyenETT> layDanhSach() {
                 transaction.rollback(); // Nếu lỗi thì hoàn tác lại
             }
             e.printStackTrace();
-            return false; // Báo lưu thất bại
+            return false;
         }
     }
     

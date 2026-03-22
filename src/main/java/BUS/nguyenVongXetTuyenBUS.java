@@ -85,7 +85,7 @@ public class nguyenVongXetTuyenBUS {
             }
             return true;
         }
-        return false; // Lưu DB thất bại
+        return false;
     }
     
     public boolean xoaNguyenVong(Entity.nguyenVongXetTuyenETT nv) {
@@ -104,6 +104,6 @@ public class nguyenVongXetTuyenBUS {
             }
             return true;
         }
-        return false; // Xóa thất bại
+        return false;
     }
 }
