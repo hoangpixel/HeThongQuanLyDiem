@@ -214,6 +214,9 @@
           </Properties>
         </Component>
         <Component class="javax.swing.JTextField" name="txtMaNganh">
+          <Properties>
+            <Property name="editable" type="boolean" value="false"/>
+          </Properties>
         </Component>
         <Component class="javax.swing.JButton" name="btnChonMaNganh">
           <Properties>
@@ -223,6 +226,9 @@
               <Color id="Hand Cursor"/>
             </Property>
           </Properties>
+          <Events>
+            <EventHandler event="actionPerformed" listener="java.awt.event.ActionListener" parameters="java.awt.event.ActionEvent" handler="btnChonMaNganhActionPerformed"/>
+          </Events>
         </Component>
         <Component class="javax.swing.JLabel" name="jLabel3">
           <Properties>
@@ -241,6 +247,9 @@
           </Properties>
         </Component>
         <Component class="javax.swing.JTextField" name="txtToHopMon">
+          <Properties>
+            <Property name="editable" type="boolean" value="false"/>
+          </Properties>
         </Component>
         <Component class="javax.swing.JButton" name="btnChonToHop">
           <Properties>
@@ -289,6 +298,9 @@
           </Properties>
         </Component>
         <Component class="javax.swing.JTextField" name="txtDiemTHXT">
+          <Properties>
+            <Property name="editable" type="boolean" value="false"/>
+          </Properties>
         </Component>
         <Component class="javax.swing.JLabel" name="jLabel7">
           <Properties>
@@ -299,6 +311,9 @@
           </Properties>
         </Component>
         <Component class="javax.swing.JTextField" name="txtDiemUuTien">
+          <Properties>
+            <Property name="editable" type="boolean" value="false"/>
+          </Properties>
         </Component>
         <Component class="javax.swing.JLabel" name="jLabel8">
           <Properties>
@@ -309,6 +324,9 @@
           </Properties>
         </Component>
         <Component class="javax.swing.JTextField" name="txtDiemCong">
+          <Properties>
+            <Property name="editable" type="boolean" value="false"/>
+          </Properties>
         </Component>
         <Component class="javax.swing.JSpinner" name="txtThuTuNV">
         </Component>

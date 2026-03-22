@@ -11,6 +11,7 @@ import Entity.diemThiETT;
 import BUS.nguyenVongXetTuyenBUS;
 import BUS.diemThiBUS;
 import BUS.diemCongBUS;
+import Entity.nganhETT;
 import java.awt.Font;
 import javax.swing.JFrame;
 import javax.swing.JLabel;
@@ -18,6 +19,7 @@ import javax.swing.JOptionPane;
 import javax.swing.SwingUtilities;
 import SELECT_GUI.selectThiSinh;
 import SELECT_GUI.selectToHop;
+import SELECT_GUI.selectNganh;
 /**
  *
  * @author mhoang
@@ -30,6 +32,7 @@ public class insertNguyenVong extends javax.swing.JDialog {
     nguyenVongXetTuyenBUS bus = new nguyenVongXetTuyenBUS();
     public String cccd;
     public String toHopMon;
+    public String maNganh;
     
     public Entity.toHopETT toHopMonDaChon = null;
     /**
@@ -40,6 +43,9 @@ public class insertNguyenVong extends javax.swing.JDialog {
         initComponents();
         setLocationRelativeTo(parent);
         btnChonToHop.setEnabled(false);
+        txtDiemCong.setText("0.0");
+        txtDiemTHXT.setText("0.0");
+        txtDiemUuTien.setText("0.0");
     }
 
     /**
@@ -96,15 +102,20 @@ public class insertNguyenVong extends javax.swing.JDialog {
         jLabel2.setFont(new java.awt.Font("Segoe UI", 0, 14)); // NOI18N
         jLabel2.setText("Mã ngành (*) : ");
 
+        txtMaNganh.setEditable(false);
+
         btnChonMaNganh.setText("...");
         btnChonMaNganh.setToolTipText("");
         btnChonMaNganh.setCursor(new java.awt.Cursor(java.awt.Cursor.HAND_CURSOR));
+        btnChonMaNganh.addActionListener(this::btnChonMaNganhActionPerformed);
 
         jLabel3.setFont(new java.awt.Font("Segoe UI", 0, 14)); // NOI18N
         jLabel3.setText("Thứ tự NV :");
 
         jLabel4.setFont(new java.awt.Font("Segoe UI", 0, 14)); // NOI18N
         jLabel4.setText("Tổ hợp môn : ");
+
+        txtToHopMon.setEditable(false);
 
         btnChonToHop.setText("...");
         btnChonToHop.setToolTipText("");
@@ -120,11 +131,17 @@ public class insertNguyenVong extends javax.swing.JDialog {
         jLabel6.setFont(new java.awt.Font("Segoe UI", 0, 14)); // NOI18N
         jLabel6.setText("Điểm THXT : ");
 
+        txtDiemTHXT.setEditable(false);
+
         jLabel7.setFont(new java.awt.Font("Segoe UI", 0, 14)); // NOI18N
         jLabel7.setText("Điểm ưu tiên : ");
 
+        txtDiemUuTien.setEditable(false);
+
         jLabel8.setFont(new java.awt.Font("Segoe UI", 0, 14)); // NOI18N
         jLabel8.setText("Điểm cộng : ");
+
+        txtDiemCong.setEditable(false);
 
         javax.swing.GroupLayout jPanel1Layout = new javax.swing.GroupLayout(jPanel1);
         jPanel1.setLayout(jPanel1Layout);
@@ -317,7 +334,6 @@ public class insertNguyenVong extends javax.swing.JDialog {
         }
         
         
-        String maNganh = txtMaNganh.getText().trim();
         int thuTuNV = (int) txtThuTuNV.getValue();
         double diemTHXT = Double.valueOf(txtDiemTHXT.getText().trim());
         double diemUTQD = Double.valueOf(txtDiemUuTien.getText().trim());
@@ -386,6 +402,20 @@ public class insertNguyenVong extends javax.swing.JDialog {
         // TODO add your handling code here:
         capNhatDiemTuDong();
     }//GEN-LAST:event_cboPTActionPerformed
+
+    private void btnChonMaNganhActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_btnChonMaNganhActionPerformed
+        // TODO add your handling code here:
+        JFrame topFrame = (JFrame) SwingUtilities.getWindowAncestor(this);
+        selectNganh dialog = new selectNganh(topFrame, true);
+        dialog.setVisible(true);
+        if(dialog.getXacNhan())
+        {
+            nganhETT nganh = dialog.getNganh();
+            maNganh = nganh.getManganh();
+            txtMaNganh.setText(maNganh);
+            capNhatDiemTuDong();
+        }
+    }//GEN-LAST:event_btnChonMaNganhActionPerformed
 
 // Bạn cần khai báo thêm một biến toàn cục ở đầu class để lưu Tổ hợp vừa chọn
     // public toHopETT toHopMonDaChon;

@@ -65,11 +65,11 @@ public class nguyenVongXetTuyenGUI extends BaseTableGUI {
         header.add("Điểm THXT");
         header.add("Điểm UTQD");
         header.add("Điềm cộng");
-        header.add("Điểm xét tuyển");
+        header.add("Điểm tổng");
         header.add("Kết quả NV");
-        header.add("Keys");
+//        header.add("Keys");
         header.add("Phương thức");
-        header.add("thm");
+        header.add("Tổ hợp");
         tableModel.setColumnIdentifiers(header);
     }
     
@@ -92,7 +92,7 @@ public class nguyenVongXetTuyenGUI extends BaseTableGUI {
             row.add(ct.getDiemCong());
             row.add(ct.getDiemXetTuyen());
             row.add(ct.getNvKetQua());
-            row.add(ct.getNvKeys());
+//            row.add(ct.getNvKeys());
             row.add(ct.getTtPhuongThuc());
             row.add(ct.getTtThm());
 
