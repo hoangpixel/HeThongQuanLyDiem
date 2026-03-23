@@ -3,18 +3,25 @@
  * Click nbfs://nbhost/SystemFileSystem/Templates/Classes/Class.java to edit this template
  */
 package Entity;
-import java.sql.Date;
+import java.util.Date;
+import jakarta.persistence.*;
 /**
  *
  * @author LE MINH HUY
  */
+
+@Entity
+@Table(name = "xt_thisinhxettuyen25")
 public class thiSinhXetTuyenETT {
+
+    @Id
+    @GeneratedValue(strategy = GenerationType.IDENTITY)
 private int idThiSinh;
     private String cccd;
     private String soBaoDanh;
     private String ho;
     private String ten;
-    private String ngaySinh;
+    private Date ngaySinh;
     private String dienThoai;
     private String password;
     private String gioiTinh;
@@ -44,9 +51,12 @@ private int idThiSinh;
     public String getTen() { return ten; }
     public void setTen(String ten) { this.ten = ten; }
 
-    public String getNgaySinh() { return ngaySinh; }
-    public void setNgaySinh(String ngaySinh) { this.ngaySinh = ngaySinh; }
-
+    public Date getNgaySinh() {
+        return ngaySinh;
+    }
+    public void setNgaySinh(Date ngaySinh) {
+        this.ngaySinh = ngaySinh;
+    }
     public String getDienThoai() { return dienThoai; }
     public void setDienThoai(String dienThoai) { this.dienThoai = dienThoai; }
 

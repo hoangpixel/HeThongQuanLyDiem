@@ -2,6 +2,15 @@ package FUNC_GUI;
 import javax.swing.JLabel;
 import javax.swing.JOptionPane;
 import java.awt.Font;
+import com.toedter.calendar.JDateChooser;
+import java.text.SimpleDateFormat;
+import java.util.Date;
+import org.jdesktop.swingx.JXComboBox;
+import java.net.URL;
+import java.io.BufferedReader;
+import java.io.InputStreamReader;
+import org.json.JSONArray;
+import org.json.JSONObject;
 /*
  * Click nbfs://nbhost/SystemFileSystem/Templates/Licenses/license-default.txt to change this license
  * Click nbfs://nbhost/SystemFileSystem/Templates/GUIForms/JDialog.java to edit this template
@@ -13,6 +22,8 @@ import java.awt.Font;
  */
 public class insertThiSinh extends javax.swing.JDialog {
     private boolean xacNhan = false;
+    public Entity.thiSinhXetTuyenETT thiSinh;
+    private JDateChooser dateNgaySinh;
     private static final java.util.logging.Logger logger = java.util.logging.Logger.getLogger(insertThiSinh.class.getName());
 
     /**
@@ -21,6 +32,62 @@ public class insertThiSinh extends javax.swing.JDialog {
     public insertThiSinh(java.awt.Frame parent, boolean modal) {
         super(parent, modal);
         initComponents();
+        loadTinh();
+
+        // TỈNH → HUYỆN
+        cboNoiSinh.addActionListener(e -> {
+            if (cboNoiSinh.getSelectedItem() == null) return;
+
+            try {
+                String selected = cboNoiSinh.getSelectedItem().toString();
+                int code = Integer.parseInt(selected.split("\\|")[1]);
+
+                String json = readAPI("https://provinces.open-api.vn/api/p/" + code + "?depth=2");
+                JSONObject obj = new JSONObject(json);
+                JSONArray districts = obj.getJSONArray("districts");
+
+                cboNoiSinh4.removeAllItems();
+
+                for (int i = 0; i < districts.length(); i++) {
+                    JSONObject d = districts.getJSONObject(i);
+                    cboNoiSinh4.addItem(d.getString("name") + "|" + d.getInt("code"));
+                }
+
+            } catch (Exception ex) {
+                ex.printStackTrace();
+            }
+        });
+
+        // HUYỆN → XÃ
+        cboNoiSinh4.addActionListener(e -> {
+            if (cboNoiSinh4.getSelectedItem() == null) return;
+
+            try {
+                String selected = cboNoiSinh4.getSelectedItem().toString();
+                int code = Integer.parseInt(selected.split("\\|")[1]);
+
+                String json = readAPI("https://provinces.open-api.vn/api/d/" + code + "?depth=2");
+                JSONObject obj = new JSONObject(json);
+                JSONArray wards = obj.getJSONArray("wards");
+
+                cboNoiSinh5.removeAllItems();
+
+                for (int i = 0; i < wards.length(); i++) {
+                    JSONObject w = wards.getJSONObject(i);
+                    cboNoiSinh5.addItem(w.getString("name"));
+                }
+
+            } catch (Exception ex) {
+                ex.printStackTrace();
+            }
+        });
+        dateNgaySinh = new JDateChooser();
+        dateNgaySinh.setBounds(cboNgaySinh.getBounds());
+        dateNgaySinh.setDateFormatString("dd/MM/yyyy");
+        dateNgaySinh.setMaxSelectableDate(new Date());
+        jPanel1.add(dateNgaySinh);
+        cboNgaySinh.setVisible(false); // ẩn combobox cũ
+        setLocationRelativeTo(parent);
     }
 
     /**
@@ -61,6 +128,8 @@ public class insertThiSinh extends javax.swing.JDialog {
         cboNoiSinh3 = new javax.swing.JComboBox<>();
         jLabel7 = new javax.swing.JLabel();
         txtPassword = new javax.swing.JTextField();
+        cboNoiSinh4 = new javax.swing.JComboBox<>();
+        cboNoiSinh5 = new javax.swing.JComboBox<>();
         jPanel3 = new javax.swing.JPanel();
         jLabel9 = new javax.swing.JLabel();
 
@@ -96,15 +165,15 @@ public class insertThiSinh extends javax.swing.JDialog {
             .addGroup(javax.swing.GroupLayout.Alignment.TRAILING, jPanel2Layout.createSequentialGroup()
                 .addContainerGap(javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE)
                 .addComponent(btnThem, javax.swing.GroupLayout.PREFERRED_SIZE, 89, javax.swing.GroupLayout.PREFERRED_SIZE)
-                .addGap(40, 40, 40)
+                .addGap(46, 46, 46)
                 .addComponent(btnThoat, javax.swing.GroupLayout.PREFERRED_SIZE, 89, javax.swing.GroupLayout.PREFERRED_SIZE)
-                .addGap(80, 80, 80))
+                .addGap(67, 67, 67))
         );
         jPanel2Layout.setVerticalGroup(
             jPanel2Layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
             .addGroup(jPanel2Layout.createSequentialGroup()
                 .addContainerGap()
-                .addGroup(jPanel2Layout.createParallelGroup(javax.swing.GroupLayout.Alignment.TRAILING, false)
+                .addGroup(jPanel2Layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING, false)
                     .addComponent(btnThoat, javax.swing.GroupLayout.DEFAULT_SIZE, 40, Short.MAX_VALUE)
                     .addComponent(btnThem, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE))
                 .addContainerGap(javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE))
@@ -145,6 +214,7 @@ public class insertThiSinh extends javax.swing.JDialog {
         jLabel14.setText("Khu vực");
 
         cboNgaySinh.setModel(new javax.swing.DefaultComboBoxModel<>(new String[] { "Item 1", "Item 2", "Item 3", "Item 4" }));
+        cboNgaySinh.addActionListener(this::cboNgaySinhActionPerformed);
 
         cboNoiSinh1.setModel(new javax.swing.DefaultComboBoxModel<>(new String[] { "Item 1", "Item 2", "Item 3", "Item 4" }));
 
@@ -161,13 +231,18 @@ public class insertThiSinh extends javax.swing.JDialog {
         jLabel7.setFont(new java.awt.Font("Segoe UI", 0, 14)); // NOI18N
         jLabel7.setText("Mật khẩu");
 
+        cboNoiSinh4.setModel(new javax.swing.DefaultComboBoxModel<>(new String[] { "Item 1", "Item 2", "Item 3", "Item 4" }));
+        cboNoiSinh4.addActionListener(this::cboNoiSinh4ActionPerformed);
+
+        cboNoiSinh5.setModel(new javax.swing.DefaultComboBoxModel<>(new String[] { "Item 1", "Item 2", "Item 3", "Item 4" }));
+
         javax.swing.GroupLayout jPanel1Layout = new javax.swing.GroupLayout(jPanel1);
         jPanel1.setLayout(jPanel1Layout);
         jPanel1Layout.setHorizontalGroup(
             jPanel1Layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
             .addGroup(jPanel1Layout.createSequentialGroup()
                 .addContainerGap()
-                .addGroup(jPanel1Layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
+                .addGroup(jPanel1Layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING, false)
                     .addGroup(jPanel1Layout.createSequentialGroup()
                         .addComponent(jLabel13, javax.swing.GroupLayout.PREFERRED_SIZE, 123, javax.swing.GroupLayout.PREFERRED_SIZE)
                         .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED)
@@ -180,23 +255,18 @@ public class insertThiSinh extends javax.swing.JDialog {
                         .addComponent(jLabel4, javax.swing.GroupLayout.PREFERRED_SIZE, 123, javax.swing.GroupLayout.PREFERRED_SIZE)
                         .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED)
                         .addComponent(txtTenTS, javax.swing.GroupLayout.PREFERRED_SIZE, 188, javax.swing.GroupLayout.PREFERRED_SIZE))
-                    .addGroup(jPanel1Layout.createParallelGroup(javax.swing.GroupLayout.Alignment.TRAILING, false)
-                        .addGroup(javax.swing.GroupLayout.Alignment.LEADING, jPanel1Layout.createSequentialGroup()
-                            .addComponent(jLabel5, javax.swing.GroupLayout.PREFERRED_SIZE, 123, javax.swing.GroupLayout.PREFERRED_SIZE)
-                            .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED)
-                            .addComponent(cboNgaySinh, 0, javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE))
-                        .addGroup(javax.swing.GroupLayout.Alignment.LEADING, jPanel1Layout.createSequentialGroup()
-                            .addComponent(jLabel1, javax.swing.GroupLayout.PREFERRED_SIZE, 123, javax.swing.GroupLayout.PREFERRED_SIZE)
-                            .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED)
-                            .addComponent(txtCCCD, javax.swing.GroupLayout.PREFERRED_SIZE, 188, javax.swing.GroupLayout.PREFERRED_SIZE)))
+                    .addGroup(jPanel1Layout.createSequentialGroup()
+                        .addComponent(jLabel5, javax.swing.GroupLayout.PREFERRED_SIZE, 123, javax.swing.GroupLayout.PREFERRED_SIZE)
+                        .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED)
+                        .addComponent(cboNgaySinh, 0, javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE))
+                    .addGroup(jPanel1Layout.createSequentialGroup()
+                        .addComponent(jLabel1, javax.swing.GroupLayout.PREFERRED_SIZE, 123, javax.swing.GroupLayout.PREFERRED_SIZE)
+                        .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED)
+                        .addComponent(txtCCCD, javax.swing.GroupLayout.PREFERRED_SIZE, 188, javax.swing.GroupLayout.PREFERRED_SIZE))
                     .addGroup(jPanel1Layout.createSequentialGroup()
                         .addComponent(jLabel8, javax.swing.GroupLayout.PREFERRED_SIZE, 123, javax.swing.GroupLayout.PREFERRED_SIZE)
                         .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED)
                         .addComponent(cboNoiSinh1, javax.swing.GroupLayout.PREFERRED_SIZE, 188, javax.swing.GroupLayout.PREFERRED_SIZE))
-                    .addGroup(jPanel1Layout.createSequentialGroup()
-                        .addComponent(jLabel11, javax.swing.GroupLayout.PREFERRED_SIZE, 123, javax.swing.GroupLayout.PREFERRED_SIZE)
-                        .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED)
-                        .addComponent(cboNoiSinh, javax.swing.GroupLayout.PREFERRED_SIZE, 188, javax.swing.GroupLayout.PREFERRED_SIZE))
                     .addGroup(jPanel1Layout.createSequentialGroup()
                         .addComponent(jLabel6, javax.swing.GroupLayout.PREFERRED_SIZE, 123, javax.swing.GroupLayout.PREFERRED_SIZE)
                         .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED)
@@ -216,8 +286,16 @@ public class insertThiSinh extends javax.swing.JDialog {
                     .addGroup(jPanel1Layout.createSequentialGroup()
                         .addComponent(jLabel7, javax.swing.GroupLayout.PREFERRED_SIZE, 123, javax.swing.GroupLayout.PREFERRED_SIZE)
                         .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED)
-                        .addComponent(txtPassword, javax.swing.GroupLayout.PREFERRED_SIZE, 188, javax.swing.GroupLayout.PREFERRED_SIZE)))
-                .addContainerGap(22, Short.MAX_VALUE))
+                        .addComponent(txtPassword, javax.swing.GroupLayout.PREFERRED_SIZE, 188, javax.swing.GroupLayout.PREFERRED_SIZE))
+                    .addGroup(jPanel1Layout.createSequentialGroup()
+                        .addComponent(jLabel11, javax.swing.GroupLayout.PREFERRED_SIZE, 123, javax.swing.GroupLayout.PREFERRED_SIZE)
+                        .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED)
+                        .addComponent(cboNoiSinh, javax.swing.GroupLayout.PREFERRED_SIZE, 58, javax.swing.GroupLayout.PREFERRED_SIZE)
+                        .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED)
+                        .addComponent(cboNoiSinh4, javax.swing.GroupLayout.PREFERRED_SIZE, 57, javax.swing.GroupLayout.PREFERRED_SIZE)
+                        .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED)
+                        .addComponent(cboNoiSinh5, 0, 1, Short.MAX_VALUE)))
+                .addContainerGap(69, Short.MAX_VALUE))
         );
         jPanel1Layout.setVerticalGroup(
             jPanel1Layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
@@ -245,7 +323,10 @@ public class insertThiSinh extends javax.swing.JDialog {
                 .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.UNRELATED)
                 .addGroup(jPanel1Layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
                     .addComponent(jLabel11)
-                    .addComponent(cboNoiSinh, javax.swing.GroupLayout.PREFERRED_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.PREFERRED_SIZE))
+                    .addGroup(jPanel1Layout.createParallelGroup(javax.swing.GroupLayout.Alignment.BASELINE)
+                        .addComponent(cboNoiSinh, javax.swing.GroupLayout.PREFERRED_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.PREFERRED_SIZE)
+                        .addComponent(cboNoiSinh4, javax.swing.GroupLayout.PREFERRED_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.PREFERRED_SIZE)
+                        .addComponent(cboNoiSinh5, javax.swing.GroupLayout.PREFERRED_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.PREFERRED_SIZE)))
                 .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.UNRELATED)
                 .addGroup(jPanel1Layout.createParallelGroup(javax.swing.GroupLayout.Alignment.BASELINE)
                     .addComponent(jLabel6)
@@ -319,12 +400,51 @@ public class insertThiSinh extends javax.swing.JDialog {
                 .addContainerGap())
         );
 
-        jPanel2.getAccessibleContext().setAccessibleName("Xử lý thêm TS");
-        jPanel1.getAccessibleContext().setAccessibleName("Thêm thí sinh");
-
         pack();
     }// </editor-fold>//GEN-END:initComponents
+    private void loadTinh() {
+        new Thread(() -> {
+            try {
+                String json = readAPI("https://provinces.open-api.vn/api/p/");
+                JSONArray arr = new JSONArray(json);
 
+                javax.swing.SwingUtilities.invokeLater(() -> {
+                    cboNoiSinh.removeAllItems();
+                });
+
+                for (int i = 0; i < arr.length(); i++) {
+                    JSONObject obj = arr.getJSONObject(i);
+                    String name = obj.getString("name");
+                    int code = obj.getInt("code");
+
+                    javax.swing.SwingUtilities.invokeLater(() -> {
+                        cboNoiSinh.addItem(name + "|" + code);
+                    });
+                }
+
+            } catch (Exception e) {
+                e.printStackTrace();
+            }
+        }).start();
+    }
+    private String readAPI(String urlString) {
+        StringBuilder result = new StringBuilder();
+        try {
+            URL url = new URL(urlString);
+            BufferedReader reader = new BufferedReader(
+                    new InputStreamReader(url.openStream(), "UTF-8"));
+
+            String line;
+            while ((line = reader.readLine()) != null) {
+                result.append(line);
+            }
+            reader.close();
+        } catch (Exception e) {
+            e.printStackTrace();
+        }
+        return result.toString();
+    }
+    
     private void btnThoatActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_btnThoatActionPerformed
         // TODO add your handling code here:
         xacNhan = false;
@@ -338,6 +458,10 @@ public class insertThiSinh extends javax.swing.JDialog {
             JOptionPane.showMessageDialog(this, "Không được để trống CCCD!", "Thông báo", JOptionPane.ERROR_MESSAGE);
             return;
         }
+        if (dateNgaySinh.getDate() == null) {
+            JOptionPane.showMessageDialog(this, "Vui lòng chọn ngày sinh!");
+            return;
+        }
         
         // 2. Gom dữ liệu từ các ô Text nhập liệu vào đối tượng ETT
         Entity.thiSinhXetTuyenETT ts = new Entity.thiSinhXetTuyenETT();
@@ -348,14 +472,14 @@ public class insertThiSinh extends javax.swing.JDialog {
         ts.setEmail(txtEmail.getText().trim());
         ts.setSoBaoDanh(txtSoBaoDanh.getText().trim());
         ts.setPassword(txtPassword.getText().trim());
-        
-        // Lấy dữ liệu từ các ô ComboBox (Sổ xuống)
-        // (Lưu ý: Tên biến cbo của bạn đang đặt hơi lộn xộn nên mình map đúng theo vị trí Label của bạn)
-        ts.setNgaySinh(cboNgaySinh.getSelectedItem() != null ? cboNgaySinh.getSelectedItem().toString() : "");
-        ts.setGioiTinh(cboNoiSinh1.getSelectedItem() != null ? cboNoiSinh1.getSelectedItem().toString() : ""); // Nhãn Giới tính
-        ts.setNoiSinh(cboNoiSinh.getSelectedItem() != null ? cboNoiSinh.getSelectedItem().toString() : ""); // Nhãn Nơi sinh
-        ts.setDoiTuong(cboNoiSinh2.getSelectedItem() != null ? cboNoiSinh2.getSelectedItem().toString() : ""); // Nhãn Đối tượng
-        ts.setKhuVuc(cboNoiSinh3.getSelectedItem() != null ? cboNoiSinh3.getSelectedItem().toString() : ""); // Nhãn Khu vực
+        ts.setNgaySinh(dateNgaySinh.getDate());
+        ts.setGioiTinh(getComboValue(cboNoiSinh1));
+        String tinh = cboNoiSinh.getSelectedItem().toString().split("\\|")[0];
+        String huyen = cboNoiSinh4.getSelectedItem().toString().split("\\|")[0];
+        String xa = cboNoiSinh5.getSelectedItem().toString();
+        ts.setNoiSinh(tinh + " - " + huyen + " - " + xa);
+        ts.setDoiTuong(getComboValue(cboNoiSinh2));
+        ts.setKhuVuc(getComboValue(cboNoiSinh3));
 
         // 3. Gọi BUS để lưu xuống Database
         BUS.thiSinhXetTuyenBUS bus = new BUS.thiSinhXetTuyenBUS();
@@ -364,22 +488,38 @@ public class insertThiSinh extends javax.swing.JDialog {
         if (isSuccess) {
             JOptionPane.showMessageDialog(this, "Thêm thí sinh thành công!");
             xacNhan = true;
-            dispose(); // Đóng form sau khi lưu thành công
+            thiSinh = ts; // 🔥 QUAN TRỌNG (trả object về)
+            dispose();
         } else {
             JOptionPane.showMessageDialog(this, "Thêm thất bại. Có thể CCCD này đã tồn tại!", "Lỗi Database", JOptionPane.ERROR_MESSAGE);
         }
 
     }//GEN-LAST:event_btnThemActionPerformed
-
+    private String getComboValue(javax.swing.JComboBox<String> cbo) {
+        return cbo.getSelectedItem() != null ? cbo.getSelectedItem().toString() : "";
+    }
+    
     private void txtTenTSActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_txtTenTSActionPerformed
         // TODO add your handling code here:
     }//GEN-LAST:event_txtTenTSActionPerformed
+
+    private void cboNgaySinhActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_cboNgaySinhActionPerformed
+        // TODO add your handling code here:
+        
+    }//GEN-LAST:event_cboNgaySinhActionPerformed
+
+    private void cboNoiSinh4ActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_cboNoiSinh4ActionPerformed
+        // TODO add your handling code here:
+    }//GEN-LAST:event_cboNoiSinh4ActionPerformed
 
     /**
      * @param args the command line arguments
      */
     public boolean isXacNhan() {
         return xacNhan;
+    }
+    public Entity.thiSinhXetTuyenETT getThiSinh() {
+        return thiSinh;
     }
     // Variables declaration - do not modify//GEN-BEGIN:variables
     private javax.swing.JButton btnThem;
@@ -389,6 +529,8 @@ public class insertThiSinh extends javax.swing.JDialog {
     private javax.swing.JComboBox<String> cboNoiSinh1;
     private javax.swing.JComboBox<String> cboNoiSinh2;
     private javax.swing.JComboBox<String> cboNoiSinh3;
+    private javax.swing.JComboBox<String> cboNoiSinh4;
+    private javax.swing.JComboBox<String> cboNoiSinh5;
     private javax.swing.JLabel jLabel1;
     private javax.swing.JLabel jLabel10;
     private javax.swing.JLabel jLabel11;

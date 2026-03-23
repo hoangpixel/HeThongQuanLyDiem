@@ -1,18 +1,19 @@
 <?xml version="1.0" encoding="UTF-8"?>
-<!DOCTYPE hibernate-configuration PUBLIC
-        "-//Hibernate/Hibernate Configuration DTD 3.0//EN"
-        "http://www.hibernate.org/dtd/hibernate-configuration-3.0.dtd">
+<!DOCTYPE hibernate-configuration PUBLIC "-//Hibernate/Hibernate Configuration DTD 3.0//EN" "http://www.hibernate.org/dtd/hibernate-configuration-3.0.dtd">
 <hibernate-configuration>
     <session-factory>
         <property name="hibernate.connection.driver_class">com.mysql.cj.jdbc.Driver</property>
-        <property name="hibernate.connection.url">jdbc:mysql://localhost:3306/hethongquanlydiem?useSSL=false&amp;serverTimezone=Asia/Ho_Chi_Minh</property>
+        <property name="hibernate.connection.url">
+            jdbc:mysql://localhost:3306/hethongquanlydiem?useSSL=false&amp;serverTimezone=Asia/Ho_Chi_Minh</property>
         <property name="hibernate.connection.username">root</property>
-        <property name="hibernate.connection.password">123456</property> <property name="hibernate.dialect">org.hibernate.dialect.MySQLDialect</property>
-        <property name="hibernate.show_sql">true</property> <property name="hibernate.hbm2ddl.auto">update</property>
+        <property name="hibernate.connection.password">123456</property>
+        <property name="hibernate.dialect">org.hibernate.dialect.MySQLDialect</property>
+        <property name="hibernate.show_sql">true</property>
+        <property name="hibernate.hbm2ddl.auto">update</property>
 
         <mapping class="Entity.nguyenVongXetTuyenETT" />
-        <mapping class="Entity.thiSinhETT" />
-        <mapping class="Entity.toHopETT"/>
+        <mapping class="Entity.thiSinhXetTuyenETT" />
+        <mapping class="Entity.toHopETT" />
         <mapping class="Entity.diemThiETT" />
         <mapping class="Entity.diemCongETT" />
         <mapping class="Entity.nganhETT" />

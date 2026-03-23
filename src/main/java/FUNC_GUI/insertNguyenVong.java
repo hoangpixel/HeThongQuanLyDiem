@@ -12,6 +12,7 @@ import BUS.nguyenVongXetTuyenBUS;
 import BUS.diemThiBUS;
 import BUS.diemCongBUS;
 import Entity.nganhETT;
+import Entity.thiSinhXetTuyenETT;
 import java.awt.Font;
 import javax.swing.JFrame;
 import javax.swing.JLabel;
@@ -380,7 +381,7 @@ public class insertNguyenVong extends javax.swing.JDialog {
         dialog.setVisible(true);
         if(dialog.getXacNhan())
         {
-            thiSinhETT thiSinh = dialog.getThiSinh();
+            thiSinhXetTuyenETT thiSinh = dialog.getThiSinh();
             cccd = thiSinh.getCccd();
             txtCCCD.setText(cccd);
             btnChonToHop.setEnabled(true);

@@ -1,44 +1,58 @@
-/*
- * Click nbfs://nbhost/SystemFileSystem/Templates/Licenses/license-default.txt to change this license
- * Click nbfs://nbhost/SystemFileSystem/Templates/Classes/Class.java to edit this template
- */
 package BUS;
+
 import DAO.diemCongDAO;
 import Entity.diemCongETT;
 import java.util.ArrayList;
-/**
- *
- * @author mhoang
- */
-public class diemCongBUS {
-public static ArrayList<diemCongETT> ds;
-    diemCongDAO data = new diemCongDAO();
 
+public class diemCongBUS {
+
+    public static ArrayList<diemCongETT> ds;
+    private diemCongDAO dao = new diemCongDAO();
+
+    // ================= LOAD =================
     public ArrayList<diemCongETT> layDanhSach() {
         if (ds == null) {
-            ds = data.layDanhSach();
+            ds = dao.layDanhSach();
         }
         return ds;
     }
 
-    // =======================================================
-    // HÀM QUAN TRỌNG: TÌM ĐIỂM CỘNG DỰA VÀO 4 ĐIỀU KIỆN
-    // =======================================================
-    public diemCongETT layDiemCongChinhXac(String cccd, String maNganh, String toHop, String phuongThuc) {
-        if (ds == null) {
-            layDanhSach();
+    // ================= THÊM =================
+    public boolean themDiemCong(diemCongETT dc) {
+        boolean result = dao.themDiemCong(dc);
+        if (result && ds != null) {
+            ds.add(dc);
         }
-        
-        for (diemCongETT dc : ds) {
-            // Phải khớp toàn bộ CCCD, Mã Ngành, Tổ Hợp, Phương Thức mới chuẩn xác
-            if (dc.getTsCccd() != null && dc.getTsCccd().equals(cccd) &&
-                dc.getMaNganh() != null && dc.getMaNganh().equals(maNganh) &&
-                dc.getMaToHop() != null && dc.getMaToHop().equals(toHop) &&
-                dc.getPhuongThuc() != null && dc.getPhuongThuc().equals(phuongThuc)) {
-                return dc;
+        return result;
+    }
+
+    // ================= SỬA =================
+    public boolean suaDiemCong(diemCongETT dc) {
+        boolean result = dao.suaDiemCong(dc);
+
+        if (result && ds != null) {
+            for (int i = 0; i < ds.size(); i++) {
+                if (ds.get(i).getIdDiemCong() == dc.getIdDiemCong()) {
+                    ds.set(i, dc);
+                    break;
+                }
             }
         }
-        
-        return null; // Nếu không tìm thấy tức là người này không có điểm cộng cho ngành này
+        return result;
+    }
+
+    // ================= XÓA =================
+    public boolean xoaDiemCong(diemCongETT dc) {
+        boolean result = dao.xoaDiemCong(dc);
+
+        if (result && ds != null) {
+            ds.removeIf(item -> item.getIdDiemCong() == dc.getIdDiemCong());
+        }
+
+        return result;
+    }
+    // ================== LẤY ĐIỂM CỘNG ==================
+    public diemCongETT layDiemCongChinhXac(String cccd, String maNganh, String maToHop, String phuongThuc) {
+        return dao.layDiemCongChinhXac(cccd, maNganh, maToHop, phuongThuc);
     }
 }

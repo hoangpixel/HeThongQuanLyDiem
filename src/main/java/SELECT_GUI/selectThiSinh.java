@@ -3,8 +3,8 @@
  * Click nbfs://nbhost/SystemFileSystem/Templates/GUIForms/JDialog.java to edit this template
  */
 package SELECT_GUI;
-import Entity.thiSinhETT;
-import BUS.thiSinhBUS;
+import Entity.thiSinhXetTuyenETT;
+import BUS.thiSinhXetTuyenBUS;
 import java.awt.Font;
 import java.util.Vector;
 import javax.swing.JLabel;
@@ -16,9 +16,9 @@ import javax.swing.table.JTableHeader;
  * @author mhoang
  */
 public class selectThiSinh extends javax.swing.JDialog {
-    public thiSinhETT thiSinh = new thiSinhETT();
+    public thiSinhXetTuyenETT thiSinh = new thiSinhXetTuyenETT();
     public boolean xacNhan = false;
-    thiSinhBUS bus = new thiSinhBUS();
+    thiSinhXetTuyenBUS bus = new thiSinhXetTuyenBUS();
     DefaultTableModel model = new DefaultTableModel();
     private static final java.util.logging.Logger logger = java.util.logging.Logger.getLogger(selectThiSinh.class.getName());
 
@@ -40,12 +40,12 @@ public class selectThiSinh extends javax.swing.JDialog {
         {
             bus.layDanhSach();
         }
-        for(thiSinhETT ct : bus.ds)
+        for(thiSinhXetTuyenETT ct : bus.ds)
         {
             Vector row = new Vector();
-            row.add(ct.getIdthisinh());
+            row.add(ct.getIdThiSinh());
             row.add(ct.getCccd());
-            row.add(ct.getSobaodanh());
+            row.add(ct.getSoBaoDanh());
             row.add(ct.getHo());
             row.add(ct.getTen());
             row.add(ct.getNgaySinh());
@@ -259,7 +259,7 @@ public class selectThiSinh extends javax.swing.JDialog {
         }
     }//GEN-LAST:event_tbThiSinhMouseClicked
 
-    public thiSinhETT getThiSinh()
+    public thiSinhXetTuyenETT getThiSinh()
     {
         return thiSinh;
     }

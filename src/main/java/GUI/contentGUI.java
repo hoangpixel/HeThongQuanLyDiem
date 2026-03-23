@@ -27,6 +27,7 @@ public class contentGUI extends JFrame {
         // 👉 Thêm panel của bạn
         contentPanel.add(new nguyenVongXetTuyenGUI(), "nguyenvong");
         contentPanel.add(new thiSinhXetTuyenGUI(), "thisinh");
+        contentPanel.add(new diemCongXetTuyenGUI(), "diemcong");
         add(contentPanel, BorderLayout.CENTER);
 
         // 👉 Bắt sự kiện nút từ navbar
@@ -41,6 +42,9 @@ public class contentGUI extends JFrame {
         });
         nav.btnThiSinh.addActionListener(e -> {
             cardLayout.show(contentPanel, "thisinh");
+        });
+        nav.btnDiemCong.addActionListener(e -> {
+            cardLayout.show(contentPanel, "diemcong");
         });
     }
 }

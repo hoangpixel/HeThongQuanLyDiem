@@ -3,81 +3,136 @@
  * Click nbfs://nbhost/SystemFileSystem/Templates/Classes/Class.java to edit this template
  */
 package DAO;
+import CONFIG.HibernateUtil;
 import Entity.thiSinhXetTuyenETT;
-import java.sql.Connection;
-import java.sql.DriverManager;
-import java.sql.PreparedStatement;
-import java.sql.ResultSet;
 import java.util.ArrayList;
+import java.util.List;
+import org.hibernate.Session;
+import org.hibernate.Transaction;
 /**
  *
  * @author LE MINH HUY
  */
 public class thiSinhXetTuyenDAO {
-// Cấu hình kết nối DB (Đổi lại cho khớp với user/pass MySQL của bạn)
-    private final String url = "jdbc:mysql://localhost:3306/hethongquanlydiem"; 
-    private final String user = "root";
-    private final String password = "061005";
 
-    public ArrayList<thiSinhXetTuyenETT> layDanhSachThíSinh() {
+    // ================== LẤY DANH SÁCH ==================
+    public ArrayList<thiSinhXetTuyenETT> layDanhSach() {
         ArrayList<thiSinhXetTuyenETT> ds = new ArrayList<>();
-        String sql = "SELECT * FROM xt_thisinhxettuyen25";
 
-        try (Connection con = DriverManager.getConnection(url, user, password);
-             PreparedStatement pst = con.prepareStatement(sql);
-             ResultSet rs = pst.executeQuery()) {
+        try (Session session = HibernateUtil.getSessionFactory().openSession()) {
 
-            while (rs.next()) {
-                thiSinhXetTuyenETT ts = new thiSinhXetTuyenETT();
-                ts.setIdThiSinh(rs.getInt("idthisinh"));
-                ts.setCccd(rs.getString("cccd"));
-                ts.setSoBaoDanh(rs.getString("sobaodanh"));
-                ts.setHo(rs.getString("ho"));
-                ts.setTen(rs.getString("ten"));
-                ts.setNgaySinh(rs.getString("ngay_sinh"));
-                ts.setDienThoai(rs.getString("dien_thoai"));
-                ts.setPassword(rs.getString("password"));
-                ts.setGioiTinh(rs.getString("gioi_tinh"));
-                ts.setEmail(rs.getString("email"));
-                ts.setNoiSinh(rs.getString("noi_sinh"));
-                ts.setUpdatedAt(rs.getDate("updated_at"));
-                ts.setDoiTuong(rs.getString("doi_tuong"));
-                ts.setKhuVuc(rs.getString("khu_vuc"));
+            List<thiSinhXetTuyenETT> listTuDB =
+                    session.createQuery("FROM thiSinhXetTuyenETT", thiSinhXetTuyenETT.class).list();
 
-                ds.add(ts);
-            }
+            ds = new ArrayList<>(listTuDB);
+
         } catch (Exception e) {
             e.printStackTrace();
-            System.out.println("Lỗi khi lấy danh sách thí sinh từ DB!");
         }
+
         return ds;
     }
-    // Hàm thêm thí sinh vào Database
+
+    // ================== THÊM ==================
     public boolean themThiSinh(thiSinhXetTuyenETT ts) {
-        String sql = "INSERT INTO xt_thisinhxettuyen25 (cccd, sobaodanh, ho, ten, ngay_sinh, dien_thoai, password, gioi_tinh, email, noi_sinh, doi_tuong, khu_vuc) VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?)";
-        
-        try (Connection con = DriverManager.getConnection(url, user, password);
-             PreparedStatement pst = con.prepareStatement(sql)) {
-            
-            pst.setString(1, ts.getCccd());
-            pst.setString(2, ts.getSoBaoDanh());
-            pst.setString(3, ts.getHo());
-            pst.setString(4, ts.getTen());
-            pst.setString(5, ts.getNgaySinh());
-            pst.setString(6, ts.getDienThoai());
-            pst.setString(7, ts.getPassword());
-            pst.setString(8, ts.getGioiTinh());
-            pst.setString(9, ts.getEmail());
-            pst.setString(10, ts.getNoiSinh());
-            pst.setString(11, ts.getDoiTuong());
-            pst.setString(12, ts.getKhuVuc());
-            
-            int rowsAffected = pst.executeUpdate();
-            return rowsAffected > 0; // Trả về true nếu thêm thành công
-            
+        Transaction transaction = null;
+
+        try (Session session = HibernateUtil.getSessionFactory().openSession()) {
+            transaction = session.beginTransaction();
+
+            session.persist(ts);
+
+            transaction.commit();
+            return true;
+
         } catch (Exception e) {
+            if (transaction != null) transaction.rollback();
             e.printStackTrace();
             return false;
         }
     }
+
+    // ================== UPDATE ==================
+    public boolean suaThiSinh(thiSinhXetTuyenETT ts) {
+        Transaction transaction = null;
+
+        try (Session session = HibernateUtil.getSessionFactory().openSession()) {
+            transaction = session.beginTransaction();
+
+            session.merge(ts);
+
+            transaction.commit();
+            return true;
+
+        } catch (Exception e) {
+            if (transaction != null) transaction.rollback();
+            e.printStackTrace();
+            return false;
+        }
+    }
+
+    // ================== TÌM KIẾM ==================
+    public ArrayList<thiSinhXetTuyenETT> timKiem(String keyword) {
+        ArrayList<thiSinhXetTuyenETT> ds = new ArrayList<>();
+
+        try (Session session = HibernateUtil.getSessionFactory().openSession()) {
+
+            List<thiSinhXetTuyenETT> listTuDB = session.createQuery(
+                    "FROM thiSinhXetTuyenETT WHERE cccd LIKE :kw OR CONCAT(ho, ' ', ten) LIKE :kw",
+                    thiSinhXetTuyenETT.class)
+                    .setParameter("kw", "%" + keyword + "%")
+                    .list();
+
+            ds = new ArrayList<>(listTuDB);
+
+        } catch (Exception e) {
+            e.printStackTrace();
+        }
+
+        return ds;
+    }
+    public boolean xoaThiSinh(Entity.thiSinhXetTuyenETT nv) {
+        org.hibernate.Transaction transaction = null;
+        try (org.hibernate.Session session = CONFIG.HibernateUtil.getSessionFactory().openSession()) {
+            transaction = session.beginTransaction();
+            
+            // 1. Tìm đối tượng dưới DB dựa vào ID
+            Entity.thiSinhXetTuyenETT nvToDelete = session.get(Entity.thiSinhXetTuyenETT.class, nv.getIdThiSinh());
+            
+            // 2. Nếu tìm thấy thì đem đi hủy
+            if (nvToDelete != null) {
+                session.remove(nvToDelete); 
+            }
+            
+            transaction.commit();
+            return true;
+        } catch (Exception e) {
+            if (transaction != null) {
+                transaction.rollback(); // Lỗi thì quay xe
+            }
+            e.printStackTrace();
+            return false;
+        }
+    }
+    // ================== PHÂN TRANG ==================
+    public ArrayList<thiSinhXetTuyenETT> layDanhSachPhanTrang(int page) {
+        ArrayList<thiSinhXetTuyenETT> ds = new ArrayList<>();
+
+        try (Session session = HibernateUtil.getSessionFactory().openSession()) {
+
+            List<thiSinhXetTuyenETT> listTuDB = session.createQuery(
+                    "FROM thiSinhXetTuyenETT", thiSinhXetTuyenETT.class)
+                    .setFirstResult((page - 1) * 20)
+                    .setMaxResults(20)
+                    .list();
+
+            ds = new ArrayList<>(listTuDB);
+            System.out.println("DAO size: " + listTuDB.size());
+        } catch (Exception e) {
+            e.printStackTrace();
+        }
+
+        return ds;
+    }
+   
 }

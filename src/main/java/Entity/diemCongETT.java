@@ -1,26 +1,15 @@
-/*
- * Click nbfs://nbhost/SystemFileSystem/Templates/Licenses/license-default.txt to change this license
- * Click nbfs://nbhost/SystemFileSystem/Templates/Classes/Class.java to edit this template
- */
 package Entity;
-import jakarta.persistence.Column;
-import jakarta.persistence.Entity;
-import jakarta.persistence.GeneratedValue;
-import jakarta.persistence.GenerationType;
-import jakarta.persistence.Id;
-import jakarta.persistence.Table;
-/**
- *
- * @author mhoang
- */
+
+import jakarta.persistence.*;
+
 @Entity
-@Table(name = "xt_diemcongxetuyen") // Chú ý: Tên bảng của thầy có 1 chữ t ở chữ xetuyen
+@Table(name = "xt_diemcongxetuyen")
 public class diemCongETT {
 
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
     @Column(name = "iddiemcong")
-    private int iddiemcong;
+    private int idDiemCong;
 
     @Column(name = "ts_cccd")
     private String tsCccd;
@@ -35,10 +24,10 @@ public class diemCongETT {
     private String phuongThuc;
 
     @Column(name = "diemCC")
-    private Double diemCC; // Điểm cộng chứng chỉ
+    private Double diemCC;
 
     @Column(name = "diemUtxt")
-    private Double diemUtxt; // Điểm ưu tiên quy đổi
+    private Double diemUtxt;
 
     @Column(name = "diemTong")
     private Double diemTong;
@@ -49,8 +38,10 @@ public class diemCongETT {
     @Column(name = "dc_keys")
     private String dcKeys;
 
-    public int getIddiemcong() {
-        return iddiemcong;
+    // ================= GETTER =================
+
+    public int getIdDiemCong() {
+        return idDiemCong;
     }
 
     public String getTsCccd() {
@@ -89,8 +80,10 @@ public class diemCongETT {
         return dcKeys;
     }
 
-    public void setIddiemcong(int iddiemcong) {
-        this.iddiemcong = iddiemcong;
+    // ================= SETTER =================
+
+    public void setIdDiemCong(int idDiemCong) {
+        this.idDiemCong = idDiemCong;
     }
 
     public void setTsCccd(String tsCccd) {
@@ -111,10 +104,12 @@ public class diemCongETT {
 
     public void setDiemCC(Double diemCC) {
         this.diemCC = diemCC;
+        tinhDiemTong(); // 🔥 auto tính
     }
 
     public void setDiemUtxt(Double diemUtxt) {
         this.diemUtxt = diemUtxt;
+        tinhDiemTong(); // 🔥 auto tính
     }
 
     public void setDiemTong(Double diemTong) {
@@ -129,5 +124,11 @@ public class diemCongETT {
         this.dcKeys = dcKeys;
     }
 
-    
+    // ================= AUTO TÍNH =================
+
+    private void tinhDiemTong() {
+        if (diemCC != null && diemUtxt != null) {
+            this.diemTong = diemCC + diemUtxt;
+        }
+    }
 }
