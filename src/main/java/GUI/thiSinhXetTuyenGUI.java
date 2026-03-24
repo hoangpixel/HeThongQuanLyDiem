@@ -76,34 +76,27 @@ public class thiSinhXetTuyenGUI extends BaseTableGUI {
     
     public void loadDataToTable() {
         thiSinhXetTuyenBUS bus = new thiSinhXetTuyenBUS();
-        if (bus.ds == null) {
-            bus.layDanhSach();
-        }
+        bus.layDanhSach();
 
-        // Tạo List chứa dữ liệu chuẩn bị cho BaseTableGUI chia trang
-        java.util.List<Vector> dataList = new java.util.ArrayList<>();
+        DefaultTableModel model = (DefaultTableModel) table.getModel();
+        model.setRowCount(0); // clear bảng
 
         for (thiSinhXetTuyenETT ts : bus.ds) {
-            Vector row = new Vector();
-            row.add(ts.getIdThiSinh());
-            row.add(ts.getCccd());
-            row.add(ts.getSoBaoDanh());
-            row.add(ts.getHo());
-            row.add(ts.getTen());
-            row.add(ts.getNgaySinh());
-            row.add(ts.getGioiTinh());
-            row.add(ts.getDienThoai());
-            row.add(ts.getEmail());
-            row.add(ts.getNoiSinh());
-            row.add(ts.getDoiTuong());
-            row.add(ts.getKhuVuc());
-
-            // Thêm vào List thay vì thêm thẳng vào tableModel
-            dataList.add(row);
+            model.addRow(new Object[]{
+                ts.getIdThiSinh(),
+                ts.getCccd(),
+                ts.getSoBaoDanh(),
+                ts.getHo(),
+                ts.getTen(),
+                ts.getNgaySinh(),
+                ts.getGioiTinh(),
+                ts.getDienThoai(),
+                ts.getEmail(),
+                ts.getNoiSinh(),
+                ts.getDoiTuong(),
+                ts.getKhuVuc()
+            });
         }
-        
-        // Truyền List vào cho BaseTableGUI vẽ và phân trang
-        setTableData(dataList);
     }
     
 
@@ -182,42 +175,31 @@ public class thiSinhXetTuyenGUI extends BaseTableGUI {
     private void hienThiDialogXoaTS() {
         int row = table.getSelectedRow();
 
-        if (row == -1) {
-            JOptionPane.showMessageDialog(this, "Vui lòng chọn thí sinh để xóa!");
-        return;
+        if (row != -1) {
+
+            JFrame topFrame = (JFrame) SwingUtilities.windowForComponent(this);
+            deleteNguyenVong dialog = new deleteNguyenVong(topFrame, true);
+            dialog.setVisible(true);
+
+            if (dialog.getXacNhanXoa()) {
+
+                // 🔥 Tính index
+                int modelIndex = table.convertRowIndexToModel(row);
+
+                thiSinhXetTuyenBUS bus = new thiSinhXetTuyenBUS();
+                bus.layDanhSach();
+
+                thiSinhXetTuyenETT tsCanXoa = bus.ds.get(modelIndex);
+
+                if (bus.xoaThiSinh(tsCanXoa)) {
+                    ((DefaultTableModel) table.getModel()).removeRow(modelIndex);
+                }
+
+                } else {
+                    JOptionPane.showMessageDialog(this, "Xóa thí sinh thất bại");
+                }
+            }
         }
-
-        // hỏi xác nhận
-        int confirm = JOptionPane.showConfirmDialog(
-                this,
-                "Bạn có chắc muốn xóa thí sinh này?",
-                "Xác nhận xóa",
-                JOptionPane.YES_NO_OPTION
-        );
-
-        if (confirm != JOptionPane.YES_OPTION) {
-            return;
-        }
-
-        // lấy index đúng (do có sort/pagination)
-        int modelIndex = table.convertRowIndexToModel(row);
-
-        thiSinhXetTuyenBUS bus = new thiSinhXetTuyenBUS();
-        bus.layDanhSach();
-
-        thiSinhXetTuyenETT ts = bus.ds.get(modelIndex);
-
-        // gọi DAO/BUS xóa
-        if (bus.xoaThiSinh(ts)) {
-
-            // 🔥 xóa trên table luôn (realtime)
-            tableModel.removeRow(modelIndex);
-
-            JOptionPane.showMessageDialog(this, "Xóa thành công!");
-        } else {
-            JOptionPane.showMessageDialog(this, "Xóa thất bại!");
-        }
-    }
     // ==============================================================
     // HÀM HIỂN THỊ DIALOG KHI DOUBLE CLICK (XEM CHI TIẾT / SỬA)
     // ==============================================================
