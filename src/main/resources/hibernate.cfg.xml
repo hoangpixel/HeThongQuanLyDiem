@@ -17,5 +17,6 @@
         <mapping class="Entity.diemThiETT" />
         <mapping class="Entity.diemCongETT" />
         <mapping class="Entity.nganhETT" />
+        <mapping class="Entity.nganhToHopETT" />
     </session-factory>
 </hibernate-configuration>

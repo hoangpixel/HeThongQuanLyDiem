@@ -24,8 +24,14 @@ public ArrayList<nguyenVongXetTuyenETT> layDanhSach() {
             
             // Bước 1: Gọi hàm .list() ở cuối để Hibernate chạy câu lệnh
             // Lưu ý chữ FROM nguyenVongXetTuyenETT phải khớp chính xác với tên Class Entity
-            List<nguyenVongXetTuyenETT> listTuDB = session.createQuery("FROM nguyenVongXetTuyenETT", nguyenVongXetTuyenETT.class).list();
             
+            // List<nguyenVongXetTuyenETT> listTuDB = session.createQuery("FROM nguyenVongXetTuyenETT", nguyenVongXetTuyenETT.class).list();
+            
+            // Tụi bây xài cái ở trên á cái này là t để sắp xếp cho đẹp
+            List<nguyenVongXetTuyenETT> listTuDB = session.createQuery(
+                "FROM nguyenVongXetTuyenETT ORDER BY nnCccd ASC, nvTt ASC", 
+                nguyenVongXetTuyenETT.class).list();
+
             // Bước 2: Chuyển cái List của Hibernate thành ArrayList của bạn
             ds = new ArrayList<>(listTuDB);
             

@@ -19,6 +19,7 @@ import javax.swing.SwingUtilities;
 import FUNC_GUI.insertNguyenVong;
 import FUNC_GUI.deleteNguyenVong;
 import FUNC_GUI.updateNguyenVong;
+import java.util.Collections;
 import javax.swing.JOptionPane;
 
 public class nguyenVongXetTuyenGUI extends BaseTableGUI {
@@ -34,6 +35,7 @@ public class nguyenVongXetTuyenGUI extends BaseTableGUI {
         btnThem.addActionListener(e -> hienThiDialogThemMoi());
         btnSua.addActionListener(e -> hienThiDialogSua());
         btnXoa.addActionListener(e ->hienThiDialogXoa());
+        btnReFresh.addActionListener(e -> thucHienRefresh());
         
         // ==============================================================
         // BỔ SUNG: GẮN SỰ KIỆN DOUBLE-CLICK CHO TABLE
@@ -121,34 +123,87 @@ private void hienThiDialogThemMoi() {
     insertNguyenVong dialog = new insertNguyenVong(topFrame, true);
     dialog.setVisible(true);
 
-    if (dialog.xacNhanThem()) {
+//    if (dialog.xacNhanThem()) {
+//        nguyenVongXetTuyenETT nv = dialog.getNguyenVong();
+//
+//        // 🔥 Convert object → Vector
+//        Vector row = new Vector();
+//        row.add(nv.getIdNv());
+//        row.add(nv.getNnCccd());
+//        row.add(nv.getNvMaNganh());
+//        row.add(nv.getNvTt());
+//        row.add(nv.getDiemThxt());
+//        row.add(nv.getDiemUtqd());
+//        row.add(nv.getDiemCong());
+//        row.add(nv.getDiemXetTuyen());
+//        row.add(nv.getNvKetQua());
+//        row.add(nv.getNvKeys());
+//        row.add(nv.getTtPhuongThuc());
+//        row.add(nv.getTtThm());
+//
+//        // 🔥 ADD vào fullDataList (QUAN TRỌNG)
+//        fullDataList.add(row);
+//
+//        // 🔥 Cập nhật lại totalPages
+//        totalPages = (int) Math.ceil((double) fullDataList.size() / rowsPerPage);
+//
+//        // 🔥 Nếu muốn nhảy tới trang cuối
+//        currentPage = totalPages;
+//
+//        // 🔥 Render lại
+//        renderCurrentPage();
+//    }
+if (dialog.xacNhanThem()) {
         nguyenVongXetTuyenETT nv = dialog.getNguyenVong();
 
-        // 🔥 Convert object → Vector
-        Vector row = new Vector();
-        row.add(nv.getIdNv());
-        row.add(nv.getNnCccd());
-        row.add(nv.getNvMaNganh());
-        row.add(nv.getNvTt());
-        row.add(nv.getDiemThxt());
-        row.add(nv.getDiemUtqd());
-        row.add(nv.getDiemCong());
-        row.add(nv.getDiemXetTuyen());
-        row.add(nv.getNvKetQua());
-        row.add(nv.getNvKeys());
-        row.add(nv.getTtPhuongThuc());
-        row.add(nv.getTtThm());
+        // 1. Lúc này hàm thêm của BUS đã nhét "nv" vào cuối biến "ds" rồi.
+        // Việc đầu tiên: SẮP XẾP lại "ds" ngay trên RAM (Tốc độ ánh sáng, không gọi DB)
+        Collections.sort(busNguyenVong.ds, new java.util.Comparator<nguyenVongXetTuyenETT>() {
+            @Override
+            public int compare(nguyenVongXetTuyenETT nv1, nguyenVongXetTuyenETT nv2) {
+                int cccdCompare = nv1.getNnCccd().compareTo(nv2.getNnCccd());
+                if (cccdCompare != 0) return cccdCompare;
+                return Integer.compare(nv1.getNvTt(), nv2.getNvTt());
+            }
+        });
 
-        // 🔥 ADD vào fullDataList (QUAN TRỌNG)
-        fullDataList.add(row);
+        // 2. Làm mới toàn bộ fullDataList dựa trên ds đã sắp xếp
+        fullDataList.clear();
+        int viTriCuaHangMoiThem = 0; // Biến để lưu vết xem thằng mới thêm rớt vào dòng thứ mấy
 
-        // 🔥 Cập nhật lại totalPages
+        for (int i = 0; i < busNguyenVong.ds.size(); i++) {
+            nguyenVongXetTuyenETT item = busNguyenVong.ds.get(i);
+            
+            // Convert object → Vector
+            Vector row = new Vector();
+            row.add(item.getIdNv());
+            row.add(item.getNnCccd());
+            row.add(item.getNvMaNganh());
+            row.add(item.getNvTt());
+            row.add(item.getDiemThxt());
+            row.add(item.getDiemUtqd());
+            row.add(item.getDiemCong());
+            row.add(item.getDiemXetTuyen());
+            row.add(item.getNvKetQua());
+            row.add(item.getNvKeys());
+            row.add(item.getTtPhuongThuc());
+            row.add(item.getTtThm());
+
+            fullDataList.add(row);
+
+            // Tìm dấu vết thằng vừa thêm bằng nv_keys (CCCD_ThuTuNV)
+            if (item.getNvKeys().equals(nv.getNvKeys())) {
+                viTriCuaHangMoiThem = i;
+            }
+        }
+
+        // 3. Cập nhật lại tổng số trang
         totalPages = (int) Math.ceil((double) fullDataList.size() / rowsPerPage);
 
-        // 🔥 Nếu muốn nhảy tới trang cuối
-        currentPage = totalPages;
+        // 4. 🔥 BÍ QUYẾT: Tính toán xem vị trí mới thêm nó rớt vào Trang số mấy để nhảy tới!
+        currentPage = (viTriCuaHangMoiThem / rowsPerPage) + 1;
 
-        // 🔥 Render lại
+        // 5. Render lại đúng cái trang chứa nguyện vọng vừa thêm
         renderCurrentPage();
     }
 }
@@ -236,5 +291,33 @@ private void hienThiDialogSua() {
                 }
             }
         }
+    }
+    
+    private void thucHienRefresh()
+    {
+//        busNguyenVong.ds = null; 
+//        fullDataList.clear();
+//        headerTable();
+//        loadDataToTable();
+//        table.getColumnModel().getColumn(9).setMinWidth(0);
+//        table.getColumnModel().getColumn(9).setMaxWidth(0);
+//        table.getColumnModel().getColumn(9).setWidth(0);
+        int confirm = javax.swing.JOptionPane.showConfirmDialog(this, 
+        "CẢNH BÁO: Hành động này sẽ khóa sổ và xét duyệt toàn bộ nguyện vọng trên hệ thống.\nBạn có chắc chắn muốn tiến hành xét tuyển?", 
+        "Xác nhận Chốt Sổ", 
+        javax.swing.JOptionPane.YES_NO_OPTION, 
+        javax.swing.JOptionPane.WARNING_MESSAGE);
+        
+    if (confirm == javax.swing.JOptionPane.YES_OPTION) {
+        // 1. Gọi trùm cuối ra tay
+        busNguyenVong.sapXepKetQuaTheoChiTieu();
+//        busNguyenVong.sapXepKetQuaTuDong();
+        
+        // 2. Refresh lại bảng để cập nhật màu sắc Đậu/Trượt
+        busNguyenVong.ds = null;
+        loadDataToTable(); 
+        
+        javax.swing.JOptionPane.showMessageDialog(this, "Tất cả nguyện vọng đã được xét duyệt thành công!");
+    }
     }
 }
