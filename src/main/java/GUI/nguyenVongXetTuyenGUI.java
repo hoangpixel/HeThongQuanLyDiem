@@ -310,7 +310,8 @@ private void hienThiDialogSua() {
         
     if (confirm == javax.swing.JOptionPane.YES_OPTION) {
         // 1. Gọi trùm cuối ra tay
-        busNguyenVong.sapXepKetQuaTuDong();
+        busNguyenVong.sapXepKetQuaTheoChiTieu();
+//        busNguyenVong.sapXepKetQuaTuDong();
         
         // 2. Refresh lại bảng để cập nhật màu sắc Đậu/Trượt
         busNguyenVong.ds = null;

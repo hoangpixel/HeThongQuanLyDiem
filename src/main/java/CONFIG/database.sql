@@ -21,7 +21,7 @@ SET @@SESSION.SQL_LOG_BIN= 0;
 -- GTID state at the beginning of the backup 
 --
 
-SET @@GLOBAL.GTID_PURGED=/*!80000 '+'*/ '424fbbe1-2261-11f1-a5e1-047c16aa0506:1-162';
+SET @@GLOBAL.GTID_PURGED=/*!80000 '+'*/ '424fbbe1-2261-11f1-a5e1-047c16aa0506:1-234';
 
 --
 -- Table structure for table `xt_bangquydoi`
@@ -153,7 +153,7 @@ CREATE TABLE `xt_nganh` (
   `sl_xtt` int DEFAULT NULL,
   `sl_dgnl` int DEFAULT NULL,
   `sl_vsat` int DEFAULT NULL,
-  `sl_thpt` varchar(255) COLLATE utf8mb3_unicode_ci DEFAULT NULL,
+  `sl_thpt` int DEFAULT NULL,
   `diemchuan_thpt` double DEFAULT NULL COMMENT 'Điểm chuẩn thi THPT',
   `diemchuan_dgnl` double DEFAULT NULL COMMENT 'Điểm chuẩn thi ĐGNL HCM',
   `diemchuan_vsat` double DEFAULT NULL COMMENT 'Điểm chuẩn thi V-SAT',
@@ -168,7 +168,7 @@ CREATE TABLE `xt_nganh` (
 
 LOCK TABLES `xt_nganh` WRITE;
 /*!40000 ALTER TABLE `xt_nganh` DISABLE KEYS */;
-INSERT INTO `xt_nganh` VALUES (1,'7140114','Quản lý giáo dục','D01',40,17,22.5,NULL,NULL,NULL,NULL,NULL,NULL,NULL,NULL,22.5,750,NULL,NULL),(2,'7140201','Giáo dục Mầm non','M01',200,20,20,NULL,NULL,NULL,NULL,NULL,NULL,NULL,NULL,20,700,NULL,NULL),(3,'7140202','Giáo dục Tiểu học','C01',200,21,21,NULL,NULL,NULL,NULL,NULL,NULL,NULL,NULL,21,720,NULL,NULL),(4,'7140209','Sư phạm Toán học','A00',40,24.5,24.5,NULL,NULL,NULL,NULL,NULL,NULL,NULL,NULL,24.5,850,NULL,NULL),(5,'7140217','Sư phạm Ngữ văn','C01',50,24,24,NULL,NULL,NULL,NULL,NULL,NULL,NULL,NULL,24,800,NULL,NULL),(6,'7140218','Sư phạm Lịch sử','C00',10,25,25,NULL,NULL,NULL,NULL,NULL,NULL,NULL,NULL,25,820,NULL,NULL),(7,'7480201','Công nghệ thông tin','A00',500,21,21,NULL,NULL,NULL,NULL,NULL,NULL,NULL,NULL,21,800,NULL,NULL),(8,'7810202','Quản trị dịch vụ du lịch và lữ hành','D01',150,19,19,NULL,NULL,NULL,NULL,NULL,NULL,NULL,NULL,19,650,NULL,NULL);
+INSERT INTO `xt_nganh` VALUES (1,'7140114','Quản lý giáo dục','D01',40,17,22.5,NULL,NULL,NULL,NULL,5,10,5,20,22.5,750,NULL,NULL),(2,'7140201','Giáo dục Mầm non','M01',200,20,20,NULL,NULL,NULL,NULL,25,50,25,100,20,700,NULL,NULL),(3,'7140202','Giáo dục Tiểu học','C01',200,21,21,NULL,NULL,NULL,NULL,25,50,25,100,21,720,NULL,NULL),(4,'7140209','Sư phạm Toán học','A00',40,24.5,24.5,NULL,NULL,NULL,NULL,5,10,5,20,24.5,850,NULL,NULL),(5,'7140217','Sư phạm Ngữ văn','C01',50,24,24,NULL,NULL,NULL,NULL,5,15,5,25,24,800,NULL,NULL),(6,'7140218','Sư phạm Lịch sử','C00',10,25,25,NULL,NULL,NULL,NULL,1,3,1,5,25,820,NULL,NULL),(7,'7480201','Công nghệ thông tin','A00',500,21,21,NULL,NULL,NULL,NULL,25,150,25,300,21,800,NULL,NULL),(8,'7810202','Quản trị dịch vụ du lịch và lữ hành','D01',150,19,19,NULL,NULL,NULL,NULL,10,50,15,75,19,650,NULL,NULL);
 /*!40000 ALTER TABLE `xt_nganh` ENABLE KEYS */;
 UNLOCK TABLES;
 
@@ -184,11 +184,11 @@ CREATE TABLE `xt_nganh_tohop` (
   `manganh` varchar(45) CHARACTER SET utf8mb3 COLLATE utf8mb3_unicode_ci NOT NULL,
   `matohop` varchar(45) CHARACTER SET utf8mb3 COLLATE utf8mb3_unicode_ci NOT NULL,
   `th_mon1` varchar(10) CHARACTER SET utf8mb3 COLLATE utf8mb3_general_ci DEFAULT NULL,
-  `hsmon1` tinyint DEFAULT NULL,
+  `hsmon1` int DEFAULT NULL,
   `th_mon2` varchar(10) CHARACTER SET utf8mb3 COLLATE utf8mb3_unicode_ci DEFAULT NULL,
-  `hsmon2` tinyint DEFAULT NULL,
+  `hsmon2` int DEFAULT NULL,
   `th_mon3` varchar(10) CHARACTER SET utf8mb3 COLLATE utf8mb3_unicode_ci DEFAULT NULL,
-  `hsmon3` tinyint DEFAULT NULL,
+  `hsmon3` int DEFAULT NULL,
   `tb_keys` varchar(45) CHARACTER SET utf8mb3 COLLATE utf8mb3_general_ci DEFAULT NULL COMMENT 'manganh_matohop',
   `N1` tinyint(1) DEFAULT NULL,
   `TO` tinyint(1) DEFAULT NULL,
@@ -201,7 +201,7 @@ CREATE TABLE `xt_nganh_tohop` (
   `TI` tinyint(1) DEFAULT NULL,
   `KHAC` tinyint(1) DEFAULT NULL,
   `KTPL` tinyint(1) DEFAULT NULL,
-  `dolech` decimal(6,2) DEFAULT '0.00',
+  `dolech` double DEFAULT NULL,
   PRIMARY KEY (`id`),
   UNIQUE KEY `key_UNIQUE` (`tb_keys`)
 ) ENGINE=InnoDB DEFAULT CHARSET=utf8mb3 COLLATE=utf8mb3_unicode_ci;
@@ -238,7 +238,7 @@ CREATE TABLE `xt_nguyenvongxettuyen` (
   `tt_thm` varchar(45) DEFAULT NULL,
   PRIMARY KEY (`idnv`),
   UNIQUE KEY `nv_keys_UNIQUE` (`nv_keys`)
-) ENGINE=InnoDB AUTO_INCREMENT=7 DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_0900_ai_ci;
+) ENGINE=InnoDB AUTO_INCREMENT=8 DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_0900_ai_ci;
 /*!40101 SET character_set_client = @saved_cs_client */;
 
 --
@@ -247,7 +247,7 @@ CREATE TABLE `xt_nguyenvongxettuyen` (
 
 LOCK TABLES `xt_nguyenvongxettuyen` WRITE;
 /*!40000 ALTER TABLE `xt_nguyenvongxettuyen` DISABLE KEYS */;
-INSERT INTO `xt_nguyenvongxettuyen` VALUES (1,'079203001111','7480201',1,23.5,0,0,23.5,'Đã đậu','079203001111_1','Xét THPT','A01'),(2,'001207008593','7480201',1,24,0,0,24,'Đã đậu','001207008593_1','Xét THPT','A01'),(3,'012345678901','7140202',1,0,0,0,0,'Đã trượt','012345678901_1','Xét THPT','D01'),(4,'012345678902','7140202',5,0,0,0,0,'Đã trượt','012345678902_5','Xét THPT','D01'),(5,'012345678902','7140217',1,0,0,0,0,'Đã trượt','012345678902_1','Xét THPT','D01'),(6,'012345678902','7140114',2,0,0,0,0,'Đã trượt','012345678902_2','Xét THPT','A00');
+INSERT INTO `xt_nguyenvongxettuyen` VALUES (1,'079203001111','7480201',1,790,0,0,790,'Đã trượt','079203001111_1','ĐGNL HCM','Không'),(2,'001207008593','7480201',1,24,0,0,24,'Đã đậu','001207008593_1','Xét THPT','A01'),(3,'012345678901','7140202',1,0,0,0,0,'Đã trượt','012345678901_1','Xét THPT','D01'),(4,'012345678902','7140202',5,0,0,0,0,'Đã trượt','012345678902_5','Xét THPT','D01'),(5,'012345678902','7140217',1,0,0,0,0,'Đã trượt','012345678902_1','Xét THPT','D01'),(6,'012345678902','7140114',2,0,0,0,0,'Đã trượt','012345678902_2','Xét THPT','A00'),(7,'079203001111','7480201',2,25.5,0.75,1.5,27.75,'Đã đậu','079203001111_2','Xét THPT','A00');
 /*!40000 ALTER TABLE `xt_nguyenvongxettuyen` ENABLE KEYS */;
 UNLOCK TABLES;
 
@@ -273,6 +273,13 @@ CREATE TABLE `xt_thisinhxettuyen25` (
   `updated_at` datetime(6) DEFAULT NULL,
   `doi_tuong` varchar(45) CHARACTER SET utf8mb3 COLLATE utf8mb3_general_ci DEFAULT NULL,
   `khu_vuc` varchar(45) CHARACTER SET utf8mb3 COLLATE utf8mb3_general_ci DEFAULT NULL,
+  `dienThoai` varchar(255) DEFAULT NULL,
+  `doiTuong` varchar(255) DEFAULT NULL,
+  `gioiTinh` varchar(255) DEFAULT NULL,
+  `khuVuc` varchar(255) DEFAULT NULL,
+  `ngaySinh` datetime(6) DEFAULT NULL,
+  `noiSinh` varchar(255) DEFAULT NULL,
+  `updatedAt` datetime(6) DEFAULT NULL,
   PRIMARY KEY (`idthisinh`),
   UNIQUE KEY `cccd_UNIQUE` (`cccd`)
 ) ENGINE=InnoDB AUTO_INCREMENT=9 DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_0900_ai_ci;
@@ -284,7 +291,7 @@ CREATE TABLE `xt_thisinhxettuyen25` (
 
 LOCK TABLES `xt_thisinhxettuyen25` WRITE;
 /*!40000 ALTER TABLE `xt_thisinhxettuyen25` DISABLE KEYS */;
-INSERT INTO `xt_thisinhxettuyen25` VALUES (1,'012345678901','SBD001','Nguyen','An','2005-03-15','0901234567','123456','Nam','an.nguyen@gmail.com','HCM','2026-03-21 20:30:45.000000','0','KV1'),(2,'012345678902','SBD002','Tran','Binh','2005-07-20','0912345678','123456','Nam','binh.tran@gmail.com','Ha Noi','2026-03-21 20:30:45.000000','1','KV2'),(3,'012345678903','SBD003','Le','Chi','2005-01-10','0923456789','123456','Nu','chi.le@gmail.com','Da Nang','2026-03-21 20:30:45.000000','0','KV1'),(4,'012345678904','SBD004','Pham','Dung','2005-12-05','0934567890','123456','Nu','dung.pham@gmail.com','Can Tho','2026-03-21 20:30:45.000000','2','KV3'),(5,'012345678905','SBD005','Hoang','Em','2005-09-09','0945678901','123456','Nam','em.hoang@gmail.com','Hue','2026-03-21 20:30:45.000000','1','KV2'),(6,'079203001111',NULL,'Nguyễn Văn','An',NULL,NULL,NULL,NULL,NULL,NULL,NULL,NULL,NULL),(7,'079203002222',NULL,'Trần Thị','Bình',NULL,NULL,NULL,NULL,NULL,NULL,NULL,NULL,NULL),(8,'001207008593',NULL,'Lê Hoàng','Cường',NULL,NULL,NULL,NULL,NULL,NULL,NULL,NULL,NULL);
+INSERT INTO `xt_thisinhxettuyen25` VALUES (1,'012345678901','SBD001','Nguyen','An','2005-03-15','0901234567','123456','Nam','an.nguyen@gmail.com','HCM','2026-03-21 20:30:45.000000','0','KV1',NULL,NULL,NULL,NULL,NULL,NULL,NULL),(2,'012345678902','SBD002','Tran','Binh','2005-07-20','0912345678','123456','Nam','binh.tran@gmail.com','Ha Noi','2026-03-21 20:30:45.000000','1','KV2',NULL,NULL,NULL,NULL,NULL,NULL,NULL),(3,'012345678903','SBD003','Le','Chi','2005-01-10','0923456789','123456','Nu','chi.le@gmail.com','Da Nang','2026-03-21 20:30:45.000000','0','KV1',NULL,NULL,NULL,NULL,NULL,NULL,NULL),(4,'012345678904','SBD004','Pham','Dung','2005-12-05','0934567890','123456','Nu','dung.pham@gmail.com','Can Tho','2026-03-21 20:30:45.000000','2','KV3',NULL,NULL,NULL,NULL,NULL,NULL,NULL),(5,'012345678905','SBD005','Hoang','Em','2005-09-09','0945678901','123456','Nam','em.hoang@gmail.com','Hue','2026-03-21 20:30:45.000000','1','KV2',NULL,NULL,NULL,NULL,NULL,NULL,NULL),(6,'079203001111',NULL,'Nguyễn Văn','An',NULL,NULL,NULL,NULL,NULL,NULL,NULL,NULL,NULL,NULL,NULL,NULL,NULL,NULL,NULL,NULL),(7,'079203002222',NULL,'Trần Thị','Bình',NULL,NULL,NULL,NULL,NULL,NULL,NULL,NULL,NULL,NULL,NULL,NULL,NULL,NULL,NULL,NULL),(8,'001207008593',NULL,'Lê Hoàng','Cường',NULL,NULL,NULL,NULL,NULL,NULL,NULL,NULL,NULL,NULL,NULL,NULL,NULL,NULL,NULL,NULL);
 /*!40000 ALTER TABLE `xt_thisinhxettuyen25` ENABLE KEYS */;
 UNLOCK TABLES;
 
@@ -327,4 +334,4 @@ SET @@SESSION.SQL_LOG_BIN = @MYSQLDUMP_TEMP_LOG_BIN;
 /*!40101 SET COLLATION_CONNECTION=@OLD_COLLATION_CONNECTION */;
 /*!40111 SET SQL_NOTES=@OLD_SQL_NOTES */;
 
--- Dump completed on 2026-03-23 20:13:05
+-- Dump completed on 2026-03-24 16:03:38

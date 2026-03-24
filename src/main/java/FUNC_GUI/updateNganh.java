@@ -45,7 +45,7 @@ public class updateNganh extends javax.swing.JDialog {
         // 3. Xử lý 4 ô đánh dấu: Nếu ngày xưa có dùng thì đánh dấu tích và hiện số lượng cũ lên
         thietLapOChon(jCheckBox1, txtTuyenThang, data.getN_tuyenthang(), data.getSl_xtt() != null ? String.valueOf(data.getSl_xtt()) : "");
         thietLapOChon(jCheckBox2, txtThiDGNL, data.getN_dgnl(), data.getSl_dgnl() != null ? String.valueOf(data.getSl_dgnl()) : "");
-        thietLapOChon(jCheckBox3, txtThiTHPT, data.getN_thpt(), data.getSl_thpt() != null ? data.getSl_thpt() : "");
+        thietLapOChon(jCheckBox3, txtThiTHPT, data.getN_thpt(), data.getSl_thpt() != null ? String.valueOf(data.getSl_thpt()) : "");
         thietLapOChon(jCheckBox4, txtThiVSAT, data.getN_vsat(), data.getSl_vsat() != null ? String.valueOf(data.getSl_vsat()) : "");
         
         // 4. Lắp công tắc thông minh: Bấm tích thì mới mở khóa ô trống bên cạnh
@@ -369,7 +369,7 @@ public class updateNganh extends javax.swing.JDialog {
         this.nganh.setSl_dgnl(jCheckBox2.isSelected() ? Integer.parseInt(txtThiDGNL.getText().trim()) : 0);
 
         this.nganh.setN_thpt(jCheckBox3.isSelected() ? "1" : "0");
-        this.nganh.setSl_thpt(jCheckBox3.isSelected() ? txtThiTHPT.getText().trim() : "0");
+        this.nganh.setSl_thpt(jCheckBox3.isSelected() ? Integer.parseInt(txtThiTHPT.getText().trim()) : 0);
 
         this.nganh.setN_vsat(jCheckBox4.isSelected() ? "1" : "0");
         this.nganh.setSl_vsat(jCheckBox4.isSelected() ? Integer.parseInt(txtThiVSAT.getText().trim()) : 0);
