@@ -49,6 +49,27 @@ public class nguyenVongXetTuyenETT {
 
     @Column(name = "tt_thm")
     private String ttThm;
+    
+    // Thêm vào trong class nguyenVongXetTuyenETT
+
+@Transient // Quan trọng: Để Hibernate không báo lỗi thiếu cột trong DB
+private double diemMon1;
+@Transient
+private double diemMon2;
+@Transient
+private double diemMon3;
+
+@Transient
+private String tenMon1;
+@Transient
+private String tenMon2;
+@Transient
+private String tenMon3;
+
+@Transient
+private double diemUuTien;
+
+// Sau đó bạn Generate Getter/Setter cho 7 cái này là xong!
 
     // Hibernate BẮT BUỘC phải có constructor rỗng
     public nguyenVongXetTuyenETT() {
@@ -90,6 +111,63 @@ public class nguyenVongXetTuyenETT {
 
     public String getTtThm() { return ttThm; }
     public void setTtThm(String ttThm) { this.ttThm = ttThm; }
+
+    public double getDiemMon1() {
+        return diemMon1;
+    }
+
+    public double getDiemMon2() {
+        return diemMon2;
+    }
+
+    public double getDiemMon3() {
+        return diemMon3;
+    }
+
+    public String getTenMon1() {
+        return tenMon1;
+    }
+
+    public String getTenMon2() {
+        return tenMon2;
+    }
+
+    public String getTenMon3() {
+        return tenMon3;
+    }
+
+    public double getDiemUuTien() {
+        return diemUuTien;
+    }
+
+    public void setDiemMon1(double diemMon1) {
+        this.diemMon1 = diemMon1;
+    }
+
+    public void setDiemMon2(double diemMon2) {
+        this.diemMon2 = diemMon2;
+    }
+
+    public void setDiemMon3(double diemMon3) {
+        this.diemMon3 = diemMon3;
+    }
+
+    public void setTenMon1(String tenMon1) {
+        this.tenMon1 = tenMon1;
+    }
+
+    public void setTenMon2(String tenMon2) {
+        this.tenMon2 = tenMon2;
+    }
+
+    public void setTenMon3(String tenMon3) {
+        this.tenMon3 = tenMon3;
+    }
+
+    public void setDiemUuTien(double diemUuTien) {
+        this.diemUuTien = diemUuTien;
+    }
+    
     
     
 }

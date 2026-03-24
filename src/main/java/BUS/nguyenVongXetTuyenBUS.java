@@ -266,4 +266,58 @@ public class nguyenVongXetTuyenBUS {
         
         System.out.println("CẮT CHỈ TIÊU HOÀN TẤT!");
     }
+    
+    // =========================================================================
+    // HÀM BƠM DỮ LIỆU ĐIỂM TỪ DATABASE VÀO CÁC BIẾN ẢO (@Transient)
+    // =========================================================================
+    public void napDiemAoChoDanhSach() {
+        if (ds == null || ds.isEmpty()) return;
+        
+        try (org.hibernate.Session session = CONFIG.HibernateUtil.getSessionFactory().openSession()) {
+            for (Entity.nguyenVongXetTuyenETT nv : ds) {
+                String cccd = nv.getNnCccd();
+                String maToHop = nv.getTtThm();
+                String phuongThuc = nv.getTtPhuongThuc();
+
+                // 1. Gán điểm ưu tiên (Lấy từ cột diem_utqd có sẵn)
+                nv.setDiemUuTien(nv.getDiemUtqd() == null ? 0.0 : nv.getDiemUtqd());
+
+                // 2. Lấy điểm ĐGNL HCM
+                if (phuongThuc.equals("ĐGNL HCM")) {
+                    Number diemNL = (Number) session.createNativeQuery("SELECT NL1 FROM xt_diemthixettuyen WHERE cccd = :cccd")
+                            .setParameter("cccd", cccd).uniqueResult();
+                    nv.setDiemMon1(diemNL == null ? 0.0 : diemNL.doubleValue());
+                } 
+                // 3. Lấy điểm V-SAT hoặc THPT
+                else if (maToHop != null && !maToHop.equals("Không")) {
+                    // Lấy tên 3 môn từ bảng Tổ Hợp
+                    Object[] toHop = (Object[]) session.createNativeQuery("SELECT mon1, mon2, mon3 FROM xt_tohop_monthi WHERE matohop = :ma")
+                            .setParameter("ma", maToHop).uniqueResult();
+
+                    if (toHop != null) {
+                        String m1 = (String) toHop[0];
+                        String m2 = (String) toHop[1];
+                        String m3 = (String) toHop[2];
+
+                        nv.setTenMon1(m1);
+                        nv.setTenMon2(m2);
+                        nv.setTenMon3(m3);
+
+                        // Lấy điểm thi dựa trên tên môn vừa tìm được (Dùng dấu backtick ` để chống lỗi từ khóa TO)
+                        String sqlDiem = "SELECT `" + m1 + "`, `" + m2 + "`, `" + m3 + "` FROM xt_diemthixettuyen WHERE cccd = :cccd";
+                        Object[] diem = (Object[]) session.createNativeQuery(sqlDiem)
+                                .setParameter("cccd", cccd).uniqueResult();
+
+                        if (diem != null) {
+                            nv.setDiemMon1(diem[0] == null ? 0.0 : ((Number) diem[0]).doubleValue());
+                            nv.setDiemMon2(diem[1] == null ? 0.0 : ((Number) diem[1]).doubleValue());
+                            nv.setDiemMon3(diem[2] == null ? 0.0 : ((Number) diem[2]).doubleValue());
+                        }
+                    }
+                }
+            }
+        } catch (Exception e) {
+            e.printStackTrace();
+        }
+    }
 }

@@ -21,6 +21,7 @@ import FUNC_GUI.deleteNguyenVong;
 import FUNC_GUI.updateNguyenVong;
 import java.util.Collections;
 import javax.swing.JOptionPane;
+import CAL.*;
 
 public class nguyenVongXetTuyenGUI extends BaseTableGUI {
 
@@ -292,32 +293,58 @@ private void hienThiDialogSua() {
             }
         }
     }
-    
-    private void thucHienRefresh()
-    {
-//        busNguyenVong.ds = null; 
-//        fullDataList.clear();
-//        headerTable();
-//        loadDataToTable();
-//        table.getColumnModel().getColumn(9).setMinWidth(0);
-//        table.getColumnModel().getColumn(9).setMaxWidth(0);
-//        table.getColumnModel().getColumn(9).setWidth(0);
-        int confirm = javax.swing.JOptionPane.showConfirmDialog(this, 
-        "CẢNH BÁO: Hành động này sẽ khóa sổ và xét duyệt toàn bộ nguyện vọng trên hệ thống.\nBạn có chắc chắn muốn tiến hành xét tuyển?", 
+     
+private void thucHienRefresh() {
+    int confirm = javax.swing.JOptionPane.showConfirmDialog(this, 
+        "CẢNH BÁO: Hành động này sẽ khóa sổ và xét duyệt toàn bộ nguyện vọng trên hệ thống.\n" +
+        "Hệ thống sẽ tự động quy đổi điểm V-SAT/ĐGNL và tính điểm ưu tiên.\n" +
+        "Bạn có chắc chắn muốn tiến hành xét tuyển?", 
         "Xác nhận Chốt Sổ", 
         javax.swing.JOptionPane.YES_NO_OPTION, 
         javax.swing.JOptionPane.WARNING_MESSAGE);
         
     if (confirm == javax.swing.JOptionPane.YES_OPTION) {
-        // 1. Gọi trùm cuối ra tay
+        // BƯỚC 1: QUY ĐỔI VÀ CHUẨN HÓA ĐIỂM CHO TỪNG NGUYỆN VỌNG
+        busNguyenVong.napDiemAoChoDanhSach();
+        for (nguyenVongXetTuyenETT nv : busNguyenVong.ds) {
+            double diemChuanHoa = 0;
+            String phuongThuc = nv.getTtPhuongThuc();
+
+            if (phuongThuc.equals("Đánh giá V-SAT")) {
+                // Sử dụng class CAL.AdmissionsConverter đã kết nối Database
+                double m1 = CAL.AdmissionsConverter.quyDoiVsat(nv.getTenMon1(), nv.getDiemMon1());
+                double m2 = CAL.AdmissionsConverter.quyDoiVsat(nv.getTenMon2(), nv.getDiemMon2());
+                double m3 = CAL.AdmissionsConverter.quyDoiVsat(nv.getTenMon3(), nv.getDiemMon3());
+                diemChuanHoa = m1 + m2 + m3;
+            } 
+            else if (phuongThuc.equals("ĐGNL HCM")) {
+                // Quy đổi thang 1200 về thang 30
+                diemChuanHoa = (nv.getDiemMon1() / 1200.0) * 30.0;
+            } 
+            else {
+                // Mặc định THPT: Cộng trực tiếp 3 môn
+                diemChuanHoa = nv.getDiemMon1() + nv.getDiemMon2() + nv.getDiemMon3();
+            }
+
+            // Cộng điểm ưu tiên (Khu vực + Đối tượng)
+            double tongCuoi = diemChuanHoa + nv.getDiemUuTien();
+            
+            // Làm tròn và khống chế tối đa 30 điểm
+            tongCuoi = Math.min(30.0, Math.round(tongCuoi * 100.0) / 100.0);
+            
+            // Cập nhật lại vào object để thuật toán Domino sử dụng
+            nv.setDiemXetTuyen(tongCuoi);
+        }
+
+        // BƯỚC 2: CHẠY THUẬT TOÁN DOMINO (Xếp hạng theo chỉ tiêu)
+        // Sau bước này, trạng thái "Đã đậu"/"Đã trượt" sẽ được cập nhật vào danh sách
         busNguyenVong.sapXepKetQuaTheoChiTieu();
-//        busNguyenVong.sapXepKetQuaTuDong();
         
-        // 2. Refresh lại bảng để cập nhật màu sắc Đậu/Trượt
-        busNguyenVong.ds = null;
-        loadDataToTable(); 
+        // BƯỚC 3: CẬP NHẬT LÊN GIAO DIỆN
+        busNguyenVong.ds = null; // Xóa cache cũ
+        loadDataToTable(); // Tải lại bảng với màu sắc và kết quả mới
         
-        javax.swing.JOptionPane.showMessageDialog(this, "Tất cả nguyện vọng đã được xét duyệt thành công!");
+        javax.swing.JOptionPane.showMessageDialog(this, "Hệ thống đã quy đổi điểm và xét duyệt thành công!");
     }
-    }
+}
 }
