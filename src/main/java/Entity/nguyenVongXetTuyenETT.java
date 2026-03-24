@@ -69,6 +69,15 @@ private String tenMon3;
 @Transient
 private double diemUuTien;
 
+@Transient
+    private double hsMon1 = 1.0;
+    @Transient
+    private double hsMon2 = 1.0;
+    @Transient
+    private double hsMon3 = 1.0;
+
+    // Nhớ Generate Getter và Setter cho 3 cái này nha!
+
 // Sau đó bạn Generate Getter/Setter cho 7 cái này là xong!
 
     // Hibernate BẮT BUỘC phải có constructor rỗng
@@ -166,6 +175,30 @@ private double diemUuTien;
 
     public void setDiemUuTien(double diemUuTien) {
         this.diemUuTien = diemUuTien;
+    }
+
+    public double getHsMon1() {
+        return hsMon1;
+    }
+
+    public double getHsMon2() {
+        return hsMon2;
+    }
+
+    public double getHsMon3() {
+        return hsMon3;
+    }
+
+    public void setHsMon1(double hsMon1) {
+        this.hsMon1 = hsMon1;
+    }
+
+    public void setHsMon2(double hsMon2) {
+        this.hsMon2 = hsMon2;
+    }
+
+    public void setHsMon3(double hsMon3) {
+        this.hsMon3 = hsMon3;
     }
     
     

@@ -306,40 +306,46 @@ private void thucHienRefresh() {
     if (confirm == javax.swing.JOptionPane.YES_OPTION) {
         // BƯỚC 1: QUY ĐỔI VÀ CHUẨN HÓA ĐIỂM CHO TỪNG NGUYỆN VỌNG
         busNguyenVong.napDiemAoChoDanhSach();
+// 1. QUY ĐỔI VÀ CHUẨN HÓA ĐIỂM
         for (nguyenVongXetTuyenETT nv : busNguyenVong.ds) {
             double diemChuanHoa = 0;
             String phuongThuc = nv.getTtPhuongThuc();
 
+            // Lấy hệ số môn học
+            double w1 = nv.getHsMon1();
+            double w2 = nv.getHsMon2();
+            double w3 = nv.getHsMon3();
+            double W = w1 + w2 + w3;
+
             if (phuongThuc.equals("Đánh giá V-SAT")) {
-                // Sử dụng class CAL.AdmissionsConverter đã kết nối Database
-                double m1 = CAL.AdmissionsConverter.quyDoiVsat(nv.getTenMon1(), nv.getDiemMon1());
-                double m2 = CAL.AdmissionsConverter.quyDoiVsat(nv.getTenMon2(), nv.getDiemMon2());
-                double m3 = CAL.AdmissionsConverter.quyDoiVsat(nv.getTenMon3(), nv.getDiemMon3());
-                diemChuanHoa = m1 + m2 + m3;
+                double d1 = CAL.AdmissionsConverter.quyDoiVsat(nv.getTenMon1(), nv.getDiemMon1());
+                double d2 = CAL.AdmissionsConverter.quyDoiVsat(nv.getTenMon2(), nv.getDiemMon2());
+                double d3 = CAL.AdmissionsConverter.quyDoiVsat(nv.getTenMon3(), nv.getDiemMon3());
+                // CÔNG THỨC MỚI (Mục 3.1 PDF)
+                diemChuanHoa = ((d1*w1 + d2*w2 + d3*w3) / W) * 3.0;
             } 
             else if (phuongThuc.equals("ĐGNL HCM")) {
-                // Quy đổi thang 1200 về thang 30
                 diemChuanHoa = (nv.getDiemMon1() / 1200.0) * 30.0;
             } 
             else {
-                // Mặc định THPT: Cộng trực tiếp 3 môn
-                diemChuanHoa = nv.getDiemMon1() + nv.getDiemMon2() + nv.getDiemMon3();
+                // THPT cũng áp dụng nhân hệ số luôn (Mục 3.1 PDF)
+                double d1 = nv.getDiemMon1();
+                double d2 = nv.getDiemMon2();
+                double d3 = nv.getDiemMon3();
+                diemChuanHoa = ((d1*w1 + d2*w2 + d3*w3) / W) * 3.0;
             }
 
-            // Cộng điểm ưu tiên (Khu vực + Đối tượng)
+            // Cộng điểm ưu tiên (Không quá 3 điểm)
             double tongCuoi = diemChuanHoa + nv.getDiemUuTien();
-            
-            // Làm tròn và khống chế tối đa 30 điểm
             tongCuoi = Math.min(30.0, Math.round(tongCuoi * 100.0) / 100.0);
             
-            // Cập nhật lại vào object để thuật toán Domino sử dụng
             nv.setDiemXetTuyen(tongCuoi);
         }
 
         // BƯỚC 2: CHẠY THUẬT TOÁN DOMINO (Xếp hạng theo chỉ tiêu)
         // Sau bước này, trạng thái "Đã đậu"/"Đã trượt" sẽ được cập nhật vào danh sách
         busNguyenVong.sapXepKetQuaTheoChiTieu();
-        
+        busNguyenVong.capNhatDiemChuanTuDong();
         // BƯỚC 3: CẬP NHẬT LÊN GIAO DIỆN
         busNguyenVong.ds = null; // Xóa cache cũ
         loadDataToTable(); // Tải lại bảng với màu sắc và kết quả mới

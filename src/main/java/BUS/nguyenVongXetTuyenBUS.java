@@ -294,7 +294,7 @@ public class nguyenVongXetTuyenBUS {
                     Object[] toHop = (Object[]) session.createNativeQuery("SELECT mon1, mon2, mon3 FROM xt_tohop_monthi WHERE matohop = :ma")
                             .setParameter("ma", maToHop).uniqueResult();
 
-                    if (toHop != null) {
+if (toHop != null) {
                         String m1 = (String) toHop[0];
                         String m2 = (String) toHop[1];
                         String m3 = (String) toHop[2];
@@ -303,8 +303,26 @@ public class nguyenVongXetTuyenBUS {
                         nv.setTenMon2(m2);
                         nv.setTenMon3(m3);
 
-                        // Lấy điểm thi dựa trên tên môn vừa tìm được (Dùng dấu backtick ` để chống lỗi từ khóa TO)
-                        String sqlDiem = "SELECT `" + m1 + "`, `" + m2 + "`, `" + m3 + "` FROM xt_diemthixettuyen WHERE cccd = :cccd";
+                        // --- CODE MỚI: LẤY HỆ SỐ MÔN TỪ BẢNG NGÀNH TỔ HỢP ---
+                        String sqlHeSo = "SELECT hsmon1, hsmon2, hsmon3 FROM xt_nganh_tohop WHERE manganh = :mn AND matohop = :ma";
+                        Object[] heSo = (Object[]) session.createNativeQuery(sqlHeSo)
+                                .setParameter("mn", nv.getNvMaNganh())
+                                .setParameter("ma", maToHop).uniqueResult();
+
+                        if (heSo != null) {
+                            nv.setHsMon1(heSo[0] == null ? 1.0 : ((Number) heSo[0]).doubleValue());
+                            nv.setHsMon2(heSo[1] == null ? 1.0 : ((Number) heSo[1]).doubleValue());
+                            nv.setHsMon3(heSo[2] == null ? 1.0 : ((Number) heSo[2]).doubleValue());
+                        }
+
+                        // --- GỠ BẪY MÔN TIẾNG ANH (Như cũ) ---
+                        String col1 = m1.equals("N1") ? "N1_THI" : m1;
+// ... (Phần lấy điểm thi bên dưới vẫn giữ nguyên)
+                        String col2 = m2.equals("N1") ? "N1_THI" : m2;
+                        String col3 = m3.equals("N1") ? "N1_THI" : m3;
+
+                        // Sửa lại câu SQL dùng col1, col2, col3
+                        String sqlDiem = "SELECT `" + col1 + "`, `" + col2 + "`, `" + col3 + "` FROM xt_diemthixettuyen WHERE cccd = :cccd";
                         Object[] diem = (Object[]) session.createNativeQuery(sqlDiem)
                                 .setParameter("cccd", cccd).uniqueResult();
 
@@ -316,6 +334,64 @@ public class nguyenVongXetTuyenBUS {
                     }
                 }
             }
+        } catch (Exception e) {
+            e.printStackTrace();
+        }
+    }
+    
+    // =========================================================================
+    // HÀM TỰ ĐỘNG TÌM VÀ CẬP NHẬT ĐIỂM CHUẨN VÀO BẢNG NGÀNH
+    // =========================================================================
+    public void capNhatDiemChuanTuDong() {
+        if (ds == null || ds.isEmpty()) return;
+
+        // 1. Tạo 1 cái Map để nhớ điểm thấp nhất của từng Ngành - Phương thức
+        // Key: "MaNganh_PhuongThuc" (VD: "7480201_Đánh giá V-SAT")
+        // Value: Điểm thấp nhất
+        java.util.HashMap<String, Double> diemChuanMap = new java.util.HashMap<>();
+
+        // 2. Quét qua toàn bộ danh sách để tìm điểm thấp nhất của người "Đã đậu"
+        for (Entity.nguyenVongXetTuyenETT nv : ds) {
+            if ("Đã đậu".equals(nv.getNvKetQua())) {
+                String key = nv.getNvMaNganh() + "_" + nv.getTtPhuongThuc();
+                double diem = nv.getDiemXetTuyen();
+
+                // Nếu chưa có ngành này trong Map, hoặc điểm của đứa này thấp hơn điểm đang lưu thì cập nhật
+                if (!diemChuanMap.containsKey(key) || diem < diemChuanMap.get(key)) {
+                    diemChuanMap.put(key, diem);
+                }
+            }
+        }
+
+        // 3. Cập nhật ngược lại vào Database (Bảng xt_nganh)
+        try (org.hibernate.Session session = CONFIG.HibernateUtil.getSessionFactory().openSession()) {
+            session.beginTransaction();
+
+            for (java.util.Map.Entry<String, Double> entry : diemChuanMap.entrySet()) {
+                String[] parts = entry.getKey().split("_");
+                String maNganh = parts[0];
+                String phuongThuc = parts[1];
+                double diemChuan = entry.getValue();
+
+                // Tùy theo phương thức mà Update vào đúng cột điểm chuẩn
+                String sqlUpdate = "";
+                if (phuongThuc.equals("Đánh giá V-SAT")) {
+                    sqlUpdate = "UPDATE xt_nganh SET diemchuan_vsat = :dc WHERE manganh = :ma";
+                } else if (phuongThuc.equals("ĐGNL HCM")) {
+                    sqlUpdate = "UPDATE xt_nganh SET diemchuan_dgnl = :dc WHERE manganh = :ma";
+                } else if (phuongThuc.equals("Xét THPT")) {
+                    sqlUpdate = "UPDATE xt_nganh SET diemchuan_thpt = :dc WHERE manganh = :ma";
+                }
+
+                if (!sqlUpdate.isEmpty()) {
+                    session.createNativeQuery(sqlUpdate)
+                           .setParameter("dc", diemChuan)
+                           .setParameter("ma", maNganh)
+                           .executeUpdate();
+                }
+            }
+            session.getTransaction().commit();
+            System.out.println("✅ Đã chốt điểm chuẩn tự động thành công!");
         } catch (Exception e) {
             e.printStackTrace();
         }
