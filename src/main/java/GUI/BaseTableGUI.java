@@ -14,7 +14,7 @@ import javax.swing.table.JTableHeader;
 public class BaseTableGUI extends JPanel {
 
     // Khai báo các components
-    public JButton btnThem, btnSua, btnXoa, btnExcel, btnThongKe, btnTimKiem, btnChiTiet;
+    public JButton btnThem, btnSua, btnXoa, btnExcel, btnReFresh, btnTimKiem, btnChiTiet;
     public JComboBox<String> cbxTimKiem;
     public JTextField txtTimKiem;
     public JTable table;
@@ -30,7 +30,7 @@ public class BaseTableGUI extends JPanel {
 
     // ================== BIẾN QUẢN LÝ PHÂN TRANG ==================
     public int currentPage = 1;
-    public final int rowsPerPage = 10; // CHỐT HIỂN THỊ 20 DÒNG 1 TRANG
+    public final int rowsPerPage = 5; // CHỐT HIỂN THỊ 20 DÒNG 1 TRANG
     public int totalPages = 1;
 //    private List<Object[]> fullDataList = new ArrayList<>(); // Biến lưu trữ toàn bộ dữ liệu
     public List<Vector> fullDataList = new ArrayList<>();
@@ -67,7 +67,7 @@ public class BaseTableGUI extends JPanel {
         btnXoa = new JButton("XÓA");
         btnChiTiet = new JButton("CHI TIẾT");
         btnExcel = new JButton("EXCEL");
-        btnThongKe = new JButton("THỐNG KÊ");
+        btnReFresh = new JButton("Refresh");
         
         btnSua.setEnabled(false);
         btnXoa.setEnabled(false);
@@ -78,7 +78,7 @@ public class BaseTableGUI extends JPanel {
         pnlActions.add(btnXoa);
         pnlActions.add(btnChiTiet);
         pnlActions.add(btnExcel);
-        pnlActions.add(btnThongKe);
+        pnlActions.add(btnReFresh);
 
         // 2. GroupBox: Tìm kiếm (Bên phải)
         JPanel pnlSearch = new JPanel(new FlowLayout(FlowLayout.RIGHT, 10, 10));
@@ -298,12 +298,12 @@ private void styleComponents() {
     btnSua.setIcon(loadAndScaleIcon("edit.png", iconSize));
     btnXoa.setIcon(loadAndScaleIcon("delete.png", iconSize));
     btnExcel.setIcon(loadAndScaleIcon("excel.png", iconSize));
-    btnThongKe.setIcon(loadAndScaleIcon("chart.png", iconSize));
+    btnReFresh.setIcon(loadAndScaleIcon("refresh.png", iconSize));
     btnChiTiet.setIcon(loadAndScaleIcon("information.png", iconSize));
     btnTimKiem.setIcon(loadAndScaleIcon("search.png", 24));
 
     // Ép chữ nằm phía DƯỚI icon và căn giữa cho 5 nút chức năng
-    JButton[] actionBtns = {btnThem, btnSua, btnXoa, btnExcel, btnThongKe,btnChiTiet};
+    JButton[] actionBtns = {btnThem, btnSua, btnXoa, btnExcel, btnReFresh,btnChiTiet};
     for (JButton btn : actionBtns) {
         if (btn.getIcon() != null) {
             btn.setVerticalTextPosition(SwingConstants.BOTTOM);   // Chữ nằm dưới hình
@@ -320,7 +320,7 @@ private void styleComponents() {
     }
 
     // ===== STYLE BUTTON CHUNG =====
-    JButton[] allBtns = {btnThem, btnSua, btnXoa, btnExcel, btnThongKe, btnTimKiem, btnFirst, btnPrev, btnNext, btnLast, btnChiTiet};
+    JButton[] allBtns = {btnThem, btnSua, btnXoa, btnExcel, btnReFresh, btnTimKiem, btnFirst, btnPrev, btnNext, btnLast, btnChiTiet};
     for (JButton btn : allBtns) {
         btn.setFont(mainFont);
         btn.setFocusPainted(false);

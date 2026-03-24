@@ -63,7 +63,18 @@ public class nganhETT {
 
     @Column(name = "sl_thpt")
     private String sl_thpt;
+    
+    @Column(name = "diemchuan_thpt")
+    private Double diemchuan_thpt;
 
+    @Column(name = "diemchuan_dgnl")
+    private Double diemchuan_dgnl;
+
+    @Column(name = "diemchuan_vsat")
+    private Double diemchuan_vsat;
+
+    @Column(name = "diemchuan_xtt")
+    private Double diemchuan_xtt;
     // ===== Getter & Setter =====
 
     public int getIdnganh() {
@@ -184,6 +195,38 @@ public class nganhETT {
 
     public void setSl_thpt(String sl_thpt) {
         this.sl_thpt = sl_thpt;
+    }
+
+    public Double getDiemchuan_thpt() {
+        return diemchuan_thpt;
+    }
+
+    public Double getDiemchuan_dgnl() {
+        return diemchuan_dgnl;
+    }
+
+    public Double getDiemchuan_vsat() {
+        return diemchuan_vsat;
+    }
+
+    public void setDiemchuan_thpt(Double diemchuan_thpt) {
+        this.diemchuan_thpt = diemchuan_thpt;
+    }
+
+    public void setDiemchuan_dgnl(Double diemchuan_dgnl) {
+        this.diemchuan_dgnl = diemchuan_dgnl;
+    }
+
+    public void setDiemchuan_vsat(Double diemchuan_vsat) {
+        this.diemchuan_vsat = diemchuan_vsat;
+    }
+
+    public Double getDiemchuan_xtt() {
+        return diemchuan_xtt;
+    }
+
+    public void setDiemchuan_xtt(Double diemchuan_xtt) {
+        this.diemchuan_xtt = diemchuan_xtt;
     }
 
     

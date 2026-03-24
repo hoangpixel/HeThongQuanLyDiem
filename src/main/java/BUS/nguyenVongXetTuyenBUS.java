@@ -106,4 +106,40 @@ public class nguyenVongXetTuyenBUS {
         }
         return false;
     }
+    
+    public void sapXepKetQuaTuDong()
+    {
+        String cccdHientai = "";
+        boolean daDauNguyenVong = false;
+        nganhBUS busNganh = new nganhBUS();
+        for(nguyenVongXetTuyenETT ct : ds)
+        {
+            if(!ct.getNnCccd().equals(cccdHientai))
+            {
+                cccdHientai = ct.getNnCccd();
+                daDauNguyenVong = false;
+            }
+            
+            if(daDauNguyenVong)
+            {
+                ct.setNvKetQua("Không xét");
+                data.suaNguyenVong(ct);
+                continue;
+            }
+            
+            String maNganh = ct.getNvMaNganh();
+            String phuongThuc = ct.getTtPhuongThuc();
+            double diemChuanNganh = busNganh.layDiemChuanTheoPhuongThuc(maNganh, phuongThuc);
+            
+            if(ct.getDiemXetTuyen() >= diemChuanNganh) {
+                ct.setNvKetQua("Đã đậu");
+                daDauNguyenVong = true; // BẬT CỜ: Đã đậu rồi, các NV sau khỏi xét!
+            } else {
+                ct.setNvKetQua("Đã trượt");
+            }
+            
+            // Cập nhật phán quyết xuống Database
+            data.suaNguyenVong(ct);
+        }
+    }
 }

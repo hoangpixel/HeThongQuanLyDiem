@@ -21,6 +21,8 @@ SET @@SESSION.SQL_LOG_BIN= 0;
 -- GTID state at the beginning of the backup 
 --
 
+SET @@GLOBAL.GTID_PURGED=/*!80000 '+'*/ '424fbbe1-2261-11f1-a5e1-047c16aa0506:1-162';
+
 --
 -- Table structure for table `xt_bangquydoi`
 --
@@ -151,7 +153,11 @@ CREATE TABLE `xt_nganh` (
   `sl_xtt` int DEFAULT NULL,
   `sl_dgnl` int DEFAULT NULL,
   `sl_vsat` int DEFAULT NULL,
-  `sl_thpt` varchar(45) CHARACTER SET utf8mb3 COLLATE utf8mb3_unicode_ci DEFAULT NULL,
+  `sl_thpt` varchar(255) COLLATE utf8mb3_unicode_ci DEFAULT NULL,
+  `diemchuan_thpt` double DEFAULT NULL COMMENT 'Điểm chuẩn thi THPT',
+  `diemchuan_dgnl` double DEFAULT NULL COMMENT 'Điểm chuẩn thi ĐGNL HCM',
+  `diemchuan_vsat` double DEFAULT NULL COMMENT 'Điểm chuẩn thi V-SAT',
+  `diemchuan_xtt` double DEFAULT NULL COMMENT 'Điểm chuẩn Xét tuyển thẳng',
   PRIMARY KEY (`idnganh`)
 ) ENGINE=InnoDB AUTO_INCREMENT=9 DEFAULT CHARSET=utf8mb3 COLLATE=utf8mb3_unicode_ci;
 /*!40101 SET character_set_client = @saved_cs_client */;
@@ -162,7 +168,7 @@ CREATE TABLE `xt_nganh` (
 
 LOCK TABLES `xt_nganh` WRITE;
 /*!40000 ALTER TABLE `xt_nganh` DISABLE KEYS */;
-INSERT INTO `xt_nganh` VALUES (1,'7140114','Quản lý giáo dục','D01',40,17,NULL,NULL,NULL,NULL,NULL,NULL,NULL,NULL,NULL),(2,'7140201','Giáo dục Mầm non','M01',200,20,NULL,NULL,NULL,NULL,NULL,NULL,NULL,NULL,NULL),(3,'7140202','Giáo dục Tiểu học','C01',200,21,NULL,NULL,NULL,NULL,NULL,NULL,NULL,NULL,NULL),(4,'7140209','Sư phạm Toán học','A00',40,24.5,NULL,NULL,NULL,NULL,NULL,NULL,NULL,NULL,NULL),(5,'7140217','Sư phạm Ngữ văn','C01',50,24,NULL,NULL,NULL,NULL,NULL,NULL,NULL,NULL,NULL),(6,'7140218','Sư phạm Lịch sử','C00',10,25,NULL,NULL,NULL,NULL,NULL,NULL,NULL,NULL,NULL),(7,'7480201','Công nghệ thông tin','A00',500,21,NULL,NULL,NULL,NULL,NULL,NULL,NULL,NULL,NULL),(8,'7810202','Quản trị dịch vụ du lịch và lữ hành','D01',150,19,NULL,NULL,NULL,NULL,NULL,NULL,NULL,NULL,NULL);
+INSERT INTO `xt_nganh` VALUES (1,'7140114','Quản lý giáo dục','D01',40,17,22.5,NULL,NULL,NULL,NULL,NULL,NULL,NULL,NULL,22.5,750,NULL,NULL),(2,'7140201','Giáo dục Mầm non','M01',200,20,20,NULL,NULL,NULL,NULL,NULL,NULL,NULL,NULL,20,700,NULL,NULL),(3,'7140202','Giáo dục Tiểu học','C01',200,21,21,NULL,NULL,NULL,NULL,NULL,NULL,NULL,NULL,21,720,NULL,NULL),(4,'7140209','Sư phạm Toán học','A00',40,24.5,24.5,NULL,NULL,NULL,NULL,NULL,NULL,NULL,NULL,24.5,850,NULL,NULL),(5,'7140217','Sư phạm Ngữ văn','C01',50,24,24,NULL,NULL,NULL,NULL,NULL,NULL,NULL,NULL,24,800,NULL,NULL),(6,'7140218','Sư phạm Lịch sử','C00',10,25,25,NULL,NULL,NULL,NULL,NULL,NULL,NULL,NULL,25,820,NULL,NULL),(7,'7480201','Công nghệ thông tin','A00',500,21,21,NULL,NULL,NULL,NULL,NULL,NULL,NULL,NULL,21,800,NULL,NULL),(8,'7810202','Quản trị dịch vụ du lịch và lữ hành','D01',150,19,19,NULL,NULL,NULL,NULL,NULL,NULL,NULL,NULL,19,650,NULL,NULL);
 /*!40000 ALTER TABLE `xt_nganh` ENABLE KEYS */;
 UNLOCK TABLES;
 
@@ -232,7 +238,7 @@ CREATE TABLE `xt_nguyenvongxettuyen` (
   `tt_thm` varchar(45) DEFAULT NULL,
   PRIMARY KEY (`idnv`),
   UNIQUE KEY `nv_keys_UNIQUE` (`nv_keys`)
-) ENGINE=InnoDB AUTO_INCREMENT=3 DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_0900_ai_ci;
+) ENGINE=InnoDB AUTO_INCREMENT=7 DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_0900_ai_ci;
 /*!40101 SET character_set_client = @saved_cs_client */;
 
 --
@@ -241,7 +247,7 @@ CREATE TABLE `xt_nguyenvongxettuyen` (
 
 LOCK TABLES `xt_nguyenvongxettuyen` WRITE;
 /*!40000 ALTER TABLE `xt_nguyenvongxettuyen` DISABLE KEYS */;
-INSERT INTO `xt_nguyenvongxettuyen` VALUES (1,'079203001111','7480201',1,25.5,0.75,1.5,27.75,'Chờ xét','079203001111_1','Xét THPT','A00'),(2,'001207008593','123',1,17.41,0,0,17.41,'Chờ xét','001207008593_1','Xét THPT','A01');
+INSERT INTO `xt_nguyenvongxettuyen` VALUES (1,'079203001111','7480201',1,23.5,0,0,23.5,'Đã đậu','079203001111_1','Xét THPT','A01'),(2,'001207008593','7480201',1,24,0,0,24,'Đã đậu','001207008593_1','Xét THPT','A01'),(3,'012345678901','7140202',1,0,0,0,0,'Đã trượt','012345678901_1','Xét THPT','D01'),(4,'012345678902','7140202',5,0,0,0,0,'Đã trượt','012345678902_5','Xét THPT','D01'),(5,'012345678902','7140217',1,0,0,0,0,'Đã trượt','012345678902_1','Xét THPT','D01'),(6,'012345678902','7140114',2,0,0,0,0,'Đã trượt','012345678902_2','Xét THPT','A00');
 /*!40000 ALTER TABLE `xt_nguyenvongxettuyen` ENABLE KEYS */;
 UNLOCK TABLES;
 
@@ -321,4 +327,4 @@ SET @@SESSION.SQL_LOG_BIN = @MYSQLDUMP_TEMP_LOG_BIN;
 /*!40101 SET COLLATION_CONNECTION=@OLD_COLLATION_CONNECTION */;
 /*!40111 SET SQL_NOTES=@OLD_SQL_NOTES */;
 
--- Dump completed on 2026-03-22 12:22:17
+-- Dump completed on 2026-03-23 20:13:05
