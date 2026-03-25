@@ -8,6 +8,7 @@ import javax.swing.JFrame;
 import javax.swing.JLabel;
 import javax.swing.SwingUtilities;
 import BUS.thiSinhXetTuyenBUS;
+import Entity.nguyenVongXetTuyenETT;
 import Entity.thiSinhXetTuyenETT;
 import FUNC_GUI.deleteNguyenVong;
 import javax.swing.table.DefaultTableModel;
@@ -15,10 +16,13 @@ import javax.swing.table.DefaultTableModel;
 import FUNC_GUI.insertThiSinh; 
 import FUNC_GUI.updateThiSinh;
 import FUNC_GUI.deleteThiSinh;
+import FUNC_GUI.updateNguyenVong;
+import java.util.ArrayList;
+import java.util.List;
 import javax.swing.JOptionPane;
 
 public class thiSinhXetTuyenGUI extends BaseTableGUI {
-
+    thiSinhXetTuyenBUS busThiSinh =new thiSinhXetTuyenBUS();
     public thiSinhXetTuyenGUI() {
         super(); 
         
@@ -75,28 +79,32 @@ public class thiSinhXetTuyenGUI extends BaseTableGUI {
     // ==============================================================
     
     public void loadDataToTable() {
-        thiSinhXetTuyenBUS bus = new thiSinhXetTuyenBUS();
-        bus.layDanhSach();
-
-        DefaultTableModel model = (DefaultTableModel) table.getModel();
-        model.setRowCount(0); // clear bảng
-
-        for (thiSinhXetTuyenETT ts : bus.ds) {
-            model.addRow(new Object[]{
-                ts.getIdThiSinh(),
-                ts.getCccd(),
-                ts.getSoBaoDanh(),
-                ts.getHo(),
-                ts.getTen(),
-                ts.getNgaySinh(),
-                ts.getGioiTinh(),
-                ts.getDienThoai(),
-                ts.getEmail(),
-                ts.getNoiSinh(),
-                ts.getDoiTuong(),
-                ts.getKhuVuc()
-            });
+        if (busThiSinh.ds == null) {
+            busThiSinh.layDanhSach();
         }
+
+        List<Vector> dataList = new ArrayList<>();
+
+        for (thiSinhXetTuyenETT ct : busThiSinh.ds) {
+            Vector row = new Vector();
+            row.add(ct.getIdThiSinh());
+            row.add(ct.getCccd());
+            row.add(ct.getSoBaoDanh());
+            row.add(ct.getHo());
+            row.add(ct.getTen());
+            row.add(ct.getNgaySinh());
+            row.add(ct.getGioiTinh());          
+            row.add(ct.getDienThoai());
+            row.add(ct.getEmail());
+            row.add(ct.getNoiSinh());
+            row.add(ct.getDoiTuong());
+            row.add(ct.getKhuVuc());
+
+            dataList.add(row); // ✅ CHỈ add vào list
+        }
+
+        // 🔥 CHỈ GỌI DÒNG NÀY
+        setTableData(dataList);
     }
     
 
@@ -111,65 +119,64 @@ public class thiSinhXetTuyenGUI extends BaseTableGUI {
         if(dialog.isXacNhan()) {
             thiSinhXetTuyenETT ts = dialog.getThiSinh();
 
-            DefaultTableModel model = tableModel;
-
-            model.addRow(new Object[]{
-                ts.getIdThiSinh(),
-                ts.getCccd(),
-                ts.getSoBaoDanh(),
-                ts.getHo(),
-                ts.getTen(),
-                ts.getNgaySinh(),
-                ts.getGioiTinh(),
-                ts.getDienThoai(),
-                ts.getEmail(),
-                ts.getNoiSinh(),
-                ts.getDoiTuong(),
-                ts.getKhuVuc()
-            });
+            Vector row =new Vector();
+            row.add(ts.getIdThiSinh());
+            row.add(ts.getCccd());
+            row.add(ts.getSoBaoDanh());
+            row.add(ts.getHo());
+            row.add(ts.getTen());
+            row.add(ts.getNgaySinh());
+            row.add(ts.getGioiTinh());          
+            row.add(ts.getDienThoai());
+            row.add(ts.getEmail());
+            row.add(ts.getNoiSinh());
+            row.add(ts.getDoiTuong());
+            row.add(ts.getKhuVuc());
+             fullDataList.add(row);
+               totalPages = (int) Math.ceil((double) fullDataList.size() / rowsPerPage);
+               currentPage = totalPages;
+                renderCurrentPage();
         }
     }
     private void hienThiDialogSuaTS() {
 
-        int selectedRow = table.getSelectedRow();
-
-        if (selectedRow == -1) {
-            JOptionPane.showMessageDialog(this, "Vui lòng chọn thí sinh để sửa!");
-            return;
-        }
-
-        int modelIndex = table.convertRowIndexToModel(selectedRow);
-
-        thiSinhXetTuyenBUS bus = new thiSinhXetTuyenBUS();
-        bus.layDanhSach();
-
-        thiSinhXetTuyenETT ts = bus.ds.get(modelIndex);
-
-        JFrame topFrame = (JFrame) SwingUtilities.getWindowAncestor(this);
-        updateThiSinh dialog = new updateThiSinh(topFrame, true, ts);
-
-        // 🔥 BẮT BUỘC
-        dialog.setVisible(true);
+        int row = table.getSelectedRow();
+        if (row != -1) {
+            // 1. Tính toán vị trí chính xác của đối tượng trong danh sách tổng
+            int modelIndex = table.convertRowIndexToModel(row);
+            int absoluteIndex = (currentPage - 1) * rowsPerPage + modelIndex; // 🔥 Bí quyết chống lỗi phân trang
+            
+            // 2. Lấy đối tượng cũ ra và ném vào Form Sửa
+            Entity.thiSinhXetTuyenETT thiSinhCu = busThiSinh.ds.get(absoluteIndex);
+            JFrame topFrame = (JFrame) SwingUtilities.windowForComponent(this);
+            
+            // Giả sử form của bạn tên là updateNguyenVong
+            updateThiSinh dialog = new updateThiSinh(topFrame, true, thiSinhCu);
+            dialog.setVisible(true); // Form Sửa hiện lên
 
         if (dialog.isXacNhan()) {
+            Entity.thiSinhXetTuyenETT tsMoi =dialog.getThiSinh();
+            java.util.Vector rowData =new java.util.Vector();
+            rowData.add(tsMoi.getIdThiSinh());
+            rowData.add(tsMoi.getCccd());
+            rowData.add(tsMoi.getSoBaoDanh());
+            rowData.add(tsMoi.getHo());
+            rowData.add(tsMoi.getTen());
+            rowData.add(tsMoi.getNgaySinh());
+            rowData.add(tsMoi.getGioiTinh());          
+            rowData.add(tsMoi.getDienThoai());
+            rowData.add(tsMoi.getEmail());
+            rowData.add(tsMoi.getNoiSinh());
+            rowData.add(tsMoi.getDoiTuong());
+            rowData.add(tsMoi.getKhuVuc());
+            
+             fullDataList.set(absoluteIndex, rowData);
 
-            thiSinhXetTuyenETT tsUpdated = dialog.getThiSinh();
-
-            DefaultTableModel model = (DefaultTableModel) table.getModel();
-
-            // 🔥 UPDATE ĐÚNG ROW
-            model.setValueAt(tsUpdated.getIdThiSinh(), modelIndex, 0);
-            model.setValueAt(tsUpdated.getCccd(), modelIndex, 1);
-            model.setValueAt(tsUpdated.getSoBaoDanh(), modelIndex, 2);
-            model.setValueAt(tsUpdated.getHo(), modelIndex, 3);
-            model.setValueAt(tsUpdated.getTen(), modelIndex, 4);
-            model.setValueAt(tsUpdated.getNgaySinh(), modelIndex, 5);
-            model.setValueAt(tsUpdated.getGioiTinh(), modelIndex, 6);
-            model.setValueAt(tsUpdated.getDienThoai(), modelIndex, 7);
-            model.setValueAt(tsUpdated.getEmail(), modelIndex, 8);
-            model.setValueAt(tsUpdated.getNoiSinh(), modelIndex, 9);
-            model.setValueAt(tsUpdated.getDoiTuong(), modelIndex, 10);
-            model.setValueAt(tsUpdated.getKhuVuc(), modelIndex, 11);
+                // 🔥 Render lại đúng trang hiện tại (Tốc độ bàn thờ, không lag, không mất trang)
+                renderCurrentPage(); 
+            }
+        } else {
+            javax.swing.JOptionPane.showMessageDialog(this, "Vui lòng chọn một nguyện vọng trên bảng để sửa!");
         }
     }
     private void hienThiDialogXoaTS() {
