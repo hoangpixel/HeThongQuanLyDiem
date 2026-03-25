@@ -323,10 +323,13 @@ private void thucHienRefresh() {
                 double d3 = CAL.AdmissionsConverter.quyDoiVsat(nv.getTenMon3(), nv.getDiemMon3());
                 // CÔNG THỨC MỚI (Mục 3.1 PDF)
                 diemChuanHoa = ((d1*w1 + d2*w2 + d3*w3) / W) * 3.0;
-            } 
+            }
             else if (phuongThuc.equals("ĐGNL HCM")) {
                 diemChuanHoa = (nv.getDiemMon1() / 1200.0) * 30.0;
-            } 
+            }
+            else if (phuongThuc.equals("Xét tuyển thẳng")) {
+                diemChuanHoa = 30.0; // Auto 30 điểm để chắc chắn đậu top đầu
+            }
             else {
                 // THPT cũng áp dụng nhân hệ số luôn (Mục 3.1 PDF)
                 double d1 = nv.getDiemMon1();

@@ -274,12 +274,11 @@
         <Component class="javax.swing.JComboBox" name="cboPT">
           <Properties>
             <Property name="model" type="javax.swing.ComboBoxModel" editor="org.netbeans.modules.form.editors2.ComboBoxModelEditor">
-              <StringArray count="5">
+              <StringArray count="4">
                 <StringItem index="0" value="X&#xe9;t THPT"/>
-                <StringItem index="1" value="X&#xe9;t H&#x1ecd;c B&#x1ea1;"/>
-                <StringItem index="2" value="&#x110;GNL HCM"/>
-                <StringItem index="3" value="&#x110;&#xe1;nh gi&#xe1; V-SAT"/>
-                <StringItem index="4" value="Tuy&#x1ec3;n Th&#x1eb3;ng"/>
+                <StringItem index="1" value="&#x110;GNL HCM"/>
+                <StringItem index="2" value="&#x110;&#xe1;nh gi&#xe1; V-SAT"/>
+                <StringItem index="3" value="Tuy&#x1ec3;n Th&#x1eb3;ng"/>
               </StringArray>
             </Property>
           </Properties>

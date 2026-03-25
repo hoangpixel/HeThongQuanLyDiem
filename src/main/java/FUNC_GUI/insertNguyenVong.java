@@ -127,7 +127,7 @@ public class insertNguyenVong extends javax.swing.JDialog {
         jLabel5.setFont(new java.awt.Font("Segoe UI", 0, 14)); // NOI18N
         jLabel5.setText("Phương thức : ");
 
-        cboPT.setModel(new javax.swing.DefaultComboBoxModel<>(new String[] { "Xét THPT", "Xét Học Bạ", "ĐGNL HCM", "Đánh giá V-SAT", "Tuyển Thẳng" }));
+        cboPT.setModel(new javax.swing.DefaultComboBoxModel<>(new String[] { "Xét THPT", "ĐGNL HCM", "Đánh giá V-SAT", "Tuyển Thẳng" }));
         cboPT.addActionListener(this::cboPTActionPerformed);
 
         jLabel6.setFont(new java.awt.Font("Segoe UI", 0, 14)); // NOI18N
@@ -414,9 +414,10 @@ public class insertNguyenVong extends javax.swing.JDialog {
         // TODO add your handling code here:
         String phuongThuc = cboPT.getSelectedItem().toString();
         
-        if (phuongThuc.equals("Xét THPT")) {
+        if (phuongThuc.equals("Xét THPT") || phuongThuc.equals("Đánh giá V-SAT")) {
             btnChonToHop.setEnabled(true);
             txtToHopMon.setText("");
+            toHopMon = "";
         } else {
             btnChonToHop.setEnabled(false);
             txtToHopMon.setText("Không");

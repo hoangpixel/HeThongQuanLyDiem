@@ -381,6 +381,8 @@ if (toHop != null) {
                     sqlUpdate = "UPDATE xt_nganh SET diemchuan_dgnl = :dc WHERE manganh = :ma";
                 } else if (phuongThuc.equals("Xét THPT")) {
                     sqlUpdate = "UPDATE xt_nganh SET diemchuan_thpt = :dc WHERE manganh = :ma";
+                }else if (phuongThuc.equals("Xét tuyển thẳng")) {
+                    sqlUpdate = "UPDATE xt_nganh SET diemchuan_xtt = :dc WHERE manganh = :ma";
                 }
 
                 if (!sqlUpdate.isEmpty()) {
