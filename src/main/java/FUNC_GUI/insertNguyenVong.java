@@ -94,6 +94,7 @@ public class insertNguyenVong extends javax.swing.JDialog {
         jLabel1.setText("CCCD Thí sinh (*) : ");
 
         txtCCCD.setEditable(false);
+        txtCCCD.addActionListener(this::txtCCCDActionPerformed);
 
         btnChonCCCThiSinh.setText("...");
         btnChonCCCThiSinh.setToolTipText("");
@@ -420,6 +421,10 @@ public class insertNguyenVong extends javax.swing.JDialog {
             capNhatDiemTuDong();
         }
     }//GEN-LAST:event_btnChonMaNganhActionPerformed
+
+    private void txtCCCDActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_txtCCCDActionPerformed
+        // TODO add your handling code here:
+    }//GEN-LAST:event_txtCCCDActionPerformed
 
 // Bạn cần khai báo thêm một biến toàn cục ở đầu class để lưu Tổ hợp vừa chọn
     // public toHopETT toHopMonDaChon;

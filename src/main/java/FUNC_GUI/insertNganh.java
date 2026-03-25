@@ -5,7 +5,10 @@
 package FUNC_GUI;
 
 import Entity.nganhETT;
+
+import javax.swing.JFrame;
 import javax.swing.JOptionPane;
+import javax.swing.SwingUtilities;
 /**
  *
  * @author Dat
@@ -20,6 +23,11 @@ public class insertNganh extends javax.swing.JDialog {
         initComponents();
         setLocationRelativeTo(parent);
         
+        txtChiTieu.setEditable(false); // Khóa không cho gõ tay
+        txtChiTieu.setFocusable(false); // Không cho nhấn Tab nhảy vào ô này
+        txtChiTieu.setBackground(new java.awt.Color(240, 240, 240)); // Đổi màu xám cho đúng chất ô hiển thị
+        txtChiTieu.setText("0");
+
         // Mở khóa để người dùng tự gõ thông tin cơ bản
         txtMaNganh.setEditable(true);
         txtTenNganh.setEditable(true);
@@ -28,11 +36,6 @@ public class insertNganh extends javax.swing.JDialog {
         txtDiemSan.setEditable(true);
         txtDiemTrungTuyen.setEditable(true);
         
-        // Giấu các nút chọn dư thừa
-        btnChonMaNganh.setVisible(false);
-        btnChonTenNganh.setVisible(false);
-        btnChonToHopGoc.setVisible(false);
-        
         // Khóa các ô số lượng phương thức ban đầu
         txtTuyenThang.setEnabled(false);
         txtThiDGNL.setEnabled(false);
@@ -40,10 +43,27 @@ public class insertNganh extends javax.swing.JDialog {
         txtThiVSAT.setEnabled(false);
         
         // Lắp ráp ổ khóa thông minh: tích vào ô vuông thì mới mở ô nhập số
-        jCheckBox1.addActionListener(evt -> txtTuyenThang.setEnabled(jCheckBox1.isSelected()));
-        jCheckBox2.addActionListener(evt -> txtThiDGNL.setEnabled(jCheckBox2.isSelected()));
-        jCheckBox3.addActionListener(evt -> txtThiTHPT.setEnabled(jCheckBox3.isSelected()));
-        jCheckBox4.addActionListener(evt -> txtThiVSAT.setEnabled(jCheckBox4.isSelected()));
+        chkTuyenThang.addActionListener(evt -> {
+            boolean isSelected = chkTuyenThang.isSelected();
+            txtTuyenThang.setEnabled(isSelected);
+            txtTuyenThang.setEditable(isSelected);
+        });
+        chkThiDGNL.addActionListener(evt -> {
+            boolean isSelected = chkThiDGNL.isSelected();
+            txtThiDGNL.setEnabled(isSelected);
+            txtThiDGNL.setEditable(isSelected);
+        });
+        chkThiTHPT.addActionListener(evt -> {
+            boolean isSelected = chkThiTHPT.isSelected();
+            txtThiTHPT.setEnabled(isSelected);
+            txtThiTHPT.setEditable(isSelected);
+        });
+        chkThiVSAT.addActionListener(evt -> {
+            boolean isSelected = chkThiVSAT.isSelected();
+            txtThiVSAT.setEnabled(isSelected);
+            txtThiVSAT.setEditable(isSelected);
+        });
+
     }
 
     @SuppressWarnings("unchecked")
@@ -52,28 +72,26 @@ public class insertNganh extends javax.swing.JDialog {
 
         jPanel1 = new javax.swing.JPanel();
         jLabel1 = new javax.swing.JLabel();
-        txtTenNganh = new javax.swing.JTextField();
-        btnChonMaNganh = new javax.swing.JButton();
         jLabel2 = new javax.swing.JLabel();
-        txtMaNganh = new javax.swing.JTextField();
-        btnChonTenNganh = new javax.swing.JButton();
         jLabel3 = new javax.swing.JLabel();
         jLabel4 = new javax.swing.JLabel();
         txtDiemSan = new javax.swing.JTextField();
-        txtToHopGoc = new javax.swing.JTextField();
-        btnChonToHopGoc = new javax.swing.JButton();
         jLabel10 = new javax.swing.JLabel();
-        txtChiTieu = new javax.swing.JTextField();
         jLabel11 = new javax.swing.JLabel();
         txtDiemTrungTuyen = new javax.swing.JTextField();
-        jCheckBox1 = new javax.swing.JCheckBox();
-        jCheckBox2 = new javax.swing.JCheckBox();
-        jCheckBox3 = new javax.swing.JCheckBox();
-        jCheckBox4 = new javax.swing.JCheckBox();
+        chkThiDGNL = new javax.swing.JCheckBox();
+        chkThiTHPT = new javax.swing.JCheckBox();
         txtTuyenThang = new javax.swing.JTextField();
         txtThiDGNL = new javax.swing.JTextField();
         txtThiTHPT = new javax.swing.JTextField();
         txtThiVSAT = new javax.swing.JTextField();
+        btnChonToHopGoc = new javax.swing.JButton();
+        txtMaNganh = new javax.swing.JTextField();
+        txtTenNganh = new javax.swing.JTextField();
+        txtToHopGoc = new javax.swing.JTextField();
+        txtChiTieu = new javax.swing.JTextField();
+        chkTuyenThang = new javax.swing.JCheckBox();
+        chkThiVSAT = new javax.swing.JCheckBox();
         jPanel2 = new javax.swing.JPanel();
         btnThoat = new javax.swing.JButton();
         btnThem = new javax.swing.JButton();
@@ -81,32 +99,16 @@ public class insertNganh extends javax.swing.JDialog {
         jLabel9 = new javax.swing.JLabel();
 
         setDefaultCloseOperation(javax.swing.WindowConstants.DISPOSE_ON_CLOSE);
-        setTitle("Thêm ngành học");
+        setTitle("Thêm nguyện vọng");
 
         jPanel1.setBackground(new java.awt.Color(255, 255, 255));
         jPanel1.setBorder(javax.swing.BorderFactory.createTitledBorder(null, "Thêm Ngành", javax.swing.border.TitledBorder.DEFAULT_JUSTIFICATION, javax.swing.border.TitledBorder.DEFAULT_POSITION, new java.awt.Font("Segoe UI", 1, 14))); // NOI18N
 
         jLabel1.setFont(new java.awt.Font("Segoe UI", 0, 14)); // NOI18N
-        jLabel1.setText("Tên ngành (*) :");
-
-        txtTenNganh.setEditable(false);
-        txtTenNganh.addActionListener(this::txtTenNganhActionPerformed);
-
-        btnChonMaNganh.setText("...");
-        btnChonMaNganh.setToolTipText("");
-        btnChonMaNganh.setCursor(new java.awt.Cursor(java.awt.Cursor.HAND_CURSOR));
-        btnChonMaNganh.addActionListener(this::btnChonMaNganhActionPerformed);
+        jLabel1.setText("Tên ngành :");
 
         jLabel2.setFont(new java.awt.Font("Segoe UI", 0, 14)); // NOI18N
         jLabel2.setText("Mã ngành (*) : ");
-
-        txtMaNganh.setEditable(false);
-        txtMaNganh.addActionListener(this::txtMaNganhActionPerformed);
-
-        btnChonTenNganh.setText("...");
-        btnChonTenNganh.setToolTipText("");
-        btnChonTenNganh.setCursor(new java.awt.Cursor(java.awt.Cursor.HAND_CURSOR));
-        btnChonTenNganh.addActionListener(this::btnChonTenNganhActionPerformed);
 
         jLabel3.setFont(new java.awt.Font("Segoe UI", 0, 14)); // NOI18N
         jLabel3.setText("Tổ hợp gốc :");
@@ -115,47 +117,80 @@ public class insertNganh extends javax.swing.JDialog {
         jLabel4.setText("Điểm sàn :");
 
         txtDiemSan.setEditable(false);
-
-        txtToHopGoc.setEditable(false);
-        txtToHopGoc.addActionListener(this::txtToHopGocActionPerformed);
-
-        btnChonToHopGoc.setText("...");
-        btnChonToHopGoc.setToolTipText("");
-        btnChonToHopGoc.setCursor(new java.awt.Cursor(java.awt.Cursor.HAND_CURSOR));
-        btnChonToHopGoc.addActionListener(this::btnChonToHopGocActionPerformed);
+        txtDiemSan.addActionListener(this::txtDiemSanActionPerformed);
 
         jLabel10.setFont(new java.awt.Font("Segoe UI", 0, 14)); // NOI18N
         jLabel10.setText("Chỉ tiêu :");
-
-        txtChiTieu.setEditable(false);
-        txtChiTieu.addActionListener(this::txtChiTieuActionPerformed);
 
         jLabel11.setFont(new java.awt.Font("Segoe UI", 0, 14)); // NOI18N
         jLabel11.setText("Điểm trúng tuyển :");
 
         txtDiemTrungTuyen.setEditable(false);
+        txtDiemTrungTuyen.addActionListener(this::txtDiemTrungTuyenActionPerformed);
 
-        jCheckBox1.setFont(new java.awt.Font("Segoe UI", 0, 14)); // NOI18N
-        jCheckBox1.setText("Tuyển thẳng");
-        jCheckBox1.addActionListener(this::jCheckBox1ActionPerformed);
+        chkThiDGNL.setFont(new java.awt.Font("Segoe UI", 0, 14)); // NOI18N
+        chkThiDGNL.setText("Thi ĐGNL");
+        chkThiDGNL.addActionListener(this::chkThiDGNLActionPerformed);
 
-        jCheckBox2.setFont(new java.awt.Font("Segoe UI", 0, 14)); // NOI18N
-        jCheckBox2.setText("Thi ĐGNL");
-
-        jCheckBox3.setFont(new java.awt.Font("Segoe UI", 0, 14)); // NOI18N
-        jCheckBox3.setText("Thi THPT");
-
-        jCheckBox4.setFont(new java.awt.Font("Segoe UI", 0, 14)); // NOI18N
-        jCheckBox4.setText("Thi V-SAT");
-        jCheckBox4.addActionListener(this::jCheckBox4ActionPerformed);
+        chkThiTHPT.setFont(new java.awt.Font("Segoe UI", 0, 14)); // NOI18N
+        chkThiTHPT.setText("Thi THPT");
+        chkThiTHPT.addActionListener(this::chkThiTHPTActionPerformed);
 
         txtTuyenThang.setEditable(false);
+        txtTuyenThang.addActionListener(this::txtTuyenThangActionPerformed);
+        txtTuyenThang.addKeyListener(new java.awt.event.KeyAdapter() {
+            public void keyReleased(java.awt.event.KeyEvent evt) {
+                txtTuyenThangKeyReleased(evt);
+            }
+        });
 
         txtThiDGNL.setEditable(false);
+        txtThiDGNL.addActionListener(this::txtThiDGNLActionPerformed);
+        txtThiDGNL.addKeyListener(new java.awt.event.KeyAdapter() {
+            public void keyReleased(java.awt.event.KeyEvent evt) {
+                txtThiDGNLKeyReleased(evt);
+            }
+        });
 
         txtThiTHPT.setEditable(false);
+        txtThiTHPT.addActionListener(this::txtThiTHPTActionPerformed);
+        txtThiTHPT.addKeyListener(new java.awt.event.KeyAdapter() {
+            public void keyReleased(java.awt.event.KeyEvent evt) {
+                txtThiTHPTKeyReleased(evt);
+            }
+        });
 
         txtThiVSAT.setEditable(false);
+        txtThiVSAT.addActionListener(this::txtThiVSATActionPerformed);
+        txtThiVSAT.addKeyListener(new java.awt.event.KeyAdapter() {
+            public void keyReleased(java.awt.event.KeyEvent evt) {
+                txtThiVSATKeyReleased(evt);
+            }
+        });
+
+        btnChonToHopGoc.setText("...");
+        btnChonToHopGoc.addActionListener(this::btnChonToHopGocActionPerformed);
+
+        txtMaNganh.setBackground(new java.awt.Color(246, 246, 246));
+        txtMaNganh.addActionListener(this::txtMaNganhActionPerformed);
+
+        txtTenNganh.setBackground(new java.awt.Color(246, 246, 246));
+        txtTenNganh.addActionListener(this::txtTenNganhActionPerformed);
+
+        txtToHopGoc.setBackground(new java.awt.Color(246, 246, 246));
+        txtToHopGoc.addActionListener(this::txtToHopGocActionPerformed);
+
+        txtChiTieu.setEditable(false);
+        txtChiTieu.setBackground(new java.awt.Color(246, 246, 246));
+        txtChiTieu.addActionListener(this::txtChiTieuActionPerformed);
+
+        chkTuyenThang.setFont(new java.awt.Font("Segoe UI", 0, 14)); // NOI18N
+        chkTuyenThang.setText("Tuyển thẳng");
+        chkTuyenThang.addActionListener(this::chkTuyenThangActionPerformed);
+
+        chkThiVSAT.setFont(new java.awt.Font("Segoe UI", 0, 14)); // NOI18N
+        chkThiVSAT.setText("Thi V-SAT");
+        chkThiVSAT.addActionListener(this::chkThiVSATActionPerformed);
 
         javax.swing.GroupLayout jPanel1Layout = new javax.swing.GroupLayout(jPanel1);
         jPanel1.setLayout(jPanel1Layout);
@@ -163,87 +198,79 @@ public class insertNganh extends javax.swing.JDialog {
             jPanel1Layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
             .addGroup(jPanel1Layout.createSequentialGroup()
                 .addContainerGap()
-                .addGroup(jPanel1Layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
+                .addGroup(jPanel1Layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING, false)
                     .addGroup(jPanel1Layout.createSequentialGroup()
-                        .addComponent(jLabel10, javax.swing.GroupLayout.PREFERRED_SIZE, 123, javax.swing.GroupLayout.PREFERRED_SIZE)
+                        .addComponent(jLabel1, javax.swing.GroupLayout.PREFERRED_SIZE, 123, javax.swing.GroupLayout.PREFERRED_SIZE)
                         .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED)
-                        .addComponent(txtChiTieu, javax.swing.GroupLayout.PREFERRED_SIZE, 188, javax.swing.GroupLayout.PREFERRED_SIZE)
-                        .addContainerGap(javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE))
+                        .addComponent(txtTenNganh, javax.swing.GroupLayout.PREFERRED_SIZE, 188, javax.swing.GroupLayout.PREFERRED_SIZE))
                     .addGroup(jPanel1Layout.createSequentialGroup()
-                        .addGroup(jPanel1Layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
+                        .addGroup(jPanel1Layout.createParallelGroup(javax.swing.GroupLayout.Alignment.TRAILING, false)
                             .addGroup(jPanel1Layout.createSequentialGroup()
+                                .addComponent(jLabel10, javax.swing.GroupLayout.PREFERRED_SIZE, 123, javax.swing.GroupLayout.PREFERRED_SIZE)
+                                .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED)
+                                .addComponent(txtChiTieu))
+                            .addGroup(javax.swing.GroupLayout.Alignment.LEADING, jPanel1Layout.createSequentialGroup()
                                 .addComponent(jLabel3, javax.swing.GroupLayout.PREFERRED_SIZE, 123, javax.swing.GroupLayout.PREFERRED_SIZE)
                                 .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED)
-                                .addComponent(txtToHopGoc, javax.swing.GroupLayout.PREFERRED_SIZE, 188, javax.swing.GroupLayout.PREFERRED_SIZE)
-                                .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED, javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE)
-                                .addComponent(btnChonToHopGoc, javax.swing.GroupLayout.PREFERRED_SIZE, 40, javax.swing.GroupLayout.PREFERRED_SIZE))
-                            .addGroup(jPanel1Layout.createSequentialGroup()
-                                .addGroup(jPanel1Layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
-                                    .addGroup(jPanel1Layout.createSequentialGroup()
-                                        .addComponent(jLabel2, javax.swing.GroupLayout.PREFERRED_SIZE, 123, javax.swing.GroupLayout.PREFERRED_SIZE)
-                                        .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED)
-                                        .addComponent(txtMaNganh, javax.swing.GroupLayout.PREFERRED_SIZE, 188, javax.swing.GroupLayout.PREFERRED_SIZE)
-                                        .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED)
-                                        .addComponent(btnChonMaNganh, javax.swing.GroupLayout.PREFERRED_SIZE, 40, javax.swing.GroupLayout.PREFERRED_SIZE))
-                                    .addGroup(jPanel1Layout.createSequentialGroup()
-                                        .addComponent(jLabel1, javax.swing.GroupLayout.PREFERRED_SIZE, 123, javax.swing.GroupLayout.PREFERRED_SIZE)
-                                        .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED)
-                                        .addComponent(txtTenNganh, javax.swing.GroupLayout.PREFERRED_SIZE, 188, javax.swing.GroupLayout.PREFERRED_SIZE)
-                                        .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED)
-                                        .addComponent(btnChonTenNganh, javax.swing.GroupLayout.PREFERRED_SIZE, 40, javax.swing.GroupLayout.PREFERRED_SIZE))
-                                    .addGroup(jPanel1Layout.createSequentialGroup()
-                                        .addComponent(jLabel11, javax.swing.GroupLayout.PREFERRED_SIZE, 123, javax.swing.GroupLayout.PREFERRED_SIZE)
-                                        .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED)
-                                        .addComponent(txtDiemTrungTuyen, javax.swing.GroupLayout.PREFERRED_SIZE, 188, javax.swing.GroupLayout.PREFERRED_SIZE)))
-                                .addGap(0, 0, Short.MAX_VALUE)))
-                        .addContainerGap(javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE))
+                                .addComponent(txtToHopGoc, javax.swing.GroupLayout.PREFERRED_SIZE, 188, javax.swing.GroupLayout.PREFERRED_SIZE)))
+                        .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED)
+                        .addComponent(btnChonToHopGoc, javax.swing.GroupLayout.PREFERRED_SIZE, 1, Short.MAX_VALUE))
                     .addGroup(jPanel1Layout.createSequentialGroup()
                         .addGroup(jPanel1Layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
+                            .addGroup(jPanel1Layout.createSequentialGroup()
+                                .addComponent(jLabel2, javax.swing.GroupLayout.PREFERRED_SIZE, 123, javax.swing.GroupLayout.PREFERRED_SIZE)
+                                .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED)
+                                .addComponent(txtMaNganh, javax.swing.GroupLayout.PREFERRED_SIZE, 188, javax.swing.GroupLayout.PREFERRED_SIZE))
+                            .addGroup(jPanel1Layout.createSequentialGroup()
+                                .addComponent(chkThiDGNL, javax.swing.GroupLayout.PREFERRED_SIZE, 110, javax.swing.GroupLayout.PREFERRED_SIZE)
+                                .addGap(18, 18, 18)
+                                .addComponent(txtThiDGNL, javax.swing.GroupLayout.PREFERRED_SIZE, 188, javax.swing.GroupLayout.PREFERRED_SIZE))
+                            .addGroup(jPanel1Layout.createSequentialGroup()
+                                .addGroup(jPanel1Layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING, false)
+                                    .addComponent(chkThiTHPT, javax.swing.GroupLayout.PREFERRED_SIZE, 110, javax.swing.GroupLayout.PREFERRED_SIZE)
+                                    .addComponent(chkThiVSAT, javax.swing.GroupLayout.DEFAULT_SIZE, 122, Short.MAX_VALUE))
+                                .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED)
+                                .addGroup(jPanel1Layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
+                                    .addComponent(txtThiVSAT, javax.swing.GroupLayout.PREFERRED_SIZE, 188, javax.swing.GroupLayout.PREFERRED_SIZE)
+                                    .addComponent(txtThiTHPT, javax.swing.GroupLayout.PREFERRED_SIZE, 188, javax.swing.GroupLayout.PREFERRED_SIZE)))
                             .addGroup(jPanel1Layout.createSequentialGroup()
                                 .addComponent(jLabel4, javax.swing.GroupLayout.PREFERRED_SIZE, 123, javax.swing.GroupLayout.PREFERRED_SIZE)
                                 .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED)
                                 .addComponent(txtDiemSan, javax.swing.GroupLayout.PREFERRED_SIZE, 188, javax.swing.GroupLayout.PREFERRED_SIZE))
                             .addGroup(jPanel1Layout.createSequentialGroup()
-                                .addComponent(jCheckBox1, javax.swing.GroupLayout.PREFERRED_SIZE, 110, javax.swing.GroupLayout.PREFERRED_SIZE)
-                                .addGap(18, 18, 18)
-                                .addComponent(txtTuyenThang, javax.swing.GroupLayout.PREFERRED_SIZE, 188, javax.swing.GroupLayout.PREFERRED_SIZE))
-                            .addGroup(jPanel1Layout.createSequentialGroup()
-                                .addComponent(jCheckBox2, javax.swing.GroupLayout.PREFERRED_SIZE, 110, javax.swing.GroupLayout.PREFERRED_SIZE)
-                                .addGap(18, 18, 18)
-                                .addComponent(txtThiDGNL, javax.swing.GroupLayout.PREFERRED_SIZE, 188, javax.swing.GroupLayout.PREFERRED_SIZE)))
-                        .addGap(0, 0, Short.MAX_VALUE))
-                    .addGroup(jPanel1Layout.createSequentialGroup()
-                        .addGroup(jPanel1Layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
-                            .addComponent(jCheckBox3, javax.swing.GroupLayout.PREFERRED_SIZE, 110, javax.swing.GroupLayout.PREFERRED_SIZE)
-                            .addComponent(jCheckBox4, javax.swing.GroupLayout.PREFERRED_SIZE, 110, javax.swing.GroupLayout.PREFERRED_SIZE))
-                        .addGap(18, 18, 18)
-                        .addGroup(jPanel1Layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
-                            .addComponent(txtThiVSAT, javax.swing.GroupLayout.PREFERRED_SIZE, 188, javax.swing.GroupLayout.PREFERRED_SIZE)
-                            .addComponent(txtThiTHPT, javax.swing.GroupLayout.PREFERRED_SIZE, 188, javax.swing.GroupLayout.PREFERRED_SIZE))
-                        .addGap(0, 0, Short.MAX_VALUE))))
+                                .addGroup(jPanel1Layout.createParallelGroup(javax.swing.GroupLayout.Alignment.TRAILING, false)
+                                    .addComponent(chkTuyenThang, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE)
+                                    .addComponent(jLabel11, javax.swing.GroupLayout.DEFAULT_SIZE, 123, Short.MAX_VALUE))
+                                .addGroup(jPanel1Layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
+                                    .addGroup(jPanel1Layout.createSequentialGroup()
+                                        .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED)
+                                        .addComponent(txtDiemTrungTuyen, javax.swing.GroupLayout.PREFERRED_SIZE, 188, javax.swing.GroupLayout.PREFERRED_SIZE))
+                                    .addGroup(jPanel1Layout.createSequentialGroup()
+                                        .addGap(5, 5, 5)
+                                        .addComponent(txtTuyenThang, javax.swing.GroupLayout.PREFERRED_SIZE, 188, javax.swing.GroupLayout.PREFERRED_SIZE)))))
+                        .addGap(49, 49, 49)))
+                .addContainerGap(javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE))
         );
         jPanel1Layout.setVerticalGroup(
             jPanel1Layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
             .addGroup(jPanel1Layout.createSequentialGroup()
                 .addGap(14, 14, 14)
                 .addGroup(jPanel1Layout.createParallelGroup(javax.swing.GroupLayout.Alignment.BASELINE)
-                    .addComponent(btnChonMaNganh)
                     .addComponent(jLabel2)
                     .addComponent(txtMaNganh, javax.swing.GroupLayout.PREFERRED_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.PREFERRED_SIZE))
                 .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.UNRELATED)
                 .addGroup(jPanel1Layout.createParallelGroup(javax.swing.GroupLayout.Alignment.BASELINE)
-                    .addComponent(btnChonTenNganh)
-                    .addComponent(txtTenNganh, javax.swing.GroupLayout.PREFERRED_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.PREFERRED_SIZE)
-                    .addComponent(jLabel1))
+                    .addComponent(jLabel1)
+                    .addComponent(txtTenNganh, javax.swing.GroupLayout.PREFERRED_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.PREFERRED_SIZE))
                 .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.UNRELATED)
                 .addGroup(jPanel1Layout.createParallelGroup(javax.swing.GroupLayout.Alignment.BASELINE)
                     .addComponent(jLabel3)
-                    .addComponent(txtToHopGoc, javax.swing.GroupLayout.PREFERRED_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.PREFERRED_SIZE)
-                    .addComponent(btnChonToHopGoc))
+                    .addComponent(btnChonToHopGoc)
+                    .addComponent(txtToHopGoc, javax.swing.GroupLayout.PREFERRED_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.PREFERRED_SIZE))
                 .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.UNRELATED)
                 .addGroup(jPanel1Layout.createParallelGroup(javax.swing.GroupLayout.Alignment.BASELINE)
-                    .addComponent(txtChiTieu, javax.swing.GroupLayout.PREFERRED_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.PREFERRED_SIZE)
-                    .addComponent(jLabel10))
+                    .addComponent(jLabel10)
+                    .addComponent(txtChiTieu, javax.swing.GroupLayout.PREFERRED_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.PREFERRED_SIZE))
                 .addGap(10, 10, 10)
                 .addGroup(jPanel1Layout.createParallelGroup(javax.swing.GroupLayout.Alignment.BASELINE)
                     .addComponent(jLabel4)
@@ -254,20 +281,22 @@ public class insertNganh extends javax.swing.JDialog {
                     .addComponent(txtDiemTrungTuyen, javax.swing.GroupLayout.PREFERRED_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.PREFERRED_SIZE))
                 .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.UNRELATED)
                 .addGroup(jPanel1Layout.createParallelGroup(javax.swing.GroupLayout.Alignment.BASELINE)
-                    .addComponent(jCheckBox1)
+                    .addComponent(chkTuyenThang)
                     .addComponent(txtTuyenThang, javax.swing.GroupLayout.PREFERRED_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.PREFERRED_SIZE))
                 .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.UNRELATED)
                 .addGroup(jPanel1Layout.createParallelGroup(javax.swing.GroupLayout.Alignment.BASELINE)
-                    .addComponent(jCheckBox2)
+                    .addComponent(chkThiDGNL)
                     .addComponent(txtThiDGNL, javax.swing.GroupLayout.PREFERRED_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.PREFERRED_SIZE))
                 .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.UNRELATED)
                 .addGroup(jPanel1Layout.createParallelGroup(javax.swing.GroupLayout.Alignment.BASELINE)
-                    .addComponent(jCheckBox3)
+                    .addComponent(chkThiTHPT)
                     .addComponent(txtThiTHPT, javax.swing.GroupLayout.PREFERRED_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.PREFERRED_SIZE))
                 .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.UNRELATED)
-                .addGroup(jPanel1Layout.createParallelGroup(javax.swing.GroupLayout.Alignment.BASELINE)
+                .addGroup(jPanel1Layout.createParallelGroup(javax.swing.GroupLayout.Alignment.TRAILING)
                     .addComponent(txtThiVSAT, javax.swing.GroupLayout.PREFERRED_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.PREFERRED_SIZE)
-                    .addComponent(jCheckBox4))
+                    .addGroup(jPanel1Layout.createSequentialGroup()
+                        .addComponent(chkThiVSAT, javax.swing.GroupLayout.PREFERRED_SIZE, 24, javax.swing.GroupLayout.PREFERRED_SIZE)
+                        .addGap(2, 2, 2)))
                 .addContainerGap(20, Short.MAX_VALUE))
         );
 
@@ -376,7 +405,7 @@ public class insertNganh extends javax.swing.JDialog {
         nganhMoi.setManganh(txtMaNganh.getText().trim());
         nganhMoi.setTennganh(txtTenNganh.getText().trim());
         nganhMoi.setN_tohopgoc(txtToHopGoc.getText().trim());
-        nganhMoi.setN_chitieu(Integer.parseInt(txtChiTieu.getText().trim()));
+        nganhMoi.setN_chitieu(Integer.parseInt(txtChiTieu.getText())); // Lấy con số tổng tự động
         
         // Móc điểm sàn và điểm chuẩn (nếu để trống thì bỏ qua)
         try {
@@ -385,23 +414,23 @@ public class insertNganh extends javax.swing.JDialog {
         } catch(Exception e){}
         
         // Ghi nhận các phương thức tuyển sinh
-        if (jCheckBox1.isSelected()) {
+        if (chkTuyenThang.isSelected()) {
             nganhMoi.setN_tuyenthang("1");
             nganhMoi.setSl_xtt(Integer.parseInt(txtTuyenThang.getText().trim()));
         }
         
-        if (jCheckBox2.isSelected()) {
+        if (chkThiDGNL.isSelected()) {
             nganhMoi.setN_dgnl("1");
             nganhMoi.setSl_dgnl(Integer.parseInt(txtThiDGNL.getText().trim()));
         }
         
-        if (jCheckBox3.isSelected()) {
+        if (chkThiTHPT.isSelected()) {
             nganhMoi.setN_thpt("1");
             // Kho lưu trữ của bạn để cột này dạng chữ, nên cứ nhét thẳng nội dung vào
             nganhMoi.setSl_thpt(txtThiTHPT.getText().trim()); 
         }
         
-        if (jCheckBox4.isSelected()) {
+        if (chkThiVSAT.isSelected()) {
             nganhMoi.setN_vsat("1");
             nganhMoi.setSl_vsat(Integer.parseInt(txtThiVSAT.getText().trim()));
         }
@@ -412,16 +441,154 @@ public class insertNganh extends javax.swing.JDialog {
         dispose();
     }//GEN-LAST:event_btnThemActionPerformed
 
-    private void txtTenNganhActionPerformed(java.awt.event.ActionEvent evt) {}
-    private void btnChonMaNganhActionPerformed(java.awt.event.ActionEvent evt) {}
-    private void txtMaNganhActionPerformed(java.awt.event.ActionEvent evt) {}
-    private void btnChonTenNganhActionPerformed(java.awt.event.ActionEvent evt) {}
-    private void txtToHopGocActionPerformed(java.awt.event.ActionEvent evt) {}
-    private void btnChonToHopGocActionPerformed(java.awt.event.ActionEvent evt) {}
-    private void txtChiTieuActionPerformed(java.awt.event.ActionEvent evt) {}
-    private void jCheckBox1ActionPerformed(java.awt.event.ActionEvent evt) {}
-    private void jCheckBox4ActionPerformed(java.awt.event.ActionEvent evt) {}
+    private void txtMaNganhActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_txtMaNganhActionPerformed
+        // TODO add your handling code here:
+    }//GEN-LAST:event_txtMaNganhActionPerformed
 
+    private void txtTenNganhActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_txtTenNganhActionPerformed
+        // TODO add your handling code here:
+        // 1. Triệu hồi Dialog chọn Tổ hợp (re-use lại cái bạn đã có)
+        JFrame topFrame = (JFrame) SwingUtilities.getWindowAncestor(this);
+        SELECT_GUI.selectToHop dialog = new SELECT_GUI.selectToHop(topFrame, true);
+        dialog.setVisible(true);
+
+        // 2. Nếu người dùng chọn xong và bấm xác nhận
+        if (dialog.getXacNhan()) {
+            Entity.toHopETT selectedToHop = dialog.getToHopETT();
+            // 3. Đổ mã tổ hợp vào ô text
+            txtToHopGoc.setText(selectedToHop.getMatohop());
+        }
+    }//GEN-LAST:event_txtTenNganhActionPerformed
+
+    private void btnChonToHopGocActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_btnChonToHopGocActionPerformed
+        // TODO add your handling code here:
+        // 1. Triệu hồi Dialog chọn Tổ hợp (re-use lại cái bạn đã có)
+        JFrame topFrame = (JFrame) SwingUtilities.getWindowAncestor(this);
+        SELECT_GUI.selectToHop dialog = new SELECT_GUI.selectToHop(topFrame, true);
+        dialog.setVisible(true);
+
+        // 2. Nếu người dùng chọn xong và bấm xác nhận
+        if (dialog.getXacNhan()) {
+            Entity.toHopETT selectedToHop = dialog.getToHopETT();
+            // 3. Đổ mã tổ hợp vào ô text
+            txtToHopGoc.setText(selectedToHop.getMatohop());
+        }
+    }//GEN-LAST:event_btnChonToHopGocActionPerformed
+
+    private void txtToHopGocActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_txtToHopGocActionPerformed
+        // TODO add your handling code here:
+        // 1. Khởi tạo Dialog chọn Tổ hợp (Dùng lại cái bạn đã làm cho Nguyện vọng)
+        JFrame topFrame = (JFrame) SwingUtilities.getWindowAncestor(this);
+        SELECT_GUI.selectToHop dialog = new SELECT_GUI.selectToHop(topFrame, true);
+        dialog.setVisible(true);
+
+        // 2. Nếu người dùng chọn xong và bấm nút "Xác nhận" trên Dialog
+        if (dialog.getXacNhan()) {
+        Entity.toHopETT selectedToHop = dialog.getToHopETT();
+        
+            // 3. Đổ Mã tổ hợp vào ô Textbox
+            txtToHopGoc.setText(selectedToHop.getMatohop());
+        
+            // 4. Hiển thị tên các môn 
+            String chiTietMon = "Môn thi: " + selectedToHop.getMon1() + " - " 
+                            + selectedToHop.getMon2() + " - " 
+                            + selectedToHop.getMon3();
+            // Giả sử bạn có 1 cái JLabel tên là lblGhiChuToHop bên cạnh
+            // lblGhiChuToHop.setText(chiTietMon); 
+        }
+    }//GEN-LAST:event_txtToHopGocActionPerformed
+
+    private void txtDiemTrungTuyenActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_txtDiemTrungTuyenActionPerformed
+        // TODO add your handling code here:
+    }//GEN-LAST:event_txtDiemTrungTuyenActionPerformed
+
+    private void txtDiemSanActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_txtDiemSanActionPerformed
+        // TODO add your handling code here:
+    }//GEN-LAST:event_txtDiemSanActionPerformed
+
+    private void txtChiTieuActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_txtChiTieuActionPerformed
+        // TODO add your handling code here:
+    }//GEN-LAST:event_txtChiTieuActionPerformed
+
+    private void txtTuyenThangActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_txtTuyenThangActionPerformed
+        // TODO add your handling code here:
+    }//GEN-LAST:event_txtTuyenThangActionPerformed
+
+    private void txtThiDGNLActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_txtThiDGNLActionPerformed
+        // TODO add your handling code here:
+    }//GEN-LAST:event_txtThiDGNLActionPerformed
+
+    private void txtThiTHPTActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_txtThiTHPTActionPerformed
+        // TODO add your handling code here:
+    }//GEN-LAST:event_txtThiTHPTActionPerformed
+
+    private void txtThiVSATActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_txtThiVSATActionPerformed
+        // TODO add your handling code here:
+    }//GEN-LAST:event_txtThiVSATActionPerformed
+
+    private void chkTuyenThangActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_chkTuyenThangActionPerformed
+        // TODO add your handling code here:
+        boolean isSelected = chkTuyenThang.isSelected();
+        txtTuyenThang.setEnabled(isSelected);
+        txtTuyenThang.setEditable(isSelected);
+        if (!isSelected) {
+            txtTuyenThang.setText("0"); // Trả về 0 khi bỏ chọn
+        }
+        tuDongTinhTong(); // Tính lại tổng ngay lập tức
+    }//GEN-LAST:event_chkTuyenThangActionPerformed
+
+    private void chkThiDGNLActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_chkThiDGNLActionPerformed
+        // TODO add your handling code here:
+        boolean isSelected = chkThiDGNL.isSelected();
+        txtThiDGNL.setEnabled(isSelected);
+        txtThiDGNL.setEditable(isSelected);
+        if (!isSelected) {
+            txtThiDGNL.setText("0"); // Trả về 0 khi bỏ chọn
+        }
+        tuDongTinhTong(); // Tính lại tổng ngay lập tức
+    }//GEN-LAST:event_chkThiDGNLActionPerformed
+
+    private void chkThiVSATActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_chkThiVSATActionPerformed
+        // TODO add your handling code here:
+        boolean isSelected = chkThiVSAT.isSelected();
+        txtThiVSAT.setEnabled(isSelected);
+        txtThiVSAT.setEditable(isSelected);
+        if (!isSelected) {
+            txtThiVSAT.setText("0"); // Trả về 0 khi bỏ chọn
+        }
+        tuDongTinhTong(); // Tính lại tổng ngay lập tức
+    }//GEN-LAST:event_chkThiVSATActionPerformed
+
+    private void txtTuyenThangKeyReleased(java.awt.event.KeyEvent evt) {//GEN-FIRST:event_txtTuyenThangKeyReleased
+        // TODO add your handling code here:
+        tuDongTinhTong();
+    }//GEN-LAST:event_txtTuyenThangKeyReleased
+
+    private void txtThiDGNLKeyReleased(java.awt.event.KeyEvent evt) {//GEN-FIRST:event_txtThiDGNLKeyReleased
+        // TODO add your handling code here:
+        tuDongTinhTong();
+    }//GEN-LAST:event_txtThiDGNLKeyReleased
+
+    private void txtThiTHPTKeyReleased(java.awt.event.KeyEvent evt) {//GEN-FIRST:event_txtThiTHPTKeyReleased
+        // TODO add your handling code here:
+        tuDongTinhTong();
+    }//GEN-LAST:event_txtThiTHPTKeyReleased
+
+    private void txtThiVSATKeyReleased(java.awt.event.KeyEvent evt) {//GEN-FIRST:event_txtThiVSATKeyReleased
+        // TODO add your handling code here:
+        tuDongTinhTong();
+    }//GEN-LAST:event_txtThiVSATKeyReleased
+
+    private void chkThiTHPTActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_chkThiTHPTActionPerformed
+        // TODO add your handling code here:
+        boolean isSelected = chkThiTHPT.isSelected();
+        txtThiTHPT.setEnabled(isSelected);
+        txtThiTHPT.setEditable(isSelected);
+        if (!isSelected) {
+            txtThiTHPT.setText("0"); // Trả về 0 khi bỏ chọn
+        }
+        tuDongTinhTong(); // Tính lại tổng ngay lập tức
+    }//GEN-LAST:event_chkThiTHPTActionPerformed
 
     // CÁC HÀM XỬ LÝ LOGIC PHỤ TRỢ
 
@@ -454,25 +621,51 @@ public class insertNganh extends javax.swing.JDialog {
             return false; 
         }
         
-        if (jCheckBox1.isSelected()) {
+        if (chkTuyenThang.isSelected()) {
             try { Integer.parseInt(txtTuyenThang.getText().trim()); } 
             catch (Exception e) { JOptionPane.showMessageDialog(this, "Chỉ tiêu Tuyển thẳng phải là con số"); return false; }
         }
-        if (jCheckBox2.isSelected()) {
+        if (chkThiDGNL.isSelected()) {
             try { Integer.parseInt(txtThiDGNL.getText().trim()); } 
             catch (Exception e) { JOptionPane.showMessageDialog(this, "Chỉ tiêu ĐGNL phải là con số"); return false; }
         }
-        if (jCheckBox3.isSelected()) {
+        if (chkThiTHPT.isSelected()) {
             try { Integer.parseInt(txtThiTHPT.getText().trim()); } 
             catch (Exception e) { JOptionPane.showMessageDialog(this, "Chỉ tiêu THPT phải là con số"); return false; }
         }
-        if (jCheckBox4.isSelected()) {
+        if (chkThiVSAT.isSelected()) {
             try { Integer.parseInt(txtThiVSAT.getText().trim()); } 
             catch (Exception e) { JOptionPane.showMessageDialog(this, "Chỉ tiêu V-SAT phải là con số"); return false; }
         }
         
         return true;
     }
+
+    private void tuDongTinhTong() {
+        int xttt = 0, dgnl = 0, vsat = 0, thpt = 0;
+    
+        try {
+            // Chỉ lấy giá trị nếu ô đó đang được chọn (Enabled)
+            if (txtTuyenThang.isEnabled() && !txtTuyenThang.getText().trim().isEmpty()) {
+                xttt = Integer.parseInt(txtTuyenThang.getText().trim());
+            }
+            if (txtThiDGNL.isEnabled() && !txtThiDGNL.getText().trim().isEmpty()) {
+                dgnl = Integer.parseInt(txtThiDGNL.getText().trim());
+            }
+            if (txtThiVSAT.isEnabled() && !txtThiVSAT.getText().trim().isEmpty()) {
+                vsat = Integer.parseInt(txtThiVSAT.getText().trim());
+            }
+            if (txtThiTHPT.isEnabled() && !txtThiTHPT.getText().trim().isEmpty()) {
+                thpt = Integer.parseInt(txtThiTHPT.getText().trim());
+            }
+        } catch (NumberFormatException e) {
+            // Nếu user gõ chữ, ta bỏ qua không cộng phần tử đó
+        }
+
+    // Thực hiện công thức: n_chitieu = sl_xttt + sl_dgnl + sl_vsat + sl_thpt
+    int tong = xttt + dgnl + vsat + thpt;
+    txtChiTieu.setText(String.valueOf(tong));
+}
     
     public boolean xacNhanThem() {
         return xacNhan;
@@ -481,17 +674,16 @@ public class insertNganh extends javax.swing.JDialog {
     public nganhETT getNganh() {
         return nganh;
     }
+    
 
     // Variables declaration - do not modify//GEN-BEGIN:variables
-    private javax.swing.JButton btnChonMaNganh;
-    private javax.swing.JButton btnChonTenNganh;
     private javax.swing.JButton btnChonToHopGoc;
     private javax.swing.JButton btnThem;
     private javax.swing.JButton btnThoat;
-    private javax.swing.JCheckBox jCheckBox1;
-    private javax.swing.JCheckBox jCheckBox2;
-    private javax.swing.JCheckBox jCheckBox3;
-    private javax.swing.JCheckBox jCheckBox4;
+    private javax.swing.JCheckBox chkThiDGNL;
+    private javax.swing.JCheckBox chkThiTHPT;
+    private javax.swing.JCheckBox chkThiVSAT;
+    private javax.swing.JCheckBox chkTuyenThang;
     private javax.swing.JLabel jLabel1;
     private javax.swing.JLabel jLabel10;
     private javax.swing.JLabel jLabel11;
