@@ -62,7 +62,7 @@ public class nganhETT {
     private Integer sl_vsat;
 
     @Column(name = "sl_thpt")
-    private String sl_thpt;
+    private Integer sl_thpt;
     
     @Column(name = "diemchuan_thpt")
     private Double diemchuan_thpt;
@@ -133,7 +133,7 @@ public class nganhETT {
         return sl_vsat;
     }
 
-    public String getSl_thpt() {
+    public Integer getSl_thpt() {
         return sl_thpt;
     }
 
@@ -193,7 +193,7 @@ public class nganhETT {
         this.sl_vsat = sl_vsat;
     }
 
-    public void setSl_thpt(String sl_thpt) {
+    public void setSl_thpt(Integer sl_thpt) {
         this.sl_thpt = sl_thpt;
     }
 

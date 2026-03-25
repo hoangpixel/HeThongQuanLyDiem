@@ -21,6 +21,7 @@ import FUNC_GUI.deleteNguyenVong;
 import FUNC_GUI.updateNguyenVong;
 import java.util.Collections;
 import javax.swing.JOptionPane;
+import CAL.*;
 
 public class nguyenVongXetTuyenGUI extends BaseTableGUI {
 
@@ -292,31 +293,67 @@ private void hienThiDialogSua() {
             }
         }
     }
-    
-    private void thucHienRefresh()
-    {
-//        busNguyenVong.ds = null; 
-//        fullDataList.clear();
-//        headerTable();
-//        loadDataToTable();
-//        table.getColumnModel().getColumn(9).setMinWidth(0);
-//        table.getColumnModel().getColumn(9).setMaxWidth(0);
-//        table.getColumnModel().getColumn(9).setWidth(0);
-        int confirm = javax.swing.JOptionPane.showConfirmDialog(this, 
-        "CẢNH BÁO: Hành động này sẽ khóa sổ và xét duyệt toàn bộ nguyện vọng trên hệ thống.\nBạn có chắc chắn muốn tiến hành xét tuyển?", 
+     
+private void thucHienRefresh() {
+    int confirm = javax.swing.JOptionPane.showConfirmDialog(this, 
+        "CẢNH BÁO: Hành động này sẽ khóa sổ và xét duyệt toàn bộ nguyện vọng trên hệ thống.\n" +
+        "Hệ thống sẽ tự động quy đổi điểm V-SAT/ĐGNL và tính điểm ưu tiên.\n" +
+        "Bạn có chắc chắn muốn tiến hành xét tuyển?", 
         "Xác nhận Chốt Sổ", 
         javax.swing.JOptionPane.YES_NO_OPTION, 
         javax.swing.JOptionPane.WARNING_MESSAGE);
         
     if (confirm == javax.swing.JOptionPane.YES_OPTION) {
-        // 1. Gọi trùm cuối ra tay
-        busNguyenVong.sapXepKetQuaTuDong();
+        // BƯỚC 1: QUY ĐỔI VÀ CHUẨN HÓA ĐIỂM CHO TỪNG NGUYỆN VỌNG
+        busNguyenVong.napDiemAoChoDanhSach();
+// 1. QUY ĐỔI VÀ CHUẨN HÓA ĐIỂM
+        for (nguyenVongXetTuyenETT nv : busNguyenVong.ds) {
+            double diemChuanHoa = 0;
+            String phuongThuc = nv.getTtPhuongThuc();
+
+            // Lấy hệ số môn học
+            double w1 = nv.getHsMon1();
+            double w2 = nv.getHsMon2();
+            double w3 = nv.getHsMon3();
+            double W = w1 + w2 + w3;
+
+            if (phuongThuc.equals("Đánh giá V-SAT")) {
+                double d1 = CAL.AdmissionsConverter.quyDoiVsat(nv.getTenMon1(), nv.getDiemMon1());
+                double d2 = CAL.AdmissionsConverter.quyDoiVsat(nv.getTenMon2(), nv.getDiemMon2());
+                double d3 = CAL.AdmissionsConverter.quyDoiVsat(nv.getTenMon3(), nv.getDiemMon3());
+                // CÔNG THỨC MỚI (Mục 3.1 PDF)
+                diemChuanHoa = ((d1*w1 + d2*w2 + d3*w3) / W) * 3.0;
+            }
+            else if (phuongThuc.equals("ĐGNL HCM")) {
+                diemChuanHoa = (nv.getDiemMon1() / 1200.0) * 30.0;
+            }
+            else if (phuongThuc.equals("Xét tuyển thẳng")) {
+                diemChuanHoa = 30.0; // Auto 30 điểm để chắc chắn đậu top đầu
+            }
+            else {
+                // THPT cũng áp dụng nhân hệ số luôn (Mục 3.1 PDF)
+                double d1 = nv.getDiemMon1();
+                double d2 = nv.getDiemMon2();
+                double d3 = nv.getDiemMon3();
+                diemChuanHoa = ((d1*w1 + d2*w2 + d3*w3) / W) * 3.0;
+            }
+
+            // Cộng điểm ưu tiên (Không quá 3 điểm)
+            double tongCuoi = diemChuanHoa + nv.getDiemUuTien();
+            tongCuoi = Math.min(30.0, Math.round(tongCuoi * 100.0) / 100.0);
+            
+            nv.setDiemXetTuyen(tongCuoi);
+        }
+
+        // BƯỚC 2: CHẠY THUẬT TOÁN DOMINO (Xếp hạng theo chỉ tiêu)
+        // Sau bước này, trạng thái "Đã đậu"/"Đã trượt" sẽ được cập nhật vào danh sách
+        busNguyenVong.sapXepKetQuaTheoChiTieu();
+        busNguyenVong.capNhatDiemChuanTuDong();
+        // BƯỚC 3: CẬP NHẬT LÊN GIAO DIỆN
+        busNguyenVong.ds = null; // Xóa cache cũ
+        loadDataToTable(); // Tải lại bảng với màu sắc và kết quả mới
         
-        // 2. Refresh lại bảng để cập nhật màu sắc Đậu/Trượt
-        busNguyenVong.ds = null;
-        loadDataToTable(); 
-        
-        javax.swing.JOptionPane.showMessageDialog(this, "Tất cả nguyện vọng đã được xét duyệt thành công!");
+        javax.swing.JOptionPane.showMessageDialog(this, "Hệ thống đã quy đổi điểm và xét duyệt thành công!");
     }
-    }
+}
 }

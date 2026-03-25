@@ -20,76 +20,32 @@ public class updateNganh extends javax.swing.JDialog {
     BUS.nganhBUS bus = new BUS.nganhBUS();
     
     public updateNganh(java.awt.Frame parent, boolean modal, nganhETT data) {
-        super(parent, modal);
-        initComponents();
-        this.nganh = data; // Cất dữ liệu vào túi để dùng
-        setLocationRelativeTo(parent);
-        
-        // 1. Đổ thông tin cũ vào các ô (Dùng đúng biến data đã nhận ở trên)
-        txtMaNganh.setText(data.getManganh());
-        txtMaNganh.setEditable(false); // Mã ngành là khóa chính, không cho sửa
-
-        txtTenNganh.setText(data.getTennganh());
-        txtToHopGoc.setText(data.getN_tohopgoc());
-        txtChiTieu.setText(data.getN_chitieu() != null ? String.valueOf(data.getN_chitieu()) : "0");
-
-        txtDiemSan.setText(data.getN_diemsan() != null ? String.valueOf(data.getN_diemsan()) : "");
-        txtDiemTrungTuyen.setText(data.getN_diemtrungtuyen() != null ? String.valueOf(data.getN_diemtrungtuyen()) : "");
-        
-        // 2. Thiết lập trạng thái ban đầu cho các ô tích
-        setupMethod(chkTuyenThang, txtTuyenThang, data.getN_tuyenthang(), data.getSl_xtt());
-        setupMethod(chkThiDGNL, txtThiDGNL, data.getN_dgnl(), data.getSl_dgnl());
-        setupMethod(chkThiTHPT, txtThiTHPT, data.getN_thpt(), data.getSl_thpt());
-        setupMethod(chkThiVSAT, txtThiVSAT, data.getN_vsat(), data.getSl_vsat());
-
-        // 3. Công tắc thông minh: tích vào ô vuông thì mới mở ô nhập số
-        chkTuyenThang.addActionListener(evt -> {
-            boolean isSelected = chkTuyenThang.isSelected();
-            txtTuyenThang.setEnabled(isSelected);
-            txtTuyenThang.setEditable(isSelected);
-        });
-        chkThiDGNL.addActionListener(evt -> {
-            boolean isSelected = chkThiDGNL.isSelected();
-            txtThiDGNL.setEnabled(isSelected);
-            txtThiDGNL.setEditable(isSelected);
-        });
-        chkThiTHPT.addActionListener(evt -> {
-            boolean isSelected = chkThiTHPT.isSelected();
-            txtThiTHPT.setEnabled(isSelected);
-            txtThiTHPT.setEditable(isSelected);
-        });
-        chkThiVSAT.addActionListener(evt -> {
-            boolean isSelected = chkThiVSAT.isSelected();
-            txtThiVSAT.setEnabled(isSelected);
-            txtThiVSAT.setEditable(isSelected);
-        });
-
-        txtChiTieu.setEditable(false);
-        txtChiTieu.setFocusable(false);
-        txtChiTieu.setBackground(new java.awt.Color(240, 240, 240));
+    super(parent, modal);
+    initComponents();
+    this.nganh = data; // Giữ nguyên bản gốc để lấy ID và các thông tin khác
+    setLocationRelativeTo(parent);
     
-        // Gọi tính tổng ngay để hiển thị đúng con số từ Database
-        tuDongTinhTong();
-        
-    }
+    // 1. Đổ thông tin cơ bản
+    txtMaNganh.setText(data.getManganh());
+    txtMaNganh.setEditable(false);
+    txtTenNganh.setText(data.getTennganh());
+    txtToHopGoc.setText(data.getN_tohopgoc());
+    txtDiemSan.setText(data.getN_diemsan() != null ? String.valueOf(data.getN_diemsan()) : "");
+    txtDiemTrungTuyen.setText(data.getN_diemtrungtuyen() != null ? String.valueOf(data.getN_diemtrungtuyen()) : "");
 
-    private void setupMethod(javax.swing.JCheckBox cb, javax.swing.JTextField txt, String val, Object count) {
-        boolean active = "1".equals(val);
-        cb.setSelected(active);
-        txt.setEnabled(active);
-        txt.setEditable(active);
-        txt.setText(count != null ? String.valueOf(count) : "0");
+    // 2. Cấu hình ô Tổng chỉ tiêu
+    txtChiTieu.setEditable(false);
+    txtChiTieu.setFocusable(false);
+    txtChiTieu.setBackground(new java.awt.Color(240, 240, 240));
 
-        txt.setBackground(active ? java.awt.Color.WHITE : new java.awt.Color(240, 240, 240));
+    // 3. Khởi tạo các phương thức (Chỉ cần gọi 1 hàm duy nhất này)
+    thietLapOChon(chkTuyenThang, txtTuyenThang, data.getN_tuyenthang(), data.getSl_xtt());
+    thietLapOChon(chkThiDGNL, txtThiDGNL, data.getN_dgnl(), data.getSl_dgnl());
+    thietLapOChon(chkThiTHPT, txtThiTHPT, data.getN_thpt(), data.getSl_thpt());
+    thietLapOChon(chkThiVSAT, txtThiVSAT, data.getN_vsat(), data.getSl_vsat());
 
-        cb.addActionListener(e -> {
-            boolean s = cb.isSelected();
-            txt.setEnabled(s);
-            txt.setEditable(s);
-            if (!s) txt.setText("0"); 
-            txt.setBackground(s ? java.awt.Color.WHITE : new java.awt.Color(240, 240, 240));
-            tuDongTinhTong(); 
-        });
+    // 4. Tính toán tổng lần đầu tiên khi mở form
+    tuDongTinhTong();
     }
 
     @SuppressWarnings("unchecked")
@@ -435,8 +391,8 @@ public class updateNganh extends javax.swing.JDialog {
         nganh.setN_dgnl(chkThiDGNL.isSelected() ? "1" : "0");
         nganh.setSl_dgnl(chkThiDGNL.isSelected() ? Integer.parseInt(txtThiDGNL.getText().trim()) : 0);
 
-        nganh.setN_thpt(chkThiTHPT.isSelected() ? "1" : "0");
-        nganh.setSl_thpt(chkThiTHPT.isSelected() ? txtThiTHPT.getText().trim() : "0");
+        this.nganh.setN_thpt(chkThiTHPT.isSelected() ? "1" : "0");
+        this.nganh.setSl_thpt(chkThiTHPT.isSelected() ? Integer.parseInt(txtThiTHPT.getText().trim()) : 0);
 
         nganh.setN_vsat(chkThiVSAT.isSelected() ? "1" : "0");
         nganh.setSl_vsat(chkThiVSAT.isSelected() ? Integer.parseInt(txtThiVSAT.getText().trim()) : 0);
@@ -616,6 +572,25 @@ public class updateNganh extends javax.swing.JDialog {
         } catch (NumberFormatException e) {
             return 0;
         }
+    }
+
+    private void thietLapOChon(javax.swing.JCheckBox cb, javax.swing.JTextField txt, String n_val, Object sl_val) {
+        boolean active = "1".equals(n_val);
+        cb.setSelected(active);
+        txt.setEnabled(active);
+        txt.setEditable(active);
+        txt.setText(sl_val != null ? String.valueOf(sl_val) : "0");
+        txt.setBackground(active ? java.awt.Color.WHITE : new java.awt.Color(240, 240, 240));
+
+        // Gắn công tắc thông minh ngay tại đây
+        cb.addActionListener(e -> {
+            boolean s = cb.isSelected();
+            txt.setEnabled(s);
+            txt.setEditable(s);
+            if (!s) txt.setText("0"); // Bỏ tích thì reset về 0
+            txt.setBackground(s ? java.awt.Color.WHITE : new java.awt.Color(240, 240, 240));
+            tuDongTinhTong(); // Tự động tính lại tổng chỉ tiêu
+        });
     }
     
     public boolean xacNhanThem() {

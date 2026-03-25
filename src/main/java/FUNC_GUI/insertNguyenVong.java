@@ -9,6 +9,7 @@ import Entity.toHopETT;
 import Entity.diemCongETT;
 import Entity.diemThiETT;
 import BUS.nguyenVongXetTuyenBUS;
+import BUS.nganhToHopBUS;
 import BUS.diemThiBUS;
 import BUS.diemCongBUS;
 import Entity.nganhETT;
@@ -127,7 +128,7 @@ public class insertNguyenVong extends javax.swing.JDialog {
         jLabel5.setFont(new java.awt.Font("Segoe UI", 0, 14)); // NOI18N
         jLabel5.setText("Phương thức : ");
 
-        cboPT.setModel(new javax.swing.DefaultComboBoxModel<>(new String[] { "Xét THPT", "Xét Học Bạ", "ĐGNL HCM", "Tuyển Thẳng" }));
+        cboPT.setModel(new javax.swing.DefaultComboBoxModel<>(new String[] { "Xét THPT", "ĐGNL HCM", "Đánh giá V-SAT", "Tuyển Thẳng" }));
         cboPT.addActionListener(this::cboPTActionPerformed);
 
         jLabel6.setFont(new java.awt.Font("Segoe UI", 0, 14)); // NOI18N
@@ -340,11 +341,18 @@ public class insertNguyenVong extends javax.swing.JDialog {
         double diemTHXT = Double.valueOf(txtDiemTHXT.getText().trim());
         double diemUTQD = Double.valueOf(txtDiemUuTien.getText().trim());
         double diemCong = Double.valueOf(txtDiemCong.getText().trim());
-        double diemXetTuyen = diemTHXT + diemUTQD + diemCong;
         String ketQuaNV = "Chờ xét";
         String key = cccd + "_" + (int) txtThuTuNV.getValue();
         String phuongThuc = cboPT.getSelectedItem().toString();
         
+        double doLechDiem = 0.0;
+        
+        nganhToHopBUS busNganhToHop = new nganhToHopBUS();
+        if(phuongThuc.equals("Xét THPT"))
+        {
+            doLechDiem = busNganhToHop.layDoLechDiem(maNganh, toHopMon);
+        }
+        double diemXetTuyen = diemTHXT + diemUTQD + diemCong + doLechDiem;
         nguyenVongXetTuyenETT ct = new nguyenVongXetTuyenETT();
         ct.setNnCccd(cccd);
         ct.setNvMaNganh(maNganh);
@@ -405,6 +413,17 @@ public class insertNguyenVong extends javax.swing.JDialog {
 
     private void cboPTActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_cboPTActionPerformed
         // TODO add your handling code here:
+        String phuongThuc = cboPT.getSelectedItem().toString();
+        
+        if (phuongThuc.equals("Xét THPT") || phuongThuc.equals("Đánh giá V-SAT")) {
+            btnChonToHop.setEnabled(true);
+            txtToHopMon.setText("");
+            toHopMon = "";
+        } else {
+            btnChonToHop.setEnabled(false);
+            txtToHopMon.setText("Không");
+            toHopMon = "Không";
+        }
         capNhatDiemTuDong();
     }//GEN-LAST:event_cboPTActionPerformed
 
@@ -435,20 +454,40 @@ public class insertNguyenVong extends javax.swing.JDialog {
         String phuongThuc = cboPT.getSelectedItem().toString();
 try {
             // --- 1. XỬ LÝ ĐIỂM THI (THXT) ---
+// --- 1. XỬ LÝ ĐIỂM GỐC TÙY THEO PHƯƠNG THỨC ---
             diemThiBUS dtBus = new diemThiBUS();
             diemThiETT diemThi = dtBus.layDiemTheoCCCD(cccd);
 
-            if (diemThi != null && toHopMonDaChon != null) {
-                String mon1 = toHopMonDaChon.getMon1(); 
-                String mon2 = toHopMonDaChon.getMon2();
-                String mon3 = toHopMonDaChon.getMon3();
+            if (diemThi != null) {
+                double diemGoc = 0.0;
 
-                double diem1 = layDiemTheoMaMon(diemThi, mon1);
-                double diem2 = layDiemTheoMaMon(diemThi, mon2);
-                double diem3 = layDiemTheoMaMon(diemThi, mon3);
+                // RẼ NHÁNH 1: Nếu là xét THPT -> Cộng 3 môn
+                if (phuongThuc.equals("Xét THPT") && toHopMonDaChon != null) {
+                    String mon1 = toHopMonDaChon.getMon1(); 
+                    String mon2 = toHopMonDaChon.getMon2();
+                    String mon3 = toHopMonDaChon.getMon3();
 
-                double tongDiem = diem1 + diem2 + diem3;
-                txtDiemTHXT.setText(String.valueOf(tongDiem));
+                    double diem1 = layDiemTheoMaMon(diemThi, mon1);
+                    double diem2 = layDiemTheoMaMon(diemThi, mon2);
+                    double diem3 = layDiemTheoMaMon(diemThi, mon3);
+                    
+                    diemGoc = diem1 + diem2 + diem3;
+                } 
+                // RẼ NHÁNH 2: Nếu là ĐGNL HCM -> Lôi đúng cột NL1 ra
+                else if (phuongThuc.equals("ĐGNL HCM")) {
+                    diemGoc = diemThi.getNl1()!= null ? diemThi.getNl1() : 0.0;
+                }
+                // RẼ NHÁNH 3: V-SAT hoặc Tuyển thẳng (Tùy theo cột trong DB của bạn)
+                else if (phuongThuc.equals("Đánh giá V-SAT")) {
+                    // Ví dụ bạn lưu điểm VSAT ở cột NK1, thay đổi cho khớp Entity của bạn nha
+                    diemGoc = diemThi.getNk1()!= null ? diemThi.getNk1() : 0.0; 
+                }
+                else if (phuongThuc.equals("Xét tuyển thẳng")) {
+                    diemGoc = 0.0; // Hoặc tùy quy định của trường
+                }
+
+                // Gắn điểm gốc vào Form và Khóa lại
+                txtDiemTHXT.setText(String.valueOf(diemGoc));
                 txtDiemTHXT.setEditable(false); 
             }
 
@@ -475,23 +514,42 @@ try {
         }
     }
 
-    // =====================================================================
-    // HÀM PHỤ TRỢ: Lấy điểm chính xác dựa vào mã môn (TO, LI, HO, VA...)
+// =====================================================================
+    // HÀM PHỤ TRỢ: Lấy điểm chính xác dựa vào mã môn (Phiên bản Full Database)
     // =====================================================================
     private double layDiemTheoMaMon(diemThiETT dt, String maMon) {
+        // Kiểm tra an toàn: Nếu mã môn rỗng thì trả về 0 luôn
         if (maMon == null || maMon.trim().isEmpty()) return 0.0;
         
         switch (maMon.toUpperCase()) {
-            case "TO": return dt.getTo();     // Toán
-            case "LI": return dt.getLi();     // Lý
-            case "HO": return dt.getHo();     // Hóa
-            case "SI": return dt.getSi();     // Sinh
-            case "VA": return dt.getVa();     // Văn
-            case "SU": return dt.getSu();     // Sử
-            case "DI": return dt.getDi();     // Địa
-            case "N1": return dt.getN1Thi();  // Tiếng Anh
-            // Thêm các môn khác (Năng khiếu, ĐGNL) tương ứng với các cột trong DB của bạn
-            default: return 0.0;
+            // --- 1. CÁC MÔN KHOA HỌC TỰ NHIÊN & XÃ HỘI ---
+            case "TO": return dt.getTo() != null ? dt.getTo() : 0.0;      // Toán
+            case "LI": return dt.getLi() != null ? dt.getLi() : 0.0;      // Lý
+            case "HO": return dt.getHo() != null ? dt.getHo() : 0.0;      // Hóa
+            case "SI": return dt.getSi() != null ? dt.getSi() : 0.0;      // Sinh
+            case "VA": return dt.getVa() != null ? dt.getVa() : 0.0;      // Văn
+            case "SU": return dt.getSu() != null ? dt.getSu() : 0.0;      // Sử
+            case "DI": return dt.getDi() != null ? dt.getDi() : 0.0;      // Địa
+            
+            // --- 2. NGOẠI NGỮ (Tự động lấy điểm cao nhất giữa Thi và Quy đổi CC) ---
+            case "N1": 
+                double diemThiTA = dt.getN1Thi() != null ? dt.getN1Thi() : 0.0;
+                double diemQuyDoiTA = dt.getN1Cc() != null ? dt.getN1Cc() : 0.0;
+                return Math.max(diemThiTA, diemQuyDoiTA);
+                
+            // --- 3. CÁC MÔN CHƯƠNG TRÌNH MỚI 2018 ---
+            case "KTPL": return dt.getKtpl() != null ? dt.getKtpl() : 0.0; // Kinh tế Pháp luật
+            case "TI": return dt.getTi() != null ? dt.getTi() : 0.0;       // Tin học
+            case "CNCN": return dt.getCncn() != null ? dt.getCncn() : 0.0; // Công nghệ Công nghiệp
+            case "CNNN": return dt.getCnnn() != null ? dt.getCnnn() : 0.0; // Công nghệ Nông nghiệp
+            
+            // --- 4. CÁC MÔN NĂNG KHIẾU & ĐÁNH GIÁ NĂNG LỰC ---
+            case "NK1": return dt.getNk1() != null ? dt.getNk1() : 0.0;    // Năng khiếu 1
+            case "NK2": return dt.getNk2() != null ? dt.getNk2() : 0.0;    // Năng khiếu 2
+            case "NL1": return dt.getNl1() != null ? dt.getNl1() : 0.0;    // ĐGNL HCM
+            
+            // --- DEFAULT: Trả về 0 nếu mã môn không khớp ---
+            default: return 0.0; 
         }
     }
     

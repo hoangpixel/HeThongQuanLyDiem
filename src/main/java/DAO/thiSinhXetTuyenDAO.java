@@ -114,25 +114,4 @@ public class thiSinhXetTuyenDAO {
             return false;
         }
     }
-    // ================== PHÂN TRANG ==================
-    public ArrayList<thiSinhXetTuyenETT> layDanhSachPhanTrang(int page) {
-        ArrayList<thiSinhXetTuyenETT> ds = new ArrayList<>();
-
-        try (Session session = HibernateUtil.getSessionFactory().openSession()) {
-
-            List<thiSinhXetTuyenETT> listTuDB = session.createQuery(
-                    "FROM thiSinhXetTuyenETT", thiSinhXetTuyenETT.class)
-                    .setFirstResult((page - 1) * 20)
-                    .setMaxResults(20)
-                    .list();
-
-            ds = new ArrayList<>(listTuDB);
-            System.out.println("DAO size: " + listTuDB.size());
-        } catch (Exception e) {
-            e.printStackTrace();
-        }
-
-        return ds;
-    }
-   
 }

@@ -427,7 +427,7 @@ public class insertNganh extends javax.swing.JDialog {
         if (chkThiTHPT.isSelected()) {
             nganhMoi.setN_thpt("1");
             // Kho lưu trữ của bạn để cột này dạng chữ, nên cứ nhét thẳng nội dung vào
-            nganhMoi.setSl_thpt(txtThiTHPT.getText().trim()); 
+            nganhMoi.setSl_dgnl(Integer.parseInt(txtThiTHPT.getText().trim()));
         }
         
         if (chkThiVSAT.isSelected()) {
