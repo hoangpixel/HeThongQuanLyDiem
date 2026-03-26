@@ -229,7 +229,7 @@ private void hienThiDialogSua() {
                 Entity.nguyenVongXetTuyenETT nvMoi = dialog.getNguyenVong();
                 
                 // 🔥 Ép kiểu đối tượng mới thành Vector y như hàm Thêm
-                java.util.Vector rowData = new java.util.Vector();
+                Vector rowData = new java.util.Vector();
                 rowData.add(nvMoi.getIdNv());
                 rowData.add(nvMoi.getNnCccd());
                 rowData.add(nvMoi.getNvMaNganh());
