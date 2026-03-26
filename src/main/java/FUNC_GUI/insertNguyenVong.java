@@ -353,6 +353,11 @@ public class insertNguyenVong extends javax.swing.JDialog {
             doLechDiem = busNganhToHop.layDoLechDiem(maNganh, toHopMon);
         }
         double diemXetTuyen = diemTHXT + diemUTQD + diemCong + doLechDiem;
+        
+        if (!phuongThuc.equals("Xét tuyển thẳng")) {
+            diemXetTuyen = Math.min(30.0, diemXetTuyen);
+        }
+        diemXetTuyen = Math.round(diemXetTuyen * 1000.0) / 1000.0;
         nguyenVongXetTuyenETT ct = new nguyenVongXetTuyenETT();
         ct.setNnCccd(cccd);
         ct.setNvMaNganh(maNganh);

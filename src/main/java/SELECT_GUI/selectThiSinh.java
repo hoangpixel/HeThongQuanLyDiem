@@ -20,6 +20,11 @@ public class selectThiSinh extends javax.swing.JDialog {
     public boolean xacNhan = false;
     thiSinhXetTuyenBUS bus = new thiSinhXetTuyenBUS();
     DefaultTableModel model = new DefaultTableModel();
+    
+    int currentPage = 1;
+    int rowsPerPage = 20;
+    int totalPages = 1;
+
     private static final java.util.logging.Logger logger = java.util.logging.Logger.getLogger(selectThiSinh.class.getName());
 
     /**
@@ -35,31 +40,55 @@ public class selectThiSinh extends javax.swing.JDialog {
 
     public void docSQL()
     {
-        model.setRowCount(0);
         if(bus.ds == null)
         {
             bus.layDanhSach();
         }
-        for(thiSinhXetTuyenETT ct : bus.ds)
-        {
-            Vector row = new Vector();
-            row.add(ct.getIdThiSinh());
-            row.add(ct.getCccd());
-            row.add(ct.getSoBaoDanh());
-            row.add(ct.getHo());
-            row.add(ct.getTen());
-            row.add(ct.getNgaySinh());
-            row.add(ct.getDienThoai());
-            row.add(ct.getGioiTinh());
-            row.add(ct.getEmail());
-            row.add(ct.getNoiSinh());
-            row.add(ct.getDoiTuong());
-            row.add(ct.getKhuVuc());
-            model.addRow(row);
-        }
-        tbThiSinh.setModel(model);
+
+        int totalRows = bus.ds.size();
+        totalPages = (int) Math.ceil((double) totalRows / rowsPerPage);
+
+        currentPage = 1;
+        loadPage(currentPage);
     }
-    
+    public void loadPage(int page)
+{
+    model.setRowCount(0);
+
+    int start = (page - 1) * rowsPerPage;
+    int end = Math.min(start + rowsPerPage, bus.ds.size());
+
+    for(int i = start; i < end; i++)
+    {
+        thiSinhXetTuyenETT ct = bus.ds.get(i);
+        Vector row = new Vector();
+        row.add(ct.getIdThiSinh());
+        row.add(ct.getCccd());
+        row.add(ct.getSoBaoDanh());
+        row.add(ct.getHo());
+        row.add(ct.getTen());
+        row.add(ct.getNgaySinh());
+        row.add(ct.getDienThoai());
+        row.add(ct.getGioiTinh());
+        row.add(ct.getEmail());
+        row.add(ct.getNoiSinh());
+        row.add(ct.getDoiTuong());
+        row.add(ct.getKhuVuc());
+        model.addRow(row);
+    }
+
+    updatePaginationUI();
+}
+    public void updatePaginationUI()
+{
+    lbPageInFo.setText(currentPage + "/" + totalPages);
+
+    btnFirst.setEnabled(currentPage > 1);
+    btnPrev.setEnabled(currentPage > 1);
+
+    btnNext.setEnabled(currentPage < totalPages);
+    btnLast.setEnabled(currentPage < totalPages);
+}
     void header()
     {
         Vector header = new Vector();
@@ -121,6 +150,11 @@ public class selectThiSinh extends javax.swing.JDialog {
         jScrollPane1 = new javax.swing.JScrollPane();
         tbThiSinh = new javax.swing.JTable();
         jButton1 = new javax.swing.JButton();
+        btnFirst = new javax.swing.JButton();
+        btnPrev = new javax.swing.JButton();
+        btnLast = new javax.swing.JButton();
+        btnNext = new javax.swing.JButton();
+        lbPageInFo = new javax.swing.JLabel();
 
         setDefaultCloseOperation(javax.swing.WindowConstants.DISPOSE_ON_CLOSE);
 
@@ -183,16 +217,46 @@ public class selectThiSinh extends javax.swing.JDialog {
         jButton1.setText("Thoát");
         jButton1.addActionListener(this::jButton1ActionPerformed);
 
+        btnFirst.setText("<<");
+        btnFirst.setCursor(new java.awt.Cursor(java.awt.Cursor.HAND_CURSOR));
+        btnFirst.addActionListener(this::btnFirstActionPerformed);
+
+        btnPrev.setText("<");
+        btnPrev.setCursor(new java.awt.Cursor(java.awt.Cursor.HAND_CURSOR));
+        btnPrev.addActionListener(this::btnPrevActionPerformed);
+
+        btnLast.setText(">>");
+        btnLast.setCursor(new java.awt.Cursor(java.awt.Cursor.HAND_CURSOR));
+        btnLast.addActionListener(this::btnLastActionPerformed);
+
+        btnNext.setText(">");
+        btnNext.setCursor(new java.awt.Cursor(java.awt.Cursor.HAND_CURSOR));
+        btnNext.addActionListener(this::btnNextActionPerformed);
+
+        lbPageInFo.setFont(new java.awt.Font("Segoe UI", 0, 14)); // NOI18N
+        lbPageInFo.setText("1/1");
+
         javax.swing.GroupLayout jPanel3Layout = new javax.swing.GroupLayout(jPanel3);
         jPanel3.setLayout(jPanel3Layout);
         jPanel3Layout.setHorizontalGroup(
             jPanel3Layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
             .addGroup(jPanel3Layout.createSequentialGroup()
-                .addContainerGap()
-                .addGroup(jPanel3Layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
-                    .addComponent(jScrollPane1)
-                    .addGroup(javax.swing.GroupLayout.Alignment.TRAILING, jPanel3Layout.createSequentialGroup()
-                        .addGap(0, 0, Short.MAX_VALUE)
+                .addGroup(jPanel3Layout.createParallelGroup(javax.swing.GroupLayout.Alignment.TRAILING)
+                    .addGroup(jPanel3Layout.createSequentialGroup()
+                        .addContainerGap()
+                        .addComponent(jScrollPane1, javax.swing.GroupLayout.DEFAULT_SIZE, 969, Short.MAX_VALUE))
+                    .addGroup(jPanel3Layout.createSequentialGroup()
+                        .addGap(354, 354, 354)
+                        .addComponent(btnFirst, javax.swing.GroupLayout.PREFERRED_SIZE, 49, javax.swing.GroupLayout.PREFERRED_SIZE)
+                        .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.UNRELATED)
+                        .addComponent(btnPrev, javax.swing.GroupLayout.PREFERRED_SIZE, 49, javax.swing.GroupLayout.PREFERRED_SIZE)
+                        .addGap(15, 15, 15)
+                        .addComponent(lbPageInFo, javax.swing.GroupLayout.PREFERRED_SIZE, 37, javax.swing.GroupLayout.PREFERRED_SIZE)
+                        .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.UNRELATED)
+                        .addComponent(btnNext, javax.swing.GroupLayout.PREFERRED_SIZE, 49, javax.swing.GroupLayout.PREFERRED_SIZE)
+                        .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.UNRELATED)
+                        .addComponent(btnLast, javax.swing.GroupLayout.PREFERRED_SIZE, 49, javax.swing.GroupLayout.PREFERRED_SIZE)
+                        .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED, javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE)
                         .addComponent(jButton1, javax.swing.GroupLayout.PREFERRED_SIZE, 102, javax.swing.GroupLayout.PREFERRED_SIZE)))
                 .addContainerGap())
         );
@@ -202,7 +266,13 @@ public class selectThiSinh extends javax.swing.JDialog {
                 .addContainerGap()
                 .addComponent(jScrollPane1, javax.swing.GroupLayout.PREFERRED_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.PREFERRED_SIZE)
                 .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED, 26, Short.MAX_VALUE)
-                .addComponent(jButton1, javax.swing.GroupLayout.PREFERRED_SIZE, 46, javax.swing.GroupLayout.PREFERRED_SIZE)
+                .addGroup(jPanel3Layout.createParallelGroup(javax.swing.GroupLayout.Alignment.BASELINE)
+                    .addComponent(jButton1, javax.swing.GroupLayout.PREFERRED_SIZE, 46, javax.swing.GroupLayout.PREFERRED_SIZE)
+                    .addComponent(btnFirst)
+                    .addComponent(btnPrev)
+                    .addComponent(btnNext)
+                    .addComponent(btnLast)
+                    .addComponent(lbPageInFo))
                 .addGap(22, 22, 22))
         );
 
@@ -252,12 +322,44 @@ public class selectThiSinh extends javax.swing.JDialog {
             if(i != -1)
             {
                 int modelIndex = tbThiSinh.convertRowIndexToModel(i);
-                thiSinh = bus.ds.get(modelIndex);
+//                thiSinh = bus.ds.get(modelIndex);
+int realIndex = (currentPage - 1) * rowsPerPage + modelIndex;
+thiSinh = bus.ds.get(realIndex);
                 xacNhan = true;
                 dispose();
             }
         }
     }//GEN-LAST:event_tbThiSinhMouseClicked
+
+    private void btnFirstActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_btnFirstActionPerformed
+        // TODO add your handling code here:
+            currentPage = 1;
+    loadPage(currentPage);
+    }//GEN-LAST:event_btnFirstActionPerformed
+
+    private void btnPrevActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_btnPrevActionPerformed
+        // TODO add your handling code here:
+            if(currentPage > 1)
+    {
+        currentPage--;
+        loadPage(currentPage);
+    }
+    }//GEN-LAST:event_btnPrevActionPerformed
+
+    private void btnNextActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_btnNextActionPerformed
+        // TODO add your handling code here:
+            if(currentPage < totalPages)
+    {
+        currentPage++;
+        loadPage(currentPage);
+    }
+    }//GEN-LAST:event_btnNextActionPerformed
+
+    private void btnLastActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_btnLastActionPerformed
+        // TODO add your handling code here:
+            currentPage = totalPages;
+    loadPage(currentPage);
+    }//GEN-LAST:event_btnLastActionPerformed
 
     public thiSinhXetTuyenETT getThiSinh()
     {
@@ -272,12 +374,17 @@ public class selectThiSinh extends javax.swing.JDialog {
      */
 
     // Variables declaration - do not modify//GEN-BEGIN:variables
+    private javax.swing.JButton btnFirst;
+    private javax.swing.JButton btnLast;
+    private javax.swing.JButton btnNext;
+    private javax.swing.JButton btnPrev;
     private javax.swing.JButton jButton1;
     private javax.swing.JLabel jLabel1;
     private javax.swing.JPanel jPanel1;
     private javax.swing.JPanel jPanel2;
     private javax.swing.JPanel jPanel3;
     private javax.swing.JScrollPane jScrollPane1;
+    private javax.swing.JLabel lbPageInFo;
     private javax.swing.JTable tbThiSinh;
     // End of variables declaration//GEN-END:variables
 }

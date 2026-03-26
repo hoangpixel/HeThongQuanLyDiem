@@ -304,9 +304,11 @@ private void thucHienRefresh() {
         javax.swing.JOptionPane.WARNING_MESSAGE);
         
     if (confirm == javax.swing.JOptionPane.YES_OPTION) {
-        // BƯỚC 1: QUY ĐỔI VÀ CHUẨN HÓA ĐIỂM CHO TỪNG NGUYỆN VỌNG
+        // Khai báo đối tượng BUS ở ngoài vòng lặp để xài chung
+        nganhToHopBUS busNganhToHop = new nganhToHopBUS(); 
+
         busNguyenVong.napDiemAoChoDanhSach();
-// 1. QUY ĐỔI VÀ CHUẨN HÓA ĐIỂM
+
         for (nguyenVongXetTuyenETT nv : busNguyenVong.ds) {
             double diemChuanHoa = 0;
             String phuongThuc = nv.getTtPhuongThuc();
@@ -317,66 +319,60 @@ private void thucHienRefresh() {
             double w3 = nv.getHsMon3();
             double W = w1 + w2 + w3;
 
+            // --- TẬN DỤNG HÀM BUS ĐỂ LẤY ĐỘ LỆCH DỄ DÀNG ---
+            double doLechDiem = 0.0;
+            if (phuongThuc.equals("Xét THPT")) {
+                // Gọi thẳng cái hàm có sẵn của ông, truyền mã ngành và tổ hợp vào
+                doLechDiem = busNganhToHop.layDoLechDiem(nv.getNvMaNganh(), nv.getTtThm()); 
+            }
+            
             if (phuongThuc.equals("Đánh giá V-SAT")) {
                 double d1 = CAL.AdmissionsConverter.quyDoiVsat(nv.getTenMon1(), nv.getDiemMon1());
                 double d2 = CAL.AdmissionsConverter.quyDoiVsat(nv.getTenMon2(), nv.getDiemMon2());
                 double d3 = CAL.AdmissionsConverter.quyDoiVsat(nv.getTenMon3(), nv.getDiemMon3());
-                // CÔNG THỨC MỚI (Mục 3.1 PDF)
                 diemChuanHoa = ((d1*w1 + d2*w2 + d3*w3) / W) * 3.0;
             }
             else if (phuongThuc.equals("ĐGNL HCM")) {
                 diemChuanHoa = (nv.getDiemMon1() / 1200.0) * 30.0;
             }
             else if (phuongThuc.equals("Xét tuyển thẳng")) {
-                            diemChuanHoa = 30.0; // Auto 30 điểm gốc
+                diemChuanHoa = 30.0; // Auto 30 điểm gốc
+                try (org.hibernate.Session session = CONFIG.HibernateUtil.getSessionFactory().openSession()) {
+                    String sqlXTT = "SELECT loai_giai FROM xt_giathuong WHERE cccd = :cccd LIMIT 1";
+                    Object loaiGiai = session.createNativeQuery(sqlXTT).setParameter("cccd", nv.getNnCccd()).uniqueResult();
 
-                            // Mở Session đi truy lùng giải thưởng của nó
-                            try (org.hibernate.Session session = CONFIG.HibernateUtil.getSessionFactory().openSession()) {
-                                String sqlXTT = "SELECT loai_giai FROM xt_giathuong WHERE cccd = :cccd LIMIT 1";
-                                Object loaiGiai = session.createNativeQuery(sqlXTT).setParameter("cccd", nv.getNnCccd()).uniqueResult();
-
-                                if (loaiGiai != null) {
-                                    String giai = loaiGiai.toString();
-                                    // Bơm điểm ẩn để thuật toán Domino phân xử
-                                    if (giai.contains("Nhất")) {
-                                        diemChuanHoa += 0.003;
-                                    } else if (giai.contains("Nhì")) {
-                                        diemChuanHoa += 0.002;
-                                    } else if (giai.contains("Ba")) {
-                                        diemChuanHoa += 0.001;
-                                    }
-                                }
-                            } catch (Exception e) { e.printStackTrace(); }
-                        }
+                    if (loaiGiai != null) {
+                        String giai = loaiGiai.toString();
+                        if (giai.contains("Nhất")) diemChuanHoa += 0.003;
+                        else if (giai.contains("Nhì")) diemChuanHoa += 0.002;
+                        else if (giai.contains("Ba")) diemChuanHoa += 0.001;
+                    }
+                } catch (Exception e) { e.printStackTrace(); }
+            }
             else {
-                // THPT cũng áp dụng nhân hệ số luôn (Mục 3.1 PDF)
+                // Xét THPT
                 double d1 = nv.getDiemMon1();
                 double d2 = nv.getDiemMon2();
                 double d3 = nv.getDiemMon3();
                 diemChuanHoa = ((d1*w1 + d2*w2 + d3*w3) / W) * 3.0;
             }
 
-        // Thay đoạn cộng điểm ưu tiên bằng cái này cho chuẩn bài:
-        double tongCuoi = diemChuanHoa + nv.getDiemUuTien();
+            // Tính tổng cuối có cộng Độ Lệch
+            double tongCuoi = diemChuanHoa + nv.getDiemUuTien() + doLechDiem;
 
-        // Nếu không phải tuyển thẳng thì mới giới hạn max 30
-        if (!phuongThuc.equals("Xét tuyển thẳng")) {
-            tongCuoi = Math.min(30.0, tongCuoi);
+            if (!phuongThuc.equals("Xét tuyển thẳng")) {
+                tongCuoi = Math.min(30.0, tongCuoi);
+            }
+
+            tongCuoi = Math.round(tongCuoi * 1000.0) / 1000.0; 
+            nv.setDiemXetTuyen(tongCuoi);
         }
 
-        // Làm tròn 3 chữ số để giữ lại cái 0.001, 0.002, 0.003 của mình
-        tongCuoi = Math.round(tongCuoi * 1000.0) / 1000.0; 
-
-        nv.setDiemXetTuyen(tongCuoi);
-        }
-
-        // BƯỚC 2: CHẠY THUẬT TOÁN DOMINO (Xếp hạng theo chỉ tiêu)
-        // Sau bước này, trạng thái "Đã đậu"/"Đã trượt" sẽ được cập nhật vào danh sách
         busNguyenVong.sapXepKetQuaTheoChiTieu();
         busNguyenVong.capNhatDiemChuanTuDong();
-        // BƯỚC 3: CẬP NHẬT LÊN GIAO DIỆN
-        busNguyenVong.ds = null; // Xóa cache cũ
-        loadDataToTable(); // Tải lại bảng với màu sắc và kết quả mới
+        
+        busNguyenVong.ds = null; 
+        loadDataToTable(); 
         
         javax.swing.JOptionPane.showMessageDialog(this, "Hệ thống đã quy đổi điểm và xét duyệt thành công!");
     }
