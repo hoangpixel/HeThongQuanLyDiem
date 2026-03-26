@@ -328,8 +328,26 @@ private void thucHienRefresh() {
                 diemChuanHoa = (nv.getDiemMon1() / 1200.0) * 30.0;
             }
             else if (phuongThuc.equals("Xét tuyển thẳng")) {
-                diemChuanHoa = 30.0; // Auto 30 điểm để chắc chắn đậu top đầu
-            }
+                            diemChuanHoa = 30.0; // Auto 30 điểm gốc
+
+                            // Mở Session đi truy lùng giải thưởng của nó
+                            try (org.hibernate.Session session = CONFIG.HibernateUtil.getSessionFactory().openSession()) {
+                                String sqlXTT = "SELECT loai_giai FROM xt_giathuong WHERE cccd = :cccd LIMIT 1";
+                                Object loaiGiai = session.createNativeQuery(sqlXTT).setParameter("cccd", nv.getNnCccd()).uniqueResult();
+
+                                if (loaiGiai != null) {
+                                    String giai = loaiGiai.toString();
+                                    // Bơm điểm ẩn để thuật toán Domino phân xử
+                                    if (giai.contains("Nhất")) {
+                                        diemChuanHoa += 0.003;
+                                    } else if (giai.contains("Nhì")) {
+                                        diemChuanHoa += 0.002;
+                                    } else if (giai.contains("Ba")) {
+                                        diemChuanHoa += 0.001;
+                                    }
+                                }
+                            } catch (Exception e) { e.printStackTrace(); }
+                        }
             else {
                 // THPT cũng áp dụng nhân hệ số luôn (Mục 3.1 PDF)
                 double d1 = nv.getDiemMon1();
@@ -338,11 +356,18 @@ private void thucHienRefresh() {
                 diemChuanHoa = ((d1*w1 + d2*w2 + d3*w3) / W) * 3.0;
             }
 
-            // Cộng điểm ưu tiên (Không quá 3 điểm)
-            double tongCuoi = diemChuanHoa + nv.getDiemUuTien();
-            tongCuoi = Math.min(30.0, Math.round(tongCuoi * 100.0) / 100.0);
-            
-            nv.setDiemXetTuyen(tongCuoi);
+        // Thay đoạn cộng điểm ưu tiên bằng cái này cho chuẩn bài:
+        double tongCuoi = diemChuanHoa + nv.getDiemUuTien();
+
+        // Nếu không phải tuyển thẳng thì mới giới hạn max 30
+        if (!phuongThuc.equals("Xét tuyển thẳng")) {
+            tongCuoi = Math.min(30.0, tongCuoi);
+        }
+
+        // Làm tròn 3 chữ số để giữ lại cái 0.001, 0.002, 0.003 của mình
+        tongCuoi = Math.round(tongCuoi * 1000.0) / 1000.0; 
+
+        nv.setDiemXetTuyen(tongCuoi);
         }
 
         // BƯỚC 2: CHẠY THUẬT TOÁN DOMINO (Xếp hạng theo chỉ tiêu)

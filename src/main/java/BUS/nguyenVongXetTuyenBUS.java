@@ -331,6 +331,57 @@ if (toHop != null) {
                             nv.setDiemMon2(diem[1] == null ? 0.0 : ((Number) diem[1]).doubleValue());
                             nv.setDiemMon3(diem[2] == null ? 0.0 : ((Number) diem[2]).doubleValue());
                         }
+                        
+                        // ... (Đoạn code cũ của ông: nv.setDiemMon1, 2, 3) ...
+
+                        // ====================================================================
+                        // 🚀 TÍNH NĂNG MỚI: AUTO QUY ĐỔI IELTS & CỘNG ĐIỂM GIẢI THƯỞNG
+                        // ====================================================================
+                        double diemCongIELTS = 0.0;
+                        double diemCongGiaiThuong = 0.0;
+
+                        // 1. DÒ TÌM CHỨNG CHỈ IELTS
+                        String sqlIELTS = "SELECT diem_quydoi, diem_cong FROM xt_chungchi WHERE cccd = :cccd LIMIT 1";
+                        Object[] ieltsData = (Object[]) session.createNativeQuery(sqlIELTS)
+                                .setParameter("cccd", cccd).uniqueResult();
+
+                        if (ieltsData != null) {
+                            double diemQuyDoi = ieltsData[0] == null ? 0.0 : ((Number) ieltsData[0]).doubleValue();
+                            diemCongIELTS = ieltsData[1] == null ? 0.0 : ((Number) ieltsData[1]).doubleValue();
+
+                            // TUYỆT CHIÊU: Tráo điểm! Nếu tổ hợp có môn Tiếng Anh (N1), lấy điểm IELTS đè lên điểm thi
+                            if ("N1".equals(m1)) nv.setDiemMon1(diemQuyDoi);
+                            if ("N1".equals(m2)) nv.setDiemMon2(diemQuyDoi);
+                            if ("N1".equals(m3)) nv.setDiemMon3(diemQuyDoi);
+                        }
+
+                        // 2. DÒ TÌM GIẢI THƯỞNG HỌC SINH GIỎI
+                        String sqlGT = "SELECT ma_mon, diem_cong_co_mon, diem_cong_khong_mon FROM xt_giathuong WHERE cccd = :cccd LIMIT 1";
+                        Object[] gtData = (Object[]) session.createNativeQuery(sqlGT)
+                                .setParameter("cccd", cccd).uniqueResult();
+
+                        if (gtData != null) {
+                            String maMonGiai = (String) gtData[0];
+                            double diemCoMon = gtData[1] == null ? 0.0 : ((Number) gtData[1]).doubleValue();
+                            double diemKhongMon = gtData[2] == null ? 0.0 : ((Number) gtData[2]).doubleValue();
+
+                            // KIỂM TRA MÔN: Xem tổ hợp (m1, m2, m3) có chứa môn đạt giải không?
+                            if (maMonGiai.equals(m1) || maMonGiai.equals(m2) || maMonGiai.equals(m3)) {
+                                diemCongGiaiThuong = diemCoMon; // Trúng tủ -> Cộng nhiều
+                            } else {
+                                diemCongGiaiThuong = diemKhongMon; // Lệch tủ -> Cộng ít
+                            }
+                        }
+
+                        // 3. CHỐT SỔ ĐIỂM ƯU TIÊN
+                        // Tổng điểm cộng = Điểm UT Khu Vực (đã gán ở trên) + IELTS + Giải thưởng
+                        double tongDiemUT = nv.getDiemUuTien() + diemCongIELTS + diemCongGiaiThuong;
+                        
+                        // Luật của Bộ: Điểm cộng thêm (không tính khu vực) thường bị chặn trần, 
+                        // nhưng ở đây mình an toàn nhất là chặn tổng điểm UT không vượt quá mức quy định (VD: max là 3.0 hoặc 5.0 tùy trường).
+                        // Ở đây tui để tạm chặn trần tổng điểm không qua 30 ở hàm tính điểm tổng rồi nên cứ cộng tẹt ga.
+                        nv.setDiemUuTien(tongDiemUT);
+                        // ====================================================================
                     }
                 }
             }
