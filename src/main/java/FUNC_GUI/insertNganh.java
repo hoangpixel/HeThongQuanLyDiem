@@ -395,50 +395,49 @@ public class insertNganh extends javax.swing.JDialog {
     }//GEN-LAST:event_btnThoatActionPerformed
 
     private void btnThemActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_btnThemActionPerformed
-        // Chạy qua bộ kiểm tra xem có gõ thiếu hay gõ sai chỗ nào không
+
         if(!kiemTraHopLe()) {
             return;
         }
-        
-        // Gom thông tin tạo thành một khối dữ liệu mới
-        nganhETT nganhMoi = new nganhETT();
-        nganhMoi.setManganh(txtMaNganh.getText().trim());
-        nganhMoi.setTennganh(txtTenNganh.getText().trim());
-        nganhMoi.setN_tohopgoc(txtToHopGoc.getText().trim());
-        nganhMoi.setN_chitieu(Integer.parseInt(txtChiTieu.getText())); // Lấy con số tổng tự động
-        
-        // Móc điểm sàn và điểm chuẩn (nếu để trống thì bỏ qua)
-        try {
-            if(!txtDiemSan.getText().trim().isEmpty()) nganhMoi.setN_diemsan(Double.parseDouble(txtDiemSan.getText().trim()));
-            if(!txtDiemTrungTuyen.getText().trim().isEmpty()) nganhMoi.setN_diemtrungtuyen(Double.parseDouble(txtDiemTrungTuyen.getText().trim()));
-        } catch(Exception e){}
-        
-        // Ghi nhận các phương thức tuyển sinh
-        if (chkTuyenThang.isSelected()) {
-            nganhMoi.setN_tuyenthang("1");
-            nganhMoi.setSl_xtt(Integer.parseInt(txtTuyenThang.getText().trim()));
-        }
-        
-        if (chkThiDGNL.isSelected()) {
-            nganhMoi.setN_dgnl("1");
-            nganhMoi.setSl_dgnl(Integer.parseInt(txtThiDGNL.getText().trim()));
-        }
-        
-        if (chkThiTHPT.isSelected()) {
-            nganhMoi.setN_thpt("1");
-            // Kho lưu trữ của bạn để cột này dạng chữ, nên cứ nhét thẳng nội dung vào
-            nganhMoi.setSl_dgnl(Integer.parseInt(txtThiTHPT.getText().trim()));
-        }
-        
-        if (chkThiVSAT.isSelected()) {
-            nganhMoi.setN_vsat("1");
-            nganhMoi.setSl_vsat(Integer.parseInt(txtThiVSAT.getText().trim()));
-        }
-        
-        // Xác nhận hoàn thành công việc đóng gói và đóng cửa sổ lại
+    
+    BUS.nganhBUS busNganh = new BUS.nganhBUS();
+    nganhETT nganhMoi = new nganhETT();
+
+    nganhMoi.setManganh(txtMaNganh.getText().trim());
+    nganhMoi.setTennganh(txtTenNganh.getText().trim());
+    nganhMoi.setN_tohopgoc(txtToHopGoc.getText().trim());
+
+    nganhMoi.setN_chitieu(Integer.parseInt(txtChiTieu.getText())); 
+    
+    try {
+        if(!txtDiemSan.getText().trim().isEmpty()) 
+            nganhMoi.setN_diemsan(Double.parseDouble(txtDiemSan.getText().trim()));
+            
+        if(!txtDiemTrungTuyen.getText().trim().isEmpty()) 
+            nganhMoi.setN_diemtrungtuyen(Double.parseDouble(txtDiemTrungTuyen.getText().trim()));
+    } catch(NumberFormatException e) {
+    }
+    
+    nganhMoi.setN_tuyenthang(chkTuyenThang.isSelected() ? "1" : "0");
+    nganhMoi.setSl_xtt(chkTuyenThang.isSelected() ? Integer.parseInt(txtTuyenThang.getText().trim()) : 0);
+
+    nganhMoi.setN_dgnl(chkThiDGNL.isSelected() ? "1" : "0");
+    nganhMoi.setSl_dgnl(chkThiDGNL.isSelected() ? Integer.parseInt(txtThiDGNL.getText().trim()) : 0);
+
+    nganhMoi.setN_thpt(chkThiTHPT.isSelected() ? "1" : "0");
+    nganhMoi.setSl_thpt(chkThiTHPT.isSelected() ? Integer.parseInt(txtThiTHPT.getText().trim()) : 0);
+
+    nganhMoi.setN_vsat(chkThiVSAT.isSelected() ? "1" : "0");
+    nganhMoi.setSl_vsat(chkThiVSAT.isSelected() ? Integer.parseInt(txtThiVSAT.getText().trim()) : 0);
+
+    if(busNganh.themNganh(nganhMoi)) {
+        xacNhan = true;
+        JOptionPane.showMessageDialog(this, "Thêm ngành thành công");
         this.nganh = nganhMoi;
-        this.xacNhan = true;
         dispose();
+    } else {
+        JOptionPane.showMessageDialog(this, "Thêm ngành thất bại");
+    }
     }//GEN-LAST:event_btnThemActionPerformed
 
     private void txtMaNganhActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_txtMaNganhActionPerformed
@@ -487,14 +486,7 @@ public class insertNganh extends javax.swing.JDialog {
         Entity.toHopETT selectedToHop = dialog.getToHopETT();
         
             // 3. Đổ Mã tổ hợp vào ô Textbox
-            txtToHopGoc.setText(selectedToHop.getMatohop());
-        
-            // 4. Hiển thị tên các môn 
-            String chiTietMon = "Môn thi: " + selectedToHop.getMon1() + " - " 
-                            + selectedToHop.getMon2() + " - " 
-                            + selectedToHop.getMon3();
-            // Giả sử bạn có 1 cái JLabel tên là lblGhiChuToHop bên cạnh
-            // lblGhiChuToHop.setText(chiTietMon); 
+            txtToHopGoc.setText(selectedToHop.getMatohop()); 
         }
     }//GEN-LAST:event_txtToHopGocActionPerformed
 

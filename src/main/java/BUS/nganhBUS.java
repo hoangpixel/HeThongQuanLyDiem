@@ -15,7 +15,10 @@ public class nganhBUS {
     nganhDAO data = new nganhDAO();
     public ArrayList<nganhETT> layDanhSach()
     {
-        ds = data.layDanhSach(); 
+        if(ds == null)
+        {
+            ds = data.layDanhSach();
+        }
         return ds;
     }
 
@@ -93,32 +96,48 @@ public class nganhBUS {
     }
 
     public boolean themNganh(nganhETT nganhMoi) {
-        // Sửa data.themNganh thành data.them
-        if (data.themNganh(nganhMoi)) {
-            // Khi thêm thành công, MySQL sẽ tự cấp ID mới. 
-            // Ta phải ép BUS gọi lệnh lấy lại toàn bộ danh sách từ DB để cập nhật ID.
-            ds = data.layDanhSach(); 
+        boolean isSuccess = data.themNganh(nganhMoi);
+        if (isSuccess) {
+            if (ds != null) 
+            {
+                ds.add(nganhMoi);
+            }
+        }
+
+        return isSuccess;
+    }
+
+    public boolean suaNganh(nganhETT nganhDaSua) {
+        // 1. Lưu xuống Database trước qua DAO
+        if (data.suaNganh(nganhDaSua)) { 
+        
+            // 2. Nếu Database OK, tiến hành cập nhật lại biến ds tĩnh (RAM)
+            if (ds != null) {
+                for (int i = 0; i < ds.size(); i++) {
+                    // Dùng idnganh để dò tìm vì nó là khóa chính duy nhất (Unique)
+                    // idnganh là kiểu int nên dùng == để so sánh
+                    if (ds.get(i).getIdnganh() == nganhDaSua.getIdnganh()) {
+                    ds.set(i, nganhDaSua); // Đè đối tượng mới vào vị trí cũ để UI cập nhật ngay
+                    break;
+                    }
+                }
+            }
             return true;
         }
         return false;
     }
 
-    public boolean suaNganh(nganhETT nganhDaSua) {
-        // Sửa data.suaNganh thành data.sua
-        if (data.suaNganh(nganhDaSua)) { 
-            // Ép buộc tải lại danh sách mới nhất từ DB, bỏ qua cái kiểm tra if(ds == null)
-            ds = data.layDanhSach(); 
-            return true;
-        }
-        return false;
-    }
-    
     public boolean xoaNganh(Entity.nganhETT nganhCanXoa) {
         // Sửa data.xoaNganh thành data.xoa
         if (data.xoaNganh(nganhCanXoa)) {
             if (ds != null) {
-                // Dùng hàm removeIf này code sẽ gọn và chạy nhanh hơn vòng lặp for rất nhiều
-                ds.removeIf(n -> n.getIdnganh() == nganhCanXoa.getIdnganh());
+                for (int i = 0; i < ds.size(); i++) {
+                    // Dò đúng cái ID đó thì gạch tên khỏi danh sách
+                    if (ds.get(i).getIdnganh() == nganhCanXoa.getIdnganh()) {
+                        ds.remove(i); 
+                        break;
+                    }
+                }
             }
             return true;
         }

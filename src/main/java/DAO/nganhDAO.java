@@ -17,13 +17,19 @@ import org.hibernate.Transaction;
  */
 public class nganhDAO {
     public ArrayList<nganhETT> layDanhSach() {
+        // Khởi tạo sẵn một ArrayList rỗng để nếu lỗi thì nó trả về rỗng, không bị văng app
         ArrayList<nganhETT> ds = new ArrayList<>();
+
         try (Session session = HibernateUtil.getSessionFactory().openSession()) {
+            // Bước 1: Gọi hàm .list() ở cuối để Hibernate chạy câu lệnh
             List<nganhETT> listTuDB = session.createQuery("FROM nganhETT", nganhETT.class).list();
+            // Bước 2: Chuyển cái List của Hibernate thành ArrayList của bạn
             ds = new ArrayList<>(listTuDB);
+
         } catch (Exception e) {
             e.printStackTrace();
         }
+
         return ds;
     }
 

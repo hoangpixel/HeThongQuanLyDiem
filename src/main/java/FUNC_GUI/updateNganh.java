@@ -20,32 +20,33 @@ public class updateNganh extends javax.swing.JDialog {
     BUS.nganhBUS bus = new BUS.nganhBUS();
     
     public updateNganh(java.awt.Frame parent, boolean modal, nganhETT data) {
-    super(parent, modal);
-    initComponents();
-    this.nganh = data; // Giữ nguyên bản gốc để lấy ID và các thông tin khác
-    setLocationRelativeTo(parent);
+        super(parent, modal);
+        initComponents();
+        this.nganh = data; 
+        setLocationRelativeTo(parent);
     
-    // 1. Đổ thông tin cơ bản
-    txtMaNganh.setText(data.getManganh());
-    txtMaNganh.setEditable(false);
-    txtTenNganh.setText(data.getTennganh());
-    txtToHopGoc.setText(data.getN_tohopgoc());
-    txtDiemSan.setText(data.getN_diemsan() != null ? String.valueOf(data.getN_diemsan()) : "");
-    txtDiemTrungTuyen.setText(data.getN_diemtrungtuyen() != null ? String.valueOf(data.getN_diemtrungtuyen()) : "");
+        // 1. Đổ thông tin cơ bản
+        txtMaNganh.setText(data.getManganh());
+        txtMaNganh.setEditable(false);
+        txtTenNganh.setText(data.getTennganh());
+        txtToHopGoc.setText(data.getN_tohopgoc());
+        txtChiTieu.setText(data.getN_chitieu() != null ? String.valueOf(data.getN_chitieu()) : "0");
+        txtDiemSan.setText(data.getN_diemsan() != null ? String.valueOf(data.getN_diemsan()) : "");
+        txtDiemTrungTuyen.setText(data.getN_diemtrungtuyen() != null ? String.valueOf(data.getN_diemtrungtuyen()) : "");
 
-    // 2. Cấu hình ô Tổng chỉ tiêu
-    txtChiTieu.setEditable(false);
-    txtChiTieu.setFocusable(false);
-    txtChiTieu.setBackground(new java.awt.Color(240, 240, 240));
+        // 2. Cấu hình ô Tổng chỉ tiêu
+        txtChiTieu.setEditable(false);
+        txtChiTieu.setFocusable(false);
+        txtChiTieu.setBackground(new java.awt.Color(240, 240, 240));
 
-    // 3. Khởi tạo các phương thức (Chỉ cần gọi 1 hàm duy nhất này)
-    thietLapOChon(chkTuyenThang, txtTuyenThang, data.getN_tuyenthang(), data.getSl_xtt());
-    thietLapOChon(chkThiDGNL, txtThiDGNL, data.getN_dgnl(), data.getSl_dgnl());
-    thietLapOChon(chkThiTHPT, txtThiTHPT, data.getN_thpt(), data.getSl_thpt());
-    thietLapOChon(chkThiVSAT, txtThiVSAT, data.getN_vsat(), data.getSl_vsat());
+        // 3. Khởi tạo các phương thức (Chỉ cần gọi 1 hàm duy nhất này)
+        thietLapOChon(chkTuyenThang, txtTuyenThang, data.getN_tuyenthang(), data.getSl_xtt());
+        thietLapOChon(chkThiDGNL, txtThiDGNL, data.getN_dgnl(), data.getSl_dgnl());
+        thietLapOChon(chkThiTHPT, txtThiTHPT, data.getN_thpt(), data.getSl_thpt());
+        thietLapOChon(chkThiVSAT, txtThiVSAT, data.getN_vsat(), data.getSl_vsat());
 
-    // 4. Tính toán tổng lần đầu tiên khi mở form
-    tuDongTinhTong();
+        // 4. Tính toán tổng lần đầu tiên khi mở form
+        //tuDongTinhTong();
     }
 
     @SuppressWarnings("unchecked")
@@ -316,7 +317,7 @@ public class updateNganh extends javax.swing.JDialog {
                 .addContainerGap(javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE))
         );
 
-        jPanel3.setBackground(new java.awt.Color(153, 255, 153));
+        jPanel3.setBackground(new java.awt.Color(204, 204, 255));
 
         jLabel9.setFont(new java.awt.Font("Segoe UI", 1, 24)); // NOI18N
         jLabel9.setText("Sửa Ngành");
@@ -325,10 +326,10 @@ public class updateNganh extends javax.swing.JDialog {
         jPanel3.setLayout(jPanel3Layout);
         jPanel3Layout.setHorizontalGroup(
             jPanel3Layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
-            .addGroup(javax.swing.GroupLayout.Alignment.TRAILING, jPanel3Layout.createSequentialGroup()
-                .addContainerGap(javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE)
+            .addGroup(jPanel3Layout.createSequentialGroup()
+                .addGap(131, 131, 131)
                 .addComponent(jLabel9)
-                .addGap(119, 119, 119))
+                .addContainerGap(javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE))
         );
         jPanel3Layout.setVerticalGroup(
             jPanel3Layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
@@ -370,40 +371,37 @@ public class updateNganh extends javax.swing.JDialog {
     // CÁC HÀM XỬ LÝ SỰ KIỆN NÚT BẤM (EVENTS)
 
     private void btnThemActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_btnThemActionPerformed
-        // Chạy qua bộ kiểm tra xem có gõ thiếu hay gõ sai chỗ nào không
-        if(!kiemTraHopLe()) return;
 
-        // Cập nhật lại các thông tin mới vào đối tượng nganh
+        if(!kiemTraHopLe()) 
+        {
+            return;
+        }
+
         nganh.setTennganh(txtTenNganh.getText().trim());
         nganh.setN_tohopgoc(txtToHopGoc.getText().trim());
+        // Lấy con số tổng tự động
         nganh.setN_chitieu(Integer.parseInt(txtChiTieu.getText().trim()));
-        
-        // Móc điểm sàn và điểm chuẩn (nếu để trống thì bỏ qua)
+
         try {
             nganh.setN_diemsan(txtDiemSan.getText().isEmpty() ? null : Double.valueOf(txtDiemSan.getText()));
             nganh.setN_diemtrungtuyen(txtDiemTrungTuyen.getText().isEmpty() ? null : Double.valueOf(txtDiemTrungTuyen.getText()));
         } catch(Exception e){}
-        
-        // Ghi nhận các phương thức tuyển sinh
+
         nganh.setN_tuyenthang(chkTuyenThang.isSelected() ? "1" : "0");
         nganh.setSl_xtt(chkTuyenThang.isSelected() ? Integer.parseInt(txtTuyenThang.getText().trim()) : 0);
-
         nganh.setN_dgnl(chkThiDGNL.isSelected() ? "1" : "0");
         nganh.setSl_dgnl(chkThiDGNL.isSelected() ? Integer.parseInt(txtThiDGNL.getText().trim()) : 0);
-
         this.nganh.setN_thpt(chkThiTHPT.isSelected() ? "1" : "0");
         this.nganh.setSl_thpt(chkThiTHPT.isSelected() ? Integer.parseInt(txtThiTHPT.getText().trim()) : 0);
-
         nganh.setN_vsat(chkThiVSAT.isSelected() ? "1" : "0");
         nganh.setSl_vsat(chkThiVSAT.isSelected() ? Integer.parseInt(txtThiVSAT.getText().trim()) : 0);
-        
-        // Gọi lệnh UPDATE từ nganhBUS
-        if (bus.suaNganh(nganh)) {
+
+        if (bus.suaNganh(this.nganh)) {
             this.xacNhan = true;
-            JOptionPane.showMessageDialog(this, "Sửa thông tin ngành thành công!");
+            JOptionPane.showMessageDialog(this, "Sửa ngành thành công");
             dispose();
         } else {
-            JOptionPane.showMessageDialog(this, "Có lỗi khi lưu vào MySQL!");
+            JOptionPane.showMessageDialog(this, "Sửa ngành thất bại");
         }
     }//GEN-LAST:event_btnThemActionPerformed
 
