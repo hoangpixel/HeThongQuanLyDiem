@@ -335,17 +335,50 @@ private void thucHienRefresh() {
             else if (phuongThuc.equals("ĐGNL HCM")) {
                 diemChuanHoa = (nv.getDiemMon1() / 1200.0) * 30.0;
             }
+//            else if (phuongThuc.equals("Xét tuyển thẳng")) {
+//                diemChuanHoa = 30.0; // Auto 30 điểm gốc
+//                try (org.hibernate.Session session = CONFIG.HibernateUtil.getSessionFactory().openSession()) {
+//                    String sqlXTT = "SELECT loai_giai FROM xt_giathuong WHERE cccd = :cccd LIMIT 1";
+//                    Object loaiGiai = session.createNativeQuery(sqlXTT).setParameter("cccd", nv.getNnCccd()).uniqueResult();
+//
+//                    if (loaiGiai != null) {
+//                        String giai = loaiGiai.toString();
+//                        if (giai.contains("Nhất")) diemChuanHoa += 0.003;
+//                        else if (giai.contains("Nhì")) diemChuanHoa += 0.002;
+//                        else if (giai.contains("Ba")) diemChuanHoa += 0.001;
+//                    }
+//                } catch (Exception e) { e.printStackTrace(); }
+//            }
             else if (phuongThuc.equals("Xét tuyển thẳng")) {
                 diemChuanHoa = 30.0; // Auto 30 điểm gốc
                 try (org.hibernate.Session session = CONFIG.HibernateUtil.getSessionFactory().openSession()) {
-                    String sqlXTT = "SELECT loai_giai FROM xt_giathuong WHERE cccd = :cccd LIMIT 1";
-                    Object loaiGiai = session.createNativeQuery(sqlXTT).setParameter("cccd", nv.getNnCccd()).uniqueResult();
+                    // Lấy CẢ Cấp giải (Quốc gia/Tỉnh) và Loại giải (Nhất/Nhì/Ba/Khuyến khích)
+                    String sqlXTT = "SELECT cap_giai, loai_giai FROM xt_giathuong WHERE cccd = :cccd LIMIT 1";
+                    Object[] giaiData = (Object[]) session.createNativeQuery(sqlXTT).setParameter("cccd", nv.getNnCccd()).uniqueResult();
 
-                    if (loaiGiai != null) {
-                        String giai = loaiGiai.toString();
-                        if (giai.contains("Nhất")) diemChuanHoa += 0.003;
-                        else if (giai.contains("Nhì")) diemChuanHoa += 0.002;
-                        else if (giai.contains("Ba")) diemChuanHoa += 0.001;
+                    if (giaiData != null) {
+                        String capGiai = giaiData[0] != null ? giaiData[0].toString() : "";
+                        String loaiGiai = giaiData[1] != null ? giaiData[1].toString() : "";
+                        
+                        double diemAn = 0.0;
+                        
+                        // TH1: Phân lô bảng điểm cho team QUỐC GIA (Từ 0.006 -> 0.009)
+                        if (capGiai.equalsIgnoreCase("Quốc gia")) {
+                            if (loaiGiai.contains("Nhất")) diemAn = 0.009;
+                            else if (loaiGiai.contains("Nhì")) diemAn = 0.008;
+                            else if (loaiGiai.contains("Ba")) diemAn = 0.007;
+                            else if (loaiGiai.contains("Khuyến khích")) diemAn = 0.006;
+                        } 
+                        // TH2: Phân lô bảng điểm cho team CẤP TỈNH (Từ 0.002 -> 0.005)
+                        else if (capGiai.equalsIgnoreCase("Cấp tỉnh") || capGiai.equalsIgnoreCase("Tỉnh")) {
+                            if (loaiGiai.contains("Nhất")) diemAn = 0.005;
+                            else if (loaiGiai.contains("Nhì")) diemAn = 0.004;
+                            else if (loaiGiai.contains("Ba")) diemAn = 0.003;
+                            else if (loaiGiai.contains("Khuyến khích")) diemAn = 0.002;
+                        }
+                        
+                        // Bơm điểm ẩn vào
+                        diemChuanHoa += diemAn;
                     }
                 } catch (Exception e) { e.printStackTrace(); }
             }

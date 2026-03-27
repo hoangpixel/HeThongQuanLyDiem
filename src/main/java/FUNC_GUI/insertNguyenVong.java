@@ -35,6 +35,8 @@ public class insertNguyenVong extends javax.swing.JDialog {
     public String cccd;
     public String toHopMon;
     public String maNganh;
+    public String phuongThuc;
+    public double doLechDiem = 0.0;
     
     public Entity.toHopETT toHopMonDaChon = null;
     /**
@@ -48,6 +50,7 @@ public class insertNguyenVong extends javax.swing.JDialog {
         txtDiemCong.setText("0.0");
         txtDiemTHXT.setText("0.0");
         txtDiemUuTien.setText("0.0");
+        txtDoLech.setText("0.0");
     }
 
     /**
@@ -79,6 +82,8 @@ public class insertNguyenVong extends javax.swing.JDialog {
         jLabel8 = new javax.swing.JLabel();
         txtDiemCong = new javax.swing.JTextField();
         txtThuTuNV = new javax.swing.JSpinner();
+        jLabel10 = new javax.swing.JLabel();
+        txtDoLech = new javax.swing.JTextField();
         jPanel2 = new javax.swing.JPanel();
         btnThoat = new javax.swing.JButton();
         btnThem = new javax.swing.JButton();
@@ -146,6 +151,11 @@ public class insertNguyenVong extends javax.swing.JDialog {
 
         txtDiemCong.setEditable(false);
 
+        jLabel10.setFont(new java.awt.Font("Segoe UI", 0, 14)); // NOI18N
+        jLabel10.setText("Độ lệch : ");
+
+        txtDoLech.setEditable(false);
+
         javax.swing.GroupLayout jPanel1Layout = new javax.swing.GroupLayout(jPanel1);
         jPanel1.setLayout(jPanel1Layout);
         jPanel1Layout.setHorizontalGroup(
@@ -192,7 +202,11 @@ public class insertNguyenVong extends javax.swing.JDialog {
                     .addGroup(jPanel1Layout.createSequentialGroup()
                         .addComponent(jLabel8, javax.swing.GroupLayout.PREFERRED_SIZE, 123, javax.swing.GroupLayout.PREFERRED_SIZE)
                         .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED)
-                        .addComponent(txtDiemCong, javax.swing.GroupLayout.PREFERRED_SIZE, 188, javax.swing.GroupLayout.PREFERRED_SIZE)))
+                        .addComponent(txtDiemCong, javax.swing.GroupLayout.PREFERRED_SIZE, 188, javax.swing.GroupLayout.PREFERRED_SIZE))
+                    .addGroup(jPanel1Layout.createSequentialGroup()
+                        .addComponent(jLabel10, javax.swing.GroupLayout.PREFERRED_SIZE, 123, javax.swing.GroupLayout.PREFERRED_SIZE)
+                        .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED)
+                        .addComponent(txtDoLech, javax.swing.GroupLayout.PREFERRED_SIZE, 188, javax.swing.GroupLayout.PREFERRED_SIZE)))
                 .addContainerGap(javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE))
         );
         jPanel1Layout.setVerticalGroup(
@@ -233,7 +247,11 @@ public class insertNguyenVong extends javax.swing.JDialog {
                 .addGroup(jPanel1Layout.createParallelGroup(javax.swing.GroupLayout.Alignment.BASELINE)
                     .addComponent(jLabel8)
                     .addComponent(txtDiemCong, javax.swing.GroupLayout.PREFERRED_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.PREFERRED_SIZE))
-                .addContainerGap(24, Short.MAX_VALUE))
+                .addGap(18, 18, 18)
+                .addGroup(jPanel1Layout.createParallelGroup(javax.swing.GroupLayout.Alignment.BASELINE)
+                    .addComponent(jLabel10)
+                    .addComponent(txtDoLech, javax.swing.GroupLayout.PREFERRED_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.PREFERRED_SIZE))
+                .addContainerGap(22, Short.MAX_VALUE))
         );
 
         jLabel1.getAccessibleContext().setAccessibleName("asd");
@@ -310,7 +328,7 @@ public class insertNguyenVong extends javax.swing.JDialog {
         layout.setVerticalGroup(
             layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
             .addGroup(layout.createSequentialGroup()
-                .addContainerGap(javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE)
+                .addContainerGap()
                 .addComponent(jPanel3, javax.swing.GroupLayout.PREFERRED_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.PREFERRED_SIZE)
                 .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED)
                 .addComponent(jPanel1, javax.swing.GroupLayout.PREFERRED_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.PREFERRED_SIZE)
@@ -343,9 +361,8 @@ public class insertNguyenVong extends javax.swing.JDialog {
         double diemCong = Double.valueOf(txtDiemCong.getText().trim());
         String ketQuaNV = "Chờ xét";
         String key = cccd + "_" + (int) txtThuTuNV.getValue();
-        String phuongThuc = cboPT.getSelectedItem().toString();
+        phuongThuc = cboPT.getSelectedItem().toString();
         
-        double doLechDiem = 0.0;
         
         nganhToHopBUS busNganhToHop = new nganhToHopBUS();
         if(phuongThuc.equals("Xét THPT"))
@@ -413,6 +430,14 @@ public class insertNguyenVong extends javax.swing.JDialog {
             toHopMon = toHopMonDaChon.getMatohop();
             txtToHopMon.setText(toHopMonDaChon.getMatohop());
             capNhatDiemTuDong();
+            
+            phuongThuc = cboPT.getSelectedItem().toString();
+            nganhToHopBUS busNganhToHop = new nganhToHopBUS();
+            if(phuongThuc.equals("Xét THPT"))
+            {
+                doLechDiem = busNganhToHop.layDoLechDiem(maNganh, toHopMon);
+                txtDoLech.setText(String.valueOf(doLechDiem));
+            }
         }
     }//GEN-LAST:event_btnChonToHopActionPerformed
 
@@ -428,6 +453,7 @@ public class insertNguyenVong extends javax.swing.JDialog {
             btnChonToHop.setEnabled(false);
             txtToHopMon.setText("Không");
             toHopMon = "Không";
+            txtDoLech.setText("0.0");
         }
         capNhatDiemTuDong();
     }//GEN-LAST:event_cboPTActionPerformed
@@ -443,6 +469,14 @@ public class insertNguyenVong extends javax.swing.JDialog {
             maNganh = nganh.getManganh();
             txtMaNganh.setText(maNganh);
             capNhatDiemTuDong();
+            
+            phuongThuc = cboPT.getSelectedItem().toString();
+            nganhToHopBUS busNganhToHop = new nganhToHopBUS();
+            if(phuongThuc.equals("Xét THPT"))
+            {
+                doLechDiem = busNganhToHop.layDoLechDiem(maNganh, toHopMon);
+                txtDoLech.setText(String.valueOf(doLechDiem));
+            }
         }
     }//GEN-LAST:event_btnChonMaNganhActionPerformed
 
@@ -732,6 +766,7 @@ public void capNhatDiemTuDong() {
     private javax.swing.JButton btnThoat;
     private javax.swing.JComboBox<String> cboPT;
     private javax.swing.JLabel jLabel1;
+    private javax.swing.JLabel jLabel10;
     private javax.swing.JLabel jLabel2;
     private javax.swing.JLabel jLabel3;
     private javax.swing.JLabel jLabel4;
@@ -747,6 +782,7 @@ public void capNhatDiemTuDong() {
     private javax.swing.JTextField txtDiemCong;
     private javax.swing.JTextField txtDiemTHXT;
     private javax.swing.JTextField txtDiemUuTien;
+    private javax.swing.JTextField txtDoLech;
     private javax.swing.JTextField txtMaNganh;
     private javax.swing.JSpinner txtThuTuNV;
     private javax.swing.JTextField txtToHopMon;
