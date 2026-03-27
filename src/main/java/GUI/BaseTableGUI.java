@@ -10,6 +10,7 @@ import javax.swing.border.TitledBorder;
 import javax.swing.table.DefaultTableCellRenderer;
 import javax.swing.table.DefaultTableModel;
 import javax.swing.table.JTableHeader;
+import CONFIG.RoundedButton;
 
 public class BaseTableGUI extends JPanel {
 
@@ -51,8 +52,15 @@ public class BaseTableGUI extends JPanel {
         pnlTop.setBackground(Color.WHITE);
 
         // 1. GroupBox: Xử lý chức năng (Bên trái)
-        pnlActions = new JPanel(new FlowLayout(FlowLayout.LEFT, 10, 10));
-        pnlActions.setBackground(Color.WHITE);
+//        pnlActions = new JPanel(new FlowLayout(FlowLayout.LEFT, 10, 10));
+//        pnlActions.setBackground(Color.WHITE);
+JPanel wrapper = new JPanel(new FlowLayout(FlowLayout.CENTER, 10, 10));
+wrapper.setBackground(Color.WHITE);
+
+pnlActions = new JPanel(new GridLayout(1, 6, 13, 10));
+pnlActions.setBackground(Color.WHITE);
+
+wrapper.add(pnlActions);
         
         actionBorder = BorderFactory.createTitledBorder(
             BorderFactory.createLineBorder(new Color(200, 200, 200)), 
@@ -62,12 +70,19 @@ public class BaseTableGUI extends JPanel {
         );
         pnlActions.setBorder(BorderFactory.createCompoundBorder(actionBorder, new EmptyBorder(5, 5, 5, 5)));
 
-        btnThem = new JButton("THÊM");
-        btnSua = new JButton("SỬA");
-        btnXoa = new JButton("XÓA");
-        btnChiTiet = new JButton("CHI TIẾT");
-        btnExcel = new JButton("EXCEL");
-        btnReFresh = new JButton("Refresh");
+//        btnThem = new JButton("THÊM");
+//        btnSua = new JButton("SỬA");
+//        btnXoa = new JButton("XÓA");
+//        btnChiTiet = new JButton("CHI TIẾT");
+//        btnExcel = new JButton("EXCEL");
+//        btnReFresh = new JButton("Refresh");
+btnThem = new RoundedButton("THÊM");
+btnSua = new RoundedButton("SỬA");
+btnXoa = new RoundedButton("XÓA");
+btnChiTiet = new RoundedButton("CHI TIẾT");
+btnExcel = new RoundedButton("EXCEL");
+btnReFresh = new RoundedButton("Refresh");
+btnTimKiem = new RoundedButton("TÌM KIẾM");
         
         btnSua.setEnabled(false);
         btnXoa.setEnabled(false);
@@ -328,8 +343,8 @@ private void styleComponents() {
     }
 
     // Nút Xóa vẫn để màu đỏ cho cảnh báo nguy hiểm
-    btnXoa.setBackground(new Color(231, 76, 60));
-    btnXoa.setForeground(Color.WHITE);
+//    btnXoa.setBackground(new Color(231, 76, 60));
+//    btnXoa.setForeground(Color.WHITE);
 
     // ===== INPUT =====
     txtTimKiem.setFont(mainFont);
