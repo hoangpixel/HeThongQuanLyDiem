@@ -25,4 +25,20 @@ public class nganhToHopDAO {
         }
         return ds;
     }
+    
+    // Trong nganhToHopDAO.java (và gọi lại ở nganhToHopBUS.java)
+    public double[] layHeSoMon(String maNganh, String maToHop) {
+        double[] heSo = {1.0, 1.0, 1.0}; // Mặc định là 1 hết
+        try (org.hibernate.Session session = CONFIG.HibernateUtil.getSessionFactory().openSession()) {
+            String sql = "SELECT hsmon1, hsmon2, hsmon3 FROM xt_nganh_tohop WHERE manganh = :mn AND matohop = :th LIMIT 1";
+            Object[] result = (Object[]) session.createNativeQuery(sql)
+                    .setParameter("mn", maNganh).setParameter("th", maToHop).uniqueResult();
+            if (result != null) {
+                heSo[0] = result[0] == null ? 1.0 : ((Number) result[0]).doubleValue();
+                heSo[1] = result[1] == null ? 1.0 : ((Number) result[1]).doubleValue();
+                heSo[2] = result[2] == null ? 1.0 : ((Number) result[2]).doubleValue();
+            }
+        } catch (Exception e) { e.printStackTrace(); }
+        return heSo;
+    }    
 }

@@ -15,7 +15,6 @@ import java.util.ArrayList;
  */
 public class thiSinhXetTuyenBUS {
     public static ArrayList<thiSinhXetTuyenETT> ds;
-    thiSinhXetTuyenDAO data = new thiSinhXetTuyenDAO();
     private thiSinhXetTuyenDAO dao = new thiSinhXetTuyenDAO();
     
     public thiSinhXetTuyenBUS() {
@@ -76,7 +75,7 @@ public class thiSinhXetTuyenBUS {
     }
     public boolean xoaThiSinh(Entity.thiSinhXetTuyenETT nv) {
         // 1. Kêu DAO xóa dưới MySQL
-        if (data.xoaThiSinh(nv)) {
+        if (dao.xoaThiSinh(nv)) {
             
             // 2. Nếu MySQL xóa thành công, xóa luôn trong RAM
             if (ds != null) {
@@ -194,5 +193,10 @@ public class thiSinhXetTuyenBUS {
 
         int next = max + 1;
         return "TS26" + String.format("%03d", next);
+    }
+    
+        public String layKhuVucTheoCCCD(String cccd) {
+        // Gọi thẳng xuống DAO
+        return dao.layKhuVucTheoCCCD(cccd);
     }
 }

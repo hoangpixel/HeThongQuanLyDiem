@@ -304,6 +304,24 @@ private void thucHienRefresh() {
         javax.swing.JOptionPane.WARNING_MESSAGE);
         
     if (confirm == javax.swing.JOptionPane.YES_OPTION) {
+        
+        try (org.hibernate.Session session = CONFIG.HibernateUtil.getSessionFactory().openSession()) {
+            session.beginTransaction();
+            // Lệnh SQL này sẽ đếm số lượng XTT thực tế và trừ thẳng vào chỉ tiêu THPT
+            String sqlUpdateChiTieu = 
+                "UPDATE xt_nganh n " +
+                "SET n.sl_thpt = n.n_chitieu - " +
+                "    IFNULL((SELECT COUNT(*) FROM xt_nguyenvongxettuyen nv WHERE nv.nv_manganh = n.manganh AND nv.tt_phuongthuc = 'Xét tuyển thẳng'), 0) " +
+                "    - n.sl_dgnl - n.sl_vsat";
+                
+            session.createNativeQuery(sqlUpdateChiTieu).executeUpdate();
+            session.getTransaction().commit();
+            System.out.println("Hệ thống đã tự động cất ghế cho team Tuyển thẳng và cập nhật lại chỉ tiêu THPT!");
+        } catch (Exception e) {
+            e.printStackTrace();
+        }
+        
+        
         // Khai báo đối tượng BUS ở ngoài vòng lặp để xài chung
         nganhToHopBUS busNganhToHop = new nganhToHopBUS(); 
 
@@ -321,8 +339,7 @@ private void thucHienRefresh() {
 
             // --- TẬN DỤNG HÀM BUS ĐỂ LẤY ĐỘ LỆCH DỄ DÀNG ---
             double doLechDiem = 0.0;
-            if (phuongThuc.equals("Xét THPT")) {
-                // Gọi thẳng cái hàm có sẵn của ông, truyền mã ngành và tổ hợp vào
+            if (phuongThuc.equals("Xét THPT") || phuongThuc.equals("Đánh giá V-SAT")) {
                 doLechDiem = busNganhToHop.layDoLechDiem(nv.getNvMaNganh(), nv.getTtThm()); 
             }
             
@@ -335,20 +352,6 @@ private void thucHienRefresh() {
             else if (phuongThuc.equals("ĐGNL HCM")) {
                 diemChuanHoa = (nv.getDiemMon1() / 1200.0) * 30.0;
             }
-//            else if (phuongThuc.equals("Xét tuyển thẳng")) {
-//                diemChuanHoa = 30.0; // Auto 30 điểm gốc
-//                try (org.hibernate.Session session = CONFIG.HibernateUtil.getSessionFactory().openSession()) {
-//                    String sqlXTT = "SELECT loai_giai FROM xt_giathuong WHERE cccd = :cccd LIMIT 1";
-//                    Object loaiGiai = session.createNativeQuery(sqlXTT).setParameter("cccd", nv.getNnCccd()).uniqueResult();
-//
-//                    if (loaiGiai != null) {
-//                        String giai = loaiGiai.toString();
-//                        if (giai.contains("Nhất")) diemChuanHoa += 0.003;
-//                        else if (giai.contains("Nhì")) diemChuanHoa += 0.002;
-//                        else if (giai.contains("Ba")) diemChuanHoa += 0.001;
-//                    }
-//                } catch (Exception e) { e.printStackTrace(); }
-//            }
             else if (phuongThuc.equals("Xét tuyển thẳng")) {
                 diemChuanHoa = 30.0; // Auto 30 điểm gốc
                 try (org.hibernate.Session session = CONFIG.HibernateUtil.getSessionFactory().openSession()) {
@@ -390,8 +393,14 @@ private void thucHienRefresh() {
                 diemChuanHoa = ((d1*w1 + d2*w2 + d3*w3) / W) * 3.0;
             }
 
-            // Tính tổng cuối có cộng Độ Lệch
-            double tongCuoi = diemChuanHoa + nv.getDiemUuTien() + doLechDiem;
+// ... (Đoạn trên tính diemChuanHoa và doLechDiem giữ nguyên) ...
+
+            // --- CODE MỚI: KIỂM TRA NULL TRƯỚC KHI CỘNG ĐỂ CHỐNG CRASH ---
+            double diemUuTienAnToan = (nv.getDiemUtqd() != null) ? nv.getDiemUtqd() : 0.0;
+            double diemCongAnToan = (nv.getDiemCong() != null) ? nv.getDiemCong() : 0.0;
+
+            // Tính tổng cuối có cộng Độ Lệch và tách bạch điểm chuẩn ý thầy
+            double tongCuoi = diemChuanHoa + diemUuTienAnToan + diemCongAnToan + doLechDiem;
 
             if (!phuongThuc.equals("Xét tuyển thẳng")) {
                 tongCuoi = Math.min(30.0, tongCuoi);

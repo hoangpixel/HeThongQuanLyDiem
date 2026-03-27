@@ -36,4 +36,14 @@ public double layDoLechDiem(String maNganh, String maToHop) {
         }
         return 0.0;
     }
+
+// Gọi xuống DAO để lấy hệ số môn
+    public double[] layHeSoMon(String maNganh, String maToHop) {
+        // Nếu ông muốn kiểm tra rỗng (Validation) thì làm ở đây trước khi gọi DAO
+        if (maNganh == null || maNganh.isEmpty() || maToHop == null || maToHop.isEmpty()) {
+            return new double[]{1.0, 1.0, 1.0}; // Trả về mặc định nếu đầu vào lỗi
+        }
+        
+        return data.layHeSoMon(maNganh, maToHop);
+    }
 }

@@ -114,4 +114,21 @@ public class thiSinhXetTuyenDAO {
             return false;
         }
     }
+    
+        // Nằm trong thiSinhXetTuyenDAO.java
+    public String layKhuVucTheoCCCD(String cccd) {
+        String khuVuc = "";
+        try (org.hibernate.Session session = CONFIG.HibernateUtil.getSessionFactory().openSession()) {
+            // Giả sử bảng của ông tên là xt_thisinhxettuyen25 và có cột khu_vuc
+            String sql = "SELECT khu_vuc FROM xt_thisinhxettuyen25 WHERE cccd = :cccd LIMIT 1";
+            Object result = session.createNativeQuery(sql).setParameter("cccd", cccd).uniqueResult();
+            
+            if (result != null) {
+                khuVuc = result.toString();
+            }
+        } catch (Exception e) {
+            e.printStackTrace();
+        }
+        return khuVuc;
+    }
 }
