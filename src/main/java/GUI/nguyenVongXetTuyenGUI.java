@@ -548,7 +548,7 @@ private void hienThiDialogSua() {
             // Gọi BUS xử lý và nhận thông báo kết quả
             String thongBao = busNguyenVong.nhapDuLieuTuExcel(filePath);
             
-            javax.swing.JOptionPane.showMessageDialog(this, thongBao, "Kết quả Nhập Excel", javax.swing.JOptionPane.INFORMATION_MESSAGE);
+            JOptionPane.showMessageDialog(this, thongBao, "Kết quả Nhập Excel", javax.swing.JOptionPane.INFORMATION_MESSAGE);
             
             // Xong xuôi thì làm mới lại cái bảng trên màn hình
             busNguyenVong.ds = null;

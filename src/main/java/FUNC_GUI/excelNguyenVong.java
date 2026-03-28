@@ -22,7 +22,5 @@ public class excelNguyenVong extends formExcelNguyenMauProMax{
         setTitle("Excel nguyện vọng");
         labelExcel.setText("Excel nguyện vọng");
         groupBoxExcel.setBorder(BorderFactory.createTitledBorder("thực hiện Import/Export excel nguyện vọng"));
-        messImport = "Import file Excel nguyện vọng thành công";
-        messExport = "Export file Excel nguyện vọng thành công";
     }
 }

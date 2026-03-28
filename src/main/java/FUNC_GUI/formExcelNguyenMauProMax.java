@@ -4,8 +4,6 @@
  */
 package FUNC_GUI;
 
-import javax.swing.JOptionPane;
-
 /**
  *
  * @author mhoang
@@ -17,7 +15,6 @@ public class formExcelNguyenMauProMax extends javax.swing.JDialog {
     /**
      * Creates new form deleteNguyenVong
      */
-    public String messImport = "", messExport;
     public boolean xacNhanImport = false, xacNhanExport = false;
     public formExcelNguyenMauProMax(java.awt.Frame parent, boolean modal) {
     super(parent, modal);
@@ -32,15 +29,6 @@ public class formExcelNguyenMauProMax extends javax.swing.JDialog {
     labelExcel.setHorizontalAlignment(javax.swing.SwingConstants.CENTER);
     jPanel1.setPreferredSize(new java.awt.Dimension(0, 78));
 
-    // 🔥 Tạo border đúng cách
-//    javax.swing.border.TitledBorder border =
-//        javax.swing.BorderFactory.createTitledBorder("Thực hiện xóa nguyện vọng");
-//
-//    border.setTitleFont(new java.awt.Font("Segoe UI", java.awt.Font.BOLD, 16));
-//    border.setTitleColor(new java.awt.Color(255, 0, 0));
-//    border.setTitleJustification(javax.swing.border.TitledBorder.CENTER);
-//
-//    groupBoxXoa.setBorder(border);
 
     jPanel1.revalidate();
     jPanel1.repaint();
@@ -159,14 +147,12 @@ public class formExcelNguyenMauProMax extends javax.swing.JDialog {
     private void btnExportActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_btnExportActionPerformed
         // TODO add your handling code here:
         xacNhanExport = true;
-        JOptionPane.showMessageDialog(this, messExport);
         dispose();
     }//GEN-LAST:event_btnExportActionPerformed
 
     private void btnThoatActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_btnThoatActionPerformed
         // TODO add your handling code here:
         xacNhanExport = true;
-        JOptionPane.showMessageDialog(this, messImport);
         dispose();
     }//GEN-LAST:event_btnThoatActionPerformed
 

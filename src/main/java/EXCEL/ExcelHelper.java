@@ -72,11 +72,48 @@ public class ExcelHelper {
     }
 
     // =========================================================================
+    // HÀM PHỤ TRỢ 1: TẠO GIAO DIỆN CHO DÒNG TIÊU ĐỀ (HEADER)
+    // =========================================================================
+    public static org.apache.poi.ss.usermodel.CellStyle taoStyleTieuDe(Workbook workbook) {
+        org.apache.poi.ss.usermodel.Font headerFont = workbook.createFont();
+        headerFont.setBold(true);
+        headerFont.setColor(org.apache.poi.ss.usermodel.IndexedColors.WHITE.getIndex());
+        headerFont.setFontHeightInPoints((short) 12);
+
+        org.apache.poi.ss.usermodel.CellStyle style = workbook.createCellStyle();
+        style.setFont(headerFont);
+        style.setFillForegroundColor(org.apache.poi.ss.usermodel.IndexedColors.DARK_BLUE.getIndex());
+        style.setFillPattern(org.apache.poi.ss.usermodel.FillPatternType.SOLID_FOREGROUND);
+        style.setAlignment(org.apache.poi.ss.usermodel.HorizontalAlignment.CENTER);
+        style.setVerticalAlignment(org.apache.poi.ss.usermodel.VerticalAlignment.CENTER);
+        style.setBorderTop(org.apache.poi.ss.usermodel.BorderStyle.THIN);
+        style.setBorderBottom(org.apache.poi.ss.usermodel.BorderStyle.THIN);
+        style.setBorderLeft(org.apache.poi.ss.usermodel.BorderStyle.THIN);
+        style.setBorderRight(org.apache.poi.ss.usermodel.BorderStyle.THIN);
+        
+        return style;
+    }
+
+    // =========================================================================
+    // HÀM PHỤ TRỢ 2: TẠO GIAO DIỆN CHO DÒNG DỮ LIỆU BÌNH THƯỜNG
+    // =========================================================================
+    public static org.apache.poi.ss.usermodel.CellStyle taoStyleDuLieu(Workbook workbook) {
+        org.apache.poi.ss.usermodel.CellStyle style = workbook.createCellStyle();
+        style.setBorderTop(org.apache.poi.ss.usermodel.BorderStyle.THIN);
+        style.setBorderBottom(org.apache.poi.ss.usermodel.BorderStyle.THIN);
+        style.setBorderLeft(org.apache.poi.ss.usermodel.BorderStyle.THIN);
+        style.setBorderRight(org.apache.poi.ss.usermodel.BorderStyle.THIN);
+        style.setAlignment(org.apache.poi.ss.usermodel.HorizontalAlignment.CENTER);
+        style.setVerticalAlignment(org.apache.poi.ss.usermodel.VerticalAlignment.CENTER);
+        
+        return style;
+    }
+    
+    
+    // =========================================================================
     // HÀM 2: XUẤT FULL DATA TỪ ARRAYLIST (Chữa dứt điểm bệnh phân trang)
     // =========================================================================
-// =========================================================================
-    // HÀM 2: XUẤT FULL DATA TỪ ARRAYLIST (BẢN ĐỘ GIAO DIỆN CỰC ĐẸP)
-    // =========================================================================
+
     public static void xuatDanhSachNguyenVongRaExcel(ArrayList<nguyenVongXetTuyenETT> ds, java.awt.Component parent, String tenBang) {
         try {
             if (ds == null || ds.isEmpty()) {
@@ -96,43 +133,18 @@ public class ExcelHelper {
                 Workbook workbook = new XSSFWorkbook();
                 Sheet sheet = workbook.createSheet(tenBang);
 
-                // ================== GÓC ĐỘ GIAO DIỆN (STYLING) ==================
-                // 1. Style cho Dòng Tiêu Đề (Header): Nền xanh đậm, chữ trắng, in đậm
-                org.apache.poi.ss.usermodel.Font headerFont = workbook.createFont();
-                headerFont.setBold(true);
-                headerFont.setColor(org.apache.poi.ss.usermodel.IndexedColors.WHITE.getIndex());
-                headerFont.setFontHeightInPoints((short) 12);
+                // --- 1. GỌI HÀM LẤY STYLE CHUNG (SẠCH SẼ CHƯA!) ---
+                org.apache.poi.ss.usermodel.CellStyle headerStyle = taoStyleTieuDe(workbook);
+                org.apache.poi.ss.usermodel.CellStyle dataStyle = taoStyleDuLieu(workbook);
 
-                org.apache.poi.ss.usermodel.CellStyle headerStyle = workbook.createCellStyle();
-                headerStyle.setFont(headerFont);
-                headerStyle.setFillForegroundColor(org.apache.poi.ss.usermodel.IndexedColors.DARK_BLUE.getIndex());
-                headerStyle.setFillPattern(org.apache.poi.ss.usermodel.FillPatternType.SOLID_FOREGROUND);
-                headerStyle.setAlignment(org.apache.poi.ss.usermodel.HorizontalAlignment.CENTER);
-                headerStyle.setVerticalAlignment(org.apache.poi.ss.usermodel.VerticalAlignment.CENTER);
-                // Kẻ viền cho header
-                headerStyle.setBorderTop(org.apache.poi.ss.usermodel.BorderStyle.THIN);
-                headerStyle.setBorderBottom(org.apache.poi.ss.usermodel.BorderStyle.THIN);
-                headerStyle.setBorderLeft(org.apache.poi.ss.usermodel.BorderStyle.THIN);
-                headerStyle.setBorderRight(org.apache.poi.ss.usermodel.BorderStyle.THIN);
-
-                // 2. Style cho Dữ liệu (Data): Kẻ ô vuông vức, căn giữa toàn bộ
-                org.apache.poi.ss.usermodel.CellStyle dataStyle = workbook.createCellStyle();
-                dataStyle.setBorderTop(org.apache.poi.ss.usermodel.BorderStyle.THIN);
-                dataStyle.setBorderBottom(org.apache.poi.ss.usermodel.BorderStyle.THIN);
-                dataStyle.setBorderLeft(org.apache.poi.ss.usermodel.BorderStyle.THIN);
-                dataStyle.setBorderRight(org.apache.poi.ss.usermodel.BorderStyle.THIN);
-                dataStyle.setAlignment(org.apache.poi.ss.usermodel.HorizontalAlignment.CENTER);
-                dataStyle.setVerticalAlignment(org.apache.poi.ss.usermodel.VerticalAlignment.CENTER);
-                // ===============================================================
-
-                // 3. In Header và áp dụng Style
+                // --- 2. IN HEADER ---
                 String[] headers = {
                     "ID NV", "CCCD", "ID Ngành", "Thứ Tự", "Điểm THXT", 
                     "Điểm UTQD", "Điểm Cộng", "Điểm Tổng", "Kết Quả NV", 
                     "Keys", "Phương Thức", "Tổ Hợp"
                 };
                 Row headerRow = sheet.createRow(0);
-                headerRow.setHeightInPoints(25); // Kéo cho dòng tiêu đề cao lên xíu cho sang
+                headerRow.setHeightInPoints(25);
                 
                 for (int i = 0; i < headers.length; i++) {
                     Cell cell = headerRow.createCell(i);
@@ -140,12 +152,11 @@ public class ExcelHelper {
                     cell.setCellStyle(headerStyle); // Khoác áo VIP cho Header
                 }
 
-                // 4. In Data và áp dụng Style
+                // --- 3. IN DATA ---
                 int rowNum = 1;
                 for (nguyenVongXetTuyenETT nv : ds) {
                     Row row = sheet.createRow(rowNum++);
                     
-                    // Tạo một mảng object để lặp qua tạo cell cho lẹ, code đỡ dài
                     Object[] rowData = {
                         nv.getIdNv(),
                         nv.getNnCccd() != null ? nv.getNnCccd() : "",
@@ -163,10 +174,8 @@ public class ExcelHelper {
 
                     for (int i = 0; i < rowData.length; i++) {
                         Cell cell = row.createCell(i);
-                        // Kích hoạt Style kẻ ô cho dòng dữ liệu
-                        cell.setCellStyle(dataStyle); 
+                        cell.setCellStyle(dataStyle); // Gắn Style Dữ liệu
                         
-                        // Xét kiểu dữ liệu để đẩy vào Excel cho chuẩn (Số ra số, chữ ra chữ)
                         if (rowData[i] instanceof Number) {
                             cell.setCellValue(((Number) rowData[i]).doubleValue());
                         } else {
@@ -175,16 +184,12 @@ public class ExcelHelper {
                     }
                 }
 
-                // 5. Căn chỉnh auto-size cho tất cả các cột
+                // --- 4. TÚT TÁT LẠI CỘT CHO ĐẸP ---
                 for (int i = 0; i < headers.length; i++) {
                     sheet.autoSizeColumn(i);
-                    // Cộng thêm tí padding (khoảng trống) cho nó thoáng mắt
                     sheet.setColumnWidth(i, sheet.getColumnWidth(i) + 1000); 
                 }
-                
-                // 6. TÍNH NĂNG ĂN TIỀN: Khóa dòng tiêu đề (Freeze Pane)
-                // Cuộn chuột ngàn dòng thì cái Header xanh đậm vẫn dính chặt ở trên cùng
-                sheet.createFreezePane(0, 1);
+                sheet.createFreezePane(0, 1); // Khóa tiêu đề
 
                 // Xuất file
                 try (FileOutputStream out = new FileOutputStream(filePath)) {
