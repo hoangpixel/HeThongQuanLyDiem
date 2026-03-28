@@ -22,7 +22,90 @@ public class nganhToHopBUS {
         return ds;
     }
     
-public double layDoLechDiem(String maNganh, String maToHop) {
+    public boolean kiemTraRong(String text)
+    {
+        if(text == null || text.trim().isEmpty())
+        {
+            return true;
+        }
+        return false;
+    }
+    
+    public boolean kiemTraSo(String text) 
+    {
+        try 
+        {
+            Integer.parseInt(text);
+            return true;
+        } catch (NumberFormatException e) 
+        {
+            return false;
+        }
+    }
+    
+    public boolean kiemTraSoThuc(String text) 
+    {
+    try {
+        Double.parseDouble(text);
+        return true;
+    } catch (NumberFormatException e) 
+    {
+        return false;
+    }
+    }
+    
+    // ===================== THÊM =====================
+    public boolean themNganhToHop(nganhToHopETT nganhToHopMoi) {
+        boolean isSuccess = data.them(nganhToHopMoi);
+        if (isSuccess) {
+            if (ds != null) {
+                ds.add(nganhToHopMoi); // Cập nhật RAM luôn, không cần load lại DB
+            }
+        }
+        return isSuccess;
+    }
+
+    // ===================== SỬA =====================
+    public boolean suaNganhToHop(nganhToHopETT nganhToHopDaSua) {
+        // 1. Lưu xuống Database trước qua DAO
+        if (data.sua(nganhToHopDaSua)) {
+
+            // 2. Nếu DB OK → cập nhật lại RAM
+            if (ds != null) {
+                for (int i = 0; i < ds.size(); i++) {
+                    // Dùng id (khóa chính) để tìm đúng phần tử
+                    if (ds.get(i).getIdNganhToHop() == nganhToHopDaSua.getIdNganhToHop()) {
+                        ds.set(i, nganhToHopDaSua); // Đè object mới vào vị trí cũ
+                        break;
+                    }
+                }
+            }
+            return true;
+        }
+        return false;
+    }
+
+    // ===================== XÓA =====================
+    public boolean xoaNganhToHop(nganhToHopETT nganhToHopCanXoa) {
+        // 1. Xóa trong Database trước
+        if (data.xoa(nganhToHopCanXoa)) {
+
+            // 2. Nếu DB OK → xóa luôn trong RAM
+            if (ds != null) {
+                for (int i = 0; i < ds.size(); i++) {
+                    if (ds.get(i).getIdNganhToHop() == nganhToHopCanXoa.getIdNganhToHop()) {
+                        ds.remove(i);
+                        break;
+                    }
+                }
+            }
+            return true;
+        }
+        return false;
+    }
+
+    
+    public double layDoLechDiem(String maNganh, String maToHop) {
         if(ds == null || ds.isEmpty()) {
             layDanhSach();
         }
