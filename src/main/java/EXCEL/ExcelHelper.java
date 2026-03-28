@@ -74,6 +74,9 @@ public class ExcelHelper {
     // =========================================================================
     // HÀM 2: XUẤT FULL DATA TỪ ARRAYLIST (Chữa dứt điểm bệnh phân trang)
     // =========================================================================
+// =========================================================================
+    // HÀM 2: XUẤT FULL DATA TỪ ARRAYLIST (BẢN ĐỘ GIAO DIỆN CỰC ĐẸP)
+    // =========================================================================
     public static void xuatDanhSachNguyenVongRaExcel(ArrayList<nguyenVongXetTuyenETT> ds, java.awt.Component parent, String tenBang) {
         try {
             if (ds == null || ds.isEmpty()) {
@@ -84,7 +87,7 @@ public class ExcelHelper {
             JFileChooser fileChooser = new JFileChooser();
             fileChooser.setDialogTitle("Chọn vị trí lưu Danh sách Nguyện Vọng");
             fileChooser.setFileFilter(new FileNameExtensionFilter("Excel Files (*.xlsx)", "xlsx"));
-            fileChooser.setSelectedFile(new File(tenBang + ".xlsx")); // Tên mặc định
+            fileChooser.setSelectedFile(new File(tenBang + ".xlsx"));
 
             if (fileChooser.showSaveDialog(parent) == JFileChooser.APPROVE_OPTION) {
                 String filePath = fileChooser.getSelectedFile().getAbsolutePath();
@@ -93,45 +96,97 @@ public class ExcelHelper {
                 Workbook workbook = new XSSFWorkbook();
                 Sheet sheet = workbook.createSheet(tenBang);
 
-                // 1. In Header (Tiêu đề cột tự định nghĩa cho đẹp)
-// 1. In Header (Đã bổ sung ID NV, Keys, và khớp thứ tự với Form của ông)
+                // ================== GÓC ĐỘ GIAO DIỆN (STYLING) ==================
+                // 1. Style cho Dòng Tiêu Đề (Header): Nền xanh đậm, chữ trắng, in đậm
+                org.apache.poi.ss.usermodel.Font headerFont = workbook.createFont();
+                headerFont.setBold(true);
+                headerFont.setColor(org.apache.poi.ss.usermodel.IndexedColors.WHITE.getIndex());
+                headerFont.setFontHeightInPoints((short) 12);
+
+                org.apache.poi.ss.usermodel.CellStyle headerStyle = workbook.createCellStyle();
+                headerStyle.setFont(headerFont);
+                headerStyle.setFillForegroundColor(org.apache.poi.ss.usermodel.IndexedColors.DARK_BLUE.getIndex());
+                headerStyle.setFillPattern(org.apache.poi.ss.usermodel.FillPatternType.SOLID_FOREGROUND);
+                headerStyle.setAlignment(org.apache.poi.ss.usermodel.HorizontalAlignment.CENTER);
+                headerStyle.setVerticalAlignment(org.apache.poi.ss.usermodel.VerticalAlignment.CENTER);
+                // Kẻ viền cho header
+                headerStyle.setBorderTop(org.apache.poi.ss.usermodel.BorderStyle.THIN);
+                headerStyle.setBorderBottom(org.apache.poi.ss.usermodel.BorderStyle.THIN);
+                headerStyle.setBorderLeft(org.apache.poi.ss.usermodel.BorderStyle.THIN);
+                headerStyle.setBorderRight(org.apache.poi.ss.usermodel.BorderStyle.THIN);
+
+                // 2. Style cho Dữ liệu (Data): Kẻ ô vuông vức, căn giữa toàn bộ
+                org.apache.poi.ss.usermodel.CellStyle dataStyle = workbook.createCellStyle();
+                dataStyle.setBorderTop(org.apache.poi.ss.usermodel.BorderStyle.THIN);
+                dataStyle.setBorderBottom(org.apache.poi.ss.usermodel.BorderStyle.THIN);
+                dataStyle.setBorderLeft(org.apache.poi.ss.usermodel.BorderStyle.THIN);
+                dataStyle.setBorderRight(org.apache.poi.ss.usermodel.BorderStyle.THIN);
+                dataStyle.setAlignment(org.apache.poi.ss.usermodel.HorizontalAlignment.CENTER);
+                dataStyle.setVerticalAlignment(org.apache.poi.ss.usermodel.VerticalAlignment.CENTER);
+                // ===============================================================
+
+                // 3. In Header và áp dụng Style
                 String[] headers = {
                     "ID NV", "CCCD", "ID Ngành", "Thứ Tự", "Điểm THXT", 
                     "Điểm UTQD", "Điểm Cộng", "Điểm Tổng", "Kết Quả NV", 
                     "Keys", "Phương Thức", "Tổ Hợp"
                 };
                 Row headerRow = sheet.createRow(0);
+                headerRow.setHeightInPoints(25); // Kéo cho dòng tiêu đề cao lên xíu cho sang
+                
                 for (int i = 0; i < headers.length; i++) {
-                    headerRow.createCell(i).setCellValue(headers[i]);
+                    Cell cell = headerRow.createCell(i);
+                    cell.setCellValue(headers[i]);
+                    cell.setCellStyle(headerStyle); // Khoác áo VIP cho Header
                 }
 
-                // 2. Lấy Full danh sách từ ArrayList đổ vào Excel
+                // 4. In Data và áp dụng Style
                 int rowNum = 1;
                 for (nguyenVongXetTuyenETT nv : ds) {
                     Row row = sheet.createRow(rowNum++);
-                    // Ép đúng thứ tự 12 cột từ 0 đến 11
-                    row.createCell(0).setCellValue(nv.getIdNv()); // Nếu id kiểu int thì nó tự nhận luôn
-                    row.createCell(1).setCellValue(nv.getNnCccd() != null ? nv.getNnCccd() : "");
-                    row.createCell(2).setCellValue(nv.getNvMaNganh() != null ? nv.getNvMaNganh() : "");
-                    row.createCell(3).setCellValue(nv.getNvTt());
-                    row.createCell(4).setCellValue(nv.getDiemThxt() != null ? nv.getDiemThxt() : 0.0);
-                    row.createCell(5).setCellValue(nv.getDiemUtqd() != null ? nv.getDiemUtqd() : 0.0);
-                    row.createCell(6).setCellValue(nv.getDiemCong() != null ? nv.getDiemCong() : 0.0);
-                    row.createCell(7).setCellValue(nv.getDiemXetTuyen() != null ? nv.getDiemXetTuyen() : 0.0);
-                    row.createCell(8).setCellValue(nv.getNvKetQua() != null ? nv.getNvKetQua() : "Chờ xét");
                     
-                    // --- CỘT KEYS ẨN CỦA ÔNG ĐÂY ---
-                    row.createCell(9).setCellValue(nv.getNvKeys() != null ? nv.getNvKeys() : "");
-                    
-                    row.createCell(10).setCellValue(nv.getTtPhuongThuc() != null ? nv.getTtPhuongThuc() : "");
-                    row.createCell(11).setCellValue(nv.getTtThm() != null ? nv.getTtThm() : "");
+                    // Tạo một mảng object để lặp qua tạo cell cho lẹ, code đỡ dài
+                    Object[] rowData = {
+                        nv.getIdNv(),
+                        nv.getNnCccd() != null ? nv.getNnCccd() : "",
+                        nv.getNvMaNganh() != null ? nv.getNvMaNganh() : "",
+                        nv.getNvTt(),
+                        nv.getDiemThxt() != null ? nv.getDiemThxt() : 0.0,
+                        nv.getDiemUtqd() != null ? nv.getDiemUtqd() : 0.0,
+                        nv.getDiemCong() != null ? nv.getDiemCong() : 0.0,
+                        nv.getDiemXetTuyen() != null ? nv.getDiemXetTuyen() : 0.0,
+                        nv.getNvKetQua() != null ? nv.getNvKetQua() : "Chờ xét",
+                        nv.getNvKeys() != null ? nv.getNvKeys() : "",
+                        nv.getTtPhuongThuc() != null ? nv.getTtPhuongThuc() : "",
+                        nv.getTtThm() != null ? nv.getTtThm() : ""
+                    };
+
+                    for (int i = 0; i < rowData.length; i++) {
+                        Cell cell = row.createCell(i);
+                        // Kích hoạt Style kẻ ô cho dòng dữ liệu
+                        cell.setCellStyle(dataStyle); 
+                        
+                        // Xét kiểu dữ liệu để đẩy vào Excel cho chuẩn (Số ra số, chữ ra chữ)
+                        if (rowData[i] instanceof Number) {
+                            cell.setCellValue(((Number) rowData[i]).doubleValue());
+                        } else {
+                            cell.setCellValue(rowData[i].toString());
+                        }
+                    }
                 }
 
-                // Tự động căn chỉnh độ rộng cột cho đẹp
+                // 5. Căn chỉnh auto-size cho tất cả các cột
                 for (int i = 0; i < headers.length; i++) {
                     sheet.autoSizeColumn(i);
+                    // Cộng thêm tí padding (khoảng trống) cho nó thoáng mắt
+                    sheet.setColumnWidth(i, sheet.getColumnWidth(i) + 1000); 
                 }
+                
+                // 6. TÍNH NĂNG ĂN TIỀN: Khóa dòng tiêu đề (Freeze Pane)
+                // Cuộn chuột ngàn dòng thì cái Header xanh đậm vẫn dính chặt ở trên cùng
+                sheet.createFreezePane(0, 1);
 
+                // Xuất file
                 try (FileOutputStream out = new FileOutputStream(filePath)) {
                     workbook.write(out);
                 }

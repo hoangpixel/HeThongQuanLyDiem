@@ -429,9 +429,24 @@ if (toHop != null) {
     }
     
     // Trong file nguyenVongXetTuyenBUS.java (Hoặc BUS tương ứng)
+// =====================================================================
+    // HÀM PHỤ TRỢ: ÉP KIỂU AN TOÀN (Tránh crash nếu ô Excel bị rỗng)
+    // =====================================================================
+    private double parseDoubleSafe(String val) {
+        try {
+            if (val == null || val.trim().isEmpty()) return 0.0;
+            return Double.parseDouble(val.trim());
+        } catch (Exception e) {
+            return 0.0;
+        }
+    }
+
+    // =====================================================================
+    // HÀM IMPORT CHÍNH THỨC ĐÃ FIX LỖI ĐIỂM SỐ 0.0
+    // =====================================================================
     public String nhapDuLieuTuExcel(String filePath) {
         try {
-            // 1. Gọi Helper để lấy ma trận dữ liệu từ Excel
+            // 1. Lấy ma trận dữ liệu từ Excel
             ArrayList<ArrayList<String>> data = EXCEL.ExcelHelper.docFileExcel(filePath);
             
             if (data.size() <= 1) {
@@ -442,33 +457,35 @@ if (toHop != null) {
             int soDongThatBai = 0;
             nguyenVongXetTuyenDAO dao = new nguyenVongXetTuyenDAO();
 
-            // 2. Dòng 0 là dòng Tiêu đề (Header) nên mình bỏ qua, bắt đầu chạy từ dòng 1
             for (int i = 1; i < data.size(); i++) {
                 ArrayList<String> row = data.get(i);
                 
                 try {
-                    // 3. Ráp dữ liệu từ cột Excel vào Entity
-                    // LƯU Ý: Số index row.get(0), row.get(1)... phải khớp y chang với thứ tự cột trong file Excel của ông!
                     nguyenVongXetTuyenETT nv = new nguyenVongXetTuyenETT();
                     
-                    nv.setNnCccd(row.get(1)); // Cột 2 trong Excel là CCCD
-                    nv.setNvMaNganh(row.get(2)); // Cột 3 là Mã Ngành
-                    nv.setTtThm(row.get(3)); // Cột 4 là Tổ hợp
-                    nv.setNvTt(Integer.parseInt(row.get(4))); // Cột 5 là Thứ tự
-                    nv.setTtPhuongThuc(row.get(5)); // Cột 6 là Phương thức
+                    nv.setNnCccd(row.get(1));              // Cột B (Index 1): CCCD
+                    nv.setNvMaNganh(row.get(2));           // Cột C (Index 2): Mã Ngành
                     
-                    // Điểm số và trạng thái cứ set mặc định chờ hệ thống quét
-                    nv.setDiemThxt(0.0);
-                    nv.setDiemUtqd(0.0);
-                    nv.setDiemCong(0.0);
-                    nv.setDiemXetTuyen(0.0);
-                    nv.setNvKetQua("Chờ xét");
+                    // Ép kiểu Thứ tự an toàn (Xử lý luôn vụ Excel tự chèn số thực kiểu "1.0")
+                    nv.setNvTt((int) parseDoubleSafe(row.get(3))); // Cột D (Index 3): Thứ Tự NV
+                    
+                    // --- ĐỌC TRỰC TIẾP ĐIỂM SỐ TỪ FILE EXCEL (KHÔNG GÁN MÙ QUÁNG NỮA) ---
+                    nv.setDiemThxt(parseDoubleSafe(row.get(4)));   // Cột E (Index 4): Điểm THXT
+                    nv.setDiemUtqd(parseDoubleSafe(row.get(5)));   // Cột F (Index 5): Điểm Ưu tiên (Khu vực)
+                    nv.setDiemCong(parseDoubleSafe(row.get(6)));   // Cột G (Index 6): Điểm Cộng (Giải/IELTS)
+                    nv.setDiemXetTuyen(parseDoubleSafe(row.get(7))); // Cột H (Index 7): Tổng Điểm
+                    
+                    String ketQua = row.get(8);
+                    nv.setNvKetQua(ketQua != null && !ketQua.isEmpty() ? ketQua : "Chờ xét"); // Cột I (Index 8)
+                    
+                    nv.setTtPhuongThuc(row.get(10));       // Cột K (Index 10): Phương thức
+                    nv.setTtThm(row.get(11));              // Cột L (Index 11): Tổ hợp
                     
                     // Tạo key ẩn
                     nv.setNvKeys(nv.getNnCccd() + "_" + nv.getNvTt());
 
-                    // 4. Đẩy xuống DAO để Thêm vào Database
-                    if (dao.saveNguyenVong(nv)) {
+                    // 4. Đẩy xuống DAO để Thêm vào Database (Nhớ sửa tên hàm cho khớp DAO của ông nha)
+                    if (dao.saveNguyenVong(nv)) { 
                         soDongThanhCong++;
                     } else {
                         soDongThatBai++;

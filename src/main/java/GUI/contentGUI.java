@@ -36,11 +36,7 @@ public class contentGUI extends JFrame {
             cardLayout.show(contentPanel, "nguyenvong");
         });
         
-        contentPanel.add(new testGUI(),"test");
-        add(contentPanel,BorderLayout.CENTER);
-        nav.btnDiemThi.addActionListener(e -> {
-            cardLayout.show(contentPanel,"test");
-        });
+
         nav.btnThiSinh.addActionListener(e -> {
             cardLayout.show(contentPanel, "thisinh");
         });

@@ -24,7 +24,7 @@ import javax.swing.JOptionPane;
 import EXCEL.ExcelHelper;
 import CAL.*;
 
-public class nguyenVongXetTuyenGUI extends BaseTableGUI {
+public class nguyenVongXetTuyenGUI extends BaseTableForNguyenVongGUIonly {
 
     nguyenVongXetTuyenBUS busNguyenVong = new nguyenVongXetTuyenBUS();
     public nguyenVongXetTuyenGUI() {
