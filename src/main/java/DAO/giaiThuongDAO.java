@@ -34,4 +34,19 @@ public class giaiThuongDAO {
             return (Object[]) session.createNativeQuery(sql).setParameter("cccd", cccd).uniqueResult();
         } catch (Exception e) { e.printStackTrace(); return null; }
     }
+    
+    public String[] layCapVaLoaiGiai(String cccd) {
+        String[] ketQua = {"", ""}; // [0]: Cấp giải, [1]: Loại giải
+        try (org.hibernate.Session session = CONFIG.HibernateUtil.getSessionFactory().openSession()) {
+            String sql = "SELECT cap_giai, loai_giai FROM xt_giathuong WHERE cccd = :cccd LIMIT 1";
+            Object[] result = (Object[]) session.createNativeQuery(sql).setParameter("cccd", cccd).uniqueResult();
+            if (result != null) {
+                ketQua[0] = result[0] != null ? result[0].toString() : "";
+                ketQua[1] = result[1] != null ? result[1].toString() : "";
+            }
+        } catch (Exception e) {
+            e.printStackTrace();
+        }
+        return ketQua;
+    }
 }

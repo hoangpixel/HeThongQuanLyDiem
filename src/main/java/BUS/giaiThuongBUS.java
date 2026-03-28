@@ -31,4 +31,10 @@ public class giaiThuongBUS {
         giaiThuongDAO dao = new giaiThuongDAO();
         return dao.layGiaiThuong(cccd);
     }
+    
+    public String[] layCapVaLoaiGiai(String cccd) {
+        if (cccd == null || cccd.isEmpty()) return new String[]{"", ""};
+        giaiThuongDAO dao = new giaiThuongDAO();
+        return dao.layCapVaLoaiGiai(cccd);
+    }
 }

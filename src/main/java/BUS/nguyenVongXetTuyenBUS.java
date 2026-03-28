@@ -108,41 +108,6 @@ public class nguyenVongXetTuyenBUS {
         return false;
     }
     
-    public void sapXepKetQuaTuDong()
-    {
-        String cccdHientai = "";
-        boolean daDauNguyenVong = false;
-        nganhBUS busNganh = new nganhBUS();
-        for(nguyenVongXetTuyenETT ct : ds)
-        {
-            if(!ct.getNnCccd().equals(cccdHientai))
-            {
-                cccdHientai = ct.getNnCccd();
-                daDauNguyenVong = false;
-            }
-            
-            if(daDauNguyenVong)
-            {
-                ct.setNvKetQua("Không xét");
-                data.suaNguyenVong(ct);
-                continue;
-            }
-            
-            String maNganh = ct.getNvMaNganh();
-            String phuongThuc = ct.getTtPhuongThuc();
-            double diemChuanNganh = busNganh.layDiemChuanTheoPhuongThuc(maNganh, phuongThuc);
-            
-            if(ct.getDiemXetTuyen() >= diemChuanNganh) {
-                ct.setNvKetQua("Đã đậu");
-                daDauNguyenVong = true; // BẬT CỜ: Đã đậu rồi, các NV sau khỏi xét!
-            } else {
-                ct.setNvKetQua("Đã trượt");
-            }
-            
-            // Cập nhật phán quyết xuống Database
-            data.suaNguyenVong(ct);
-        }
-    }
     
     // ==================================================================================
     // 🏆 THUẬT TOÁN BOSS: LỌC ẢO (DOMINO) CẮT THEO CHỈ TIÊU TỪNG PHƯƠNG THỨC
@@ -216,7 +181,20 @@ public class nguyenVongXetTuyenBUS {
                 ArrayList<nguyenVongXetTuyenETT> roHienTai = mapRoXetTuyen.get(keyRo);
 
                 // Sắp xếp tụi trong Rổ theo Điểm giảm dần (Đứa cao điểm đứng đầu)
-                roHienTai.sort((nv1, nv2) -> Double.compare(nv2.getDiemXetTuyen(), nv1.getDiemXetTuyen()));
+//                roHienTai.sort((nv1, nv2) -> Double.compare(nv2.getDiemXetTuyen(), nv1.getDiemXetTuyen()));
+                // Sắp xếp tụi trong Rổ theo Điểm giảm dần. NẾU BẰNG ĐIỂM -> Xài Tiêu chí phụ
+                roHienTai.sort((nv1, nv2) -> {
+                    // 1. Tiêu chí chính: So sánh Điểm Xét Tuyển (Thấp đến Cao -> Đảo ngược lại là Cao xuống Thấp)
+                    int diemCompare = Double.compare(nv2.getDiemXetTuyen(), nv1.getDiemXetTuyen());
+                    
+                    if (diemCompare != 0) {
+                        return diemCompare; // Trả về kết quả chênh lệch điểm
+                    }
+                    
+                    // 2. Tiêu chí phụ (TIE-BREAKER): Bằng điểm nhau thì ưu tiên Thứ Tự Nguyện Vọng
+                    // Đứa nào đặt NV ưu tiên hơn (Số nhỏ hơn, VD: NV1 < NV2) thì được đẩy lên trên
+                    return Integer.compare(nv1.getNvTt(), nv2.getNvTt());
+                });
 
                 int chiTieu = mapChiTieu.getOrDefault(keyRo, 0);
 
@@ -447,6 +425,63 @@ if (toHop != null) {
             System.out.println("✅ Đã chốt điểm chuẩn tự động thành công!");
         } catch (Exception e) {
             e.printStackTrace();
+        }
+    }
+    
+    // Trong file nguyenVongXetTuyenBUS.java (Hoặc BUS tương ứng)
+    public String nhapDuLieuTuExcel(String filePath) {
+        try {
+            // 1. Gọi Helper để lấy ma trận dữ liệu từ Excel
+            ArrayList<ArrayList<String>> data = EXCEL.ExcelHelper.docFileExcel(filePath);
+            
+            if (data.size() <= 1) {
+                return "File Excel trống hoặc chỉ có mỗi dòng Tiêu đề!";
+            }
+
+            int soDongThanhCong = 0;
+            int soDongThatBai = 0;
+            nguyenVongXetTuyenDAO dao = new nguyenVongXetTuyenDAO();
+
+            // 2. Dòng 0 là dòng Tiêu đề (Header) nên mình bỏ qua, bắt đầu chạy từ dòng 1
+            for (int i = 1; i < data.size(); i++) {
+                ArrayList<String> row = data.get(i);
+                
+                try {
+                    // 3. Ráp dữ liệu từ cột Excel vào Entity
+                    // LƯU Ý: Số index row.get(0), row.get(1)... phải khớp y chang với thứ tự cột trong file Excel của ông!
+                    nguyenVongXetTuyenETT nv = new nguyenVongXetTuyenETT();
+                    
+                    nv.setNnCccd(row.get(1)); // Cột 2 trong Excel là CCCD
+                    nv.setNvMaNganh(row.get(2)); // Cột 3 là Mã Ngành
+                    nv.setTtThm(row.get(3)); // Cột 4 là Tổ hợp
+                    nv.setNvTt(Integer.parseInt(row.get(4))); // Cột 5 là Thứ tự
+                    nv.setTtPhuongThuc(row.get(5)); // Cột 6 là Phương thức
+                    
+                    // Điểm số và trạng thái cứ set mặc định chờ hệ thống quét
+                    nv.setDiemThxt(0.0);
+                    nv.setDiemUtqd(0.0);
+                    nv.setDiemCong(0.0);
+                    nv.setDiemXetTuyen(0.0);
+                    nv.setNvKetQua("Chờ xét");
+                    
+                    // Tạo key ẩn
+                    nv.setNvKeys(nv.getNnCccd() + "_" + nv.getNvTt());
+
+                    // 4. Đẩy xuống DAO để Thêm vào Database
+                    if (dao.saveNguyenVong(nv)) {
+                        soDongThanhCong++;
+                    } else {
+                        soDongThatBai++;
+                    }
+                } catch (Exception ex) {
+                    soDongThatBai++; // Lỗi ép kiểu hoặc thiếu dữ liệu thì tính là thất bại dòng đó
+                }
+            }
+            return "Nhập thành công: " + soDongThanhCong + " dòng.\nLỗi/Trùng lặp: " + soDongThatBai + " dòng.";
+
+        } catch (Exception e) {
+            e.printStackTrace();
+            return "Lỗi khi đọc file Excel: " + e.getMessage();
         }
     }
 }

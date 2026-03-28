@@ -94,4 +94,20 @@ public class nganhDAO {
             return false;
         }
     }
+    
+    public boolean capNhatChiTieuThucTe() {
+        try (org.hibernate.Session session = CONFIG.HibernateUtil.getSessionFactory().openSession()) {
+            session.beginTransaction();
+            String sql = "UPDATE xt_nganh n " +
+                         "SET n.sl_thpt = n.n_chitieu - " +
+                         "    IFNULL((SELECT COUNT(*) FROM xt_nguyenvongxettuyen nv WHERE nv.nv_manganh = n.manganh AND nv.tt_phuongthuc = 'Xét tuyển thẳng'), 0) " +
+                         "    - n.sl_dgnl - n.sl_vsat";
+            session.createNativeQuery(sql).executeUpdate();
+            session.getTransaction().commit();
+            return true;
+        } catch (Exception e) {
+            e.printStackTrace();
+            return false;
+        }
+    }
 }

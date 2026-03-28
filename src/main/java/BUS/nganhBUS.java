@@ -53,47 +53,6 @@ public class nganhBUS {
         return false;
     }
 }
-    
-// Nâng cấp: Lấy điểm chuẩn dựa vào cả MÃ NGÀNH và PHƯƠNG THỨC
-// ==============================================================
-    // HÀM LẤY ĐIỂM CHUẨN CHÍNH XÁC THEO TỪNG PHƯƠNG THỨC
-    // ==============================================================
-    public double layDiemChuanTheoPhuongThuc(String maNganh, String phuongThuc) {
-        // Kiểm tra xem danh sách đã được load chưa
-        if (ds == null || ds.isEmpty()) {
-            layDanhSach();
-        }
-        
-        // Quét tìm đúng mã ngành
-        for (Entity.nganhETT nganh : ds) {
-            if (nganh.getManganh() != null && nganh.getManganh().equals(maNganh)) {
-                
-                // Rẽ nhánh tìm điểm chuẩn tùy theo chữ của phương thức
-                if (phuongThuc.equalsIgnoreCase("Xét THPT")) {
-                    return (nganh.getDiemchuan_thpt() != null) ? nganh.getDiemchuan_thpt() : 0.0;
-                } 
-                else if (phuongThuc.equalsIgnoreCase("ĐGNL HCM")) {
-                    return (nganh.getDiemchuan_dgnl() != null) ? nganh.getDiemchuan_dgnl() : 0.0;
-                }
-                else if (phuongThuc.equalsIgnoreCase("Xét VSAT")) {
-                    return (nganh.getDiemchuan_vsat() != null) ? nganh.getDiemchuan_vsat() : 0.0;
-                }
-                else if (phuongThuc.equalsIgnoreCase("Xét tuyển thẳng") || phuongThuc.equalsIgnoreCase("Tuyển Thẳng")) {
-                    return (nganh.getDiemchuan_xtt() != null) ? nganh.getDiemchuan_xtt() : 0.0;
-                }
-                
-                // Fallback: Lấy điểm chuẩn gốc nếu không khớp phương thức nào
-                if (nganh.getN_diemtrungtuyen() != null) {
-                    return nganh.getN_diemtrungtuyen(); 
-                }
-                // Fallback 2: Lấy điểm sàn nếu điểm chuẩn gốc cũng trống
-                else if (nganh.getN_diemsan() != null) { 
-                    return nganh.getN_diemsan();
-                }
-            }
-        }
-        return 0.0; // Trả về 0 nếu không tìm thấy
-    }
 
     public boolean themNganh(nganhETT nganhMoi) {
         boolean isSuccess = data.themNganh(nganhMoi);
@@ -142,7 +101,11 @@ public class nganhBUS {
             return true;
         }
         return false;
-    }  
-
+    }
+    
+    public boolean capNhatChiTieuThucTe() {
+        nganhDAO dao = new nganhDAO();
+        return dao.capNhatChiTieuThucTe();
+    }
 }
 
