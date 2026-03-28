@@ -18,7 +18,7 @@ import jakarta.persistence.Table;
 public class nganhToHopETT {
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
-    private int id;
+    private int idNganhToHop;
 
     @Column(name = "manganh", nullable = false)
     private String maNganh;
@@ -83,8 +83,8 @@ public class nganhToHopETT {
     @Column(name = "dolech")
     private Double doLech;
 
-    public int getId() {
-        return id;
+    public int getIdNganhToHop() {
+        return idNganhToHop;
     }
 
     public String getMaNganh() {
@@ -171,8 +171,8 @@ public class nganhToHopETT {
         return doLech;
     }
 
-    public void setId(int id) {
-        this.id = id;
+    public void setIdNganhToHop(int idNganhToHop) {
+        this.idNganhToHop = idNganhToHop;
     }
 
     public void setMaNganh(String maNganh) {
