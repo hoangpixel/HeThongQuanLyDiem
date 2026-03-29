@@ -11,11 +11,14 @@ import javax.swing.table.DefaultTableModel;
 import javax.swing.JOptionPane;
 
 import BUS.diemCongBUS;
+import BUS.thiSinhXetTuyenBUS;
 import Entity.diemCongETT;
+import Entity.thiSinhXetTuyenETT;
 
 import FUNC_GUI.insertDiemCong;
 import FUNC_GUI.updateDiemCong;
 import FUNC_GUI.deleteDiemCong;
+import FUNC_GUI.deleteNguyenVong;
 /*
  * Click nbfs://nbhost/SystemFileSystem/Templates/Licenses/license-default.txt to change this license
  * Click nbfs://nbhost/SystemFileSystem/Templates/Classes/Class.java to edit this template
@@ -153,29 +156,32 @@ public class diemCongXetTuyenGUI extends BaseTableGUI {
 
     // ================= XÓA =================
     private void hienThiDialogXoa() {
-        int row = table.getSelectedRow();
+            int row = table.getSelectedRow();
 
-        if (row == -1) {
-            JOptionPane.showMessageDialog(this, "Chọn dòng để xóa!");
-            return;
-        }
+        if (row != -1) {
 
-        int confirm = JOptionPane.showConfirmDialog(this, "Xóa dòng này?", "Xác nhận", JOptionPane.YES_NO_OPTION);
-        if (confirm != JOptionPane.YES_OPTION) return;
+            JFrame topFrame = (JFrame) SwingUtilities.windowForComponent(this);
+            deleteDiemCong dialog = new deleteDiemCong(topFrame, true);
+            dialog.setVisible(true);
 
-        int index = table.convertRowIndexToModel(row);
+            if (dialog.getXacNhanXoa()) {
 
-        diemCongBUS bus = new diemCongBUS();
-        bus.layDanhSach();
+                // 🔥 Tính index
+                int modelIndex = table.convertRowIndexToModel(row);
 
-        diemCongETT dc = bus.ds.get(index);
+                diemCongBUS bus = new diemCongBUS();
+                bus.layDanhSach();
 
-        if (bus.xoaDiemCong(dc)) {
-            tableModel.removeRow(index);
-            JOptionPane.showMessageDialog(this, "Xóa thành công!");
-        } else {
-            JOptionPane.showMessageDialog(this, "Xóa thất bại!");
-        }
+                diemCongETT dcCanXoa = bus.ds.get(modelIndex);
+
+                if (bus.xoaDiemCong(dcCanXoa)) {
+                    ((DefaultTableModel) table.getModel()).removeRow(modelIndex);
+                }
+
+                } else {
+                    JOptionPane.showMessageDialog(this, "Xóa điểm cộng thất bại");
+                }
+            }
     }
 
     // ================= CHI TIẾT =================

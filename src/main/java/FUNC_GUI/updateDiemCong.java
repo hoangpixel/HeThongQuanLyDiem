@@ -4,30 +4,61 @@
  */
 package FUNC_GUI;
 import Entity.diemCongETT;
+import Entity.nganhETT;
+import Entity.toHopETT;
+import SELECT_GUI.selectNganh;
+import SELECT_GUI.selectThiSinh;
+import SELECT_GUI.selectToHop;
+import javax.swing.JFrame;
 import javax.swing.JOptionPane;
+import javax.swing.SwingUtilities;
 /**
  *
  * @author LE MINH HUY
  */
-public class updateDiemCong extends javax.swing.JDialog {
-    private diemCongETT dc;
-    private boolean xacNhan = false;
-    private static final java.util.logging.Logger logger = java.util.logging.Logger.getLogger(updateDiemCong.class.getName());
-
-    /**
-     * Creates new form updateDiemCong
-     */
-    public updateDiemCong(java.awt.Frame parent, boolean modal, diemCongETT dc) {
+    public class updateDiemCong extends javax.swing.JDialog {
+        private diemCongETT dc;
+        private boolean xacNhan = false;
+        private static final java.util.logging.Logger logger = java.util.logging.Logger.getLogger(updateDiemCong.class.getName());
+        private Entity.toHopETT toHopMonDaChon;
+        public String cccd;
+        public String toHopMon;
+        public String maNganh;
+        /**
+         * Creates new form updateDiemCong
+         */
+       public updateDiemCong(java.awt.Frame parent, boolean modal, diemCongETT dc) {
         super(parent, modal);
         initComponents();
 
         this.dc = dc;
 
-        txtMaNganh.setText(dc.getMaNganh());
-        txtToHopGoc.setText(dc.getMaToHop());
-        txtDiemSan.setText(String.valueOf(dc.getDiemCC()));
-        txtDiemTrungTuyen.setText(String.valueOf(dc.getDiemUtxt()));
-        txtThiDGNL.setText(dc.getGhiChu());
+        // 🔥 gán biến
+        this.cccd = dc.getTsCccd();
+        this.maNganh = dc.getMaNganh();
+        this.toHopMon = dc.getMaToHop();
+
+        // 🔥 hiển thị dữ liệu lên form
+        txtCccd.setText(cccd);
+        txtMaNganh.setText(maNganh);
+        txtMaToHop.setText(toHopMon);
+
+        txtDiemCC.setText(String.valueOf(dc.getDiemCC()));
+        txtDiemUTXT.setText(String.valueOf(dc.getDiemUtxt()));
+        txtDiemTong.setText(String.valueOf(dc.getDiemTong())); // 🔥 thêm
+        txtGhiChu.setText(dc.getGhiChu());
+
+        // 🔥 set phương thức
+        jComboBox1.setSelectedItem(dc.getPhuongThuc());
+
+        // 🔥 mở ghi chú nhập tay
+        txtGhiChu.setEditable(true);
+        txtGhiChu.setEnabled(true);
+
+        // 🔥 auto tính lại
+        jComboBox1.addActionListener(e -> capNhatDiemTuDong());
+        capNhatDiemTuDong();
+
         setLocationRelativeTo(parent);
     }
 
@@ -44,29 +75,26 @@ public class updateDiemCong extends javax.swing.JDialog {
         jLabel9 = new javax.swing.JLabel();
         jPanel1 = new javax.swing.JPanel();
         jLabel1 = new javax.swing.JLabel();
-        txtTenNganh = new javax.swing.JTextField();
-        btnChonMaNganh = new javax.swing.JButton();
-        jLabel2 = new javax.swing.JLabel();
         txtMaNganh = new javax.swing.JTextField();
-        btnChonTenNganh = new javax.swing.JButton();
+        jLabel2 = new javax.swing.JLabel();
+        txtCccd = new javax.swing.JTextField();
+        btnChonMaNganh = new javax.swing.JButton();
         jLabel3 = new javax.swing.JLabel();
         jLabel4 = new javax.swing.JLabel();
-        txtDiemSan = new javax.swing.JTextField();
-        txtToHopGoc = new javax.swing.JTextField();
-        btnChonToHopGoc = new javax.swing.JButton();
+        txtDiemCC = new javax.swing.JTextField();
+        txtMaToHop = new javax.swing.JTextField();
+        btnChonMaToHop = new javax.swing.JButton();
         jLabel10 = new javax.swing.JLabel();
         jLabel11 = new javax.swing.JLabel();
-        txtDiemTrungTuyen = new javax.swing.JTextField();
-        txtTuyenThang = new javax.swing.JTextField();
-        txtThiDGNL = new javax.swing.JTextField();
-        txtThiTHPT = new javax.swing.JTextField();
+        txtDiemUTXT = new javax.swing.JTextField();
+        txtDiemTong = new javax.swing.JTextField();
+        txtGhiChu = new javax.swing.JTextField();
         jLabel12 = new javax.swing.JLabel();
         jLabel13 = new javax.swing.JLabel();
-        jLabel14 = new javax.swing.JLabel();
         jComboBox1 = new javax.swing.JComboBox<>();
         jPanel2 = new javax.swing.JPanel();
         btnThoat = new javax.swing.JButton();
-        btnThem = new javax.swing.JButton();
+        btnSua = new javax.swing.JButton();
 
         setDefaultCloseOperation(javax.swing.WindowConstants.DISPOSE_ON_CLOSE);
 
@@ -98,24 +126,19 @@ public class updateDiemCong extends javax.swing.JDialog {
         jLabel1.setFont(new java.awt.Font("Segoe UI", 0, 14)); // NOI18N
         jLabel1.setText("Mã ngành (*) :");
 
-        txtTenNganh.setEditable(false);
-        txtTenNganh.addActionListener(this::txtMaNganhActionPerformed);
+        txtMaNganh.setEditable(false);
+        txtMaNganh.addActionListener(this::txtMaNganhActionPerformed);
+
+        jLabel2.setFont(new java.awt.Font("Segoe UI", 0, 14)); // NOI18N
+        jLabel2.setText("CCCD:");
+
+        txtCccd.setEditable(false);
+        txtCccd.addActionListener(this::txtCCCDActionPerformed);
 
         btnChonMaNganh.setText("...");
         btnChonMaNganh.setToolTipText("");
         btnChonMaNganh.setCursor(new java.awt.Cursor(java.awt.Cursor.HAND_CURSOR));
         btnChonMaNganh.addActionListener(this::btnChonMaNganhActionPerformed);
-
-        jLabel2.setFont(new java.awt.Font("Segoe UI", 0, 14)); // NOI18N
-        jLabel2.setText("CCCD:");
-
-        txtMaNganh.setEditable(false);
-        txtMaNganh.addActionListener(this::txtCCCDActionPerformed);
-
-        btnChonTenNganh.setText("...");
-        btnChonTenNganh.setToolTipText("");
-        btnChonTenNganh.setCursor(new java.awt.Cursor(java.awt.Cursor.HAND_CURSOR));
-        btnChonTenNganh.addActionListener(this::btnChonTenNganhActionPerformed);
 
         jLabel3.setFont(new java.awt.Font("Segoe UI", 0, 14)); // NOI18N
         jLabel3.setText("Mã tổ hợp:");
@@ -123,15 +146,15 @@ public class updateDiemCong extends javax.swing.JDialog {
         jLabel4.setFont(new java.awt.Font("Segoe UI", 0, 14)); // NOI18N
         jLabel4.setText("Điểm CC:");
 
-        txtDiemSan.setEditable(false);
+        txtDiemCC.setEditable(false);
 
-        txtToHopGoc.setEditable(false);
-        txtToHopGoc.addActionListener(this::txtMaToHopActionPerformed);
+        txtMaToHop.setEditable(false);
+        txtMaToHop.addActionListener(this::txtMaToHopActionPerformed);
 
-        btnChonToHopGoc.setText("...");
-        btnChonToHopGoc.setToolTipText("");
-        btnChonToHopGoc.setCursor(new java.awt.Cursor(java.awt.Cursor.HAND_CURSOR));
-        btnChonToHopGoc.addActionListener(this::btnChonToHopGocActionPerformed);
+        btnChonMaToHop.setText("...");
+        btnChonMaToHop.setToolTipText("");
+        btnChonMaToHop.setCursor(new java.awt.Cursor(java.awt.Cursor.HAND_CURSOR));
+        btnChonMaToHop.addActionListener(this::btnChonMaToHopActionPerformed);
 
         jLabel10.setFont(new java.awt.Font("Segoe UI", 0, 14)); // NOI18N
         jLabel10.setText("Phương thức:");
@@ -139,13 +162,12 @@ public class updateDiemCong extends javax.swing.JDialog {
         jLabel11.setFont(new java.awt.Font("Segoe UI", 0, 14)); // NOI18N
         jLabel11.setText("Điểm UTXT :");
 
-        txtDiemTrungTuyen.setEditable(false);
+        txtDiemUTXT.setEditable(false);
 
-        txtTuyenThang.setEditable(false);
+        txtDiemTong.setEditable(false);
 
-        txtThiDGNL.setEditable(false);
-
-        txtThiTHPT.setEditable(false);
+        txtGhiChu.setFocusCycleRoot(true);
+        txtGhiChu.addActionListener(this::txtGhiChuActionPerformed);
 
         jLabel12.setFont(new java.awt.Font("Segoe UI", 0, 14)); // NOI18N
         jLabel12.setText("Điểm tổng:");
@@ -153,10 +175,7 @@ public class updateDiemCong extends javax.swing.JDialog {
         jLabel13.setFont(new java.awt.Font("Segoe UI", 0, 14)); // NOI18N
         jLabel13.setText("Ghi chú:");
 
-        jLabel14.setFont(new java.awt.Font("Segoe UI", 0, 14)); // NOI18N
-        jLabel14.setText("DC_Keys:");
-
-        jComboBox1.setModel(new javax.swing.DefaultComboBoxModel<>(new String[] { "Item 1", "Item 2", "Item 3", "Item 4" }));
+        jComboBox1.setModel(new javax.swing.DefaultComboBoxModel<>(new String[] { "Xét THPT", "ĐGNL HCM", "Đánh giá V-SAT", "Tuyển Thẳng" }));
 
         javax.swing.GroupLayout jPanel1Layout = new javax.swing.GroupLayout(jPanel1);
         jPanel1.setLayout(jPanel1Layout);
@@ -170,38 +189,32 @@ public class updateDiemCong extends javax.swing.JDialog {
                             .addGroup(jPanel1Layout.createSequentialGroup()
                                 .addComponent(jLabel4, javax.swing.GroupLayout.PREFERRED_SIZE, 123, javax.swing.GroupLayout.PREFERRED_SIZE)
                                 .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED)
-                                .addComponent(txtDiemSan, javax.swing.GroupLayout.PREFERRED_SIZE, 188, javax.swing.GroupLayout.PREFERRED_SIZE))
+                                .addComponent(txtDiemCC, javax.swing.GroupLayout.PREFERRED_SIZE, 188, javax.swing.GroupLayout.PREFERRED_SIZE))
                             .addGroup(jPanel1Layout.createSequentialGroup()
                                 .addComponent(jLabel12, javax.swing.GroupLayout.PREFERRED_SIZE, 123, javax.swing.GroupLayout.PREFERRED_SIZE)
                                 .addGap(5, 5, 5)
-                                .addComponent(txtTuyenThang, javax.swing.GroupLayout.PREFERRED_SIZE, 188, javax.swing.GroupLayout.PREFERRED_SIZE))
+                                .addComponent(txtDiemTong, javax.swing.GroupLayout.PREFERRED_SIZE, 188, javax.swing.GroupLayout.PREFERRED_SIZE))
                             .addGroup(jPanel1Layout.createSequentialGroup()
                                 .addComponent(jLabel13, javax.swing.GroupLayout.PREFERRED_SIZE, 123, javax.swing.GroupLayout.PREFERRED_SIZE)
                                 .addGap(5, 5, 5)
-                                .addComponent(txtThiDGNL, javax.swing.GroupLayout.PREFERRED_SIZE, 188, javax.swing.GroupLayout.PREFERRED_SIZE))
-                            .addGroup(jPanel1Layout.createSequentialGroup()
-                                .addComponent(jLabel14, javax.swing.GroupLayout.PREFERRED_SIZE, 123, javax.swing.GroupLayout.PREFERRED_SIZE)
-                                .addGap(5, 5, 5)
-                                .addComponent(txtThiTHPT, javax.swing.GroupLayout.PREFERRED_SIZE, 188, javax.swing.GroupLayout.PREFERRED_SIZE)))
+                                .addComponent(txtGhiChu, javax.swing.GroupLayout.PREFERRED_SIZE, 188, javax.swing.GroupLayout.PREFERRED_SIZE)))
                         .addGap(0, 0, Short.MAX_VALUE))
                     .addGroup(jPanel1Layout.createSequentialGroup()
                         .addGroup(jPanel1Layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
                             .addGroup(jPanel1Layout.createSequentialGroup()
                                 .addComponent(jLabel2, javax.swing.GroupLayout.PREFERRED_SIZE, 123, javax.swing.GroupLayout.PREFERRED_SIZE)
                                 .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED)
+                                .addComponent(txtCccd, javax.swing.GroupLayout.PREFERRED_SIZE, 188, javax.swing.GroupLayout.PREFERRED_SIZE))
+                            .addGroup(jPanel1Layout.createSequentialGroup()
+                                .addComponent(jLabel1, javax.swing.GroupLayout.PREFERRED_SIZE, 123, javax.swing.GroupLayout.PREFERRED_SIZE)
+                                .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED)
                                 .addComponent(txtMaNganh, javax.swing.GroupLayout.PREFERRED_SIZE, 188, javax.swing.GroupLayout.PREFERRED_SIZE)
                                 .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED)
                                 .addComponent(btnChonMaNganh, javax.swing.GroupLayout.PREFERRED_SIZE, 40, javax.swing.GroupLayout.PREFERRED_SIZE))
                             .addGroup(jPanel1Layout.createSequentialGroup()
-                                .addComponent(jLabel1, javax.swing.GroupLayout.PREFERRED_SIZE, 123, javax.swing.GroupLayout.PREFERRED_SIZE)
-                                .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED)
-                                .addComponent(txtTenNganh, javax.swing.GroupLayout.PREFERRED_SIZE, 188, javax.swing.GroupLayout.PREFERRED_SIZE)
-                                .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED)
-                                .addComponent(btnChonTenNganh, javax.swing.GroupLayout.PREFERRED_SIZE, 40, javax.swing.GroupLayout.PREFERRED_SIZE))
-                            .addGroup(jPanel1Layout.createSequentialGroup()
                                 .addComponent(jLabel11, javax.swing.GroupLayout.PREFERRED_SIZE, 123, javax.swing.GroupLayout.PREFERRED_SIZE)
                                 .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED)
-                                .addComponent(txtDiemTrungTuyen, javax.swing.GroupLayout.PREFERRED_SIZE, 188, javax.swing.GroupLayout.PREFERRED_SIZE))
+                                .addComponent(txtDiemUTXT, javax.swing.GroupLayout.PREFERRED_SIZE, 188, javax.swing.GroupLayout.PREFERRED_SIZE))
                             .addGroup(jPanel1Layout.createSequentialGroup()
                                 .addGroup(jPanel1Layout.createParallelGroup(javax.swing.GroupLayout.Alignment.TRAILING, false)
                                     .addGroup(javax.swing.GroupLayout.Alignment.LEADING, jPanel1Layout.createSequentialGroup()
@@ -211,9 +224,9 @@ public class updateDiemCong extends javax.swing.JDialog {
                                     .addGroup(javax.swing.GroupLayout.Alignment.LEADING, jPanel1Layout.createSequentialGroup()
                                         .addComponent(jLabel3, javax.swing.GroupLayout.PREFERRED_SIZE, 123, javax.swing.GroupLayout.PREFERRED_SIZE)
                                         .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED)
-                                        .addComponent(txtToHopGoc, javax.swing.GroupLayout.PREFERRED_SIZE, 188, javax.swing.GroupLayout.PREFERRED_SIZE)))
+                                        .addComponent(txtMaToHop, javax.swing.GroupLayout.PREFERRED_SIZE, 188, javax.swing.GroupLayout.PREFERRED_SIZE)))
                                 .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED)
-                                .addComponent(btnChonToHopGoc, javax.swing.GroupLayout.PREFERRED_SIZE, 40, javax.swing.GroupLayout.PREFERRED_SIZE)))
+                                .addComponent(btnChonMaToHop, javax.swing.GroupLayout.PREFERRED_SIZE, 40, javax.swing.GroupLayout.PREFERRED_SIZE)))
                         .addContainerGap(9, Short.MAX_VALUE))))
         );
         jPanel1Layout.setVerticalGroup(
@@ -221,19 +234,18 @@ public class updateDiemCong extends javax.swing.JDialog {
             .addGroup(jPanel1Layout.createSequentialGroup()
                 .addGap(14, 14, 14)
                 .addGroup(jPanel1Layout.createParallelGroup(javax.swing.GroupLayout.Alignment.BASELINE)
-                    .addComponent(btnChonMaNganh)
                     .addComponent(jLabel2)
-                    .addComponent(txtMaNganh, javax.swing.GroupLayout.PREFERRED_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.PREFERRED_SIZE))
+                    .addComponent(txtCccd, javax.swing.GroupLayout.PREFERRED_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.PREFERRED_SIZE))
                 .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.UNRELATED)
                 .addGroup(jPanel1Layout.createParallelGroup(javax.swing.GroupLayout.Alignment.BASELINE)
-                    .addComponent(btnChonTenNganh)
-                    .addComponent(txtTenNganh, javax.swing.GroupLayout.PREFERRED_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.PREFERRED_SIZE)
+                    .addComponent(btnChonMaNganh)
+                    .addComponent(txtMaNganh, javax.swing.GroupLayout.PREFERRED_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.PREFERRED_SIZE)
                     .addComponent(jLabel1))
                 .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.UNRELATED)
                 .addGroup(jPanel1Layout.createParallelGroup(javax.swing.GroupLayout.Alignment.BASELINE)
                     .addComponent(jLabel3)
-                    .addComponent(txtToHopGoc, javax.swing.GroupLayout.PREFERRED_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.PREFERRED_SIZE)
-                    .addComponent(btnChonToHopGoc))
+                    .addComponent(txtMaToHop, javax.swing.GroupLayout.PREFERRED_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.PREFERRED_SIZE)
+                    .addComponent(btnChonMaToHop))
                 .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.UNRELATED)
                 .addGroup(jPanel1Layout.createParallelGroup(javax.swing.GroupLayout.Alignment.BASELINE)
                     .addComponent(jLabel10)
@@ -241,24 +253,20 @@ public class updateDiemCong extends javax.swing.JDialog {
                 .addGap(10, 10, 10)
                 .addGroup(jPanel1Layout.createParallelGroup(javax.swing.GroupLayout.Alignment.BASELINE)
                     .addComponent(jLabel4)
-                    .addComponent(txtDiemSan, javax.swing.GroupLayout.PREFERRED_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.PREFERRED_SIZE))
+                    .addComponent(txtDiemCC, javax.swing.GroupLayout.PREFERRED_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.PREFERRED_SIZE))
                 .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.UNRELATED)
                 .addGroup(jPanel1Layout.createParallelGroup(javax.swing.GroupLayout.Alignment.BASELINE)
                     .addComponent(jLabel11)
-                    .addComponent(txtDiemTrungTuyen, javax.swing.GroupLayout.PREFERRED_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.PREFERRED_SIZE))
+                    .addComponent(txtDiemUTXT, javax.swing.GroupLayout.PREFERRED_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.PREFERRED_SIZE))
                 .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.UNRELATED)
                 .addGroup(jPanel1Layout.createParallelGroup(javax.swing.GroupLayout.Alignment.BASELINE)
-                    .addComponent(txtTuyenThang, javax.swing.GroupLayout.PREFERRED_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.PREFERRED_SIZE)
+                    .addComponent(txtDiemTong, javax.swing.GroupLayout.PREFERRED_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.PREFERRED_SIZE)
                     .addComponent(jLabel12))
                 .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.UNRELATED)
                 .addGroup(jPanel1Layout.createParallelGroup(javax.swing.GroupLayout.Alignment.BASELINE)
-                    .addComponent(txtThiDGNL, javax.swing.GroupLayout.PREFERRED_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.PREFERRED_SIZE)
+                    .addComponent(txtGhiChu, javax.swing.GroupLayout.PREFERRED_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.PREFERRED_SIZE)
                     .addComponent(jLabel13))
-                .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.UNRELATED)
-                .addGroup(jPanel1Layout.createParallelGroup(javax.swing.GroupLayout.Alignment.BASELINE)
-                    .addComponent(txtThiTHPT, javax.swing.GroupLayout.PREFERRED_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.PREFERRED_SIZE)
-                    .addComponent(jLabel14))
-                .addContainerGap(54, Short.MAX_VALUE))
+                .addContainerGap(22, Short.MAX_VALUE))
         );
 
         jPanel2.setBackground(new java.awt.Color(255, 255, 255));
@@ -271,10 +279,10 @@ public class updateDiemCong extends javax.swing.JDialog {
         btnThoat.setCursor(new java.awt.Cursor(java.awt.Cursor.HAND_CURSOR));
         btnThoat.addActionListener(this::btnThoatActionPerformed);
 
-        btnThem.setFont(new java.awt.Font("Segoe UI", 1, 14)); // NOI18N
-        btnThem.setText("Sửa");
-        btnThem.setCursor(new java.awt.Cursor(java.awt.Cursor.HAND_CURSOR));
-        btnThem.addActionListener(this::btnThemActionPerformed);
+        btnSua.setFont(new java.awt.Font("Segoe UI", 1, 14)); // NOI18N
+        btnSua.setText("Sửa");
+        btnSua.setCursor(new java.awt.Cursor(java.awt.Cursor.HAND_CURSOR));
+        btnSua.addActionListener(this::btnSuaActionPerformed);
 
         javax.swing.GroupLayout jPanel2Layout = new javax.swing.GroupLayout(jPanel2);
         jPanel2.setLayout(jPanel2Layout);
@@ -282,7 +290,7 @@ public class updateDiemCong extends javax.swing.JDialog {
             jPanel2Layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
             .addGroup(javax.swing.GroupLayout.Alignment.TRAILING, jPanel2Layout.createSequentialGroup()
                 .addContainerGap(javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE)
-                .addComponent(btnThem, javax.swing.GroupLayout.PREFERRED_SIZE, 89, javax.swing.GroupLayout.PREFERRED_SIZE)
+                .addComponent(btnSua, javax.swing.GroupLayout.PREFERRED_SIZE, 89, javax.swing.GroupLayout.PREFERRED_SIZE)
                 .addGap(40, 40, 40)
                 .addComponent(btnThoat, javax.swing.GroupLayout.PREFERRED_SIZE, 89, javax.swing.GroupLayout.PREFERRED_SIZE)
                 .addGap(80, 80, 80))
@@ -293,7 +301,7 @@ public class updateDiemCong extends javax.swing.JDialog {
                 .addContainerGap()
                 .addGroup(jPanel2Layout.createParallelGroup(javax.swing.GroupLayout.Alignment.TRAILING, false)
                     .addComponent(btnThoat, javax.swing.GroupLayout.DEFAULT_SIZE, 40, Short.MAX_VALUE)
-                    .addComponent(btnThem, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE))
+                    .addComponent(btnSua, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE))
                 .addContainerGap(javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE))
         );
 
@@ -328,55 +336,188 @@ public class updateDiemCong extends javax.swing.JDialog {
         // TODO add your handling code here:
     }//GEN-LAST:event_txtMaNganhActionPerformed
 
-    private void btnChonMaNganhActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_btnChonMaNganhActionPerformed
-        // TODO add your handling code here:
-    }//GEN-LAST:event_btnChonMaNganhActionPerformed
-
     private void txtCCCDActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_txtCCCDActionPerformed
         // TODO add your handling code here:
     }//GEN-LAST:event_txtCCCDActionPerformed
 
-    private void btnChonTenNganhActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_btnChonTenNganhActionPerformed
+    private void btnChonMaNganhActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_btnChonMaNganhActionPerformed
         // TODO add your handling code here:
-    }//GEN-LAST:event_btnChonTenNganhActionPerformed
+          JFrame topFrame = (JFrame) SwingUtilities.getWindowAncestor(this);
+        selectNganh dialog = new selectNganh(topFrame, true);
+        dialog.setVisible(true);
+        if(dialog.getXacNhan())
+        {
+            nganhETT nganh = dialog.getNganh();
+            maNganh = nganh.getManganh();
+            txtMaNganh.setText(maNganh);
+            capNhatDiemTuDong(); 
+        }
+    }//GEN-LAST:event_btnChonMaNganhActionPerformed
 
     private void txtMaToHopActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_txtMaToHopActionPerformed
         // TODO add your handling code here:
     }//GEN-LAST:event_txtMaToHopActionPerformed
 
-    private void btnChonToHopGocActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_btnChonToHopGocActionPerformed
+    private void btnChonMaToHopActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_btnChonMaToHopActionPerformed
         // TODO add your handling code here:
-    }//GEN-LAST:event_btnChonToHopGocActionPerformed
+           JFrame topFrame = (JFrame) SwingUtilities.getWindowAncestor(this);
+        selectToHop dialog = new selectToHop(topFrame, true);
+        dialog.setVisible(true);
+        if(dialog.getXacNhan())
+        {
+            toHopMonDaChon = dialog.getToHopETT();
+            toHopETT toHopETT = dialog.getToHopETT();
+            toHopMon = toHopETT.getMatohop();
+            txtMaToHop.setText(toHopMon);     
+            capNhatDiemTuDong(); 
+        }
+    }//GEN-LAST:event_btnChonMaToHopActionPerformed
 
     private void btnThoatActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_btnThoatActionPerformed
         xacNhan = false;
         dispose();
     }//GEN-LAST:event_btnThoatActionPerformed
 
-    private void btnThemActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_btnThemActionPerformed
-         try {
+    private void btnSuaActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_btnSuaActionPerformed
+                                     
+        try {
+            dc.setTsCccd(txtCccd.getText().trim());
             dc.setMaNganh(txtMaNganh.getText().trim());
-            dc.setMaToHop(txtToHopGoc.getText().trim());
+            dc.setMaToHop(txtMaToHop.getText().trim());
             dc.setPhuongThuc(jComboBox1.getSelectedItem().toString());
 
-            double diemCC = Double.parseDouble(txtDiemSan.getText().trim());
-            double diemUuTien = Double.parseDouble(txtDiemTrungTuyen.getText().trim());
+            // 🔥 GHI CHÚ
+            dc.setGhiChu(txtGhiChu.getText().trim());
 
-            dc.setDiemCC(diemCC);
-            dc.setDiemUtxt(diemUuTien);
-            dc.setDiemTong(diemCC + diemUuTien);
+            double dCC = Double.parseDouble(txtDiemCC.getText().isEmpty() ? "0" : txtDiemCC.getText());
+            double dUT = Double.parseDouble(txtDiemUTXT.getText().isEmpty() ? "0" : txtDiemUTXT.getText());
+            double dTong = Double.parseDouble(txtDiemTong.getText().isEmpty() ? "0" : txtDiemTong.getText());
 
-            dc.setGhiChu(txtThiDGNL.getText().trim());
+            dc.setDiemCC(dCC);
+            dc.setDiemUtxt(dUT);
+            dc.setDiemTong(dTong);
+
+            // 🔥 UPDATE DB (QUAN TRỌNG NHẤT)
+            org.hibernate.Session session = null;
+            org.hibernate.Transaction tx = null;
+
+            try {
+                session = CONFIG.HibernateUtil.getSessionFactory().openSession();
+                tx = session.beginTransaction();
+
+                session.update(dc); // 🔥 BẮT BUỘC
+
+                tx.commit();
+
+            } catch (Exception e) {
+                if (tx != null) tx.rollback();
+                JOptionPane.showMessageDialog(this, "Lỗi cập nhật DB!");
+                e.printStackTrace();
+                return; // ❗ không đóng form nếu lỗi
+            }
 
             xacNhan = true;
             dispose();
 
         } catch (Exception e) {
-            JOptionPane.showMessageDialog(this, "Dữ liệu không hợp lệ!");
+            JOptionPane.showMessageDialog(this, "Không được đổi dữ liệu CCCD!");
         }
-    }//GEN-LAST:event_btnThemActionPerformed
+    }//GEN-LAST:event_btnSuaActionPerformed
+
+    private void txtGhiChuActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_txtGhiChuActionPerformed
+        // TODO add your handling code here:
+    }//GEN-LAST:event_txtGhiChuActionPerformed
     public diemCongETT getDiemCong() {
         return dc;
+    }
+    public void capNhatDiemTuDong() {
+        String cccd = txtCccd.getText().trim();
+        if (cccd.isEmpty()) return;
+
+        double diemCongIELTS = 0.0;
+        double diemCongGiaiThuong = 0.0;
+        double diemGoc = 0.0;
+
+        // --- 1. LUÔN LẤY ĐIỂM CHỨNG CHỈ & GIẢI THƯỞNG TRƯỚC ---
+        try (org.hibernate.Session session = CONFIG.HibernateUtil.getSessionFactory().openSession()) {
+            // Query chứng chỉ
+            String sqlIELTS = "SELECT diem_cong FROM xt_chungchi WHERE cccd = :cccd LIMIT 1";
+            Object resIELTS = session.createNativeQuery(sqlIELTS).setParameter("cccd", cccd).uniqueResult();
+            if (resIELTS != null) {
+                diemCongIELTS = ((Number) resIELTS).doubleValue();
+            }
+
+            // Query giải thưởng (Tạm thời lấy điểm không môn nếu chưa chọn tổ hợp)
+            String sqlGT = "SELECT ma_mon, diem_cong_co_mon, diem_cong_khong_mon FROM xt_giathuong WHERE cccd = :cccd LIMIT 1";
+            Object[] gtData = (Object[]) session.createNativeQuery(sqlGT).setParameter("cccd", cccd).uniqueResult();
+            if (gtData != null) {
+                String maMonGiai = (String) gtData[0];
+                double dCoMon = ((Number) gtData[1]).doubleValue();
+                double dKhongMon = ((Number) gtData[2]).doubleValue();
+
+                // Nếu đã chọn tổ hợp thì check có môn, nếu chưa thì mặc định lấy điểm không môn
+                if (toHopMonDaChon != null) {
+                    String m1 = toHopMonDaChon.getMon1();
+                    String m2 = toHopMonDaChon.getMon2();
+                    String m3 = toHopMonDaChon.getMon3();
+                    diemCongGiaiThuong = (maMonGiai.equals(m1) || maMonGiai.equals(m2) || maMonGiai.equals(m3)) ? dCoMon : dKhongMon;
+                } else {
+                    diemCongGiaiThuong = dKhongMon;
+                }
+            }
+        } catch (Exception e) {
+            System.err.println("Lỗi lấy điểm cộng: " + e.getMessage());
+        }
+
+        // Hiển thị ngay Điểm CC lên giao diện (Max là 3.0)
+        double tongDiemCong = Math.min(diemCongIELTS + diemCongGiaiThuong, 3.0);
+        txtDiemCC.setText(String.valueOf(tongDiemCong));
+
+        // --- 2. LOGIC TÍNH ĐIỂM GỐC (Chỉ chạy khi đủ thông tin Ngành/Tổ hợp/Phương thức) ---
+        if (jComboBox1.getSelectedItem() == null) return;
+        String phuongThuc = jComboBox1.getSelectedItem().toString();
+
+        try {
+            BUS.diemThiBUS dtBus = new BUS.diemThiBUS();
+            Entity.diemThiETT diemThi = dtBus.layDiemTheoCCCD(cccd);
+
+            if (diemThi != null) {
+                // ... Giữ nguyên logic tính diemGoc cho Xét THPT, ĐGNL, Tuyển thẳng như cũ của bạn ...
+                // Lưu ý: Trong khối "Xét THPT", bạn không cần query lại IELTS/GT nữa vì đã lấy ở trên
+            }
+
+            // --- 3. CẬP NHẬT ĐIỂM TỔNG ---
+            double diemUT = 0;
+            try {
+                // Lấy khéo léo giá trị từ txtDiemUTXT (Xử lý chuỗi "01 - Ưu tiên...")
+                String utStr = txtDiemUTXT.getText().split(" ")[0]; 
+                diemUT = Double.parseDouble(utStr);
+            } catch (Exception e) {
+                diemUT = 0;
+            }
+
+            double tongKet = Math.round((diemGoc + tongDiemCong + diemUT) * 100.0) / 100.0;
+            tongKet = Math.min(tongKet, 3.0);
+            txtDiemTong.setText(String.valueOf(tongKet));
+
+        } catch (Exception e) {
+            e.printStackTrace();
+        }
+    }
+    // Hàm bổ trợ lấy điểm từ Entity diemThi dựa trên mã môn (Toán, Lý, Hóa...)
+    private double layDiemTheoMaMon(Entity.diemThiETT dt, String maMon) {
+        if (maMon == null || dt == null) return 0.0;
+        // Huy kiểm tra xem trong Entity diemThiETT dùng getTo() hay getT1() nhé
+        switch (maMon) {
+            case "TO": case "T1": return dt.getTo() != null ? dt.getTo() : 0.0;
+            case "LI": case "L1": return dt.getLi() != null ? dt.getLi() : 0.0;
+            case "HO": case "H1": return dt.getHo() != null ? dt.getHo() : 0.0;
+            case "SI": case "S1": return dt.getSi() != null ? dt.getSi() : 0.0;
+            case "SU": case "S2": return dt.getSu() != null ? dt.getSu() : 0.0;
+            case "DI": case "D1": return dt.getDi() != null ? dt.getDi() : 0.0;
+            case "VA": case "V1": return dt.getVa() != null ? dt.getVa() : 0.0;
+            default: return 0.0;
+        }
     }
     /**
      * @param args the command line arguments
@@ -386,9 +527,8 @@ public class updateDiemCong extends javax.swing.JDialog {
     }
     // Variables declaration - do not modify//GEN-BEGIN:variables
     private javax.swing.JButton btnChonMaNganh;
-    private javax.swing.JButton btnChonTenNganh;
-    private javax.swing.JButton btnChonToHopGoc;
-    private javax.swing.JButton btnThem;
+    private javax.swing.JButton btnChonMaToHop;
+    private javax.swing.JButton btnSua;
     private javax.swing.JButton btnThoat;
     private javax.swing.JComboBox<String> jComboBox1;
     private javax.swing.JLabel jLabel1;
@@ -396,7 +536,6 @@ public class updateDiemCong extends javax.swing.JDialog {
     private javax.swing.JLabel jLabel11;
     private javax.swing.JLabel jLabel12;
     private javax.swing.JLabel jLabel13;
-    private javax.swing.JLabel jLabel14;
     private javax.swing.JLabel jLabel2;
     private javax.swing.JLabel jLabel3;
     private javax.swing.JLabel jLabel4;
@@ -404,13 +543,12 @@ public class updateDiemCong extends javax.swing.JDialog {
     private javax.swing.JPanel jPanel1;
     private javax.swing.JPanel jPanel2;
     private javax.swing.JPanel jPanel3;
-    private javax.swing.JTextField txtDiemSan;
-    private javax.swing.JTextField txtDiemTrungTuyen;
+    private javax.swing.JTextField txtCccd;
+    private javax.swing.JTextField txtDiemCC;
+    private javax.swing.JTextField txtDiemTong;
+    private javax.swing.JTextField txtDiemUTXT;
+    private javax.swing.JTextField txtGhiChu;
     private javax.swing.JTextField txtMaNganh;
-    private javax.swing.JTextField txtTenNganh;
-    private javax.swing.JTextField txtThiDGNL;
-    private javax.swing.JTextField txtThiTHPT;
-    private javax.swing.JTextField txtToHopGoc;
-    private javax.swing.JTextField txtTuyenThang;
+    private javax.swing.JTextField txtMaToHop;
     // End of variables declaration//GEN-END:variables
 }

@@ -29,31 +29,31 @@ public class thiSinhETT {
     @Column(name = "ten")
     private String ten;
 
-    @Column(name = "ngay_sinh")
+    @Column(name = "ngaySinh")
     private String ngaySinh;
 
-    @Column(name = "dien_thoai")
+    @Column(name = "dienThoai")
     private String dienThoai;
 
     @Column(name = "password")
     private String password;
 
-    @Column(name = "gioi_tinh")
+    @Column(name = "gioiTinh")
     private String gioiTinh;
 
     @Column(name = "email")
     private String email;
 
-    @Column(name = "noi_sinh")
+    @Column(name = "noiSinh")
     private String noiSinh;
 
     @Column(name = "updated_at")
     private Date updatedAt;
 
-    @Column(name = "doi_tuong")
+    @Column(name = "doiTuong")
     private String doiTuong;
 
-    @Column(name = "khu_vuc")
+    @Column(name = "khuVuc")
     private String khuVuc;
 
     // TODO: Click chuột phải -> Insert Code -> Getter and Setter để tự động tạo nhé!
