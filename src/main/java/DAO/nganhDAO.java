@@ -95,13 +95,17 @@ public class nganhDAO {
         }
     }
     
-    public boolean capNhatChiTieuThucTe() {
+public boolean capNhatChiTieuThucTe() {
         try (org.hibernate.Session session = CONFIG.HibernateUtil.getSessionFactory().openSession()) {
             session.beginTransaction();
+            
+            // THAY ĐỔI SQL: Trừ trực tiếp các cột chỉ tiêu thành phần (sl_xtt, sl_dgnl, sl_vsat)
             String sql = "UPDATE xt_nganh n " +
                          "SET n.sl_thpt = n.n_chitieu - " +
-                         "    IFNULL((SELECT COUNT(*) FROM xt_nguyenvongxettuyen nv WHERE nv.nv_manganh = n.manganh AND nv.tt_phuongthuc = 'Xét tuyển thẳng'), 0) " +
-                         "    - n.sl_dgnl - n.sl_vsat";
+                         "    IFNULL(n.sl_xtt, 0) - " +
+                         "    IFNULL(n.sl_dgnl, 0) - " +
+                         "    IFNULL(n.sl_vsat, 0)";
+                         
             session.createNativeQuery(sql).executeUpdate();
             session.getTransaction().commit();
             return true;

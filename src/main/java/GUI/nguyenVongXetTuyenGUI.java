@@ -402,131 +402,6 @@ private void hienThiDialogSua() {
         javax.swing.JOptionPane.showMessageDialog(this, "Hệ thống đã quy đổi điểm và xét duyệt thành công!");
     }
 }
-//private void thucHienRefresh() {
-//    int confirm = javax.swing.JOptionPane.showConfirmDialog(this, 
-//        "CẢNH BÁO: Hành động này sẽ khóa sổ và xét duyệt toàn bộ nguyện vọng trên hệ thống.\n" +
-//        "Hệ thống sẽ tự động quy đổi điểm V-SAT/ĐGNL và tính điểm ưu tiên.\n" +
-//        "Bạn có chắc chắn muốn tiến hành xét tuyển?", 
-//        "Xác nhận Chốt Sổ", 
-//        javax.swing.JOptionPane.YES_NO_OPTION, 
-//        javax.swing.JOptionPane.WARNING_MESSAGE);
-//        
-//    if (confirm == javax.swing.JOptionPane.YES_OPTION) {
-//        
-//        try (org.hibernate.Session session = CONFIG.HibernateUtil.getSessionFactory().openSession()) {
-//            session.beginTransaction();
-//            // Lệnh SQL này sẽ đếm số lượng XTT thực tế và trừ thẳng vào chỉ tiêu THPT
-//            String sqlUpdateChiTieu = 
-//                "UPDATE xt_nganh n " +
-//                "SET n.sl_thpt = n.n_chitieu - " +
-//                "    IFNULL((SELECT COUNT(*) FROM xt_nguyenvongxettuyen nv WHERE nv.nv_manganh = n.manganh AND nv.tt_phuongthuc = 'Xét tuyển thẳng'), 0) " +
-//                "    - n.sl_dgnl - n.sl_vsat";
-//                
-//            session.createNativeQuery(sqlUpdateChiTieu).executeUpdate();
-//            session.getTransaction().commit();
-//            System.out.println("Hệ thống đã tự động cất ghế cho team Tuyển thẳng và cập nhật lại chỉ tiêu THPT!");
-//        } catch (Exception e) {
-//            e.printStackTrace();
-//        }
-//        
-//        
-//        // Khai báo đối tượng BUS ở ngoài vòng lặp để xài chung
-//        nganhToHopBUS busNganhToHop = new nganhToHopBUS(); 
-//
-//        busNguyenVong.napDiemAoChoDanhSach();
-//
-//        for (nguyenVongXetTuyenETT nv : busNguyenVong.ds) {
-//            double diemChuanHoa = 0;
-//            String phuongThuc = nv.getTtPhuongThuc();
-//
-//            // Lấy hệ số môn học
-//            double w1 = nv.getHsMon1();
-//            double w2 = nv.getHsMon2();
-//            double w3 = nv.getHsMon3();
-//            double W = w1 + w2 + w3;
-//
-//            // --- TẬN DỤNG HÀM BUS ĐỂ LẤY ĐỘ LỆCH DỄ DÀNG ---
-//            double doLechDiem = 0.0;
-//            if (phuongThuc.equals("Xét THPT") || phuongThuc.equals("Đánh giá V-SAT")) {
-//                doLechDiem = busNganhToHop.layDoLechDiem(nv.getNvMaNganh(), nv.getTtThm()); 
-//            }
-//            
-//            if (phuongThuc.equals("Đánh giá V-SAT")) {
-//                double d1 = CAL.AdmissionsConverter.quyDoiVsat(nv.getTenMon1(), nv.getDiemMon1());
-//                double d2 = CAL.AdmissionsConverter.quyDoiVsat(nv.getTenMon2(), nv.getDiemMon2());
-//                double d3 = CAL.AdmissionsConverter.quyDoiVsat(nv.getTenMon3(), nv.getDiemMon3());
-//                diemChuanHoa = ((d1*w1 + d2*w2 + d3*w3) / W) * 3.0;
-//            }
-//            else if (phuongThuc.equals("ĐGNL HCM")) {
-//                diemChuanHoa = (nv.getDiemMon1() / 1200.0) * 30.0;
-//            }
-//            else if (phuongThuc.equals("Xét tuyển thẳng")) {
-//                diemChuanHoa = 30.0; // Auto 30 điểm gốc
-//                try (org.hibernate.Session session = CONFIG.HibernateUtil.getSessionFactory().openSession()) {
-//                    // Lấy CẢ Cấp giải (Quốc gia/Tỉnh) và Loại giải (Nhất/Nhì/Ba/Khuyến khích)
-//                    String sqlXTT = "SELECT cap_giai, loai_giai FROM xt_giathuong WHERE cccd = :cccd LIMIT 1";
-//                    Object[] giaiData = (Object[]) session.createNativeQuery(sqlXTT).setParameter("cccd", nv.getNnCccd()).uniqueResult();
-//
-//                    if (giaiData != null) {
-//                        String capGiai = giaiData[0] != null ? giaiData[0].toString() : "";
-//                        String loaiGiai = giaiData[1] != null ? giaiData[1].toString() : "";
-//                        
-//                        double diemAn = 0.0;
-//                        
-//                        // TH1: Phân lô bảng điểm cho team QUỐC GIA (Từ 0.006 -> 0.009)
-//                        if (capGiai.equalsIgnoreCase("Quốc gia")) {
-//                            if (loaiGiai.contains("Nhất")) diemAn = 0.009;
-//                            else if (loaiGiai.contains("Nhì")) diemAn = 0.008;
-//                            else if (loaiGiai.contains("Ba")) diemAn = 0.007;
-//                            else if (loaiGiai.contains("Khuyến khích")) diemAn = 0.006;
-//                        } 
-//                        // TH2: Phân lô bảng điểm cho team CẤP TỈNH (Từ 0.002 -> 0.005)
-//                        else if (capGiai.equalsIgnoreCase("Cấp tỉnh") || capGiai.equalsIgnoreCase("Tỉnh")) {
-//                            if (loaiGiai.contains("Nhất")) diemAn = 0.005;
-//                            else if (loaiGiai.contains("Nhì")) diemAn = 0.004;
-//                            else if (loaiGiai.contains("Ba")) diemAn = 0.003;
-//                            else if (loaiGiai.contains("Khuyến khích")) diemAn = 0.002;
-//                        }
-//                        
-//                        // Bơm điểm ẩn vào
-//                        diemChuanHoa += diemAn;
-//                    }
-//                } catch (Exception e) { e.printStackTrace(); }
-//            }
-//            else {
-//                // Xét THPT
-//                double d1 = nv.getDiemMon1();
-//                double d2 = nv.getDiemMon2();
-//                double d3 = nv.getDiemMon3();
-//                diemChuanHoa = ((d1*w1 + d2*w2 + d3*w3) / W) * 3.0;
-//            }
-//
-//// ... (Đoạn trên tính diemChuanHoa và doLechDiem giữ nguyên) ...
-//
-//            // --- CODE MỚI: KIỂM TRA NULL TRƯỚC KHI CỘNG ĐỂ CHỐNG CRASH ---
-//            double diemUuTienAnToan = (nv.getDiemUtqd() != null) ? nv.getDiemUtqd() : 0.0;
-//            double diemCongAnToan = (nv.getDiemCong() != null) ? nv.getDiemCong() : 0.0;
-//
-//            // Tính tổng cuối có cộng Độ Lệch và tách bạch điểm chuẩn ý thầy
-//            double tongCuoi = diemChuanHoa + diemUuTienAnToan + diemCongAnToan + doLechDiem;
-//
-//            if (!phuongThuc.equals("Xét tuyển thẳng")) {
-//                tongCuoi = Math.min(30.0, tongCuoi);
-//            }
-//
-//            tongCuoi = Math.round(tongCuoi * 1000.0) / 1000.0; 
-//            nv.setDiemXetTuyen(tongCuoi);
-//        }
-//
-//        busNguyenVong.sapXepKetQuaTheoChiTieu();
-//        busNguyenVong.capNhatDiemChuanTuDong();
-//        
-//        busNguyenVong.ds = null; 
-//        loadDataToTable(); 
-//        
-//        javax.swing.JOptionPane.showMessageDialog(this, "Hệ thống đã quy đổi điểm và xét duyệt thành công!");
-//    }
-//}
     
     public void hienThiExcel()
     {
@@ -554,7 +429,7 @@ private void hienThiDialogSua() {
             busNguyenVong.ds = null;
             loadDataToTable();
         }
-        }else
+        }else if(dialog.getXacNhanExport())
         {
             ArrayList<nguyenVongXetTuyenETT> fullDanhSach = busNguyenVong.layDanhSach();
             ExcelHelper.xuatDanhSachNguyenVongRaExcel(fullDanhSach, this, "DanhSachNguyenVong");

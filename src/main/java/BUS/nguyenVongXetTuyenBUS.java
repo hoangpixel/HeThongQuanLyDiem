@@ -119,6 +119,7 @@ public class nguyenVongXetTuyenBUS {
 
         nganhBUS busNganh = new nganhBUS();
         ArrayList<Entity.nganhETT> dsNganh = busNganh.layDanhSach();
+        HashMap<String, String> mapToHopGoc = new HashMap<>();
 
         // BƯỚC 1: TẠO BẢN ĐỒ CHỈ TIÊU 
         // Lấy chỉ tiêu từ Database lên RAM để check cho lẹ, Key = "MaNganh_PhuongThuc"
@@ -128,6 +129,7 @@ public class nguyenVongXetTuyenBUS {
             mapChiTieu.put(nganh.getManganh() + "_ĐGNL HCM", nganh.getSl_dgnl() != null ? nganh.getSl_dgnl() : 0);
             mapChiTieu.put(nganh.getManganh() + "_Đánh giá V-SAT", nganh.getSl_vsat() != null ? nganh.getSl_vsat() : 0);
             mapChiTieu.put(nganh.getManganh() + "_Xét tuyển thẳng", nganh.getSl_xtt() != null ? nganh.getSl_xtt() : 0);
+            mapToHopGoc.put(nganh.getManganh(), nganh.getN_tohopgoc());
         }
 
         // BƯỚC 2: GOM NHÓM NGUYỆN VỌNG THEO TỪNG HỌC SINH
@@ -179,39 +181,81 @@ public class nguyenVongXetTuyenBUS {
             // 3.2. Đi từng Rổ kiểm tra xem có bị lố chỉ tiêu không
             for (String keyRo : mapRoXetTuyen.keySet()) {
                 ArrayList<nguyenVongXetTuyenETT> roHienTai = mapRoXetTuyen.get(keyRo);
+                
+                // Lấy Mã ngành hiện tại từ keyRo (Ví dụ "7480201_Xét THPT" -> Lấy "7480201")
+                String maNganhHienTai = keyRo.split("_")[0];
+                String toHopGoc = mapToHopGoc.getOrDefault(maNganhHienTai, "");
 
-                // Sắp xếp tụi trong Rổ theo Điểm giảm dần (Đứa cao điểm đứng đầu)
-//                roHienTai.sort((nv1, nv2) -> Double.compare(nv2.getDiemXetTuyen(), nv1.getDiemXetTuyen()));
-                // Sắp xếp tụi trong Rổ theo Điểm giảm dần. NẾU BẰNG ĐIỂM -> Xài Tiêu chí phụ
+                // SẮP XẾP CAO CẤP V2: Đưa Tổ Hợp Gốc vào làm "Thái Thượng Hoàng"
                 roHienTai.sort((nv1, nv2) -> {
-                    // 1. Tiêu chí chính: So sánh Điểm Xét Tuyển (Thấp đến Cao -> Đảo ngược lại là Cao xuống Thấp)
+                    // Ưu tiên 1: Điểm Xét Tuyển (Cao xuống Thấp)
                     int diemCompare = Double.compare(nv2.getDiemXetTuyen(), nv1.getDiemXetTuyen());
+                    if (diemCompare != 0) return diemCompare;
                     
-                    if (diemCompare != 0) {
-                        return diemCompare; // Trả về kết quả chênh lệch điểm
-                    }
-                    
-                    // 2. Tiêu chí phụ (TIE-BREAKER): Bằng điểm nhau thì ưu tiên Thứ Tự Nguyện Vọng
-                    // Đứa nào đặt NV ưu tiên hơn (Số nhỏ hơn, VD: NV1 < NV2) thì được đẩy lên trên
+                    // Ưu tiên 2 (MỚI): TỔ HỢP GỐC - Bằng điểm thì ưu tiên thằng có Tổ hợp = Tổ hợp gốc
+                    boolean isNv1Goc = nv1.getTtThm() != null && nv1.getTtThm().equals(toHopGoc);
+                    boolean isNv2Goc = nv2.getTtThm() != null && nv2.getTtThm().equals(toHopGoc);
+                    if (isNv1Goc && !isNv2Goc) return -1; // nv1 là con ruột -> Xếp trên
+                    if (!isNv1Goc && isNv2Goc) return 1;  // nv2 là con ruột -> Xếp trên
+
+                    // Ưu tiên 3: Điểm Môn 1 (Toán) - Cùng là con ruột (hoặc cùng không phải) thì xét điểm Toán
+                    int diemToanCompare = Double.compare(nv2.getDiemMon1(), nv1.getDiemMon1());
+                    if (diemToanCompare != 0) return diemToanCompare;
+
+                    // Ưu tiên 4: Thứ tự nguyện vọng (Nhỏ xuống Lớn)
                     return Integer.compare(nv1.getNvTt(), nv2.getNvTt());
                 });
 
                 int chiTieu = mapChiTieu.getOrDefault(keyRo, 0);
 
-                // Nếu Rổ đang chứa nhiều đứa hơn số Chỉ Tiêu -> Chém rớt tụi chót bảng
-                if (roHienTai.size() > chiTieu) {
-                    for (int i = chiTieu; i < roHienTai.size(); i++) {
+                if (chiTieu == 0) {
+                    // Nếu ngành/phương thức đó không có chỉ tiêu (0) -> Rớt sạch
+                    for (int i = 0; i < roHienTai.size(); i++) {
+                        nguyenVongXetTuyenETT nvBiTruot = roHienTai.get(i);
+                        String cccdBiTruot = nvBiTruot.getNnCccd();
+                        conTroNV.put(cccdBiTruot, conTroNV.get(cccdBiTruot) + 1);
+                        coSuThayDoi = true; 
+                    }
+                    roHienTai.clear();
+                } 
+                else if (roHienTai.size() > chiTieu) {
+                    // CẮT CHỈ TIÊU & NỚI RỔ
+                    int diemCatThucTe = chiTieu;
+                    nguyenVongXetTuyenETT nguoiCuoiCungDau = roHienTai.get(chiTieu - 1); 
+                    
+                    // NỚI RỔ: Cập nhật điều kiện đồng điểm (Thêm vụ giống nhau về Tổ hợp gốc)
+                    boolean isNguoiCuoiGoc = nguoiCuoiCungDau.getTtThm() != null && nguoiCuoiCungDau.getTtThm().equals(toHopGoc);
+                    
+                    while (diemCatThucTe < roHienTai.size()) {
+                        nguyenVongXetTuyenETT nguoiTiepTheo = roHienTai.get(diemCatThucTe);
+                        boolean isNguoiTiepTheoGoc = nguoiTiepTheo.getTtThm() != null && nguoiTiepTheo.getTtThm().equals(toHopGoc);
+                        
+                        // ĐỒNG ĐIỂM HOÀN TOÀN TỪ ƯU TIÊN 1 TỚI ƯU TIÊN 4
+                        if (nguoiTiepTheo.getDiemXetTuyen() == nguoiCuoiCungDau.getDiemXetTuyen() &&
+                            isNguoiTiepTheoGoc == isNguoiCuoiGoc && 
+                            nguoiTiepTheo.getDiemMon1() == nguoiCuoiCungDau.getDiemMon1() &&
+                            nguoiTiepTheo.getNvTt() == nguoiCuoiCungDau.getNvTt()) {
+                            
+                            diemCatThucTe++; // Cứu nó!
+                        } else {
+                            break; 
+                        }
+                    }
+
+                    // Bắt đầu chém từ cái vạch cắt thực tế (diemCatThucTe)
+                    for (int i = diemCatThucTe; i < roHienTai.size(); i++) {
                         nguyenVongXetTuyenETT nvBiTruot = roHienTai.get(i);
                         String cccdBiTruot = nvBiTruot.getNnCccd();
                         
                         // Đứa bị trượt phải lùi con trỏ xuống NV tiếp theo của nó
                         conTroNV.put(cccdBiTruot, conTroNV.get(cccdBiTruot) + 1);
                         
-                        // KÍCH HOẠT DOMINO: Vì có người bị lùi NV, hệ thống bắt buộc phải xếp rổ lại 1 lần nữa!
+                        // KÍCH HOẠT DOMINO: Bắt buộc phải xếp rổ lại 1 lần nữa!
                         coSuThayDoi = true; 
                     }
-                    // Quét sạch xác tụi bị chém ra khỏi Rổ hiện tại
-                    roHienTai.subList(chiTieu, roHienTai.size()).clear();
+                    
+                    // Quét xác tụi bị chém ra khỏi rổ
+                    roHienTai.subList(diemCatThucTe, roHienTai.size()).clear();
                 }
             }
         }

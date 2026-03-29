@@ -152,7 +152,8 @@ public class formExcelNguyenMauProMax extends javax.swing.JDialog {
 
     private void btnThoatActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_btnThoatActionPerformed
         // TODO add your handling code here:
-        xacNhanExport = true;
+        xacNhanExport = false;
+        xacNhanImport = false;
         dispose();
     }//GEN-LAST:event_btnThoatActionPerformed
 

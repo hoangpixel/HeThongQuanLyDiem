@@ -18,6 +18,7 @@ import jakarta.persistence.Table;
 public class nganhToHopETT {
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
+    @Column(name = "id")
     private int idNganhToHop;
 
     @Column(name = "manganh", nullable = false)

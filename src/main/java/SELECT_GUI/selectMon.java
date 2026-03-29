@@ -76,6 +76,12 @@ public class selectMon extends javax.swing.JDialog {
         model.addRow(new Object[]{"TI", "Tin học"});
         model.addRow(new Object[]{"KHAC", "Môn khác"});
         model.addRow(new Object[]{"KTPL", "Kinh tế & Pháp luật"});
+        model.addRow(new Object[]{"NK1", "Năng khiếu 1"});
+        model.addRow(new Object[]{"NK2", "Năng khiếu 2"});
+        model.addRow(new Object[]{"NK3", "Năng khiếu 3"});
+        model.addRow(new Object[]{"NK4", "Năng khiếu 4"});
+        model.addRow(new Object[]{"NK5", "Năng khiếu 5"});
+        model.addRow(new Object[]{"NK6", "Năng khiếu 6"});
     }
     /**
      * This method is called from within the constructor to initialize the form.

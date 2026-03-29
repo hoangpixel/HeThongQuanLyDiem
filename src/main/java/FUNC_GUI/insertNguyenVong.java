@@ -136,7 +136,7 @@ public class insertNguyenVong extends javax.swing.JDialog {
         jLabel5.setFont(new java.awt.Font("Segoe UI", 0, 14)); // NOI18N
         jLabel5.setText("Phương thức : ");
 
-        cboPT.setModel(new javax.swing.DefaultComboBoxModel<>(new String[] { "Xét THPT", "ĐGNL HCM", "Đánh giá V-SAT", "Tuyển Thẳng" }));
+        cboPT.setModel(new javax.swing.DefaultComboBoxModel<>(new String[] { "Xét THPT", "ĐGNL HCM", "Đánh giá V-SAT", "Xét tuyển thẳng" }));
         cboPT.addActionListener(this::cboPTActionPerformed);
 
         jLabel6.setFont(new java.awt.Font("Segoe UI", 0, 14)); // NOI18N
@@ -478,8 +478,12 @@ public class insertNguyenVong extends javax.swing.JDialog {
     private void cboPTActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_cboPTActionPerformed
         // TODO add your handling code here:
         String phuongThuc = cboPT.getSelectedItem().toString();
-        
-        if (phuongThuc.equals("Xét THPT") || phuongThuc.equals("Đánh giá V-SAT")) {
+        if(phuongThuc.equals("Xét tuyển thẳng"))
+        {
+            txtDiemTHXT.setText("30");
+            btnChonToHop.setEnabled(false);
+        }
+        else if (phuongThuc.equals("Xét THPT") || phuongThuc.equals("Đánh giá V-SAT")) {
             btnChonToHop.setEnabled(true);
             txtToHopMon.setText("");
             toHopMon = "";
@@ -518,126 +522,6 @@ public class insertNguyenVong extends javax.swing.JDialog {
         // TODO add your handling code here:
     }//GEN-LAST:event_txtCCCDActionPerformed
 
-// Bạn cần khai báo thêm một biến toàn cục ở đầu class để lưu Tổ hợp vừa chọn
-    // public toHopETT toHopMonDaChon;
-
-//public void capNhatDiemTuDong() {
-//        if (cccd == null || cccd.trim().isEmpty()) return;
-//        if (cboPT.getSelectedItem() == null) return;
-//
-//        String maNganh = txtMaNganh.getText().trim();
-//        String phuongThuc = cboPT.getSelectedItem().toString();
-//        
-//        try {
-//            diemThiBUS dtBus = new diemThiBUS();
-//            diemThiETT diemThi = dtBus.layDiemTheoCCCD(cccd);
-//            
-//            double diemCongIELTS = 0.0;
-//            double diemCongGiaiThuong = 0.0;
-//            double diemGoc = 0.0;
-//
-//            if (diemThi != null) {
-//                // RẼ NHÁNH: Gộp chung Xét THPT và V-SAT vì cả 2 đều dùng Tổ hợp 3 môn
-//                if ((phuongThuc.equals("Xét THPT") || phuongThuc.equals("Đánh giá V-SAT")) && toHopMonDaChon != null) {
-//                    String mon1 = toHopMonDaChon.getMon1(); 
-//                    String mon2 = toHopMonDaChon.getMon2();
-//                    String mon3 = toHopMonDaChon.getMon3();
-//
-//                    // Lấy điểm thô từ DB
-//                    double diem1 = layDiemTheoMaMon(diemThi, mon1);
-//                    double diem2 = layDiemTheoMaMon(diemThi, mon2);
-//                    double diem3 = layDiemTheoMaMon(diemThi, mon3);
-//                    
-//                    double w1 = 1.0, w2 = 1.0, w3 = 1.0; 
-//
-//                    try (org.hibernate.Session session = CONFIG.HibernateUtil.getSessionFactory().openSession()) {
-//                        // 1. TÌM HỆ SỐ MÔN (Dùng chung cho cả 2 phương thức)
-//                        if (!maNganh.isEmpty()) {
-//                            String sqlHeSo = "SELECT hsmon1, hsmon2, hsmon3 FROM xt_nganh_tohop WHERE manganh = :mn AND matohop = :th LIMIT 1";
-//                            Object[] heSoData = (Object[]) session.createNativeQuery(sqlHeSo)
-//                                    .setParameter("mn", maNganh).setParameter("th", toHopMon).uniqueResult();
-//                            if (heSoData != null) {
-//                                w1 = heSoData[0] == null ? 1.0 : ((Number) heSoData[0]).doubleValue();
-//                                w2 = heSoData[1] == null ? 1.0 : ((Number) heSoData[1]).doubleValue();
-//                                w3 = heSoData[2] == null ? 1.0 : ((Number) heSoData[2]).doubleValue();
-//                            }
-//                        }
-//
-//                        // 2. CHỈ Xét THPT mới dò điểm IELTS và Giải thưởng (V-SAT không áp dụng cái này)
-//                        if (phuongThuc.equals("Xét THPT")) {
-//                            String sqlIELTS = "SELECT diem_quydoi, diem_cong FROM xt_chungchi WHERE cccd = :cccd LIMIT 1";
-//                            Object[] ieltsData = (Object[]) session.createNativeQuery(sqlIELTS).setParameter("cccd", cccd).uniqueResult();
-//                            if (ieltsData != null) {
-//                                double diemQuyDoi = ieltsData[0] == null ? 0.0 : ((Number) ieltsData[0]).doubleValue();
-//                                diemCongIELTS = ieltsData[1] == null ? 0.0 : ((Number) ieltsData[1]).doubleValue();
-//                                if ("N1".equals(mon1)) diem1 = diemQuyDoi;
-//                                if ("N1".equals(mon2)) diem2 = diemQuyDoi;
-//                                if ("N1".equals(mon3)) diem3 = diemQuyDoi;
-//                            }
-//
-//                            String sqlGT = "SELECT ma_mon, diem_cong_co_mon, diem_cong_khong_mon FROM xt_giathuong WHERE cccd = :cccd LIMIT 1";
-//                            Object[] gtData = (Object[]) session.createNativeQuery(sqlGT).setParameter("cccd", cccd).uniqueResult();
-//                            if (gtData != null) {
-//                                String maMonGiai = (String) gtData[0];
-//                                double diemCoMon = gtData[1] == null ? 0.0 : ((Number) gtData[1]).doubleValue();
-//                                double diemKhongMon = gtData[2] == null ? 0.0 : ((Number) gtData[2]).doubleValue();
-//                                if (maMonGiai.equals(mon1) || maMonGiai.equals(mon2) || maMonGiai.equals(mon3)) {
-//                                    diemCongGiaiThuong = diemCoMon; 
-//                                } else {
-//                                    diemCongGiaiThuong = diemKhongMon; 
-//                                }
-//                            }
-//                        }
-//                    } catch (Exception e) { e.printStackTrace(); }
-//
-//                    // 3. TÍNH ĐIỂM CHUẨN HÓA THEO PHƯƠNG THỨC
-//                    double W = w1 + w2 + w3;
-//                    if (W > 0) {
-//                        if (phuongThuc.equals("Đánh giá V-SAT")) {
-//                            // Gọi hàm quy đổi V-SAT của ông
-//                            double d1 = CAL.AdmissionsConverter.quyDoiVsat(mon1, diem1);
-//                            double d2 = CAL.AdmissionsConverter.quyDoiVsat(mon2, diem2);
-//                            double d3 = CAL.AdmissionsConverter.quyDoiVsat(mon3, diem3);
-//                            diemGoc = ((d1 * w1 + d2 * w2 + d3 * w3) / W) * 3.0;
-//                        } else {
-//                            // THPT bình thường
-//                            diemGoc = ((diem1 * w1 + diem2 * w2 + diem3 * w3) / W) * 3.0;
-//                        }
-//                    }
-//                    diemGoc = Math.round(diemGoc * 100.0) / 100.0;
-//                } 
-//                else if (phuongThuc.equals("ĐGNL HCM")) {
-//                    diemGoc = diemThi.getNl1() != null ? (diemThi.getNl1() / 1200.0) * 30.0 : 0.0;
-//                    diemGoc = Math.round(diemGoc * 100.0) / 100.0;
-//                }
-//                else if (phuongThuc.equals("Xét tuyển thẳng")) {
-//                    diemGoc = 30.0; 
-//                }
-//
-//                txtDiemTHXT.setText(String.valueOf(diemGoc));
-//            }
-//
-//// --- GÓC DỌN DẸP LẠI PHẦN HIỂN THỊ CUỐI HÀM ---
-//            // 1. Điểm THXT
-//            txtDiemTHXT.setText(String.valueOf(diemGoc));
-//
-//            // 2. Điểm Cộng (Chứng chỉ + Giải thưởng) theo đúng ý thầy
-//            double tongDiemCong = diemCongIELTS + diemCongGiaiThuong;
-//            txtDiemCong.setText(String.valueOf(tongDiemCong));
-//
-//            // 3. KHÔNG ĐỤNG CHẠM GÌ TỚI txtDiemUuTien Ở ĐÂY CẢ!
-//            // Để cho nút "Chọn Thí Sinh" lo việc gán điểm Khu Vực vào ô đó.
-//
-//            // Khóa textfield không cho sửa bậy
-//            txtDiemTHXT.setEditable(false);
-//            txtDiemCong.setEditable(false);
-//            txtDiemUuTien.setEditable(false); 
-//
-//        } catch (Exception e) {
-//            e.printStackTrace();
-//        }
-//    }
-    
     public void capNhatDiemTuDong() {
         if (cccd == null || cccd.trim().isEmpty()) return;
         if (cboPT.getSelectedItem() == null) return;
@@ -685,9 +569,9 @@ public class insertNguyenVong extends javax.swing.JDialog {
                         double diemQuyDoi = ielts[0];
                         diemCongIELTS = ielts[1];
                         
-                        if ("N1".equals(mon1)) diem1 = diemQuyDoi;
-                        if ("N1".equals(mon2)) diem2 = diemQuyDoi;
-                        if ("N1".equals(mon3)) diem3 = diemQuyDoi;
+                        if ("N1".equals(mon1)) diem1 = Math.max(diem1, diemQuyDoi);
+                        if ("N1".equals(mon2)) diem2 = Math.max(diem2, diemQuyDoi);
+                        if ("N1".equals(mon3)) diem3 = Math.max(diem3, diemQuyDoi);
 
                         // Dò Giải Thưởng qua BUS
                         giaiThuongBUS gtBus = new giaiThuongBUS();
@@ -779,6 +663,11 @@ public class insertNguyenVong extends javax.swing.JDialog {
             // --- 4. CÁC MÔN NĂNG KHIẾU & ĐÁNH GIÁ NĂNG LỰC ---
             case "NK1": return dt.getNk1() != null ? dt.getNk1() : 0.0;    // Năng khiếu 1
             case "NK2": return dt.getNk2() != null ? dt.getNk2() : 0.0;    // Năng khiếu 2
+            case "NK3": return dt.getNk3() != null ? dt.getNk3() : 0.0;
+            case "NK4": return dt.getNk4() != null ? dt.getNk4() : 0.0;
+            case "NK5": return dt.getNk5() != null ? dt.getNk5() : 0.0;
+            case "NK6": return dt.getNk6() != null ? dt.getNk6() : 0.0;
+            
             case "NL1": return dt.getNl1() != null ? dt.getNl1() : 0.0;    // ĐGNL HCM
             
             // --- DEFAULT: Trả về 0 nếu mã môn không khớp ---
