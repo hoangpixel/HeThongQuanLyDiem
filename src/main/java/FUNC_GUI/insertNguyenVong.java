@@ -569,9 +569,18 @@ public class insertNguyenVong extends javax.swing.JDialog {
                         double diemQuyDoi = ielts[0];
                         diemCongIELTS = ielts[1];
                         
-                        if ("N1".equals(mon1)) diem1 = Math.max(diem1, diemQuyDoi);
-                        if ("N1".equals(mon2)) diem2 = Math.max(diem2, diemQuyDoi);
-                        if ("N1".equals(mon3)) diem3 = Math.max(diem3, diemQuyDoi);
+                        // KIỂM TRA XEM TỔ HỢP NÀY CÓ MÔN TIẾNG ANH (N1) KHÔNG?
+                        boolean coTiengAnh = "N1".equals(mon1) || "N1".equals(mon2) || "N1".equals(mon3);
+
+                        if (coTiengAnh) {
+                            // CÓ TIẾNG ANH: Tráo điểm thi, và TỊCH THU ĐIỂM CỘNG KHUYẾN KHÍCH
+                            if ("N1".equals(mon1)) diem1 = Math.max(diem1, diemQuyDoi);
+                            if ("N1".equals(mon2)) diem2 = Math.max(diem2, diemQuyDoi);
+                            if ("N1".equals(mon3)) diem3 = Math.max(diem3, diemQuyDoi);
+                            
+                            diemCongIELTS = 0.0; // Reset về 0, không cho buff bẩn!
+                        } 
+                        // NẾU KHÔNG CÓ TIẾNG ANH -> Bỏ qua lệnh if này, diemCongIELTS vẫn giữ nguyên để đem đi cộng ở cuối hàm.
 
                         // Dò Giải Thưởng qua BUS
                         giaiThuongBUS gtBus = new giaiThuongBUS();
