@@ -23,6 +23,38 @@ public class toHopBUS {
         return ds;
     }
     
+    public boolean kiemTraRong(String text)
+    {
+        if(text == null || text.trim().isEmpty())
+        {
+            return true;
+        }
+        return false;
+    }
+    
+    public boolean kiemTraSo(String text) 
+    {
+        try 
+        {
+            Integer.parseInt(text);
+            return true;
+        } catch (NumberFormatException e) 
+        {
+            return false;
+        }
+    }
+    
+    public boolean kiemTraSoThuc(String text) 
+    {
+    try {
+        Double.parseDouble(text);
+        return true;
+    } catch (NumberFormatException e) 
+    {
+        return false;
+    }
+    }
+    
     // ===================== THÊM =====================
     public boolean themToHop (toHopETT toHopMoi){
         boolean isSuccess = data.them(toHopMoi);
@@ -35,16 +67,16 @@ public class toHopBUS {
     }
 
     // ===================== SỬA =====================
-    public boolean suaNganhToHop(toHopETT nganhToHopDaSua) {
+    public boolean suaToHop(toHopETT ToHopDaSua) {
         // 1. Lưu xuống Database trước qua DAO
-        if (data.sua(nganhToHopDaSua)) {
+        if (data.sua(ToHopDaSua)) {
 
             // 2. Nếu DB OK → cập nhật lại RAM
             if (ds != null) {
                 for (int i = 0; i < ds.size(); i++) {
                     // Dùng id (khóa chính) để tìm đúng phần tử
-                    if (ds.get(i).getIdtohop() == nganhToHopDaSua.getIdtohop()) {
-                        ds.set(i, nganhToHopDaSua); // Đè object mới vào vị trí cũ
+                    if (ds.get(i).getIdtohop() == ToHopDaSua.getIdtohop()) {
+                        ds.set(i, ToHopDaSua); // Đè object mới vào vị trí cũ
                         break;
                     }
                 }
@@ -55,14 +87,14 @@ public class toHopBUS {
     }
 
     // ===================== XÓA =====================
-    public boolean xoaNganhToHop(toHopETT nganhToHopCanXoa) {
+    public boolean xoaNganhToHop(toHopETT ToHopCanXoa) {
         // 1. Xóa trong Database trước
-        if (data.xoa(nganhToHopCanXoa)) {
+        if (data.xoa(ToHopCanXoa)) {
 
             // 2. Nếu DB OK → xóa luôn trong RAM
             if (ds != null) {
                 for (int i = 0; i < ds.size(); i++) {
-                    if (ds.get(i).getIdtohop() == nganhToHopCanXoa.getIdtohop()) {
+                    if (ds.get(i).getIdtohop() == ToHopCanXoa.getIdtohop()) {
                         ds.remove(i);
                         break;
                     }
