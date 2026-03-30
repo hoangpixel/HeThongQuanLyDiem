@@ -622,4 +622,90 @@ public class nguyenVongXetTuyenBUS {
             return "Lỗi khi đọc file Excel: " + e.getMessage();
         }
     }
+    
+    public ArrayList<nguyenVongXetTuyenETT> timKiemCoBan(String tim, int index)
+    {
+        if(ds == null)
+        {
+            layDanhSach();
+        }
+        
+        ArrayList<nguyenVongXetTuyenETT> dskq = new ArrayList<nguyenVongXetTuyenETT>();
+        String tuKhoa = tim.trim().toLowerCase();
+        
+        for(nguyenVongXetTuyenETT ct : ds)
+        {
+            switch (index) {
+                case 0:
+                    if(String.valueOf(ct.getIdNv()).toLowerCase().contains(tuKhoa))
+                    {
+                        dskq.add(ct);
+                    }
+                    break;
+                case 1:
+                    if(ct.getNnCccd() != null && ct.getNnCccd().toLowerCase().contains(tuKhoa))
+                    {
+                        dskq.add(ct);
+                    }
+                    break;
+                case 2:
+                    if(ct.getNvMaNganh() != null && ct.getNvMaNganh().toLowerCase().contains(tuKhoa))
+                    {
+                        dskq.add(ct);
+                    }
+                    break;
+                case 3:
+                    if(String.valueOf(ct.getNvTt()).toLowerCase().contains(tuKhoa))
+                    {
+                        dskq.add(ct);
+                    }
+                    break;
+                case 4:
+                    if(String.valueOf(ct.getDiemThxt()).toLowerCase().contains(tuKhoa))
+                    {
+                        dskq.add(ct);
+                    }
+                    break;
+                case 5:
+                    if(String.valueOf(ct.getDiemUtqd()).toLowerCase().contains(tuKhoa))
+                    {
+                        dskq.add(ct);
+                    }
+                    break;
+                case 6:
+                    if(String.valueOf(ct.getDiemCong()).toLowerCase().contains(tuKhoa))
+                    {
+                        dskq.add(ct);
+                    }
+                    break;
+                case 7:
+                    if(String.valueOf(ct.getDiemXetTuyen()).toLowerCase().contains(tuKhoa))
+                    {
+                        dskq.add(ct);
+                    }
+                    break;
+                case 8:
+                    if(ct.getNvKetQua() != null && ct.getNvKetQua().toLowerCase().contains(tuKhoa))
+                    {
+                        dskq.add(ct);
+                    }
+                    break;
+                case 9:
+                    if(ct.getTtPhuongThuc() != null && ct.getTtPhuongThuc().toLowerCase().contains(tuKhoa))
+                    {
+                        dskq.add(ct);
+                    }
+                    break;
+                case 10:
+                    if(ct.getTtThm() != null && ct.getTtThm().toLowerCase().contains(tuKhoa))
+                    {
+                        dskq.add(ct);
+                    }
+                    break;
+                default:
+                    throw new AssertionError();
+            }
+        }
+        return dskq;
+    }
 }

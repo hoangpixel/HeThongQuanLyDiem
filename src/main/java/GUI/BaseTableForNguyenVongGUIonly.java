@@ -318,7 +318,7 @@ private void styleComponents() {
     btnReFresh.setIcon(loadAndScaleIcon("refresh.png", iconSize));
     btnChiTiet.setIcon(loadAndScaleIcon("information.png", iconSize));
     btnTimKiem.setIcon(loadAndScaleIcon("search.png", 24));
-    btnTinhToanKetQua.setIcon(loadAndScaleIcon("information.png", iconSize));
+    btnTinhToanKetQua.setIcon(loadAndScaleIcon("cogwheel.png", iconSize));
 
     // Ép chữ nằm phía DƯỚI icon và căn giữa cho 5 nút chức năng
     JButton[] actionBtns = {btnThem, btnSua, btnXoa, btnExcel, btnReFresh,btnChiTiet,btnTinhToanKetQua};

@@ -23,6 +23,7 @@ import java.util.Collections;
 import javax.swing.JOptionPane;
 import EXCEL.ExcelHelper;
 import CAL.*;
+import java.lang.reflect.Array;
 
 public class nguyenVongXetTuyenGUI extends BaseTableForNguyenVongGUIonly {
 
@@ -37,8 +38,10 @@ public class nguyenVongXetTuyenGUI extends BaseTableForNguyenVongGUIonly {
         btnThem.addActionListener(e -> hienThiDialogThemMoi());
         btnSua.addActionListener(e -> hienThiDialogSua());
         btnXoa.addActionListener(e ->hienThiDialogXoa());
-        btnReFresh.addActionListener(e -> thucHienRefresh());
+        btnTinhToanKetQua.addActionListener(e -> thucHienTinhToanKetQua());
         btnExcel.addActionListener(e -> hienThiExcel());
+        btnReFresh.addActionListener(e -> thucHienRefresh());
+        btnTimKiem.addActionListener(e -> thucHienTimKiem());
         
         // ==============================================================
         // BỔ SUNG: GẮN SỰ KIỆN DOUBLE-CLICK CHO TABLE
@@ -66,6 +69,58 @@ public class nguyenVongXetTuyenGUI extends BaseTableForNguyenVongGUIonly {
         table.getColumnModel().getColumn(9).setMinWidth(0);
         table.getColumnModel().getColumn(9).setMaxWidth(0);
         table.getColumnModel().getColumn(9).setWidth(0);
+        loadComboBox();
+    }
+    
+    
+    public void loadComboBox() {
+        cbxTimKiem.removeAllItems();
+
+        cbxTimKiem.addItem("ID NV");
+        cbxTimKiem.addItem("CCCD");
+        cbxTimKiem.addItem("Mã ngành");
+        cbxTimKiem.addItem("Thứ tự NV");
+        cbxTimKiem.addItem("Điểm THXT");
+        cbxTimKiem.addItem("Điểm UTQD");
+        cbxTimKiem.addItem("Điểm cộng");
+        cbxTimKiem.addItem("Điểm xét tuyển");
+        cbxTimKiem.addItem("Kết quả");
+        cbxTimKiem.addItem("Phương thức");
+        cbxTimKiem.addItem("Tổ hợp");
+    }
+    
+    public void thucHienTimKiem()
+    {
+        String tim = txtTimKiem.getText().trim();
+        int index = cbxTimKiem.getSelectedIndex();
+        ArrayList<nguyenVongXetTuyenETT> dskq = busNguyenVong.timKiemCoBan(tim, index);
+        List<Vector> dsHienThi = new ArrayList<>();
+        
+        
+        for (nguyenVongXetTuyenETT ct : dskq) 
+        {
+            Vector row = new Vector();
+            row.add(ct.getIdNv());
+            row.add(ct.getNnCccd());
+            row.add(ct.getNvMaNganh());
+            row.add(ct.getNvTt());
+            row.add(ct.getDiemThxt());
+            row.add(ct.getDiemUtqd());
+            row.add(ct.getDiemCong());
+            row.add(ct.getDiemXetTuyen());
+            row.add(ct.getNvKetQua());
+            row.add(ct.getNvKeys());
+            row.add(ct.getTtPhuongThuc());
+            row.add(ct.getTtThm());
+
+            dsHienThi.add(row);
+        }
+
+        setTableData(dsHienThi);
+        if(dsHienThi.isEmpty())
+        {
+            JOptionPane.showMessageDialog(this, "Không tìm thấy dữ liệu phù hợp");
+        }
     }
     
     // Hàm tạo header và truyền dữ liệu vào table
@@ -403,7 +458,7 @@ private void hienThiDialogSua() {
 //    }
 //}
     
-    private void thucHienRefresh() {
+    private void thucHienTinhToanKetQua() {
         int confirm = javax.swing.JOptionPane.showConfirmDialog(this, 
             "CẢNH BÁO: Hành động này sẽ khóa sổ và xét duyệt toàn bộ nguyện vọng trên hệ thống.\n" +
             "Hệ thống sẽ tự động tổng hợp điểm, phân bổ chỉ tiêu và áp dụng tiêu chí phụ.\n" +
@@ -520,5 +575,37 @@ private void hienThiDialogSua() {
             ArrayList<nguyenVongXetTuyenETT> fullDanhSach = busNguyenVong.layDanhSach();
             ExcelHelper.xuatDanhSachNguyenVongRaExcel(fullDanhSach, this, "DanhSachNguyenVong");
         }
+    }
+    
+    public void thucHienRefresh()
+    {
+        cbxTimKiem.setSelectedIndex(0);
+        txtTimKiem.setText(null);
+        
+        busNguyenVong.layDanhSach();
+
+        fullDataList.clear();
+        List<Vector> dataList = new ArrayList<>();
+
+        for (nguyenVongXetTuyenETT ct : busNguyenVong.ds) 
+        {
+            Vector row = new Vector();
+            row.add(ct.getIdNv());
+            row.add(ct.getNnCccd());
+            row.add(ct.getNvMaNganh());
+            row.add(ct.getNvTt());
+            row.add(ct.getDiemThxt());
+            row.add(ct.getDiemUtqd());
+            row.add(ct.getDiemCong());
+            row.add(ct.getDiemXetTuyen());
+            row.add(ct.getNvKetQua());
+            row.add(ct.getNvKeys());
+            row.add(ct.getTtPhuongThuc());
+            row.add(ct.getTtThm());
+
+            dataList.add(row);
+        }
+
+        setTableData(dataList);
     }
 }
