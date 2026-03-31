@@ -23,18 +23,17 @@ import java.util.Collections;
 import javax.swing.JOptionPane;
 import EXCEL.ExcelHelper;
 import CAL.*;
+import FUNC_GUI.detailNguyenVong;
 import java.lang.reflect.Array;
 
 public class nguyenVongXetTuyenGUI extends BaseTableForNguyenVongGUIonly {
 
     nguyenVongXetTuyenBUS busNguyenVong = new nguyenVongXetTuyenBUS();
     public nguyenVongXetTuyenGUI() {
-        super(); // Gọi giao diện cơ bản từ BaseTableGUI lên
-        // 1. Đổi tên GroupBox và Cột
+        super();
         setTableNameForTitle("Nguyện Vọng"); 
         headerTable();
         
-        // 2. Gắn sự kiện nút bấm
         btnThem.addActionListener(e -> hienThiDialogThemMoi());
         btnSua.addActionListener(e -> hienThiDialogSua());
         btnXoa.addActionListener(e ->hienThiDialogXoa());
@@ -42,29 +41,9 @@ public class nguyenVongXetTuyenGUI extends BaseTableForNguyenVongGUIonly {
         btnExcel.addActionListener(e -> hienThiExcel());
         btnReFresh.addActionListener(e -> thucHienRefresh());
         btnTimKiem.addActionListener(e -> thucHienTimKiem());
+        btnChiTiet.addActionListener(e -> hienThiChiTietNV());
         
-        // ==============================================================
-        // BỔ SUNG: GẮN SỰ KIỆN DOUBLE-CLICK CHO TABLE
-        // ==============================================================
-        table.addMouseListener(new MouseAdapter() {
-            @Override
-            public void mouseClicked(MouseEvent evt) {
-                // Kiểm tra xem người dùng có click đúp (2 lần) không
-                if (evt.getClickCount() == 2) {
-                    // Lấy ra vị trí dòng (row) mà người dùng vừa click vào
-                    int selectedRow = table.getSelectedRow();
-                    
-                    // Nếu có dòng được chọn (khác -1)
-                    if (selectedRow != -1) {
-                        // Gọi hàm hiển thị form và truyền vị trí dòng vào
-//                        hienThiDialogChiTiet(selectedRow);
-                    }
-                }
-            }
-        });
-        // ==============================================================
         
-        // 3. GỌI HÀM TẢI DỮ LIỆU LÊN BẢNG KHI VỪA MỞ FORM LÊN
         loadDataToTable();
         table.getColumnModel().getColumn(9).setMinWidth(0);
         table.getColumnModel().getColumn(9).setMaxWidth(0);
@@ -93,6 +72,14 @@ public class nguyenVongXetTuyenGUI extends BaseTableForNguyenVongGUIonly {
     {
         String tim = txtTimKiem.getText().trim();
         int index = cbxTimKiem.getSelectedIndex();
+        
+        if(tim.isEmpty())
+        {
+            JOptionPane.showMessageDialog(this, "Vui lòng nhập nội dung cần tìm");
+            txtTimKiem.requestFocus();
+            return;
+        }
+        
         ArrayList<nguyenVongXetTuyenETT> dskq = busNguyenVong.timKiemCoBan(tim, index);
         List<Vector> dsHienThi = new ArrayList<>();
         
@@ -172,10 +159,6 @@ public class nguyenVongXetTuyenGUI extends BaseTableForNguyenVongGUIonly {
         setTableData(dataList);
     }
 
-    // Hàm mở JDialog thêm mới (Giữ nguyên)
-// ==============================================================
-    // HÀM MỞ FORM JDIALOG ĐỂ THÊM NGUYỆN VỌNG MỚI
-    // ==============================================================
 private void hienThiDialogThemMoi() {
     JFrame topFrame = (JFrame) SwingUtilities.getWindowAncestor(this);
     insertNguyenVong dialog = new insertNguyenVong(topFrame, true);
@@ -274,7 +257,7 @@ private void hienThiDialogSua() {
             int absoluteIndex = (currentPage - 1) * rowsPerPage + modelIndex; // 🔥 Bí quyết chống lỗi phân trang
             
             // 2. Lấy đối tượng cũ ra và ném vào Form Sửa
-            Entity.nguyenVongXetTuyenETT nguyenVongCu = busNguyenVong.ds.get(absoluteIndex);
+            nguyenVongXetTuyenETT nguyenVongCu = busNguyenVong.ds.get(absoluteIndex);
             JFrame topFrame = (JFrame) SwingUtilities.windowForComponent(this);
             
             // Giả sử form của bạn tên là updateNguyenVong
@@ -283,7 +266,7 @@ private void hienThiDialogSua() {
             
             // 3. Sau khi người dùng Sửa và bấm LƯU thành công
             if (dialog.xacNhanThem()) { 
-                Entity.nguyenVongXetTuyenETT nvMoi = dialog.getNguyenVong();
+                nguyenVongXetTuyenETT nvMoi = dialog.getNguyenVong();
                 
                 // 🔥 Ép kiểu đối tượng mới thành Vector y như hàm Thêm
                 Vector rowData = new java.util.Vector();
@@ -530,6 +513,11 @@ private void hienThiDialogSua() {
                 // Làm tròn 3 chữ số thập phân cho chuẩn
                 tongCuoi = Math.round(tongCuoi * 1000.0) / 1000.0; 
                 nv.setDiemXetTuyen(tongCuoi);
+                // Chèn dòng này vào vòng lặp for ở Bước 2 trong Form Cha
+            System.out.println("Thí sinh: " + nv.getNnCccd() + 
+                               " | Tổ hợp: " + nv.getTtThm() + 
+                               " | Tên Môn 1: " + nv.getTenMon1() + 
+                               " | Điểm Môn 1: " + nv.getDiemMon1());
             }
 
             // --- BƯỚC 3: THUẬT TOÁN DOMINO CHÉM CHỈ TIÊU ---
@@ -607,5 +595,20 @@ private void hienThiDialogSua() {
         }
 
         setTableData(dataList);
+    }
+    
+    private void hienThiChiTietNV()
+    {
+        int row = table.getSelectedRow();
+        if (row != -1) {
+            int modelIndex = table.convertRowIndexToModel(row);
+            int absoluteIndex = (currentPage - 1) * rowsPerPage + modelIndex;
+            
+            nguyenVongXetTuyenETT nguyenVongCu = busNguyenVong.ds.get(absoluteIndex);
+            JFrame topFrame = (JFrame) SwingUtilities.windowForComponent(this);
+            
+            detailNguyenVong dialog = new detailNguyenVong(topFrame, true, nguyenVongCu);
+            dialog.setVisible(true);
+        }
     }
 }

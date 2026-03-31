@@ -295,6 +295,7 @@ public class insertNguyenVong extends javax.swing.JDialog {
         );
 
         jPanel3.setBackground(new java.awt.Color(153, 255, 153));
+        jPanel3.setBorder(javax.swing.BorderFactory.createLineBorder(new java.awt.Color(0, 0, 0)));
 
         jLabel9.setFont(new java.awt.Font("Segoe UI", 1, 24)); // NOI18N
         jLabel9.setText("Thêm Nguyện Vọng");
@@ -485,8 +486,8 @@ public class insertNguyenVong extends javax.swing.JDialog {
         }
         else if (phuongThuc.equals("Xét THPT") || phuongThuc.equals("Đánh giá V-SAT")) {
             btnChonToHop.setEnabled(true);
-            txtToHopMon.setText("");
-            toHopMon = "";
+//            txtToHopMon.setText("");
+//            toHopMon = "";
         } else {
             btnChonToHop.setEnabled(false);
             txtToHopMon.setText("Không");
