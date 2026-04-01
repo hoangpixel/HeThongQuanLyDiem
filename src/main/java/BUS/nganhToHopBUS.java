@@ -54,9 +54,31 @@ public class nganhToHopBUS {
     }
     }
     
+    public boolean kiemTraSoAm(String text)
+    {
+        int so = Integer.parseInt(text);
+        if(so < 0)
+        {
+            return false;
+        }
+        return true;
+    }
+          
+    public boolean kiemTraTrung(String key)
+    {
+        for(nganhToHopETT ct : ds)
+        {
+            if(ct.getKey().equals(key))
+            {
+                return true;
+            }
+        }
+        return false;
+    }
+        
     // ===================== THÊM =====================
     public boolean themNganhToHop(nganhToHopETT nganhToHopMoi) {
-        boolean isSuccess = data.them(nganhToHopMoi);
+        boolean isSuccess = data.themNganhToHop(nganhToHopMoi);
         if (isSuccess) {
             if (ds != null) {
                 ds.add(nganhToHopMoi); // Cập nhật RAM luôn, không cần load lại DB
@@ -68,7 +90,7 @@ public class nganhToHopBUS {
     // ===================== SỬA =====================
     public boolean suaNganhToHop(nganhToHopETT nganhToHopDaSua) {
         // 1. Lưu xuống Database trước qua DAO
-        if (data.sua(nganhToHopDaSua)) {
+        if (data.suaNganhToHop(nganhToHopDaSua)) {
 
             // 2. Nếu DB OK → cập nhật lại RAM
             if (ds != null) {
@@ -128,5 +150,24 @@ public class nganhToHopBUS {
         }
         
         return data.layHeSoMon(maNganh, maToHop);
+    }
+    
+    // Hàm này giống như Kính lúp, chỉ tìm kiếm trên RAM, không đụng tới DB
+    public nganhToHopETT layNganhToHopBangKey(String key) {
+        // 1. Đảm bảo danh sách trên RAM đã có đồ ăn
+        if (ds == null || ds.isEmpty()) {
+            layDanhSach(); 
+        }
+
+        // 2. Cầm kính lúp đi dò từng thằng một
+        for (nganhToHopETT nth : ds) {
+            // Nếu tìm thấy thằng nào có cái Mã Key trùng khớp (Ví dụ: "7480201_A00")
+            if (nth.getKey() != null && nth.getKey().equals(key)) {
+                return nth; // Bắt được nó rồi, ném nó ra ngoài!
+            }
+        }
+
+        // 3. Tìm đỏ mắt không thấy thì báo Null
+        return null; 
     }
 }

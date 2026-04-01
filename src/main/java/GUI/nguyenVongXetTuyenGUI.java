@@ -441,7 +441,93 @@ private void hienThiDialogSua() {
 //    }
 //}
     
-    private void thucHienTinhToanKetQua() {
+//    private void thucHienTinhToanKetQua() {
+//        int confirm = javax.swing.JOptionPane.showConfirmDialog(this, 
+//            "CẢNH BÁO: Hành động này sẽ khóa sổ và xét duyệt toàn bộ nguyện vọng trên hệ thống.\n" +
+//            "Hệ thống sẽ tự động tổng hợp điểm, phân bổ chỉ tiêu và áp dụng tiêu chí phụ.\n" +
+//            "Bạn có chắc chắn muốn tiến hành xét tuyển?", 
+//            "Xác nhận Chốt Sổ", 
+//            javax.swing.JOptionPane.YES_NO_OPTION, 
+//            javax.swing.JOptionPane.WARNING_MESSAGE);
+//            
+//        if (confirm == javax.swing.JOptionPane.YES_OPTION) {
+//            
+//            // --- BƯỚC 0: GỌI BUS ĐỂ TỰ ĐỘNG CẬP NHẬT CHỈ TIÊU (Đã fix lỗi trừ sai) ---
+//            nganhBUS nBus = new nganhBUS();
+//            if (nBus.capNhatChiTieuThucTe()) {
+//                System.out.println("Hệ thống đã tự động cất ghế cho team Tuyển thẳng, V-SAT, ĐGNL và cập nhật lại chỉ tiêu THPT!");
+//            }
+//            
+//            // --- BƯỚC 1: LẤY ĐIỂM THÀNH PHẦN (Phục vụ cho Tiêu chí phụ Môn Toán lúc xếp hạng) ---
+//            busNguyenVong.napDiemAoChoDanhSach();
+//
+//            nganhToHopBUS busNganhToHop = new nganhToHopBUS(); 
+//            giaiThuongBUS gtBus = new giaiThuongBUS(); 
+//
+//            // --- BƯỚC 2: GOM ĐIỂM THÀNH PHẨM TỪ DATABASE ---
+//            for (nguyenVongXetTuyenETT nv : busNguyenVong.ds) {
+//                String phuongThuc = nv.getTtPhuongThuc();
+//
+//                // 1. Lấy độ lệch điểm (Nếu có)
+//                double doLechDiem = 0.0;
+//                if (phuongThuc.equals("Xét THPT") || phuongThuc.equals("Đánh giá V-SAT")) {
+//                    doLechDiem = busNganhToHop.layDoLechDiem(nv.getNvMaNganh(), nv.getTtThm()); 
+//                }
+//                
+//                // 2. Lấy các con số ĐÃ ĐƯỢC CHỐT SỔ TỪ FORM CON / EXCEL (Không tính lại hệ số môn)
+//                double diemThxtAnToan = (nv.getDiemThxt() != null) ? nv.getDiemThxt() : 0.0;
+//                double diemUuTienKhuVuc = (nv.getDiemUtqd() != null) ? nv.getDiemUtqd() : 0.0;
+//                double diemCongThem = (nv.getDiemCong() != null) ? nv.getDiemCong() : 0.0;
+//
+//                double tongCuoi = 0.0;
+//
+//                // 3. XỬ LÝ RIÊNG TEAM TUYỂN THẲNG (Gắn điểm ẩn để xếp hạng)
+//                if (phuongThuc.equals("Xét tuyển thẳng")) {
+//                    diemThxtAnToan = 30.0; // Auto 30 điểm gốc
+//                    
+//                    String[] ttGiai = gtBus.layCapVaLoaiGiai(nv.getNnCccd());
+//                    String capGiai = ttGiai[0];
+//                    String loaiGiai = ttGiai[1];
+//                    double diemAn = 0.0;
+//                    
+//                    if (capGiai.equalsIgnoreCase("Quốc gia")) {
+//                        if (loaiGiai.contains("Nhất")) diemAn = 0.009;
+//                        else if (loaiGiai.contains("Nhì")) diemAn = 0.008;
+//                        else if (loaiGiai.contains("Ba")) diemAn = 0.007;
+//                        else if (loaiGiai.contains("Khuyến khích")) diemAn = 0.006;
+//                    } 
+//                    else if (capGiai.equalsIgnoreCase("Cấp tỉnh") || capGiai.equalsIgnoreCase("Tỉnh")) {
+//                        if (loaiGiai.contains("Nhất")) diemAn = 0.005;
+//                        else if (loaiGiai.contains("Nhì")) diemAn = 0.004;
+//                        else if (loaiGiai.contains("Ba")) diemAn = 0.003;
+//                        else if (loaiGiai.contains("Khuyến khích")) diemAn = 0.002;
+//                    }
+//                    tongCuoi = diemThxtAnToan + diemAn;
+//                } 
+//                else {
+//                    // CÁC PHƯƠNG THỨC KHÁC: Tổng hợp và khóa trần 30đ
+//                    tongCuoi = diemThxtAnToan + diemUuTienKhuVuc + diemCongThem + doLechDiem;
+//                    tongCuoi = Math.min(30.0, tongCuoi); 
+//                }
+//
+//                // Làm tròn 3 chữ số thập phân cho chuẩn
+//                tongCuoi = Math.round(tongCuoi * 1000.0) / 1000.0; 
+//                nv.setDiemXetTuyen(tongCuoi);
+//            }
+//
+//            // --- BƯỚC 3: THUẬT TOÁN DOMINO CHÉM CHỈ TIÊU ---
+//            busNguyenVong.sapXepKetQuaTheoChiTieu();
+//            busNguyenVong.capNhatDiemChuanTuDong();
+//            
+//            // Tải lại bảng lên giao diện
+//            busNguyenVong.ds = null; 
+//            loadDataToTable(); 
+//            
+//            javax.swing.JOptionPane.showMessageDialog(this, "Hệ thống đã phân bổ chỉ tiêu và xét duyệt thành công!");
+//        }
+//    }
+    
+        private void thucHienTinhToanKetQua() {
         int confirm = javax.swing.JOptionPane.showConfirmDialog(this, 
             "CẢNH BÁO: Hành động này sẽ khóa sổ và xét duyệt toàn bộ nguyện vọng trên hệ thống.\n" +
             "Hệ thống sẽ tự động tổng hợp điểm, phân bổ chỉ tiêu và áp dụng tiêu chí phụ.\n" +
@@ -460,6 +546,8 @@ private void hienThiDialogSua() {
             
             // --- BƯỚC 1: LẤY ĐIỂM THÀNH PHẦN (Phục vụ cho Tiêu chí phụ Môn Toán lúc xếp hạng) ---
             busNguyenVong.napDiemAoChoDanhSach();
+            DAO.bangQuyDoiDAO qdDao = new DAO.bangQuyDoiDAO();
+            ArrayList<bangQuyDoiETT> dsQuyDoi = qdDao.layDanhSach();
 
             nganhToHopBUS busNganhToHop = new nganhToHopBUS(); 
             giaiThuongBUS gtBus = new giaiThuongBUS(); 
@@ -467,14 +555,56 @@ private void hienThiDialogSua() {
             // --- BƯỚC 2: GOM ĐIỂM THÀNH PHẨM TỪ DATABASE ---
             for (nguyenVongXetTuyenETT nv : busNguyenVong.ds) {
                 String phuongThuc = nv.getTtPhuongThuc();
+                String maNganh = nv.getNvMaNganh();
+                String toHop = nv.getTtThm();
 
-                // 1. Lấy độ lệch điểm (Nếu có)
+// 1. Lấy độ lệch điểm và HỆ SỐ MÔN (Mới thêm)
                 double doLechDiem = 0.0;
-                if (phuongThuc.equals("Xét THPT") || phuongThuc.equals("Đánh giá V-SAT")) {
-                    doLechDiem = busNganhToHop.layDoLechDiem(nv.getNvMaNganh(), nv.getTtThm()); 
+                double diemThxtMoi = 0.0; // Biến chứa điểm đã nhân hệ số mới
+
+                if (phuongThuc.equals("ĐGNL HCM")) {
+                    // ĐGNL không nhân hệ số môn, chỉ quy đổi
+                    diemThxtMoi = (nv.getDiemMon1() / 1200.0) * 30.0;
                 }
-                
-                // 2. Lấy các con số ĐÃ ĐƯỢC CHỐT SỔ TỪ FORM CON / EXCEL (Không tính lại hệ số môn)
+                else if (phuongThuc.equals("Xét THPT") || phuongThuc.equals("Đánh giá V-SAT")) {
+                    
+                    // Lấy Tổ Hợp hiện tại lên để soi Hệ số
+                    Entity.nganhToHopETT toHopHienTai = busNganhToHop.layNganhToHopBangKey(maNganh + "_" + toHop);
+                    
+                    if (toHopHienTai != null) {
+                        doLechDiem = toHopHienTai.getDoLech();
+                        
+                        // 🔥 TÍNH LẠI ĐIỂM THXT THEO HỆ SỐ MỚI NHẤT 🔥
+                        int hs1 = toHopHienTai.getHeSoMon1();
+                        int hs2 = toHopHienTai.getHeSoMon2();
+                        int hs3 = toHopHienTai.getHeSoMon3();
+                        int tongHeSo = hs1 + hs2 + hs3;
+                        
+                        // Nếu tổng hệ số = 0 thì mặc định chia 3 để tránh lỗi / by zero
+                        tongHeSo = (tongHeSo > 0) ? tongHeSo : 3; 
+
+                        if (phuongThuc.equals("Xét THPT")) {
+                            diemThxtMoi = (nv.getDiemMon1()*hs1 + nv.getDiemMon2()*hs2 + nv.getDiemMon3()*hs3) * 3 / tongHeSo;
+                        } else if (phuongThuc.equals("Đánh giá V-SAT")) {
+                            // VSAT Thang 150 -> Quy về 10, nhân hệ số, rồi quy về 30
+//                            double d1 = CAL.AdmissionsConverter.quyDoiVsat(nv.getTenMon1(), nv.getDiemMon1());
+//                            double d2 = CAL.AdmissionsConverter.quyDoiVsat(nv.getTenMon2(), nv.getDiemMon2());
+//                            double d3 = CAL.AdmissionsConverter.quyDoiVsat(nv.getTenMon3(), nv.getDiemMon3());
+//                            diemThxtMoi = ((d1*hs1 + d2*hs2 + d3*hs3) / tongHeSo) * 3.0;
+                            double d1 = CAL.AdmissionsConverter.quyDoiVsat(nv.getTenMon1(), nv.getDiemMon1(), dsQuyDoi);
+                            double d2 = CAL.AdmissionsConverter.quyDoiVsat(nv.getTenMon2(), nv.getDiemMon2(), dsQuyDoi);
+                            double d3 = CAL.AdmissionsConverter.quyDoiVsat(nv.getTenMon3(), nv.getDiemMon3(), dsQuyDoi);
+                            diemThxtMoi = ((d1*hs1 + d2*hs2 + d3*hs3) / tongHeSo) * 3.0;
+                        }
+                    }
+                }
+
+                // Cập nhật lại điểm THXT mới tính vào Object (Để lát nó Lưu xuống DB luôn)
+                if (!phuongThuc.equals("Xét tuyển thẳng")) {
+                     nv.setDiemThxt(Math.round(diemThxtMoi * 100.0) / 100.0);
+                }
+
+                // 2. Lấy các con số điểm cộng
                 double diemThxtAnToan = (nv.getDiemThxt() != null) ? nv.getDiemThxt() : 0.0;
                 double diemUuTienKhuVuc = (nv.getDiemUtqd() != null) ? nv.getDiemUtqd() : 0.0;
                 double diemCongThem = (nv.getDiemCong() != null) ? nv.getDiemCong() : 0.0;
@@ -511,13 +641,8 @@ private void hienThiDialogSua() {
                 }
 
                 // Làm tròn 3 chữ số thập phân cho chuẩn
-                tongCuoi = Math.round(tongCuoi * 1000.0) / 1000.0; 
+                tongCuoi = Math.round(tongCuoi * 100.0) / 100.0; 
                 nv.setDiemXetTuyen(tongCuoi);
-                // Chèn dòng này vào vòng lặp for ở Bước 2 trong Form Cha
-            System.out.println("Thí sinh: " + nv.getNnCccd() + 
-                               " | Tổ hợp: " + nv.getTtThm() + 
-                               " | Tên Môn 1: " + nv.getTenMon1() + 
-                               " | Điểm Môn 1: " + nv.getDiemMon1());
             }
 
             // --- BƯỚC 3: THUẬT TOÁN DOMINO CHÉM CHỈ TIÊU ---

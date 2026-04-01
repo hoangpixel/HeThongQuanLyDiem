@@ -290,79 +290,6 @@ public class nguyenVongXetTuyenBUS {
         System.out.println("CẮT CHỈ TIÊU HOÀN TẤT!");
     }
     
-    // =========================================================================
-    // HÀM BƠM DỮ LIỆU ĐIỂM TỪ DATABASE VÀO CÁC BIẾN ẢO (@Transient)
-    // =========================================================================
-//    public void napDiemAoChoDanhSach() {
-//        if (ds == null || ds.isEmpty()) return;
-//        
-//        try (org.hibernate.Session session = CONFIG.HibernateUtil.getSessionFactory().openSession()) {
-//            for (Entity.nguyenVongXetTuyenETT nv : ds) {
-//                String cccd = nv.getNnCccd();
-//                String maToHop = nv.getTtThm();
-//                String phuongThuc = nv.getTtPhuongThuc();
-//
-//                // 1. Lấy điểm ĐGNL HCM
-//                if (phuongThuc.equals("ĐGNL HCM")) {
-//                    Number diemNL = (Number) session.createNativeQuery("SELECT NL1 FROM xt_diemthixettuyen WHERE cccd = :cccd")
-//                            .setParameter("cccd", cccd).uniqueResult();
-//                    nv.setDiemMon1(diemNL == null ? 0.0 : diemNL.doubleValue());
-//                } 
-//                // 2. Lấy điểm 3 môn cho V-SAT hoặc THPT (Để phục vụ xếp hạng Tiêu chí phụ)
-//                else if (maToHop != null && !maToHop.equals("Không")) {
-//                    Object[] toHop = (Object[]) session.createNativeQuery("SELECT mon1, mon2, mon3 FROM xt_tohop_monthi WHERE matohop = :ma")
-//                            .setParameter("ma", maToHop).uniqueResult();
-//
-//                    if (toHop != null) {
-//                        String m1 = (String) toHop[0];
-//                        String m2 = (String) toHop[1];
-//                        String m3 = (String) toHop[2];
-//
-//                        nv.setTenMon1(m1);
-//                        nv.setTenMon2(m2);
-//                        nv.setTenMon3(m3);
-//
-//                        // Gỡ bẫy môn Tiếng Anh (Lấy N1_THI để map với cột Database)
-//                        String col1 = m1.equals("N1") ? "N1_THI" : m1;
-//                        String col2 = m2.equals("N1") ? "N1_THI" : m2;
-//                        String col3 = m3.equals("N1") ? "N1_THI" : m3;
-//
-//                        String sqlDiem = "SELECT `" + col1 + "`, `" + col2 + "`, `" + col3 + "` FROM xt_diemthixettuyen WHERE cccd = :cccd";
-//                        Object[] diem = (Object[]) session.createNativeQuery(sqlDiem)
-//                                .setParameter("cccd", cccd).uniqueResult();
-//
-//                        if (diem != null) {
-//                            double diem1 = diem[0] == null ? 0.0 : ((Number) diem[0]).doubleValue();
-//                            double diem2 = diem[1] == null ? 0.0 : ((Number) diem[1]).doubleValue();
-//                            double diem3 = diem[2] == null ? 0.0 : ((Number) diem[2]).doubleValue();
-//                            
-//                            // Gắn điểm thi thô vào (Thực chất hệ thống chỉ xài diemMon1 cho Tie-breaker)
-//                            nv.setDiemMon1(diem1);
-//                            nv.setDiemMon2(diem2);
-//                            nv.setDiemMon3(diem3);
-//                            
-//                            // (MỞ RỘNG: Nếu m1 là N1, dò thêm IELTS để Tiêu chí phụ chính xác 100%)
-//                            if ("N1".equals(m1) || "N1".equals(m2) || "N1".equals(m3)) {
-//                                String sqlIELTS = "SELECT diem_quydoi FROM xt_chungchi WHERE cccd = :cccd LIMIT 1";
-//                                Number diemIELTS = (Number) session.createNativeQuery(sqlIELTS).setParameter("cccd", cccd).uniqueResult();
-//                                if (diemIELTS != null) {
-//                                    double ieltsQD = diemIELTS.doubleValue();
-//                                    if ("N1".equals(m1)) nv.setDiemMon1(Math.max(diem1, ieltsQD));
-//                                    if ("N1".equals(m2)) nv.setDiemMon2(Math.max(diem2, ieltsQD));
-//                                    if ("N1".equals(m3)) nv.setDiemMon3(Math.max(diem3, ieltsQD));
-//                                }
-//                            }
-//                        }
-//                    }
-//                }
-//                
-//                // TUYỆT ĐỐI KHÔNG CỘNG ĐIỂM ƯU TIÊN HAY GIẢI THƯỞNG Ở ĐÂY NỮA.
-//                // Trả lại trách nhiệm đó cho Form Con và Form Cha.
-//            }
-//        } catch (Exception e) {
-//            e.printStackTrace();
-//        }
-//    }
     
     public void napDiemAoChoDanhSach() {
         if (ds == null || ds.isEmpty()) return;
@@ -419,65 +346,6 @@ public class nguyenVongXetTuyenBUS {
         }
     }
     
-    // =========================================================================
-    // HÀM TỰ ĐỘNG TÌM VÀ CẬP NHẬT ĐIỂM CHUẨN VÀO BẢNG NGÀNH
-    // =========================================================================
-//    public void capNhatDiemChuanTuDong() {
-//        if (ds == null || ds.isEmpty()) return;
-//
-//        // 1. Tạo 1 cái Map để nhớ điểm thấp nhất của từng Ngành - Phương thức
-//        // Key: "MaNganh_PhuongThuc" (VD: "7480201_Đánh giá V-SAT")
-//        // Value: Điểm thấp nhất
-//        java.util.HashMap<String, Double> diemChuanMap = new java.util.HashMap<>();
-//
-//        // 2. Quét qua toàn bộ danh sách để tìm điểm thấp nhất của người "Đã đậu"
-//        for (Entity.nguyenVongXetTuyenETT nv : ds) {
-//            if ("Đã đậu".equals(nv.getNvKetQua())) {
-//                String key = nv.getNvMaNganh() + "_" + nv.getTtPhuongThuc();
-//                double diem = nv.getDiemXetTuyen();
-//
-//                // Nếu chưa có ngành này trong Map, hoặc điểm của đứa này thấp hơn điểm đang lưu thì cập nhật
-//                if (!diemChuanMap.containsKey(key) || diem < diemChuanMap.get(key)) {
-//                    diemChuanMap.put(key, diem);
-//                }
-//            }
-//        }
-//
-//        // 3. Cập nhật ngược lại vào Database (Bảng xt_nganh)
-//        try (org.hibernate.Session session = CONFIG.HibernateUtil.getSessionFactory().openSession()) {
-//            session.beginTransaction();
-//
-//            for (java.util.Map.Entry<String, Double> entry : diemChuanMap.entrySet()) {
-//                String[] parts = entry.getKey().split("_");
-//                String maNganh = parts[0];
-//                String phuongThuc = parts[1];
-//                double diemChuan = entry.getValue();
-//
-//                // Tùy theo phương thức mà Update vào đúng cột điểm chuẩn
-//                String sqlUpdate = "";
-//                if (phuongThuc.equals("Đánh giá V-SAT")) {
-//                    sqlUpdate = "UPDATE xt_nganh SET diemchuan_vsat = :dc WHERE manganh = :ma";
-//                } else if (phuongThuc.equals("ĐGNL HCM")) {
-//                    sqlUpdate = "UPDATE xt_nganh SET diemchuan_dgnl = :dc WHERE manganh = :ma";
-//                } else if (phuongThuc.equals("Xét THPT")) {
-//                    sqlUpdate = "UPDATE xt_nganh SET diemchuan_thpt = :dc WHERE manganh = :ma";
-//                }else if (phuongThuc.equals("Xét tuyển thẳng")) {
-//                    sqlUpdate = "UPDATE xt_nganh SET diemchuan_xtt = :dc WHERE manganh = :ma";
-//                }
-//
-//                if (!sqlUpdate.isEmpty()) {
-//                    session.createNativeQuery(sqlUpdate)
-//                           .setParameter("dc", diemChuan)
-//                           .setParameter("ma", maNganh)
-//                           .executeUpdate();
-//                }
-//            }
-//            session.getTransaction().commit();
-//            System.out.println("✅ Đã chốt điểm chuẩn tự động thành công!");
-//        } catch (Exception e) {
-//            e.printStackTrace();
-//        }
-//    }
     
     public void capNhatDiemChuanTuDong() {
         if (ds == null || ds.isEmpty()) return;
@@ -508,10 +376,6 @@ public class nguyenVongXetTuyenBUS {
         }
     }
     
-    // Trong file nguyenVongXetTuyenBUS.java (Hoặc BUS tương ứng)
-// =====================================================================
-    // HÀM PHỤ TRỢ: ÉP KIỂU AN TOÀN (Tránh crash nếu ô Excel bị rỗng)
-    // =====================================================================
     private double parseDoubleSafe(String val) {
         try {
             if (val == null || val.trim().isEmpty()) return 0.0;
