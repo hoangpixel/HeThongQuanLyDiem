@@ -4,9 +4,13 @@
  */
 package SELECT_GUI;
 
+import java.awt.Color;
+import java.awt.Component;
+import java.awt.Dimension;
 import java.awt.Font;
 import java.util.Vector;
 import javax.swing.JLabel;
+import javax.swing.JTable;
 import javax.swing.table.DefaultTableCellRenderer;
 import javax.swing.table.DefaultTableModel;
 import javax.swing.table.JTableHeader;
@@ -33,32 +37,63 @@ public class selectMon extends javax.swing.JDialog {
     }
 
     public void headerTable(){
-        Vector header = new Vector();
-        header.add("Mã môn");
-        header.add("Tên môn");
+        Vector<String> headerVec = new Vector<>();
+        headerVec.add("Mã môn");
+        headerVec.add("Tên môn");
 
-        model = new DefaultTableModel(header,0)
-                {
-                    @Override
-                    public boolean isCellEditable(int row,int column)
-                {
-                    return false;
-                }
-                };
+        model = new DefaultTableModel(headerVec, 0){
+            @Override
+            public boolean isCellEditable(int row, int column){
+                return false;
+            }
+        };
+
         tbMon.setModel(model);
-        DefaultTableCellRenderer centerRenderer = new DefaultTableCellRenderer();
-        centerRenderer.setHorizontalAlignment(JLabel.CENTER);
 
-        // Căn nội dung ra chính giữa
-        for (int i = 0; i < tbMon.getColumnCount(); i++) {
-        tbMon.getColumnModel().getColumn(i).setCellRenderer(centerRenderer);
-        }
+        Font mainFont = new Font("Segoe UI", Font.PLAIN, 14);
 
-        //căn header ra center
-        JTableHeader headerTB = tbMon.getTableHeader();
-        DefaultTableCellRenderer center = (DefaultTableCellRenderer) headerTB.getDefaultRenderer();
-        center.setHorizontalAlignment(JLabel.CENTER);
-        headerTB.setFont(new Font("Segoe UI",Font.BOLD,14));
+        // ===== HEADER =====
+        JTableHeader header = tbMon.getTableHeader(); // ✅ FIX Ở ĐÂY
+        header.setFont(new Font("Segoe UI", Font.BOLD, 14));
+        header.setPreferredSize(new Dimension(100, 35));
+        header.setBackground(new Color(52, 73, 94));
+        header.setForeground(Color.WHITE);
+
+        DefaultTableCellRenderer headerRenderer = 
+            (DefaultTableCellRenderer) header.getDefaultRenderer();
+        headerRenderer.setHorizontalAlignment(JLabel.CENTER);
+
+        header.setReorderingAllowed(false);
+        header.setResizingAllowed(false);
+
+        // ===== TABLE =====
+        tbMon.setFont(mainFont);
+        tbMon.setRowHeight(32);
+        tbMon.setSelectionBackground(new Color(52, 152, 219));
+        tbMon.setSelectionForeground(Color.WHITE);
+
+        tbMon.setShowGrid(false);
+        tbMon.setIntercellSpacing(new Dimension(0, 0));
+
+        // ===== RENDER =====
+        tbMon.setDefaultRenderer(Object.class, new DefaultTableCellRenderer() {
+            @Override
+            public Component getTableCellRendererComponent(JTable table, Object value,
+                                                           boolean isSelected, boolean hasFocus,
+                                                           int row, int column) {
+
+                Component c = super.getTableCellRendererComponent(
+                        table, value, isSelected, hasFocus, row, column
+                );
+
+                setHorizontalAlignment(JLabel.CENTER);
+
+                if (!isSelected) {
+                    c.setBackground(row % 2 == 0 ? Color.WHITE : new Color(245, 245, 245));
+                }
+                return c;
+            }
+        });
     }
     
     public void insertTable()

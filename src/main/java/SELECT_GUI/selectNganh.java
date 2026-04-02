@@ -5,9 +5,13 @@
 package SELECT_GUI;
 import Entity.nganhETT;
 import BUS.nganhBUS;
+import java.awt.Color;
+import java.awt.Component;
+import java.awt.Dimension;
 import java.awt.Font;
 import java.util.Vector;
 import javax.swing.JLabel;
+import javax.swing.JTable;
 import javax.swing.table.DefaultTableCellRenderer;
 import javax.swing.table.DefaultTableModel;
 import javax.swing.table.JTableHeader;
@@ -65,50 +69,75 @@ public class selectNganh extends javax.swing.JDialog {
     
     void header()
     {
-        Vector header = new Vector();
-        header.add("ID");
-        header.add("ID ngành");
-        header.add("Tên ngành");
-        header.add("Tổ hợp gốc");
-        header.add("Chỉ tiêu");
-        header.add("Điểm sàn");
-        header.add("Điểm trúng tuyển");
-        header.add("Tuyển thẳng");
-        header.add("DGNL");
-        header.add("THPT");
-        header.add("VSAT");
-        header.add("SL XTT");
-        header.add("SL DGNL");
-        header.add("SL VSAT");
-        header.add("SL THPT");
-        model = new DefaultTableModel(header,0)
-                {
-                    @Override
-                    public boolean isCellEditable(int row,int column)
-                {
-                    return false;
+        Vector headerVec = new Vector();
+        headerVec.add("ID");
+        headerVec.add("ID ngành");
+        headerVec.add("Tên ngành");
+        headerVec.add("Tổ hợp gốc");
+        headerVec.add("Chỉ tiêu");
+        headerVec.add("Điểm sàn");
+        headerVec.add("Điểm trúng tuyển");
+        headerVec.add("Tuyển thẳng");
+        headerVec.add("DGNL");
+        headerVec.add("THPT");
+        headerVec.add("VSAT");
+        headerVec.add("SL XTT");
+        headerVec.add("SL DGNL");
+        headerVec.add("SL VSAT");
+        headerVec.add("SL THPT");
+        model = new DefaultTableModel(headerVec, 0){
+            @Override
+            public boolean isCellEditable(int row, int column){
+                return false;
+            }
+        };
+
+        tbNganh.setModel(model);
+
+        Font mainFont = new Font("Segoe UI", Font.PLAIN, 14);
+
+        // ===== HEADER =====
+        JTableHeader header = tbNganh.getTableHeader(); // ✅ FIX Ở ĐÂY
+        header.setFont(new Font("Segoe UI", Font.BOLD, 14));
+        header.setPreferredSize(new Dimension(100, 35));
+        header.setBackground(new Color(52, 73, 94));
+        header.setForeground(Color.WHITE);
+
+        DefaultTableCellRenderer headerRenderer = 
+            (DefaultTableCellRenderer) header.getDefaultRenderer();
+        headerRenderer.setHorizontalAlignment(JLabel.CENTER);
+
+        header.setReorderingAllowed(false);
+        header.setResizingAllowed(false);
+
+        // ===== TABLE =====
+        tbNganh.setFont(mainFont);
+        tbNganh.setRowHeight(32);
+        tbNganh.setSelectionBackground(new Color(52, 152, 219));
+        tbNganh.setSelectionForeground(Color.WHITE);
+
+        tbNganh.setShowGrid(false);
+        tbNganh.setIntercellSpacing(new Dimension(0, 0));
+
+        // ===== RENDER =====
+        tbNganh.setDefaultRenderer(Object.class, new DefaultTableCellRenderer() {
+            @Override
+            public Component getTableCellRendererComponent(JTable table, Object value,
+                                                           boolean isSelected, boolean hasFocus,
+                                                           int row, int column) {
+
+                Component c = super.getTableCellRendererComponent(
+                        table, value, isSelected, hasFocus, row, column
+                );
+
+                setHorizontalAlignment(JLabel.CENTER);
+
+                if (!isSelected) {
+                    c.setBackground(row % 2 == 0 ? Color.WHITE : new Color(245, 245, 245));
                 }
-                };
-       tbNganh.setModel(model);
-               DefaultTableCellRenderer centerRenderer = new DefaultTableCellRenderer();
-        centerRenderer.setHorizontalAlignment(JLabel.CENTER);
-
-        // Căn nội dung ra chính giữa
-        for (int i = 0; i < tbNganh.getColumnCount(); i++) {
-        tbNganh.getColumnModel().getColumn(i).setCellRenderer(centerRenderer);
-}
-
-        //căn header ra center
-        JTableHeader headerTB = tbNganh.getTableHeader();
-        DefaultTableCellRenderer center = (DefaultTableCellRenderer) headerTB.getDefaultRenderer();
-        center.setHorizontalAlignment(JLabel.CENTER);
-        headerTB.setFont(new Font("Segoe UI",Font.BOLD,14));
-        
-        tbNganh.setRowHeight(30);
-        tbNganh.setFocusable(false);
-        tbNganh.setAutoCreateRowSorter(true);
-        tbNganh.setDefaultEditor(Object.class, null);
-        tbNganh.setShowVerticalLines(false);
+                return c;
+            }
+        });
     }
     
     /**

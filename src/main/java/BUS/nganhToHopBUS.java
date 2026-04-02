@@ -170,4 +170,167 @@ public class nganhToHopBUS {
         // 3. Tìm đỏ mắt không thấy thì báo Null
         return null; 
     }
+    
+        private double parseDoubleSafe(String val) {
+        try {
+            if (val == null || val.trim().isEmpty()) return 0.0;
+            return Double.parseDouble(val.trim());
+        } catch (Exception e) {
+            return 0.0;
+        }
+    }
+    
+        public Integer parseIntSafe(String val) {
+    try {
+        if (val == null || val.trim().isEmpty()) return 0;
+        return (int) Double.parseDouble(val.trim()); // xử lý luôn 1.0
+    } catch (Exception e) {
+        return 0;
+    }
+}
+        public String nhapDuLieuTuExcel(String filePath) {
+        try {
+            // 1. Lấy ma trận dữ liệu từ Excel
+            ArrayList<ArrayList<String>> dataExcel = EXCEL.ExcelHelper.docFileExcel(filePath);
+            
+            if (dataExcel.size() <= 1) {
+                return "File Excel trống hoặc chỉ có mỗi dòng Tiêu đề!";
+            }
+
+            int soDongThanhCong = 0;
+            int soDongThatBai = 0;
+
+            for (int i = 1; i < dataExcel.size(); i++) {
+                ArrayList<String> row = dataExcel.get(i);
+                
+                try {
+                    nganhToHopETT nv = new nganhToHopETT();
+                    
+                    nv.setMaNganh(row.get(1));
+                    nv.setMaToHop(row.get(2));
+
+                    nv.setMon1(row.get(3));
+                    nv.setHeSoMon1(parseIntSafe(row.get(4)));
+
+                    nv.setMon2(row.get(5));
+                    nv.setHeSoMon2(parseIntSafe(row.get(6)));
+
+                    nv.setMon3(row.get(7));
+                    nv.setHeSoMon3(parseIntSafe(row.get(8)));
+
+                    // Key
+                    nv.setKey(nv.getMaNganh() + "_" + nv.getMaToHop());
+
+                    // 🔥 MẤY CỘT MÔN BỊ THIẾU (đây là cái bạn cần)
+                    nv.setN1(parseIntSafe(row.get(10)));
+                    nv.setTO(parseIntSafe(row.get(11)));
+                    nv.setLI(parseIntSafe(row.get(12)));
+                    nv.setHO(parseIntSafe(row.get(13)));
+                    nv.setSI(parseIntSafe(row.get(14)));
+                    nv.setVA(parseIntSafe(row.get(15)));
+                    nv.setSU(parseIntSafe(row.get(16)));
+                    nv.setDI(parseIntSafe(row.get(17)));
+                    nv.setTI(parseIntSafe(row.get(18)));
+                    nv.setKHAC(parseIntSafe(row.get(19)));
+                    nv.setKTPL(parseIntSafe(row.get(20)));
+
+                    // Độ lệch
+                    nv.setDoLech(parseDoubleSafe(row.get(21)));
+                    
+                    // 4. Đẩy xuống DAO để Thêm vào Database (Nhớ sửa tên hàm cho khớp DAO của ông nha)
+                    if (data.themNganhToHop(nv)) { 
+                        soDongThanhCong++;
+                    } else {
+                        soDongThatBai++;
+                    }
+                } catch (Exception ex) {
+                    soDongThatBai++; // Lỗi ép kiểu hoặc thiếu dữ liệu thì tính là thất bại dòng đó
+                }
+            }
+            return "Nhập thành công: " + soDongThanhCong + " dòng.\nLỗi/Trùng lặp: " + soDongThatBai + " dòng.";
+
+        } catch (Exception e) {
+            e.printStackTrace();
+            return "Lỗi khi đọc file Excel: " + e.getMessage();
+        }
+    }
+        
+    public ArrayList<nganhToHopETT> timKiemCoBan(String tim, int index)
+    {
+        if(ds == null)
+        {
+            layDanhSach();
+        }
+        
+        ArrayList<nganhToHopETT> dskq = new ArrayList<nganhToHopETT>();
+        
+        for(nganhToHopETT ct : ds)
+        {
+            switch (index) {
+                case 0:
+                    if(String.valueOf(ct.getIdNganhToHop()).contains(tim))
+                    {
+                        dskq.add(ct);
+                    }
+                    break;
+                case 1:
+                    if(ct.getMaNganh() != null && ct.getMaNganh().toLowerCase().contains(tim))
+                    {
+                        dskq.add(ct);
+                    }
+                    break;
+                case 2:
+                    if(ct.getMaToHop() != null && ct.getMaToHop().toLowerCase().contains(tim))
+                    {
+                        dskq.add(ct);
+                    }
+                    break;
+                case 3:
+                    if(ct.getMon1() != null && ct.getMon1().toLowerCase().contains(tim))
+                    {
+                        dskq.add(ct);
+                    }
+                    break;
+                case 4:
+                    if(String.valueOf(ct.getHeSoMon1()).contains(tim))
+                    {
+                        dskq.add(ct);
+                    }
+                    break;
+                case 5:
+                    if(ct.getMon2() != null && ct.getMon2().toLowerCase().contains(tim))
+                    {
+                        dskq.add(ct);
+                    }
+                    break;
+                case 6:
+                    if(String.valueOf(ct.getHeSoMon2()).contains(tim))
+                    {
+                        dskq.add(ct);
+                    }
+                    break;
+                case 7:
+                    if(ct.getMon3() != null && ct.getMon3().toLowerCase().contains(tim))
+                    {
+                        dskq.add(ct);
+                    }
+                    break;
+                case 8:
+                    if(String.valueOf(ct.getHeSoMon3()).contains(tim))
+                    {
+                        dskq.add(ct);
+                    }
+                    break;
+                case 9:
+                    if(String.valueOf(ct.getDoLech()).contains(tim))
+                    {
+                        dskq.add(ct);
+                    }
+                    break;
+                default:
+                    throw new AssertionError();
+            }
+        }
+        return dskq;
+    }
 }

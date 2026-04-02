@@ -49,37 +49,37 @@ public class nganhToHopETT {
     private String key;
 
     @Column(name = "N1")
-    private Boolean N1;
+    private Integer N1;
 
     @Column(name = "`TO`")
-    private Boolean TO;
+    private Integer TO;
 
     @Column(name = "LI")
-    private Boolean LI;
+    private Integer LI;
 
     @Column(name = "HO")
-    private Boolean HO;
+    private Integer HO;
 
     @Column(name = "SI")
-    private Boolean SI;
+    private Integer SI;
 
     @Column(name = "VA")
-    private Boolean VA;
+    private Integer VA;
 
     @Column(name = "SU")
-    private Boolean SU;
+    private Integer SU;
 
     @Column(name = "DI")
-    private Boolean DI;
+    private Integer DI;
 
     @Column(name = "TI")
-    private Boolean TI;
+    private Integer TI;
 
     @Column(name = "KHAC")
-    private Boolean KHAC;
+    private Integer KHAC;
 
     @Column(name = "KTPL")
-    private Boolean KTPL;
+    private Integer KTPL;
 
     @Column(name = "dolech")
     private Double doLech;
@@ -124,47 +124,47 @@ public class nganhToHopETT {
         return key;
     }
 
-    public Boolean getN1() {
+    public Integer getN1() {
         return N1;
     }
 
-    public Boolean getTO() {
+    public Integer getTO() {
         return TO;
     }
 
-    public Boolean getLI() {
+    public Integer getLI() {
         return LI;
     }
 
-    public Boolean getHO() {
+    public Integer getHO() {
         return HO;
     }
 
-    public Boolean getSI() {
+    public Integer getSI() {
         return SI;
     }
 
-    public Boolean getVA() {
+    public Integer getVA() {
         return VA;
     }
 
-    public Boolean getSU() {
+    public Integer getSU() {
         return SU;
     }
 
-    public Boolean getDI() {
+    public Integer getDI() {
         return DI;
     }
 
-    public Boolean getTI() {
+    public Integer getTI() {
         return TI;
     }
 
-    public Boolean getKHAC() {
+    public Integer getKHAC() {
         return KHAC;
     }
 
-    public Boolean getKTPL() {
+    public Integer getKTPL() {
         return KTPL;
     }
 
@@ -212,47 +212,47 @@ public class nganhToHopETT {
         this.key = key;
     }
 
-    public void setN1(Boolean N1) {
+    public void setN1(Integer N1) {
         this.N1 = N1;
     }
 
-    public void setTO(Boolean TO) {
+    public void setTO(Integer TO) {
         this.TO = TO;
     }
 
-    public void setLI(Boolean LI) {
+    public void setLI(Integer LI) {
         this.LI = LI;
     }
 
-    public void setHO(Boolean HO) {
+    public void setHO(Integer HO) {
         this.HO = HO;
     }
 
-    public void setSI(Boolean SI) {
+    public void setSI(Integer SI) {
         this.SI = SI;
     }
 
-    public void setVA(Boolean VA) {
+    public void setVA(Integer VA) {
         this.VA = VA;
     }
 
-    public void setSU(Boolean SU) {
+    public void setSU(Integer SU) {
         this.SU = SU;
     }
 
-    public void setDI(Boolean DI) {
+    public void setDI(Integer DI) {
         this.DI = DI;
     }
 
-    public void setTI(Boolean TI) {
+    public void setTI(Integer TI) {
         this.TI = TI;
     }
 
-    public void setKHAC(Boolean KHAC) {
+    public void setKHAC(Integer KHAC) {
         this.KHAC = KHAC;
     }
 
-    public void setKTPL(Boolean KTPL) {
+    public void setKTPL(Integer KTPL) {
         this.KTPL = KTPL;
     }
 

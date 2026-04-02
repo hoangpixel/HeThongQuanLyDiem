@@ -309,7 +309,7 @@ private void hienThiDialogSua() {
                 int modelIndex = table.convertRowIndexToModel(row);
                 int absoluteIndex = (currentPage - 1) * rowsPerPage + modelIndex;
                 
-                Entity.nguyenVongXetTuyenETT nvCanXoa = busNguyenVong.ds.get(absoluteIndex);
+                nguyenVongXetTuyenETT nvCanXoa = busNguyenVong.ds.get(absoluteIndex);
                 
                 // 3. Gọi BUS thực thi lệnh XÓA
                 if (busNguyenVong.xoaNguyenVong(nvCanXoa)) {

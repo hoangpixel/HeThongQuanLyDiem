@@ -54,7 +54,13 @@ public boolean themNganhToHop(Entity.nganhToHopETT nth) {
                     case "SU": SU = 1; break;
                     case "DI": DI = 1; break;
                     case "TI": TI = 1; break;
-                    case "KHAC": KHAC = 1; break;
+                    case "NK1": KHAC = 1; break;
+                    case "NK2": KHAC = 1; break;
+                    case "NK3": KHAC = 1; break;
+                    case "NK4": KHAC = 1; break;
+                    case "NK5": KHAC = 1; break;
+                    case "NK6": KHAC = 1; break;
+                    
                     case "KTPL": KTPL = 1; break;
                 }
             }
@@ -124,7 +130,12 @@ public boolean suaNganhToHop(Entity.nganhToHopETT nth) {
                     case "SU": SU = 1; break;
                     case "DI": DI = 1; break;
                     case "TI": TI = 1; break;
-                    case "KHAC": KHAC = 1; break;
+                    case "NK1": KHAC = 1; break;
+                    case "NK2": KHAC = 1; break;
+                    case "NK3": KHAC = 1; break;
+                    case "NK4": KHAC = 1; break;
+                    case "NK5": KHAC = 1; break;
+                    case "NK6": KHAC = 1; break;
                     case "KTPL": KTPL = 1; break;
                 }
             }
