@@ -391,6 +391,7 @@ private void styleComponents() {
     table.setIntercellSpacing(new Dimension(0, 0));
 
     // ===== RENDERER (CĂN GIỮA + ZEBRA STRIPE) =====
+// ===== RENDERER (CĂN GIỮA + ZEBRA STRIPE + ĐỔI MÀU CHỮ THEO TRẠNG THÁI) =====
     table.setDefaultRenderer(Object.class, new DefaultTableCellRenderer() {
         @Override
         public Component getTableCellRendererComponent(JTable table, Object value,
@@ -401,17 +402,58 @@ private void styleComponents() {
                     table, value, isSelected, hasFocus, row, column
             );
 
-            // Căn giữa nội dung các ô
+            // 1. Căn giữa nội dung các ô
             setHorizontalAlignment(JLabel.CENTER);
 
-            // Màu xen kẽ ngựa vằn (Zebra stripe)
+            // 2. Màu nền xen kẽ ngựa vằn (Zebra stripe)
             if (!isSelected) {
                 if (row % 2 == 0) {
                     c.setBackground(Color.WHITE);
                 } else {
                     c.setBackground(new Color(245, 245, 245));
                 }
+            } else {
+                // Màu nền khi user click chọn dòng
+                c.setBackground(new Color(52, 152, 219)); 
             }
+
+            // 3. ĐỔI MÀU CHỮ CHO CỘT TRẠNG THÁI
+            // LƯU Ý QUAN TRỌNG: Trong Java, cột đếm từ 0. 
+            // Nên nếu "cột số 9" của bạn (đếm từ trái sang phải 1,2,3...) thì index của nó là 8.
+            // Nếu bạn đang dùng chỉ số index = 9 trong mảng, thì đổi số 8 bên dưới thành 9 nha!
+            int cotTrangThaiIndex = 8; 
+
+            if (column == cotTrangThaiIndex) {
+                String status = value != null ? value.toString().trim() : "";
+                
+                // Chữ cột này cho in đậm xíu nhìn cho nổi bật
+                c.setFont(new Font("Segoe UI", Font.BOLD, 14));
+
+                // Bắt đầu xét chuỗi để tô màu
+                if (status.equalsIgnoreCase("Chờ xét")) {
+                    c.setForeground(Color.BLACK);
+                } else if (status.equalsIgnoreCase("Đã đậu")) {
+                    c.setForeground(new Color(46, 204, 113)); // Xanh lá dịu mắt
+                } else if (status.equalsIgnoreCase("Đã trượt")) {
+                    c.setForeground(new Color(231, 76, 60));  // Đỏ cảnh báo
+                } else if (status.equalsIgnoreCase("Không xét")) {
+                    c.setForeground(new Color(108, 122, 137)); // Nâu SaddleBrown
+                } else {
+                    c.setForeground(isSelected ? Color.WHITE : Color.BLACK);
+                }
+                
+                // Nếu dòng đang được chọn (bôi xanh), bạn muốn chữ vẫn giữ màu hay biến thành màu trắng?
+                // Ở đây tui set: Nếu đang chọn thì chữ thành Trắng hết cho dễ đọc.
+                if (isSelected) {
+                    c.setForeground(Color.WHITE);
+                }
+                
+            } else {
+                // Các cột khác thì trả lại font bình thường và màu đen (hoặc trắng nếu đang chọn)
+                c.setFont(new Font("Segoe UI", Font.PLAIN, 14));
+                c.setForeground(isSelected ? Color.WHITE : Color.BLACK);
+            }
+
             return c;
         }
     });
