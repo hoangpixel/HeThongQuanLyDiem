@@ -587,10 +587,6 @@ private void hienThiDialogSua() {
                             diemThxtMoi = (nv.getDiemMon1()*hs1 + nv.getDiemMon2()*hs2 + nv.getDiemMon3()*hs3) * 3 / tongHeSo;
                         } else if (phuongThuc.equals("Đánh giá V-SAT")) {
                             // VSAT Thang 150 -> Quy về 10, nhân hệ số, rồi quy về 30
-//                            double d1 = CAL.AdmissionsConverter.quyDoiVsat(nv.getTenMon1(), nv.getDiemMon1());
-//                            double d2 = CAL.AdmissionsConverter.quyDoiVsat(nv.getTenMon2(), nv.getDiemMon2());
-//                            double d3 = CAL.AdmissionsConverter.quyDoiVsat(nv.getTenMon3(), nv.getDiemMon3());
-//                            diemThxtMoi = ((d1*hs1 + d2*hs2 + d3*hs3) / tongHeSo) * 3.0;
                             double d1 = CAL.AdmissionsConverter.quyDoiVsat(nv.getTenMon1(), nv.getDiemMon1(), dsQuyDoi);
                             double d2 = CAL.AdmissionsConverter.quyDoiVsat(nv.getTenMon2(), nv.getDiemMon2(), dsQuyDoi);
                             double d3 = CAL.AdmissionsConverter.quyDoiVsat(nv.getTenMon3(), nv.getDiemMon3(), dsQuyDoi);
@@ -636,8 +632,28 @@ private void hienThiDialogSua() {
                 } 
                 else {
                     // CÁC PHƯƠNG THỨC KHÁC: Tổng hợp và khóa trần 30đ
-                    tongCuoi = diemThxtAnToan + diemUuTienKhuVuc + diemCongThem + doLechDiem;
-                    tongCuoi = Math.min(30.0, tongCuoi); 
+//                    tongCuoi = diemThxtAnToan + diemUuTienKhuVuc + diemCongThem + doLechDiem;
+//                    tongCuoi = Math.min(30.0, tongCuoi); 
+                    // CÁC PHƯƠNG THỨC KHÁC: Tổng hợp và khóa trần 30đ
+                    
+                    // 🔥 BẮT ĐẦU LOGIC BÓP ĐIỂM ƯU TIÊN THEO CHUẨN BỘ GD 🔥
+                    // Lưu ý: Biến diemUuTienKhuVuc của ông lúc này chính là MĐƯT (Đã bốc từ DB lên)
+                    double diemXetMoc = diemThxtAnToan + diemCongThem; 
+                    double diemUuTienThucTe = diemUuTienKhuVuc; 
+                    
+                    // Nếu tổng điểm >= 22.5 thì áp dụng công thức 
+                    if (diemXetMoc >= 22.5) {
+                        // Công thức: [(30 - ĐTHXT - ĐC) / 7.5] * MĐƯT 
+                        diemUuTienThucTe = ((30.0 - diemThxtAnToan - diemCongThem) / 7.5) * diemUuTienKhuVuc;
+                        
+                        if (diemUuTienThucTe < 0) {
+                            diemUuTienThucTe = 0.0;
+                        }
+                    }
+
+                    // TÍNH TỔNG ĐIỂM CUỐI: Dùng điểm ưu tiên đã bóp [cite: 76]
+                    tongCuoi = diemThxtAnToan + diemUuTienThucTe + diemCongThem + doLechDiem;
+                    tongCuoi = Math.min(30.0, tongCuoi);
                 }
 
                 // Làm tròn 3 chữ số thập phân cho chuẩn
