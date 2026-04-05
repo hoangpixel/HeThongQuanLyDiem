@@ -5,9 +5,13 @@
 package SELECT_GUI;
 import Entity.toHopETT;
 import BUS.toHopBUS;
+import java.awt.Color;
+import java.awt.Component;
+import java.awt.Dimension;
 import java.awt.Font;
 import java.util.Vector;
 import javax.swing.JLabel;
+import javax.swing.JTable;
 import javax.swing.table.DefaultTableCellRenderer;
 import javax.swing.table.DefaultTableModel;
 import javax.swing.table.JTableHeader;
@@ -56,42 +60,67 @@ public class selectToHop extends javax.swing.JDialog {
     
     void header()
     {
-        Vector header = new Vector();
-        header.add("ID");
-        header.add("Mã TH");
-        header.add("Tên TH");
-        header.add("Môn 1");
-        header.add("Môn 2");
-        header.add("Môn 3");
+        Vector headerVec = new Vector();
+        headerVec.add("ID");
+        headerVec.add("Mã TH");
+        headerVec.add("Tên TH");
+        headerVec.add("Môn 1");
+        headerVec.add("Môn 2");
+        headerVec.add("Môn 3");
 
-        model = new DefaultTableModel(header,0)
-                {
-                    @Override
-                    public boolean isCellEditable(int row,int column)
-                {
-                    return false;
+        model = new DefaultTableModel(headerVec, 0){
+            @Override
+            public boolean isCellEditable(int row, int column){
+                return false;
+            }
+        };
+
+        tbToHop.setModel(model);
+
+        Font mainFont = new Font("Segoe UI", Font.PLAIN, 14);
+
+        // ===== HEADER =====
+        JTableHeader header = tbToHop.getTableHeader(); // ✅ FIX Ở ĐÂY
+        header.setFont(new Font("Segoe UI", Font.BOLD, 14));
+        header.setPreferredSize(new Dimension(100, 35));
+        header.setBackground(new Color(52, 73, 94));
+        header.setForeground(Color.WHITE);
+
+        DefaultTableCellRenderer headerRenderer = 
+            (DefaultTableCellRenderer) header.getDefaultRenderer();
+        headerRenderer.setHorizontalAlignment(JLabel.CENTER);
+
+        header.setReorderingAllowed(false);
+        header.setResizingAllowed(false);
+
+        // ===== TABLE =====
+        tbToHop.setFont(mainFont);
+        tbToHop.setRowHeight(32);
+        tbToHop.setSelectionBackground(new Color(52, 152, 219));
+        tbToHop.setSelectionForeground(Color.WHITE);
+
+        tbToHop.setShowGrid(false);
+        tbToHop.setIntercellSpacing(new Dimension(0, 0));
+
+        // ===== RENDER =====
+        tbToHop.setDefaultRenderer(Object.class, new DefaultTableCellRenderer() {
+            @Override
+            public Component getTableCellRendererComponent(JTable table, Object value,
+                                                           boolean isSelected, boolean hasFocus,
+                                                           int row, int column) {
+
+                Component c = super.getTableCellRendererComponent(
+                        table, value, isSelected, hasFocus, row, column
+                );
+
+                setHorizontalAlignment(JLabel.CENTER);
+
+                if (!isSelected) {
+                    c.setBackground(row % 2 == 0 ? Color.WHITE : new Color(245, 245, 245));
                 }
-                };
-       tbToHop.setModel(model);
-               DefaultTableCellRenderer centerRenderer = new DefaultTableCellRenderer();
-        centerRenderer.setHorizontalAlignment(JLabel.CENTER);
-
-        // Căn nội dung ra chính giữa
-        for (int i = 0; i < tbToHop.getColumnCount(); i++) {
-        tbToHop.getColumnModel().getColumn(i).setCellRenderer(centerRenderer);
-}
-
-        //căn header ra center
-        JTableHeader headerTB = tbToHop.getTableHeader();
-        DefaultTableCellRenderer center = (DefaultTableCellRenderer) headerTB.getDefaultRenderer();
-        center.setHorizontalAlignment(JLabel.CENTER);
-        headerTB.setFont(new Font("Segoe UI",Font.BOLD,14));
-        
-        tbToHop.setRowHeight(30);
-        tbToHop.setFocusable(false);
-        tbToHop.setAutoCreateRowSorter(true);
-        tbToHop.setDefaultEditor(Object.class, null);
-        tbToHop.setShowVerticalLines(false);
+                return c;
+            }
+        });
     }
     
     /**

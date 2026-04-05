@@ -3,6 +3,7 @@
  * Click nbfs://nbhost/SystemFileSystem/Templates/Classes/Class.java to edit this template
  */
 package BUS;
+import DAO.nganhDAO;
 import DAO.nguyenVongXetTuyenDAO;
 import Entity.nguyenVongXetTuyenETT;
 import java.util.ArrayList;
@@ -289,193 +290,92 @@ public class nguyenVongXetTuyenBUS {
         System.out.println("CẮT CHỈ TIÊU HOÀN TẤT!");
     }
     
-    // =========================================================================
-    // HÀM BƠM DỮ LIỆU ĐIỂM TỪ DATABASE VÀO CÁC BIẾN ẢO (@Transient)
-    // =========================================================================
+    
     public void napDiemAoChoDanhSach() {
         if (ds == null || ds.isEmpty()) return;
-        
-        try (org.hibernate.Session session = CONFIG.HibernateUtil.getSessionFactory().openSession()) {
-            for (Entity.nguyenVongXetTuyenETT nv : ds) {
-                String cccd = nv.getNnCccd();
-                String maToHop = nv.getTtThm();
-                String phuongThuc = nv.getTtPhuongThuc();
 
-                // 1. Gán điểm ưu tiên (Lấy từ cột diem_utqd có sẵn)
-                nv.setDiemUuTien(nv.getDiemUtqd() == null ? 0.0 : nv.getDiemUtqd());
+        for (Entity.nguyenVongXetTuyenETT nv : ds) {
+            String cccd = nv.getNnCccd();
+            String maToHop = nv.getTtThm();
+            String phuongThuc = nv.getTtPhuongThuc();
 
-                // 2. Lấy điểm ĐGNL HCM
-                if (phuongThuc.equals("ĐGNL HCM")) {
-                    Number diemNL = (Number) session.createNativeQuery("SELECT NL1 FROM xt_diemthixettuyen WHERE cccd = :cccd")
-                            .setParameter("cccd", cccd).uniqueResult();
-                    nv.setDiemMon1(diemNL == null ? 0.0 : diemNL.doubleValue());
-                } 
-                // 3. Lấy điểm V-SAT hoặc THPT
-                else if (maToHop != null && !maToHop.equals("Không")) {
-                    // Lấy tên 3 môn từ bảng Tổ Hợp
-                    Object[] toHop = (Object[]) session.createNativeQuery("SELECT mon1, mon2, mon3 FROM xt_tohop_monthi WHERE matohop = :ma")
-                            .setParameter("ma", maToHop).uniqueResult();
+            // 1. Lấy điểm ĐGNL HCM
+            if (phuongThuc.equals("ĐGNL HCM")) {
+                nv.setDiemMon1(data.layDiemDGNL(cccd));
+            } 
+            // 2. Lấy điểm 3 môn cho V-SAT hoặc THPT
+            else if (maToHop != null && !maToHop.equals("Không")) {
+                
+                String[] toHop = data.layMonTuToHop(maToHop);
 
-if (toHop != null) {
-                        String m1 = (String) toHop[0];
-                        String m2 = (String) toHop[1];
-                        String m3 = (String) toHop[2];
+                if (toHop != null) {
+                    String m1 = toHop[0];
+                    String m2 = toHop[1];
+                    String m3 = toHop[2];
 
-                        nv.setTenMon1(m1);
-                        nv.setTenMon2(m2);
-                        nv.setTenMon3(m3);
+                    nv.setTenMon1(m1);
+                    nv.setTenMon2(m2);
+                    nv.setTenMon3(m3);
 
-                        // --- CODE MỚI: LẤY HỆ SỐ MÔN TỪ BẢNG NGÀNH TỔ HỢP ---
-                        String sqlHeSo = "SELECT hsmon1, hsmon2, hsmon3 FROM xt_nganh_tohop WHERE manganh = :mn AND matohop = :ma";
-                        Object[] heSo = (Object[]) session.createNativeQuery(sqlHeSo)
-                                .setParameter("mn", nv.getNvMaNganh())
-                                .setParameter("ma", maToHop).uniqueResult();
+                    // Gỡ bẫy môn Tiếng Anh (Lấy N1_THI để map với cột Database)
+                    String col1 = m1.equals("N1") ? "N1_THI" : m1;
+                    String col2 = m2.equals("N1") ? "N1_THI" : m2;
+                    String col3 = m3.equals("N1") ? "N1_THI" : m3;
 
-                        if (heSo != null) {
-                            nv.setHsMon1(heSo[0] == null ? 1.0 : ((Number) heSo[0]).doubleValue());
-                            nv.setHsMon2(heSo[1] == null ? 1.0 : ((Number) heSo[1]).doubleValue());
-                            nv.setHsMon3(heSo[2] == null ? 1.0 : ((Number) heSo[2]).doubleValue());
+                    // Gọi DAO lấy 1 mảng 3 con điểm
+                    double[] diemThi = data.layDiemThiBaMon(cccd, col1, col2, col3);
+                    double diem1 = diemThi[0];
+                    double diem2 = diemThi[1];
+                    double diem3 = diemThi[2];
+                    
+                    nv.setDiemMon1(diem1);
+                    nv.setDiemMon2(diem2);
+                    nv.setDiemMon3(diem3);
+                    
+                    // (MỞ RỘNG: Dò thêm IELTS để Tiêu chí phụ chính xác 100%)
+                    if ("N1".equals(m1) || "N1".equals(m2) || "N1".equals(m3)) {
+                        double ieltsQD = data.layDiemIELTS(cccd);
+                        if (ieltsQD > 0) { // Có chứng chỉ mới tráo
+                            if ("N1".equals(m1)) nv.setDiemMon1(Math.max(diem1, ieltsQD));
+                            if ("N1".equals(m2)) nv.setDiemMon2(Math.max(diem2, ieltsQD));
+                            if ("N1".equals(m3)) nv.setDiemMon3(Math.max(diem3, ieltsQD));
                         }
-
-                        // --- GỠ BẪY MÔN TIẾNG ANH (Như cũ) ---
-                        String col1 = m1.equals("N1") ? "N1_THI" : m1;
-// ... (Phần lấy điểm thi bên dưới vẫn giữ nguyên)
-                        String col2 = m2.equals("N1") ? "N1_THI" : m2;
-                        String col3 = m3.equals("N1") ? "N1_THI" : m3;
-
-                        // Sửa lại câu SQL dùng col1, col2, col3
-                        String sqlDiem = "SELECT `" + col1 + "`, `" + col2 + "`, `" + col3 + "` FROM xt_diemthixettuyen WHERE cccd = :cccd";
-                        Object[] diem = (Object[]) session.createNativeQuery(sqlDiem)
-                                .setParameter("cccd", cccd).uniqueResult();
-
-                        if (diem != null) {
-                            nv.setDiemMon1(diem[0] == null ? 0.0 : ((Number) diem[0]).doubleValue());
-                            nv.setDiemMon2(diem[1] == null ? 0.0 : ((Number) diem[1]).doubleValue());
-                            nv.setDiemMon3(diem[2] == null ? 0.0 : ((Number) diem[2]).doubleValue());
-                        }
-                        
-                        // ... (Đoạn code cũ của ông: nv.setDiemMon1, 2, 3) ...
-
-                        // ====================================================================
-                        // 🚀 TÍNH NĂNG MỚI: AUTO QUY ĐỔI IELTS & CỘNG ĐIỂM GIẢI THƯỞNG
-                        // ====================================================================
-                        double diemCongIELTS = 0.0;
-                        double diemCongGiaiThuong = 0.0;
-
-                        // 1. DÒ TÌM CHỨNG CHỈ IELTS
-                        String sqlIELTS = "SELECT diem_quydoi, diem_cong FROM xt_chungchi WHERE cccd = :cccd LIMIT 1";
-                        Object[] ieltsData = (Object[]) session.createNativeQuery(sqlIELTS)
-                                .setParameter("cccd", cccd).uniqueResult();
-
-                        if (ieltsData != null) {
-                            double diemQuyDoi = ieltsData[0] == null ? 0.0 : ((Number) ieltsData[0]).doubleValue();
-                            diemCongIELTS = ieltsData[1] == null ? 0.0 : ((Number) ieltsData[1]).doubleValue();
-
-                            // TUYỆT CHIÊU: Tráo điểm! Nếu tổ hợp có môn Tiếng Anh (N1), lấy điểm IELTS đè lên điểm thi
-                            if ("N1".equals(m1)) nv.setDiemMon1(diemQuyDoi);
-                            if ("N1".equals(m2)) nv.setDiemMon2(diemQuyDoi);
-                            if ("N1".equals(m3)) nv.setDiemMon3(diemQuyDoi);
-                        }
-
-                        // 2. DÒ TÌM GIẢI THƯỞNG HỌC SINH GIỎI
-                        String sqlGT = "SELECT ma_mon, diem_cong_co_mon, diem_cong_khong_mon FROM xt_giathuong WHERE cccd = :cccd LIMIT 1";
-                        Object[] gtData = (Object[]) session.createNativeQuery(sqlGT)
-                                .setParameter("cccd", cccd).uniqueResult();
-
-                        if (gtData != null) {
-                            String maMonGiai = (String) gtData[0];
-                            double diemCoMon = gtData[1] == null ? 0.0 : ((Number) gtData[1]).doubleValue();
-                            double diemKhongMon = gtData[2] == null ? 0.0 : ((Number) gtData[2]).doubleValue();
-
-                            // KIỂM TRA MÔN: Xem tổ hợp (m1, m2, m3) có chứa môn đạt giải không?
-                            if (maMonGiai.equals(m1) || maMonGiai.equals(m2) || maMonGiai.equals(m3)) {
-                                diemCongGiaiThuong = diemCoMon; // Trúng tủ -> Cộng nhiều
-                            } else {
-                                diemCongGiaiThuong = diemKhongMon; // Lệch tủ -> Cộng ít
-                            }
-                        }
-
-                        // 3. CHỐT SỔ ĐIỂM ƯU TIÊN
-                        // Tổng điểm cộng = Điểm UT Khu Vực (đã gán ở trên) + IELTS + Giải thưởng
-                        double tongDiemUT = nv.getDiemUuTien() + diemCongIELTS + diemCongGiaiThuong;
-                        
-                        // Luật của Bộ: Điểm cộng thêm (không tính khu vực) thường bị chặn trần, 
-                        // nhưng ở đây mình an toàn nhất là chặn tổng điểm UT không vượt quá mức quy định (VD: max là 3.0 hoặc 5.0 tùy trường).
-                        // Ở đây tui để tạm chặn trần tổng điểm không qua 30 ở hàm tính điểm tổng rồi nên cứ cộng tẹt ga.
-                        nv.setDiemUuTien(tongDiemUT);
-                        // ====================================================================
                     }
                 }
             }
-        } catch (Exception e) {
-            e.printStackTrace();
         }
     }
     
-    // =========================================================================
-    // HÀM TỰ ĐỘNG TÌM VÀ CẬP NHẬT ĐIỂM CHUẨN VÀO BẢNG NGÀNH
-    // =========================================================================
+    
     public void capNhatDiemChuanTuDong() {
         if (ds == null || ds.isEmpty()) return;
 
-        // 1. Tạo 1 cái Map để nhớ điểm thấp nhất của từng Ngành - Phương thức
-        // Key: "MaNganh_PhuongThuc" (VD: "7480201_Đánh giá V-SAT")
-        // Value: Điểm thấp nhất
+        // 1. TẠO MAP CHỨA DATA LỌC (LOGIC TẦNG BUS)
         java.util.HashMap<String, Double> diemChuanMap = new java.util.HashMap<>();
 
-        // 2. Quét qua toàn bộ danh sách để tìm điểm thấp nhất của người "Đã đậu"
+        // Quét qua để tìm "Kẻ thủ khoa ngược" (Đứa đậu với điểm thấp nhất)
         for (Entity.nguyenVongXetTuyenETT nv : ds) {
             if ("Đã đậu".equals(nv.getNvKetQua())) {
                 String key = nv.getNvMaNganh() + "_" + nv.getTtPhuongThuc();
                 double diem = nv.getDiemXetTuyen();
 
-                // Nếu chưa có ngành này trong Map, hoặc điểm của đứa này thấp hơn điểm đang lưu thì cập nhật
                 if (!diemChuanMap.containsKey(key) || diem < diemChuanMap.get(key)) {
                     diemChuanMap.put(key, diem);
                 }
             }
         }
 
-        // 3. Cập nhật ngược lại vào Database (Bảng xt_nganh)
-        try (org.hibernate.Session session = CONFIG.HibernateUtil.getSessionFactory().openSession()) {
-            session.beginTransaction();
-
-            for (java.util.Map.Entry<String, Double> entry : diemChuanMap.entrySet()) {
-                String[] parts = entry.getKey().split("_");
-                String maNganh = parts[0];
-                String phuongThuc = parts[1];
-                double diemChuan = entry.getValue();
-
-                // Tùy theo phương thức mà Update vào đúng cột điểm chuẩn
-                String sqlUpdate = "";
-                if (phuongThuc.equals("Đánh giá V-SAT")) {
-                    sqlUpdate = "UPDATE xt_nganh SET diemchuan_vsat = :dc WHERE manganh = :ma";
-                } else if (phuongThuc.equals("ĐGNL HCM")) {
-                    sqlUpdate = "UPDATE xt_nganh SET diemchuan_dgnl = :dc WHERE manganh = :ma";
-                } else if (phuongThuc.equals("Xét THPT")) {
-                    sqlUpdate = "UPDATE xt_nganh SET diemchuan_thpt = :dc WHERE manganh = :ma";
-                }else if (phuongThuc.equals("Xét tuyển thẳng")) {
-                    sqlUpdate = "UPDATE xt_nganh SET diemchuan_xtt = :dc WHERE manganh = :ma";
-                }
-
-                if (!sqlUpdate.isEmpty()) {
-                    session.createNativeQuery(sqlUpdate)
-                           .setParameter("dc", diemChuan)
-                           .setParameter("ma", maNganh)
-                           .executeUpdate();
-                }
-            }
-            session.getTransaction().commit();
-            System.out.println("✅ Đã chốt điểm chuẩn tự động thành công!");
-        } catch (Exception e) {
-            e.printStackTrace();
+        // 2. GIAO VIỆC CHO DAO XUỐNG DATABASE XỬ LÝ (TÁCH BẠCH)
+        // Gọi nganhDAO vì mình đang update vào bảng Ngành
+        nganhDAO nDao = new nganhDAO(); 
+        
+        if (nDao.capNhatDanhSachDiemChuan(diemChuanMap)) {
+            System.out.println("✅ Đã chốt điểm chuẩn tự động thành công (Clean Code)!");
+        } else {
+            System.out.println("❌ Có lỗi xảy ra khi chốt điểm chuẩn!");
         }
     }
     
-    // Trong file nguyenVongXetTuyenBUS.java (Hoặc BUS tương ứng)
-// =====================================================================
-    // HÀM PHỤ TRỢ: ÉP KIỂU AN TOÀN (Tránh crash nếu ô Excel bị rỗng)
-    // =====================================================================
     private double parseDoubleSafe(String val) {
         try {
             if (val == null || val.trim().isEmpty()) return 0.0;
@@ -544,5 +444,91 @@ if (toHop != null) {
             e.printStackTrace();
             return "Lỗi khi đọc file Excel: " + e.getMessage();
         }
+    }
+    
+    public ArrayList<nguyenVongXetTuyenETT> timKiemCoBan(String tim, int index)
+    {
+        if(ds == null)
+        {
+            layDanhSach();
+        }
+        
+        ArrayList<nguyenVongXetTuyenETT> dskq = new ArrayList<nguyenVongXetTuyenETT>();
+        String tuKhoa = tim.trim().toLowerCase();
+        
+        for(nguyenVongXetTuyenETT ct : ds)
+        {
+            switch (index) {
+                case 0:
+                    if(String.valueOf(ct.getIdNv()).toLowerCase().contains(tuKhoa))
+                    {
+                        dskq.add(ct);
+                    }
+                    break;
+                case 1:
+                    if(ct.getNnCccd() != null && ct.getNnCccd().toLowerCase().contains(tuKhoa))
+                    {
+                        dskq.add(ct);
+                    }
+                    break;
+                case 2:
+                    if(ct.getNvMaNganh() != null && ct.getNvMaNganh().toLowerCase().contains(tuKhoa))
+                    {
+                        dskq.add(ct);
+                    }
+                    break;
+                case 3:
+                    if(String.valueOf(ct.getNvTt()).toLowerCase().contains(tuKhoa))
+                    {
+                        dskq.add(ct);
+                    }
+                    break;
+                case 4:
+                    if(String.valueOf(ct.getDiemThxt()).toLowerCase().contains(tuKhoa))
+                    {
+                        dskq.add(ct);
+                    }
+                    break;
+                case 5:
+                    if(String.valueOf(ct.getDiemUtqd()).toLowerCase().contains(tuKhoa))
+                    {
+                        dskq.add(ct);
+                    }
+                    break;
+                case 6:
+                    if(String.valueOf(ct.getDiemCong()).toLowerCase().contains(tuKhoa))
+                    {
+                        dskq.add(ct);
+                    }
+                    break;
+                case 7:
+                    if(String.valueOf(ct.getDiemXetTuyen()).toLowerCase().contains(tuKhoa))
+                    {
+                        dskq.add(ct);
+                    }
+                    break;
+                case 8:
+                    if(ct.getNvKetQua() != null && ct.getNvKetQua().toLowerCase().contains(tuKhoa))
+                    {
+                        dskq.add(ct);
+                    }
+                    break;
+                case 9:
+                    if(ct.getTtPhuongThuc() != null && ct.getTtPhuongThuc().toLowerCase().contains(tuKhoa))
+                    {
+                        dskq.add(ct);
+                    }
+                    break;
+                case 10:
+                    if(ct.getTtThm() != null && ct.getTtThm().toLowerCase().contains(tuKhoa))
+                    {
+                        dskq.add(ct);
+                    }
+                    break;
+                default:
+                    throw new AssertionError();
+            }
+        }
+        return dskq;
     }
 }

@@ -96,7 +96,8 @@ btnTimKiem = new RoundedButton("TÌM KIẾM");
         pnlActions.add(btnReFresh);
 
         // 2. GroupBox: Tìm kiếm (Bên phải)
-        JPanel pnlSearch = new JPanel(new FlowLayout(FlowLayout.RIGHT, 10, 10));
+        // 🔥 FIX: Thay FlowLayout bằng GridBagLayout để tự động căn giữa theo chiều dọc
+        JPanel pnlSearch = new JPanel(new GridBagLayout());
         pnlSearch.setBackground(Color.WHITE);
         
         TitledBorder searchBorder = BorderFactory.createTitledBorder(
@@ -107,13 +108,20 @@ btnTimKiem = new RoundedButton("TÌM KIẾM");
         );
         pnlSearch.setBorder(BorderFactory.createCompoundBorder(searchBorder, new EmptyBorder(5, 5, 5, 5)));
 
-        cbxTimKiem = new JComboBox<>(new String[]{"Tìm theo Mã", "Tìm theo Tên", "Tìm theo CCCD"});
+        cbxTimKiem = new JComboBox<>(new String[]{"Messi", "Bucac", "Anh 7"});
         txtTimKiem = new JTextField(15);
         btnTimKiem = new JButton("TÌM KIẾM");
         
-        pnlSearch.add(cbxTimKiem);
-        pnlSearch.add(txtTimKiem);
-        pnlSearch.add(btnTimKiem);
+        // Tạo một panel con (inner panel) dùng FlowLayout để dàn hàng ngang
+        JPanel innerSearch = new JPanel(new FlowLayout(FlowLayout.RIGHT, 10, 0));
+        innerSearch.setBackground(Color.WHITE);
+        
+        innerSearch.add(cbxTimKiem);
+        innerSearch.add(txtTimKiem);
+        innerSearch.add(btnTimKiem);
+
+        // Thêm panel con vào panel Tìm kiếm
+        pnlSearch.add(innerSearch);
 
         pnlTop.add(pnlActions, BorderLayout.CENTER); 
         pnlTop.add(pnlSearch, BorderLayout.EAST);    

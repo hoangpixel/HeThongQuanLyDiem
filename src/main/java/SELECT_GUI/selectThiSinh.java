@@ -5,9 +5,13 @@
 package SELECT_GUI;
 import Entity.thiSinhXetTuyenETT;
 import BUS.thiSinhXetTuyenBUS;
+import java.awt.Color;
+import java.awt.Component;
+import java.awt.Dimension;
 import java.awt.Font;
 import java.util.Vector;
 import javax.swing.JLabel;
+import javax.swing.JTable;
 import javax.swing.table.DefaultTableCellRenderer;
 import javax.swing.table.DefaultTableModel;
 import javax.swing.table.JTableHeader;
@@ -91,47 +95,72 @@ public class selectThiSinh extends javax.swing.JDialog {
 }
     void header()
     {
-        Vector header = new Vector();
-        header.add("ID");
-        header.add("CCCD");
-        header.add("SBD");
-        header.add("Họ");
-        header.add("Tên");
-        header.add("Ngày sinh");
-        header.add("SĐT");
-        header.add("Giới tính");
-        header.add("Email");
-        header.add("Nơi sinh");
-        header.add("Đối tượng");
-        header.add("Khu vực");
-        model = new DefaultTableModel(header,0)
-                {
-                    @Override
-                    public boolean isCellEditable(int row,int column)
-                {
-                    return false;
+        Vector headerVec = new Vector();
+        headerVec.add("ID");
+        headerVec.add("CCCD");
+        headerVec.add("SBD");
+        headerVec.add("Họ");
+        headerVec.add("Tên");
+        headerVec.add("Ngày sinh");
+        headerVec.add("SĐT");
+        headerVec.add("Giới tính");
+        headerVec.add("Email");
+        headerVec.add("Nơi sinh");
+        headerVec.add("Đối tượng");
+        headerVec.add("Khu vực");
+        model = new DefaultTableModel(headerVec, 0){
+            @Override
+            public boolean isCellEditable(int row, int column){
+                return false;
+            }
+        };
+
+        tbThiSinh.setModel(model);
+
+        Font mainFont = new Font("Segoe UI", Font.PLAIN, 14);
+
+        // ===== HEADER =====
+        JTableHeader header = tbThiSinh.getTableHeader(); // ✅ FIX Ở ĐÂY
+        header.setFont(new Font("Segoe UI", Font.BOLD, 14));
+        header.setPreferredSize(new Dimension(100, 35));
+        header.setBackground(new Color(52, 73, 94));
+        header.setForeground(Color.WHITE);
+
+        DefaultTableCellRenderer headerRenderer = 
+            (DefaultTableCellRenderer) header.getDefaultRenderer();
+        headerRenderer.setHorizontalAlignment(JLabel.CENTER);
+
+        header.setReorderingAllowed(false);
+        header.setResizingAllowed(false);
+
+        // ===== TABLE =====
+        tbThiSinh.setFont(mainFont);
+        tbThiSinh.setRowHeight(32);
+        tbThiSinh.setSelectionBackground(new Color(52, 152, 219));
+        tbThiSinh.setSelectionForeground(Color.WHITE);
+
+        tbThiSinh.setShowGrid(false);
+        tbThiSinh.setIntercellSpacing(new Dimension(0, 0));
+
+        // ===== RENDER =====
+        tbThiSinh.setDefaultRenderer(Object.class, new DefaultTableCellRenderer() {
+            @Override
+            public Component getTableCellRendererComponent(JTable table, Object value,
+                                                           boolean isSelected, boolean hasFocus,
+                                                           int row, int column) {
+
+                Component c = super.getTableCellRendererComponent(
+                        table, value, isSelected, hasFocus, row, column
+                );
+
+                setHorizontalAlignment(JLabel.CENTER);
+
+                if (!isSelected) {
+                    c.setBackground(row % 2 == 0 ? Color.WHITE : new Color(245, 245, 245));
                 }
-                };
-       tbThiSinh.setModel(model);
-               DefaultTableCellRenderer centerRenderer = new DefaultTableCellRenderer();
-        centerRenderer.setHorizontalAlignment(JLabel.CENTER);
-
-        // Căn nội dung ra chính giữa
-        for (int i = 0; i < tbThiSinh.getColumnCount(); i++) {
-        tbThiSinh.getColumnModel().getColumn(i).setCellRenderer(centerRenderer);
-}
-
-        //căn header ra center
-        JTableHeader headerTB = tbThiSinh.getTableHeader();
-        DefaultTableCellRenderer center = (DefaultTableCellRenderer) headerTB.getDefaultRenderer();
-        center.setHorizontalAlignment(JLabel.CENTER);
-        headerTB.setFont(new Font("Segoe UI",Font.BOLD,14));
-        
-        tbThiSinh.setRowHeight(30);
-        tbThiSinh.setFocusable(false);
-        tbThiSinh.setAutoCreateRowSorter(true);
-        tbThiSinh.setDefaultEditor(Object.class, null);
-        tbThiSinh.setShowVerticalLines(false);
+                return c;
+            }
+        });
     }
     
     /**

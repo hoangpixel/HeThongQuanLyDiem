@@ -199,4 +199,9 @@ public class thiSinhXetTuyenBUS {
         // Gọi thẳng xuống DAO
         return dao.layKhuVucTheoCCCD(cccd);
     }
+        
+        public String layDoiTuongTheoCCCD(String cccd) {
+        // Gọi thẳng xuống DAO
+        return dao.layDoiTuongTheoCCCD(cccd);
+    }
 }

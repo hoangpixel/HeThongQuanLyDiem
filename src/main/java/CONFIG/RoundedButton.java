@@ -42,25 +42,50 @@ public class RoundedButton extends JButton {
         });
     }
 
+//    @Override
+//    protected void paintComponent(Graphics g) {
+//        Graphics2D g2 = (Graphics2D) g.create();
+//
+//        g2.setRenderingHint(RenderingHints.KEY_ANTIALIASING, RenderingHints.VALUE_ANTIALIAS_ON);
+//
+//        // Background
+//        if (isHover) {
+//            g2.setColor(hoverColor);
+//        } else {
+//            g2.setColor(Color.WHITE);
+//        }
+//        g2.fillRoundRect(0, 0, getWidth(), getHeight(), 10, 10);
+//
+//        // Border
+//        g2.setColor(borderColor);
+//        g2.drawRoundRect(0, 0, getWidth() - 1, getHeight() - 1, 10, 10);
+//
+//        g2.dispose();
+//        super.paintComponent(g);
+//    }
+    
     @Override
     protected void paintComponent(Graphics g) {
         Graphics2D g2 = (Graphics2D) g.create();
 
+        // Bật khử răng cưa cho nét vẽ mượt mà
         g2.setRenderingHint(RenderingHints.KEY_ANTIALIASING, RenderingHints.VALUE_ANTIALIAS_ON);
 
-        // Background
+        // Background: Cũng lùi vào 1px để màu nền không lem ra ngoài viền
         if (isHover) {
             g2.setColor(hoverColor);
         } else {
             g2.setColor(Color.WHITE);
         }
-        g2.fillRoundRect(0, 0, getWidth(), getHeight(), 10, 10);
+        g2.fillRoundRect(1, 1, getWidth() - 2, getHeight() - 2, 10, 10);
 
-        // Border
+        // Border: Dời tọa độ x, y từ 0 -> 1 và trừ hao width, height để viền không bị cắt
         g2.setColor(borderColor);
-        g2.drawRoundRect(0, 0, getWidth() - 1, getHeight() - 1, 10, 10);
+        g2.drawRoundRect(1, 1, getWidth() - 3, getHeight() - 3, 10, 10);
 
         g2.dispose();
+        
+        // Gọi super để vẽ Text (chữ của button) đè lên trên cùng
         super.paintComponent(g);
     }
 }

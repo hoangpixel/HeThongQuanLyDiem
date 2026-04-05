@@ -38,3 +38,19 @@ public class main {
         });
     }
 }
+//public class main {
+//    public static void main(String[] args) {
+//        try {
+//            // Giữ nguyên cái giao diện FlatLaf cho đẹp
+//            UIManager.setLookAndFeel(new FlatLightLaf());
+//        } catch (Exception e) {
+//            e.printStackTrace();
+//        }
+//
+//        SwingUtilities.invokeLater(() -> {
+//            // Chạy LoginForm trước thay vì contentGUI
+//            loginProMax login = new loginProMax();
+//            login.setVisible(true);
+//        });
+//    }
+//}

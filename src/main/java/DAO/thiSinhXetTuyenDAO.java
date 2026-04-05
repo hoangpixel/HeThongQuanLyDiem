@@ -131,4 +131,19 @@ public class thiSinhXetTuyenDAO {
         }
         return khuVuc;
     }
+    
+        public String layDoiTuongTheoCCCD(String cccd) {
+        String khuVuc = "";
+        try (org.hibernate.Session session = CONFIG.HibernateUtil.getSessionFactory().openSession()) {
+            String sql = "SELECT doiTuong FROM xt_thisinhxettuyen25 WHERE cccd = :cccd LIMIT 1";
+            Object result = session.createNativeQuery(sql).setParameter("cccd", cccd).uniqueResult();
+            
+            if (result != null) {
+                khuVuc = result.toString();
+            }
+        } catch (Exception e) {
+            e.printStackTrace();
+        }
+        return khuVuc;
+    }
 }

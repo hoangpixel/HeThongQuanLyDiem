@@ -1,5 +1,6 @@
 package EXCEL;
 
+import Entity.nganhToHopETT;
 import java.io.File;
 import java.io.FileOutputStream;
 import java.util.ArrayList;
@@ -170,6 +171,106 @@ public class ExcelHelper {
                         nv.getNvKeys() != null ? nv.getNvKeys() : "",
                         nv.getTtPhuongThuc() != null ? nv.getTtPhuongThuc() : "",
                         nv.getTtThm() != null ? nv.getTtThm() : ""
+                    };
+
+                    for (int i = 0; i < rowData.length; i++) {
+                        Cell cell = row.createCell(i);
+                        cell.setCellStyle(dataStyle); // Gắn Style Dữ liệu
+                        
+                        if (rowData[i] instanceof Number) {
+                            cell.setCellValue(((Number) rowData[i]).doubleValue());
+                        } else {
+                            cell.setCellValue(rowData[i].toString());
+                        }
+                    }
+                }
+
+                // --- 4. TÚT TÁT LẠI CỘT CHO ĐẸP ---
+                for (int i = 0; i < headers.length; i++) {
+                    sheet.autoSizeColumn(i);
+                    sheet.setColumnWidth(i, sheet.getColumnWidth(i) + 1000); 
+                }
+                sheet.createFreezePane(0, 1); // Khóa tiêu đề
+
+                // Xuất file
+                try (FileOutputStream out = new FileOutputStream(filePath)) {
+                    workbook.write(out);
+                }
+                workbook.close();
+                JOptionPane.showMessageDialog(parent, "Xuất file thành công!\n" + filePath, "Thành công", JOptionPane.INFORMATION_MESSAGE);
+            }
+        } catch (Exception e) {
+            e.printStackTrace();
+            JOptionPane.showMessageDialog(parent, "Lỗi khi xuất: " + e.getMessage(), "Lỗi", JOptionPane.ERROR_MESSAGE);
+        }
+    }
+    
+        public static void xuatDanhSachNganhToHopRaExcel(ArrayList<nganhToHopETT> ds, java.awt.Component parent, String tenBang) {
+        try {
+            if (ds == null || ds.isEmpty()) {
+                JOptionPane.showMessageDialog(parent, "Không có dữ liệu để xuất!", "Cảnh báo", JOptionPane.WARNING_MESSAGE);
+                return;
+            }
+
+            JFileChooser fileChooser = new JFileChooser();
+            fileChooser.setDialogTitle("Chọn vị trí lưu Danh sách Ngành tổ hợp");
+            fileChooser.setFileFilter(new FileNameExtensionFilter("Excel Files (*.xlsx)", "xlsx"));
+            fileChooser.setSelectedFile(new File(tenBang + ".xlsx"));
+
+            if (fileChooser.showSaveDialog(parent) == JFileChooser.APPROVE_OPTION) {
+                String filePath = fileChooser.getSelectedFile().getAbsolutePath();
+                if (!filePath.toLowerCase().endsWith(".xlsx")) filePath += ".xlsx";
+
+                Workbook workbook = new XSSFWorkbook();
+                Sheet sheet = workbook.createSheet(tenBang);
+
+                // --- 1. GỌI HÀM LẤY STYLE CHUNG (SẠCH SẼ CHƯA!) ---
+                org.apache.poi.ss.usermodel.CellStyle headerStyle = taoStyleTieuDe(workbook);
+                org.apache.poi.ss.usermodel.CellStyle dataStyle = taoStyleDuLieu(workbook);
+
+                // --- 2. IN HEADER ---
+                String[] headers = {
+                    "ID", "ID ngành", "ID tổ hợp", "Môn 1", "Hệ số môn 1", 
+                    "Môn 2", "Hệ số môn 2", "Môn 3", "Hệ số môn 3", 
+                    "Keys", "N1", "TO", "LI", "HO", "SI", "VA", "SU", "DI", "TI", "KHAC", "KTPL", "Độ lệch"
+                };
+                Row headerRow = sheet.createRow(0);
+                headerRow.setHeightInPoints(25);
+                
+                for (int i = 0; i < headers.length; i++) {
+                    Cell cell = headerRow.createCell(i);
+                    cell.setCellValue(headers[i]);
+                    cell.setCellStyle(headerStyle); // Khoác áo VIP cho Header
+                }
+
+                // --- 3. IN DATA ---
+                int rowNum = 1;
+                for (nganhToHopETT nv : ds) {
+                    Row row = sheet.createRow(rowNum++);
+                    
+                    Object[] rowData = {
+                        nv.getIdNganhToHop(),
+                        nv.getMaNganh() != null ? nv.getMaNganh() : "",
+                        nv.getMaToHop() != null ? nv.getMaToHop() : "",
+                        nv.getMon1() != null ? nv.getMon1() : "",
+                        nv.getHeSoMon1()!= null ? nv.getHeSoMon1() : 0.0,
+                        nv.getMon2() != null ? nv.getMon2() : "",
+                        nv.getHeSoMon2()!= null ? nv.getHeSoMon2() : 0.0,
+                        nv.getMon3() != null ? nv.getMon3() : "",
+                        nv.getHeSoMon3() != null ? nv.getHeSoMon3() : 0.0,
+                        nv.getKey()!= null ? nv.getKey() : "",
+                        nv.getN1() != null ? nv.getN1() : 0,
+                        nv.getTO() != null ? nv.getTO() : 0,
+                        nv.getLI() != null ? nv.getLI() : 0,
+                        nv.getHO() != null ? nv.getHO() : 0,
+                        nv.getSI() != null ? nv.getSI() : 0,
+                        nv.getVA() != null ? nv.getVA() : 0,
+                        nv.getSU() != null ? nv.getSU() : 0,
+                        nv.getDI() != null ? nv.getDI() : 0,
+                        nv.getTI() != null ? nv.getTI() : 0,
+                        nv.getKHAC() != null ? nv.getKHAC() : 0,
+                        nv.getKTPL() != null ? nv.getKTPL() : 0,
+                        nv.getDoLech()!= null ? nv.getDoLech() : 0.0
                     };
 
                     for (int i = 0; i < rowData.length; i++) {

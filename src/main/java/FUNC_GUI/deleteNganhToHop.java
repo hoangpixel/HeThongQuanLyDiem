@@ -4,25 +4,24 @@
  */
 package FUNC_GUI;
 
-import FUNC_GUI.formDeleteNguyenMauProMax;
 import java.awt.Frame;
 import javax.swing.BorderFactory;
 
 /**
  *
- * @author Dang Khoa
+ * @author mhoang
  */
 public class deleteNganhToHop extends formDeleteNguyenMauProMax{
-    
-    public deleteNganhToHop(Frame parent, boolean modal) {
-        super(parent, modal);
-        loadFormNguyenVong();
-    }
-    void loadFormNguyenVong()
+    public deleteNganhToHop(Frame parent, boolean modal)
     {
-        setTitle("Xóa Môn Thi");
-        labelXoa.setText("Xóa Môn Thi");
-        groupBoxXoa.setBorder(BorderFactory.createTitledBorder("thực hiện xóa môn thi"));
-        mess = "Xóa Môn Thi thành công";
+        super(parent, modal);
+        loadFormNganhToHop();
+    }
+    void loadFormNganhToHop() 
+    {
+        setTitle("Xóa ngành tổ hợp");
+        labelXoa.setText("Xóa ngành tổ hợp");
+        groupBoxXoa.setBorder(BorderFactory.createTitledBorder("Thực hiện xóa ngành tổ hợp"));
+        mess = "Xóa ngành tổ hợp thành công";
     }
 }
