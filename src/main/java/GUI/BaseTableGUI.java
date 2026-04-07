@@ -66,7 +66,7 @@ wrapper.add(pnlActions);
             BorderFactory.createLineBorder(new Color(200, 200, 200)), 
             "Xử lý chức năng của table ...", 
             TitledBorder.LEFT, TitledBorder.TOP, 
-            new Font("Segoe UI", Font.BOLD, 14), Color.DARK_GRAY
+            UIManager.getFont("defaultFont").deriveFont(Font.BOLD, 14f), Color.DARK_GRAY
         );
         pnlActions.setBorder(BorderFactory.createCompoundBorder(actionBorder, new EmptyBorder(5, 5, 5, 5)));
 
@@ -104,7 +104,7 @@ btnTimKiem = new RoundedButton("TÌM KIẾM");
             BorderFactory.createLineBorder(new Color(200, 200, 200)), 
             "Tìm kiếm", 
             TitledBorder.LEFT, TitledBorder.TOP, 
-            new Font("Segoe UI", Font.BOLD, 14), Color.DARK_GRAY
+            UIManager.getFont("defaultFont").deriveFont(Font.BOLD, 14f), Color.DARK_GRAY
         );
         pnlSearch.setBorder(BorderFactory.createCompoundBorder(searchBorder, new EmptyBorder(5, 5, 5, 5)));
 
@@ -184,7 +184,7 @@ btnTimKiem = new RoundedButton("TÌM KIẾM");
         btnFirst = new JButton("<<");
         btnPrev = new JButton("<");
         lblPageInfo = new JLabel("Trang 1 / 1");
-        lblPageInfo.setFont(new Font("Segoe UI", Font.BOLD, 14));
+        lblPageInfo.setFont(UIManager.getFont("defaultFont").deriveFont(Font.BOLD, 14f));
         btnNext = new JButton(">");
         btnLast = new JButton(">>");
         
@@ -291,7 +291,11 @@ btnTimKiem = new RoundedButton("TÌM KIẾM");
     }
 
 private void styleComponents() {
-    Font mainFont = new Font("Segoe UI", Font.PLAIN, 14);
+    Font baseFont = UIManager.getFont("defaultFont");
+if (baseFont == null) {
+    baseFont = new Font("SansSerif", Font.PLAIN, 14);
+}
+Font mainFont = baseFont.deriveFont(Font.PLAIN, 14f);
 
     // ==========================================
     // ===== BỔ SUNG: SET ICON CHO BUTTONS ======
@@ -363,7 +367,7 @@ private void styleComponents() {
 
     // ===== HEADER TABLE =====
     JTableHeader header = table.getTableHeader();
-    header.setFont(new Font("Segoe UI", Font.BOLD, 14));
+    header.setFont(baseFont.deriveFont(Font.BOLD, 14f));
     header.setPreferredSize(new Dimension(100, 35));
     header.setBackground(new Color(52, 73, 94)); // xanh đậm
     header.setForeground(Color.WHITE);

@@ -66,7 +66,7 @@ wrapper.add(pnlActions);
             BorderFactory.createLineBorder(new Color(200, 200, 200)), 
             "Xử lý chức năng của table ...", 
             TitledBorder.LEFT, TitledBorder.TOP, 
-            new Font("Segoe UI", Font.BOLD, 14), Color.DARK_GRAY
+            UIManager.getFont("defaultFont").deriveFont(Font.BOLD, 14f), Color.DARK_GRAY
         );
         pnlActions.setBorder(BorderFactory.createCompoundBorder(actionBorder, new EmptyBorder(5, 5, 5, 5)));
 
@@ -107,7 +107,7 @@ btnTinhToanKetQua = new RoundedButton("TÍNH TOÁN KQ");
             BorderFactory.createLineBorder(new Color(200, 200, 200)), 
             "Tìm kiếm", 
             TitledBorder.LEFT, TitledBorder.TOP, 
-            new Font("Segoe UI", Font.BOLD, 14), Color.DARK_GRAY
+            UIManager.getFont("defaultFont").deriveFont(Font.BOLD, 14f), Color.DARK_GRAY
         );
         pnlSearch.setBorder(BorderFactory.createCompoundBorder(searchBorder, new EmptyBorder(5, 5, 5, 5)));
 
@@ -187,7 +187,7 @@ btnTinhToanKetQua = new RoundedButton("TÍNH TOÁN KQ");
         btnFirst = new JButton("<<");
         btnPrev = new JButton("<");
         lblPageInfo = new JLabel("Trang 1 / 1");
-        lblPageInfo.setFont(new Font("Segoe UI", Font.BOLD, 14));
+        lblPageInfo.setFont(UIManager.getFont("defaultFont").deriveFont(Font.BOLD, 14f));
         btnNext = new JButton(">");
         btnLast = new JButton(">>");
         
@@ -294,7 +294,15 @@ btnTinhToanKetQua = new RoundedButton("TÍNH TOÁN KQ");
     }
 
 private void styleComponents() {
-    Font mainFont = new Font("Segoe UI", Font.PLAIN, 14);
+// 1. Gán vào biến tạm trước
+    Font tempFont = UIManager.getFont("defaultFont");
+    if (tempFont == null) {
+        tempFont = new Font("SansSerif", Font.PLAIN, 14);
+    }
+    
+    // 2. Gán vào biến final để đem vào bên trong Renderer xài mà không bị lỗi
+    final Font baseFont = tempFont; 
+    Font mainFont = baseFont.deriveFont(Font.PLAIN, 14f);
 
     // ==========================================
     // ===== BỔ SUNG: SET ICON CHO BUTTONS ======
@@ -367,7 +375,7 @@ private void styleComponents() {
 
     // ===== HEADER TABLE =====
     JTableHeader header = table.getTableHeader();
-    header.setFont(new Font("Segoe UI", Font.BOLD, 14));
+    header.setFont(baseFont.deriveFont(Font.BOLD, 14f));
     header.setPreferredSize(new Dimension(100, 35));
     header.setBackground(new Color(52, 73, 94)); // xanh đậm
     header.setForeground(Color.WHITE);
@@ -392,6 +400,7 @@ private void styleComponents() {
 
     // ===== RENDERER (CĂN GIỮA + ZEBRA STRIPE) =====
 // ===== RENDERER (CĂN GIỮA + ZEBRA STRIPE + ĐỔI MÀU CHỮ THEO TRẠNG THÁI) =====
+
     table.setDefaultRenderer(Object.class, new DefaultTableCellRenderer() {
         @Override
         public Component getTableCellRendererComponent(JTable table, Object value,
@@ -418,16 +427,13 @@ private void styleComponents() {
             }
 
             // 3. ĐỔI MÀU CHỮ CHO CỘT TRẠNG THÁI
-            // LƯU Ý QUAN TRỌNG: Trong Java, cột đếm từ 0. 
-            // Nên nếu "cột số 9" của bạn (đếm từ trái sang phải 1,2,3...) thì index của nó là 8.
-            // Nếu bạn đang dùng chỉ số index = 9 trong mảng, thì đổi số 8 bên dưới thành 9 nha!
             int cotTrangThaiIndex = 8; 
 
             if (column == cotTrangThaiIndex) {
                 String status = value != null ? value.toString().trim() : "";
                 
-                // Chữ cột này cho in đậm xíu nhìn cho nổi bật
-                c.setFont(new Font("Segoe UI", Font.BOLD, 14));
+                // 🔥 SỬA Ở ĐÂY: Dùng deriveFont để in đậm mà vẫn giữ nguyên font chữ app
+                c.setFont(baseFont.deriveFont(Font.BOLD, 14f));
 
                 // Bắt đầu xét chuỗi để tô màu
                 if (status.equalsIgnoreCase("Chờ xét")) {
@@ -437,20 +443,19 @@ private void styleComponents() {
                 } else if (status.equalsIgnoreCase("Đã trượt")) {
                     c.setForeground(new Color(231, 76, 60));  // Đỏ cảnh báo
                 } else if (status.equalsIgnoreCase("Không xét")) {
-                    c.setForeground(new Color(108, 122, 137)); // Nâu SaddleBrown
+                    c.setForeground(new Color(108, 122, 137)); // Xám đậm
                 } else {
                     c.setForeground(isSelected ? Color.WHITE : Color.BLACK);
                 }
                 
-                // Nếu dòng đang được chọn (bôi xanh), bạn muốn chữ vẫn giữ màu hay biến thành màu trắng?
-                // Ở đây tui set: Nếu đang chọn thì chữ thành Trắng hết cho dễ đọc.
+                // Nếu dòng đang được chọn (bôi xanh)
                 if (isSelected) {
                     c.setForeground(Color.WHITE);
                 }
                 
             } else {
-                // Các cột khác thì trả lại font bình thường và màu đen (hoặc trắng nếu đang chọn)
-                c.setFont(new Font("Segoe UI", Font.PLAIN, 14));
+                // 🔥 SỬA Ở ĐÂY: Các cột khác thì trả lại font bình thường bằng deriveFont
+                c.setFont(baseFont.deriveFont(Font.PLAIN, 14f));
                 c.setForeground(isSelected ? Color.WHITE : Color.BLACK);
             }
 
