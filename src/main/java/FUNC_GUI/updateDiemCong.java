@@ -37,7 +37,13 @@ import javax.swing.SwingUtilities;
         this.cccd = dc.getTsCccd();
         this.maNganh = dc.getMaNganh();
         this.toHopMon = dc.getMaToHop();
-
+        // 🔥 LOAD LẠI TỔ HỢP
+        try (org.hibernate.Session session = CONFIG.HibernateUtil.getSessionFactory().openSession()) {
+            String sql = "FROM toHopETT WHERE matohop = :matohop";
+            toHopMonDaChon = session.createQuery(sql, Entity.toHopETT.class)
+                    .setParameter("matohop", this.toHopMon)
+                    .uniqueResult();
+        }
         // 🔥 hiển thị dữ liệu lên form
         txtCccd.setText(cccd);
         txtMaNganh.setText(maNganh);
@@ -57,7 +63,7 @@ import javax.swing.SwingUtilities;
 
         // 🔥 auto tính lại
         jComboBox1.addActionListener(e -> capNhatDiemTuDong());
-        capNhatDiemTuDong();
+
 
         setLocationRelativeTo(parent);
     }
@@ -434,75 +440,70 @@ import javax.swing.SwingUtilities;
         String cccd = txtCccd.getText().trim();
         if (cccd.isEmpty()) return;
 
-        double diemCongIELTS = 0.0;
-        double diemCongGiaiThuong = 0.0;
-        double diemGoc = 0.0;
+        double diemCC = 0.0;
+        double diemGT = 0.0;
 
-        // --- 1. LUÔN LẤY ĐIỂM CHỨNG CHỈ & GIẢI THƯỞNG TRƯỚC ---
         try (org.hibernate.Session session = CONFIG.HibernateUtil.getSessionFactory().openSession()) {
-            // Query chứng chỉ
-            String sqlIELTS = "SELECT diem_cong FROM xt_chungchi WHERE cccd = :cccd LIMIT 1";
-            Object resIELTS = session.createNativeQuery(sqlIELTS).setParameter("cccd", cccd).uniqueResult();
-            if (resIELTS != null) {
-                diemCongIELTS = ((Number) resIELTS).doubleValue();
+
+            // ===== 1. CHỨNG CHỈ =====
+            String sqlCC = "SELECT diem_cong FROM xt_chungchi WHERE cccd = :cccd LIMIT 1";
+            Object resCC = session.createNativeQuery(sqlCC)
+                    .setParameter("cccd", cccd)
+                    .uniqueResult();
+
+            if (resCC != null) {
+                diemCC = ((Number) resCC).doubleValue();
+            }
+            boolean coMonAnh = false;
+
+            if (toHopMonDaChon != null) {
+                String m1 = toHopMonDaChon.getMon1();
+                String m2 = toHopMonDaChon.getMon2();
+                String m3 = toHopMonDaChon.getMon3();
+
+                coMonAnh = "N1".equals(m1) || "N1".equals(m2) || "N1".equals(m3);
             }
 
-            // Query giải thưởng (Tạm thời lấy điểm không môn nếu chưa chọn tổ hợp)
-            String sqlGT = "SELECT ma_mon, diem_cong_co_mon, diem_cong_khong_mon FROM xt_giathuong WHERE cccd = :cccd LIMIT 1";
-            Object[] gtData = (Object[]) session.createNativeQuery(sqlGT).setParameter("cccd", cccd).uniqueResult();
+            // 🔥 nếu có tiếng Anh → KHÔNG cộng CC
+            if (coMonAnh) {
+                diemCC = 0;
+            }
+            // ===== 2. GIẢI THƯỞNG =====
+            String sqlGT = "SELECT ma_mon, diem_cong_co_mon, diem_cong_khong_mon " +
+                           "FROM xt_giathuong WHERE TRIM(cccd) = TRIM(:cccd) LIMIT 1";
+
+            Object[] gtData = (Object[]) session.createNativeQuery(sqlGT)
+                    .setParameter("cccd", cccd)
+                    .uniqueResult();
+
             if (gtData != null) {
-                String maMonGiai = (String) gtData[0];
+                String maMon = (String) gtData[0];
                 double dCoMon = ((Number) gtData[1]).doubleValue();
                 double dKhongMon = ((Number) gtData[2]).doubleValue();
 
-                // Nếu đã chọn tổ hợp thì check có môn, nếu chưa thì mặc định lấy điểm không môn
                 if (toHopMonDaChon != null) {
                     String m1 = toHopMonDaChon.getMon1();
                     String m2 = toHopMonDaChon.getMon2();
                     String m3 = toHopMonDaChon.getMon3();
-                    diemCongGiaiThuong = (maMonGiai.equals(m1) || maMonGiai.equals(m2) || maMonGiai.equals(m3)) ? dCoMon : dKhongMon;
+
+                    diemGT = (maMon.equals(m1) || maMon.equals(m2) || maMon.equals(m3))
+                            ? dCoMon : dKhongMon;
                 } else {
-                    diemCongGiaiThuong = dKhongMon;
+                    diemGT = dKhongMon;
                 }
             }
-        } catch (Exception e) {
-            System.err.println("Lỗi lấy điểm cộng: " + e.getMessage());
-        }
-
-        // Hiển thị ngay Điểm CC lên giao diện (Max là 3.0)
-        double tongDiemCong = Math.min(diemCongIELTS + diemCongGiaiThuong, 3.0);
-        txtDiemCC.setText(String.valueOf(tongDiemCong));
-
-        // --- 2. LOGIC TÍNH ĐIỂM GỐC (Chỉ chạy khi đủ thông tin Ngành/Tổ hợp/Phương thức) ---
-        if (jComboBox1.getSelectedItem() == null) return;
-        String phuongThuc = jComboBox1.getSelectedItem().toString();
-
-        try {
-            BUS.diemThiBUS dtBus = new BUS.diemThiBUS();
-            Entity.diemThiETT diemThi = dtBus.layDiemTheoCCCD(cccd);
-
-            if (diemThi != null) {
-                // ... Giữ nguyên logic tính diemGoc cho Xét THPT, ĐGNL, Tuyển thẳng như cũ của bạn ...
-                // Lưu ý: Trong khối "Xét THPT", bạn không cần query lại IELTS/GT nữa vì đã lấy ở trên
-            }
-
-            // --- 3. CẬP NHẬT ĐIỂM TỔNG ---
-            double diemUT = 0;
-            try {
-                // Lấy khéo léo giá trị từ txtDiemUTXT (Xử lý chuỗi "01 - Ưu tiên...")
-                String utStr = txtDiemUTXT.getText().split(" ")[0]; 
-                diemUT = Double.parseDouble(utStr);
-            } catch (Exception e) {
-                diemUT = 0;
-            }
-
-            double tongKet = Math.round((diemGoc + tongDiemCong + diemUT) * 100.0) / 100.0;
-            tongKet = Math.min(tongKet, 3.0);
-            txtDiemTong.setText(String.valueOf(tongKet));
 
         } catch (Exception e) {
             e.printStackTrace();
         }
+
+        // ===== 3. HIỂN THỊ =====
+        txtDiemCC.setText(String.valueOf(diemCC));     // ✅ CHỈ CC
+        txtDiemUTXT.setText(String.valueOf(diemGT));   // ✅ UTXT
+
+        // ===== TỔNG =====
+        double tongCong = Math.min(diemCC + diemGT, 3.0);
+        txtDiemTong.setText(String.valueOf(tongCong)); // ✅ tổng
     }
     // Hàm bổ trợ lấy điểm từ Entity diemThi dựa trên mã môn (Toán, Lý, Hóa...)
     private double layDiemTheoMaMon(Entity.diemThiETT dt, String maMon) {
