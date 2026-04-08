@@ -37,4 +37,58 @@ public class giaiThuongBUS {
         giaiThuongDAO dao = new giaiThuongDAO();
         return dao.layCapVaLoaiGiai(cccd);
     }
+    
+    public boolean themGT(giaiThuongETT gt) {
+        boolean isSuccess = data.themGiaiThuong(gt);
+        if (isSuccess) {
+            if (ds != null) {
+                ds.add(gt);
+            }
+        }
+        return isSuccess;
+    }
+
+    public boolean suaGT(giaiThuongETT gtMoi) {
+        if (data.suaGiaiThuong(gtMoi)) {
+            if (ds != null) {
+                for (int i = 0; i < ds.size(); i++) {
+                    if (ds.get(i).getIdGt() == gtMoi.getIdGt()) {
+                        ds.set(i, gtMoi);
+                        break;
+                    }
+                }
+            }
+            return true;
+        }
+        return false;
+    }
+
+    public boolean xoaGT(int idGt) {
+        if (data.xoaGiaiThuong(idGt)) {
+            if (ds != null) {
+                ds.removeIf(item -> item.getIdGt() == idGt);
+            } 
+            return true;
+        }
+        return false;
+    }
+
+    public ArrayList<giaiThuongETT> timKiemCoBan(String tim, int index) {
+        if (ds == null) layDanhSach();
+        ArrayList<giaiThuongETT> dskq = new ArrayList<>();
+        String tuKhoa = tim.trim().toLowerCase();
+
+        for (giaiThuongETT ct : ds) {
+            String data = switch (index) {
+                case 0 -> String.valueOf(ct.getIdGt());
+                case 1 -> ct.getCccd();
+                case 2 -> ct.getCapGiai();
+                case 3 -> ct.getMaMon();
+                case 4 -> ct.getLoaiGiai();
+                default -> "";
+            };
+            if (data.toLowerCase().contains(tuKhoa)) dskq.add(ct);
+        }
+        return dskq;
+    }
 }

@@ -385,7 +385,7 @@ public class updateNganh extends javax.swing.JDialog {
         try {
             nganh.setN_diemsan(txtDiemSan.getText().isEmpty() ? null : Double.valueOf(txtDiemSan.getText()));
             nganh.setN_diemtrungtuyen(txtDiemTrungTuyen.getText().isEmpty() ? null : Double.valueOf(txtDiemTrungTuyen.getText()));
-        } catch(Exception e){}
+        } catch(Exception e){e.printStackTrace();}
 
         nganh.setN_tuyenthang(chkTuyenThang.isSelected() ? "1" : "0");
         nganh.setSl_xtt(chkTuyenThang.isSelected() ? Integer.parseInt(txtTuyenThang.getText().trim()) : 0);

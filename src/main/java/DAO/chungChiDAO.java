@@ -9,13 +9,14 @@ import Entity.chungChiETT;
 import java.util.ArrayList;
 import java.util.List;
 import org.hibernate.Session;
+import org.hibernate.Transaction;
 
 /**
  *
  * @author mhoang
  */
 public class chungChiDAO {
-        public ArrayList<chungChiETT> layDanhSach() {
+    public ArrayList<chungChiETT> layDanhSach() {
         ArrayList<chungChiETT> ds = new ArrayList<>();
         try (Session session = HibernateUtil.getSessionFactory().openSession()) {
             List<chungChiETT> listTuDB = session.createQuery("FROM chungChiETT", chungChiETT.class).list();
@@ -24,6 +25,61 @@ public class chungChiDAO {
             e.printStackTrace();
         }
         return ds;
+    }
+    
+    public boolean themCC(chungChiETT ett) {
+        Transaction transaction = null;
+        try (Session session = HibernateUtil.getSessionFactory().openSession()) {
+            transaction = session.beginTransaction();
+            session.persist(ett); // Hibernate tự sinh INSERT
+            transaction.commit();
+            return true;
+        } catch (Exception e) {
+            if (transaction != null){
+                transaction.rollback();
+            }
+            e.printStackTrace();
+            return false;
+        }
+    }
+    
+    public boolean suaCC(chungChiETT cc) {
+        Transaction transaction = null;
+        try (Session session = HibernateUtil.getSessionFactory().openSession()) {
+            transaction = session.beginTransaction();
+            session.merge(cc); // Dùng merge() để cập nhật dòng dữ liệu
+            transaction.commit();
+            return true;
+        } catch (Exception e) {
+            if (transaction != null){
+                transaction.rollback(); // Lỗi thì quay xe 
+            }
+            e.printStackTrace();
+            return false;
+        }
+    }
+    
+    public boolean xoaCC(int idCc) {
+        Transaction transaction = null;
+        try (Session session = HibernateUtil.getSessionFactory().openSession()) {
+            transaction = session.beginTransaction();
+            
+            // Tìm đối tượng dưới DB dựa vào ID
+            chungChiETT ettToDelete = session.get(chungChiETT.class, idCc);
+            
+            if (ettToDelete != null) {
+                session.remove(ettToDelete); // Nếu thấy thì remove
+            }
+            
+            transaction.commit();
+            return true;
+        } catch (Exception e) {
+            if (transaction != null) {
+                transaction.rollback();
+            }
+            e.printStackTrace();
+            return false;
+        }
     }
         
     // Trong chungChiDAO.java (và gọi lại ở chungChiBUS.java)
@@ -38,5 +94,24 @@ public class chungChiDAO {
             }
         } catch (Exception e) { e.printStackTrace(); }
         return diem;
+    }
+
+    public boolean checkToHopCoMonAnh(String cccd) {
+        boolean coMonAnh = false;
+        try (Session session = HibernateUtil.getSessionFactory().openSession()) {
+            String sql = "SELECT th.ten_tohop FROM xt_thisinhxettuyen25 ts " + 
+                         "JOIN xt_nguyenvongxettuyen nv ON ts.cccd = nv.nn_cccd " +
+                         "JOIN xt_tohop_monthi th ON nv.tt_thm = th.matohop " +
+                         "WHERE ts.cccd = :cccd LIMIT 1";
+            
+            Object result = session.createNativeQuery(sql).setParameter("cccd", cccd).uniqueResult();
+            if (result != null) {
+                String tenTohop = result.toString();
+                if (tenTohop.contains("Anh") || tenTohop.contains("Tiếng Anh")) {
+                    coMonAnh = true;
+                }
+            }
+        } catch (Exception e) { e.printStackTrace(); }
+        return coMonAnh;
     }
 }
