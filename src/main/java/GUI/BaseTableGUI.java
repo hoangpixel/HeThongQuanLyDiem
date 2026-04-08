@@ -66,7 +66,7 @@ wrapper.add(pnlActions);
             BorderFactory.createLineBorder(new Color(200, 200, 200)), 
             "Xử lý chức năng của table ...", 
             TitledBorder.LEFT, TitledBorder.TOP, 
-            new Font("Segoe UI", Font.BOLD, 14), Color.DARK_GRAY
+            UIManager.getFont("defaultFont").deriveFont(Font.BOLD, 14f), Color.DARK_GRAY
         );
         pnlActions.setBorder(BorderFactory.createCompoundBorder(actionBorder, new EmptyBorder(5, 5, 5, 5)));
 
@@ -96,24 +96,32 @@ btnTimKiem = new RoundedButton("TÌM KIẾM");
         pnlActions.add(btnReFresh);
 
         // 2. GroupBox: Tìm kiếm (Bên phải)
-        JPanel pnlSearch = new JPanel(new FlowLayout(FlowLayout.RIGHT, 10, 10));
+        // 🔥 FIX: Thay FlowLayout bằng GridBagLayout để tự động căn giữa theo chiều dọc
+        JPanel pnlSearch = new JPanel(new GridBagLayout());
         pnlSearch.setBackground(Color.WHITE);
         
         TitledBorder searchBorder = BorderFactory.createTitledBorder(
             BorderFactory.createLineBorder(new Color(200, 200, 200)), 
             "Tìm kiếm", 
             TitledBorder.LEFT, TitledBorder.TOP, 
-            new Font("Segoe UI", Font.BOLD, 14), Color.DARK_GRAY
+            UIManager.getFont("defaultFont").deriveFont(Font.BOLD, 14f), Color.DARK_GRAY
         );
         pnlSearch.setBorder(BorderFactory.createCompoundBorder(searchBorder, new EmptyBorder(5, 5, 5, 5)));
 
-        cbxTimKiem = new JComboBox<>(new String[]{"Tìm theo Mã", "Tìm theo Tên", "Tìm theo CCCD"});
+        cbxTimKiem = new JComboBox<>(new String[]{"Messi", "Bucac", "Anh 7"});
         txtTimKiem = new JTextField(15);
         btnTimKiem = new JButton("TÌM KIẾM");
         
-        pnlSearch.add(cbxTimKiem);
-        pnlSearch.add(txtTimKiem);
-        pnlSearch.add(btnTimKiem);
+        // Tạo một panel con (inner panel) dùng FlowLayout để dàn hàng ngang
+        JPanel innerSearch = new JPanel(new FlowLayout(FlowLayout.RIGHT, 10, 0));
+        innerSearch.setBackground(Color.WHITE);
+        
+        innerSearch.add(cbxTimKiem);
+        innerSearch.add(txtTimKiem);
+        innerSearch.add(btnTimKiem);
+
+        // Thêm panel con vào panel Tìm kiếm
+        pnlSearch.add(innerSearch);
 
         pnlTop.add(pnlActions, BorderLayout.CENTER); 
         pnlTop.add(pnlSearch, BorderLayout.EAST);    
@@ -176,7 +184,7 @@ btnTimKiem = new RoundedButton("TÌM KIẾM");
         btnFirst = new JButton("<<");
         btnPrev = new JButton("<");
         lblPageInfo = new JLabel("Trang 1 / 1");
-        lblPageInfo.setFont(new Font("Segoe UI", Font.BOLD, 14));
+        lblPageInfo.setFont(UIManager.getFont("defaultFont").deriveFont(Font.BOLD, 14f));
         btnNext = new JButton(">");
         btnLast = new JButton(">>");
         
@@ -283,7 +291,11 @@ btnTimKiem = new RoundedButton("TÌM KIẾM");
     }
 
 private void styleComponents() {
-    Font mainFont = new Font("Segoe UI", Font.PLAIN, 14);
+    Font baseFont = UIManager.getFont("defaultFont");
+if (baseFont == null) {
+    baseFont = new Font("SansSerif", Font.PLAIN, 14);
+}
+Font mainFont = baseFont.deriveFont(Font.PLAIN, 14f);
 
     // ==========================================
     // ===== BỔ SUNG: SET ICON CHO BUTTONS ======
@@ -355,7 +367,7 @@ private void styleComponents() {
 
     // ===== HEADER TABLE =====
     JTableHeader header = table.getTableHeader();
-    header.setFont(new Font("Segoe UI", Font.BOLD, 14));
+    header.setFont(baseFont.deriveFont(Font.BOLD, 14f));
     header.setPreferredSize(new Dimension(100, 35));
     header.setBackground(new Color(52, 73, 94)); // xanh đậm
     header.setForeground(Color.WHITE);

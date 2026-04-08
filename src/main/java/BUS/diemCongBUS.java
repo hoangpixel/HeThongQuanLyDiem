@@ -51,6 +51,7 @@ public class diemCongBUS {
 
         return result;
     }
+    
     // ================== LẤY ĐIỂM CỘNG ==================
     public diemCongETT layDiemCongChinhXac(String cccd, String maNganh, String maToHop, String phuongThuc) {
         return dao.layDiemCongChinhXac(cccd, maNganh, maToHop, phuongThuc);

@@ -103,4 +103,53 @@ public ArrayList<nguyenVongXetTuyenETT> layDanhSach() {
             return false;
         }
     }
+    
+    // 1. Thợ mỏ lấy điểm ĐGNL
+    public double layDiemDGNL(String cccd) {
+        try (org.hibernate.Session session = CONFIG.HibernateUtil.getSessionFactory().openSession()) {
+            Number diemNL = (Number) session.createNativeQuery("SELECT NL1 FROM xt_diemthixettuyen WHERE cccd = :cccd")
+                    .setParameter("cccd", cccd).uniqueResult();
+            return diemNL == null ? 0.0 : diemNL.doubleValue();
+        } catch (Exception e) { e.printStackTrace(); return 0.0; }
+    }
+
+    // 2. Thợ mỏ lấy 3 môn từ mã Tổ Hợp
+    public String[] layMonTuToHop(String matohop) {
+        try (org.hibernate.Session session = CONFIG.HibernateUtil.getSessionFactory().openSession()) {
+            Object[] toHop = (Object[]) session.createNativeQuery("SELECT mon1, mon2, mon3 FROM xt_tohop_monthi WHERE matohop = :ma")
+                    .setParameter("ma", matohop).uniqueResult();
+            if (toHop != null) {
+                return new String[] {(String)toHop[0], (String)toHop[1], (String)toHop[2]};
+            }
+        } catch (Exception e) { e.printStackTrace(); }
+        return null;
+    }
+
+    // 3. Thợ mỏ lấy Điểm 3 Môn Thi Gốc
+    public double[] layDiemThiBaMon(String cccd, String col1, String col2, String col3) {
+        try (org.hibernate.Session session = CONFIG.HibernateUtil.getSessionFactory().openSession()) {
+            String sql = "SELECT `" + col1 + "`, `" + col2 + "`, `" + col3 + "` FROM xt_diemthixettuyen WHERE cccd = :cccd";
+            Object[] diem = (Object[]) session.createNativeQuery(sql)
+                    .setParameter("cccd", cccd).uniqueResult();
+            if (diem != null) {
+                return new double[] {
+                    diem[0] == null ? 0.0 : ((Number) diem[0]).doubleValue(),
+                    diem[1] == null ? 0.0 : ((Number) diem[1]).doubleValue(),
+                    diem[2] == null ? 0.0 : ((Number) diem[2]).doubleValue()
+                };
+            }
+        } catch (Exception e) { e.printStackTrace(); }
+        return new double[] {0.0, 0.0, 0.0};
+    }
+
+    // 4. Thợ mỏ lấy điểm IELTS Quy Đổi
+    public double layDiemIELTS(String cccd) {
+        try (org.hibernate.Session session = CONFIG.HibernateUtil.getSessionFactory().openSession()) {
+            Number diem = (Number) session.createNativeQuery("SELECT diem_quydoi FROM xt_chungchi WHERE cccd = :cccd LIMIT 1")
+                    .setParameter("cccd", cccd).uniqueResult();
+            return diem == null ? 0.0 : diem.doubleValue();
+        } catch (Exception e) { e.printStackTrace(); return 0.0; }
+    }
+    
+    
 }

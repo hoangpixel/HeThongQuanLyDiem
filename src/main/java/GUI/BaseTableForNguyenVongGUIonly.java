@@ -66,7 +66,7 @@ wrapper.add(pnlActions);
             BorderFactory.createLineBorder(new Color(200, 200, 200)), 
             "Xử lý chức năng của table ...", 
             TitledBorder.LEFT, TitledBorder.TOP, 
-            new Font("Segoe UI", Font.BOLD, 14), Color.DARK_GRAY
+            UIManager.getFont("defaultFont").deriveFont(Font.BOLD, 14f), Color.DARK_GRAY
         );
         pnlActions.setBorder(BorderFactory.createCompoundBorder(actionBorder, new EmptyBorder(5, 5, 5, 5)));
 
@@ -98,14 +98,16 @@ btnTinhToanKetQua = new RoundedButton("TÍNH TOÁN KQ");
         pnlActions.add(btnReFresh);
 
         // 2. GroupBox: Tìm kiếm (Bên phải)
-        JPanel pnlSearch = new JPanel(new FlowLayout(FlowLayout.RIGHT, 10, 10));
+// 2. GroupBox: Tìm kiếm (Bên phải)
+        // 🔥 FIX: Thay FlowLayout bằng GridBagLayout để tự động căn giữa theo chiều dọc
+        JPanel pnlSearch = new JPanel(new GridBagLayout());
         pnlSearch.setBackground(Color.WHITE);
         
         TitledBorder searchBorder = BorderFactory.createTitledBorder(
             BorderFactory.createLineBorder(new Color(200, 200, 200)), 
             "Tìm kiếm", 
             TitledBorder.LEFT, TitledBorder.TOP, 
-            new Font("Segoe UI", Font.BOLD, 14), Color.DARK_GRAY
+            UIManager.getFont("defaultFont").deriveFont(Font.BOLD, 14f), Color.DARK_GRAY
         );
         pnlSearch.setBorder(BorderFactory.createCompoundBorder(searchBorder, new EmptyBorder(5, 5, 5, 5)));
 
@@ -113,9 +115,16 @@ btnTinhToanKetQua = new RoundedButton("TÍNH TOÁN KQ");
         txtTimKiem = new JTextField(15);
         btnTimKiem = new JButton("TÌM KIẾM");
         
-        pnlSearch.add(cbxTimKiem);
-        pnlSearch.add(txtTimKiem);
-        pnlSearch.add(btnTimKiem);
+        // Tạo một panel con (inner panel) dùng FlowLayout để dàn hàng ngang
+        JPanel innerSearch = new JPanel(new FlowLayout(FlowLayout.RIGHT, 10, 0));
+        innerSearch.setBackground(Color.WHITE);
+        
+        innerSearch.add(cbxTimKiem);
+        innerSearch.add(txtTimKiem);
+        innerSearch.add(btnTimKiem);
+
+        // Thêm panel con vào panel Tìm kiếm
+        pnlSearch.add(innerSearch);
 
         pnlTop.add(pnlActions, BorderLayout.CENTER); 
         pnlTop.add(pnlSearch, BorderLayout.EAST);    
@@ -178,7 +187,7 @@ btnTinhToanKetQua = new RoundedButton("TÍNH TOÁN KQ");
         btnFirst = new JButton("<<");
         btnPrev = new JButton("<");
         lblPageInfo = new JLabel("Trang 1 / 1");
-        lblPageInfo.setFont(new Font("Segoe UI", Font.BOLD, 14));
+        lblPageInfo.setFont(UIManager.getFont("defaultFont").deriveFont(Font.BOLD, 14f));
         btnNext = new JButton(">");
         btnLast = new JButton(">>");
         
@@ -285,7 +294,15 @@ btnTinhToanKetQua = new RoundedButton("TÍNH TOÁN KQ");
     }
 
 private void styleComponents() {
-    Font mainFont = new Font("Segoe UI", Font.PLAIN, 14);
+// 1. Gán vào biến tạm trước
+    Font tempFont = UIManager.getFont("defaultFont");
+    if (tempFont == null) {
+        tempFont = new Font("SansSerif", Font.PLAIN, 14);
+    }
+    
+    // 2. Gán vào biến final để đem vào bên trong Renderer xài mà không bị lỗi
+    final Font baseFont = tempFont; 
+    Font mainFont = baseFont.deriveFont(Font.PLAIN, 14f);
 
     // ==========================================
     // ===== BỔ SUNG: SET ICON CHO BUTTONS ======
@@ -358,7 +375,7 @@ private void styleComponents() {
 
     // ===== HEADER TABLE =====
     JTableHeader header = table.getTableHeader();
-    header.setFont(new Font("Segoe UI", Font.BOLD, 14));
+    header.setFont(baseFont.deriveFont(Font.BOLD, 14f));
     header.setPreferredSize(new Dimension(100, 35));
     header.setBackground(new Color(52, 73, 94)); // xanh đậm
     header.setForeground(Color.WHITE);
@@ -382,6 +399,8 @@ private void styleComponents() {
     table.setIntercellSpacing(new Dimension(0, 0));
 
     // ===== RENDERER (CĂN GIỮA + ZEBRA STRIPE) =====
+// ===== RENDERER (CĂN GIỮA + ZEBRA STRIPE + ĐỔI MÀU CHỮ THEO TRẠNG THÁI) =====
+
     table.setDefaultRenderer(Object.class, new DefaultTableCellRenderer() {
         @Override
         public Component getTableCellRendererComponent(JTable table, Object value,
@@ -392,17 +411,54 @@ private void styleComponents() {
                     table, value, isSelected, hasFocus, row, column
             );
 
-            // Căn giữa nội dung các ô
+            // 1. Căn giữa nội dung các ô
             setHorizontalAlignment(JLabel.CENTER);
 
-            // Màu xen kẽ ngựa vằn (Zebra stripe)
+            // 2. Màu nền xen kẽ ngựa vằn (Zebra stripe)
             if (!isSelected) {
                 if (row % 2 == 0) {
                     c.setBackground(Color.WHITE);
                 } else {
                     c.setBackground(new Color(245, 245, 245));
                 }
+            } else {
+                // Màu nền khi user click chọn dòng
+                c.setBackground(new Color(52, 152, 219)); 
             }
+
+            // 3. ĐỔI MÀU CHỮ CHO CỘT TRẠNG THÁI
+            int cotTrangThaiIndex = 8; 
+
+            if (column == cotTrangThaiIndex) {
+                String status = value != null ? value.toString().trim() : "";
+                
+                // 🔥 SỬA Ở ĐÂY: Dùng deriveFont để in đậm mà vẫn giữ nguyên font chữ app
+                c.setFont(baseFont.deriveFont(Font.BOLD, 14f));
+
+                // Bắt đầu xét chuỗi để tô màu
+                if (status.equalsIgnoreCase("Chờ xét")) {
+                    c.setForeground(Color.BLACK);
+                } else if (status.equalsIgnoreCase("Đã đậu")) {
+                    c.setForeground(new Color(46, 204, 113)); // Xanh lá dịu mắt
+                } else if (status.equalsIgnoreCase("Đã trượt")) {
+                    c.setForeground(new Color(231, 76, 60));  // Đỏ cảnh báo
+                } else if (status.equalsIgnoreCase("Không xét")) {
+                    c.setForeground(new Color(108, 122, 137)); // Xám đậm
+                } else {
+                    c.setForeground(isSelected ? Color.WHITE : Color.BLACK);
+                }
+                
+                // Nếu dòng đang được chọn (bôi xanh)
+                if (isSelected) {
+                    c.setForeground(Color.WHITE);
+                }
+                
+            } else {
+                // 🔥 SỬA Ở ĐÂY: Các cột khác thì trả lại font bình thường bằng deriveFont
+                c.setFont(baseFont.deriveFont(Font.PLAIN, 14f));
+                c.setForeground(isSelected ? Color.WHITE : Color.BLACK);
+            }
+
             return c;
         }
     });

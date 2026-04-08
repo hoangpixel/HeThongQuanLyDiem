@@ -23,18 +23,17 @@ import java.util.Collections;
 import javax.swing.JOptionPane;
 import EXCEL.ExcelHelper;
 import CAL.*;
+import FUNC_GUI.detailNguyenVong;
 import java.lang.reflect.Array;
 
 public class nguyenVongXetTuyenGUI extends BaseTableForNguyenVongGUIonly {
 
     nguyenVongXetTuyenBUS busNguyenVong = new nguyenVongXetTuyenBUS();
     public nguyenVongXetTuyenGUI() {
-        super(); // Gọi giao diện cơ bản từ BaseTableGUI lên
-        // 1. Đổi tên GroupBox và Cột
+        super();
         setTableNameForTitle("Nguyện Vọng"); 
         headerTable();
         
-        // 2. Gắn sự kiện nút bấm
         btnThem.addActionListener(e -> hienThiDialogThemMoi());
         btnSua.addActionListener(e -> hienThiDialogSua());
         btnXoa.addActionListener(e ->hienThiDialogXoa());
@@ -42,29 +41,9 @@ public class nguyenVongXetTuyenGUI extends BaseTableForNguyenVongGUIonly {
         btnExcel.addActionListener(e -> hienThiExcel());
         btnReFresh.addActionListener(e -> thucHienRefresh());
         btnTimKiem.addActionListener(e -> thucHienTimKiem());
+        btnChiTiet.addActionListener(e -> hienThiChiTietNV());
         
-        // ==============================================================
-        // BỔ SUNG: GẮN SỰ KIỆN DOUBLE-CLICK CHO TABLE
-        // ==============================================================
-        table.addMouseListener(new MouseAdapter() {
-            @Override
-            public void mouseClicked(MouseEvent evt) {
-                // Kiểm tra xem người dùng có click đúp (2 lần) không
-                if (evt.getClickCount() == 2) {
-                    // Lấy ra vị trí dòng (row) mà người dùng vừa click vào
-                    int selectedRow = table.getSelectedRow();
-                    
-                    // Nếu có dòng được chọn (khác -1)
-                    if (selectedRow != -1) {
-                        // Gọi hàm hiển thị form và truyền vị trí dòng vào
-//                        hienThiDialogChiTiet(selectedRow);
-                    }
-                }
-            }
-        });
-        // ==============================================================
         
-        // 3. GỌI HÀM TẢI DỮ LIỆU LÊN BẢNG KHI VỪA MỞ FORM LÊN
         loadDataToTable();
         table.getColumnModel().getColumn(9).setMinWidth(0);
         table.getColumnModel().getColumn(9).setMaxWidth(0);
@@ -93,6 +72,14 @@ public class nguyenVongXetTuyenGUI extends BaseTableForNguyenVongGUIonly {
     {
         String tim = txtTimKiem.getText().trim();
         int index = cbxTimKiem.getSelectedIndex();
+        
+        if(tim.isEmpty())
+        {
+            JOptionPane.showMessageDialog(this, "Vui lòng nhập nội dung cần tìm");
+            txtTimKiem.requestFocus();
+            return;
+        }
+        
         ArrayList<nguyenVongXetTuyenETT> dskq = busNguyenVong.timKiemCoBan(tim, index);
         List<Vector> dsHienThi = new ArrayList<>();
         
@@ -172,10 +159,6 @@ public class nguyenVongXetTuyenGUI extends BaseTableForNguyenVongGUIonly {
         setTableData(dataList);
     }
 
-    // Hàm mở JDialog thêm mới (Giữ nguyên)
-// ==============================================================
-    // HÀM MỞ FORM JDIALOG ĐỂ THÊM NGUYỆN VỌNG MỚI
-    // ==============================================================
 private void hienThiDialogThemMoi() {
     JFrame topFrame = (JFrame) SwingUtilities.getWindowAncestor(this);
     insertNguyenVong dialog = new insertNguyenVong(topFrame, true);
@@ -274,7 +257,7 @@ private void hienThiDialogSua() {
             int absoluteIndex = (currentPage - 1) * rowsPerPage + modelIndex; // 🔥 Bí quyết chống lỗi phân trang
             
             // 2. Lấy đối tượng cũ ra và ném vào Form Sửa
-            Entity.nguyenVongXetTuyenETT nguyenVongCu = busNguyenVong.ds.get(absoluteIndex);
+            nguyenVongXetTuyenETT nguyenVongCu = busNguyenVong.ds.get(absoluteIndex);
             JFrame topFrame = (JFrame) SwingUtilities.windowForComponent(this);
             
             // Giả sử form của bạn tên là updateNguyenVong
@@ -283,7 +266,7 @@ private void hienThiDialogSua() {
             
             // 3. Sau khi người dùng Sửa và bấm LƯU thành công
             if (dialog.xacNhanThem()) { 
-                Entity.nguyenVongXetTuyenETT nvMoi = dialog.getNguyenVong();
+                nguyenVongXetTuyenETT nvMoi = dialog.getNguyenVong();
                 
                 // 🔥 Ép kiểu đối tượng mới thành Vector y như hàm Thêm
                 Vector rowData = new java.util.Vector();
@@ -326,7 +309,7 @@ private void hienThiDialogSua() {
                 int modelIndex = table.convertRowIndexToModel(row);
                 int absoluteIndex = (currentPage - 1) * rowsPerPage + modelIndex;
                 
-                Entity.nguyenVongXetTuyenETT nvCanXoa = busNguyenVong.ds.get(absoluteIndex);
+                nguyenVongXetTuyenETT nvCanXoa = busNguyenVong.ds.get(absoluteIndex);
                 
                 // 3. Gọi BUS thực thi lệnh XÓA
                 if (busNguyenVong.xoaNguyenVong(nvCanXoa)) {
@@ -458,7 +441,93 @@ private void hienThiDialogSua() {
 //    }
 //}
     
-    private void thucHienTinhToanKetQua() {
+//    private void thucHienTinhToanKetQua() {
+//        int confirm = javax.swing.JOptionPane.showConfirmDialog(this, 
+//            "CẢNH BÁO: Hành động này sẽ khóa sổ và xét duyệt toàn bộ nguyện vọng trên hệ thống.\n" +
+//            "Hệ thống sẽ tự động tổng hợp điểm, phân bổ chỉ tiêu và áp dụng tiêu chí phụ.\n" +
+//            "Bạn có chắc chắn muốn tiến hành xét tuyển?", 
+//            "Xác nhận Chốt Sổ", 
+//            javax.swing.JOptionPane.YES_NO_OPTION, 
+//            javax.swing.JOptionPane.WARNING_MESSAGE);
+//            
+//        if (confirm == javax.swing.JOptionPane.YES_OPTION) {
+//            
+//            // --- BƯỚC 0: GỌI BUS ĐỂ TỰ ĐỘNG CẬP NHẬT CHỈ TIÊU (Đã fix lỗi trừ sai) ---
+//            nganhBUS nBus = new nganhBUS();
+//            if (nBus.capNhatChiTieuThucTe()) {
+//                System.out.println("Hệ thống đã tự động cất ghế cho team Tuyển thẳng, V-SAT, ĐGNL và cập nhật lại chỉ tiêu THPT!");
+//            }
+//            
+//            // --- BƯỚC 1: LẤY ĐIỂM THÀNH PHẦN (Phục vụ cho Tiêu chí phụ Môn Toán lúc xếp hạng) ---
+//            busNguyenVong.napDiemAoChoDanhSach();
+//
+//            nganhToHopBUS busNganhToHop = new nganhToHopBUS(); 
+//            giaiThuongBUS gtBus = new giaiThuongBUS(); 
+//
+//            // --- BƯỚC 2: GOM ĐIỂM THÀNH PHẨM TỪ DATABASE ---
+//            for (nguyenVongXetTuyenETT nv : busNguyenVong.ds) {
+//                String phuongThuc = nv.getTtPhuongThuc();
+//
+//                // 1. Lấy độ lệch điểm (Nếu có)
+//                double doLechDiem = 0.0;
+//                if (phuongThuc.equals("Xét THPT") || phuongThuc.equals("Đánh giá V-SAT")) {
+//                    doLechDiem = busNganhToHop.layDoLechDiem(nv.getNvMaNganh(), nv.getTtThm()); 
+//                }
+//                
+//                // 2. Lấy các con số ĐÃ ĐƯỢC CHỐT SỔ TỪ FORM CON / EXCEL (Không tính lại hệ số môn)
+//                double diemThxtAnToan = (nv.getDiemThxt() != null) ? nv.getDiemThxt() : 0.0;
+//                double diemUuTienKhuVuc = (nv.getDiemUtqd() != null) ? nv.getDiemUtqd() : 0.0;
+//                double diemCongThem = (nv.getDiemCong() != null) ? nv.getDiemCong() : 0.0;
+//
+//                double tongCuoi = 0.0;
+//
+//                // 3. XỬ LÝ RIÊNG TEAM TUYỂN THẲNG (Gắn điểm ẩn để xếp hạng)
+//                if (phuongThuc.equals("Xét tuyển thẳng")) {
+//                    diemThxtAnToan = 30.0; // Auto 30 điểm gốc
+//                    
+//                    String[] ttGiai = gtBus.layCapVaLoaiGiai(nv.getNnCccd());
+//                    String capGiai = ttGiai[0];
+//                    String loaiGiai = ttGiai[1];
+//                    double diemAn = 0.0;
+//                    
+//                    if (capGiai.equalsIgnoreCase("Quốc gia")) {
+//                        if (loaiGiai.contains("Nhất")) diemAn = 0.009;
+//                        else if (loaiGiai.contains("Nhì")) diemAn = 0.008;
+//                        else if (loaiGiai.contains("Ba")) diemAn = 0.007;
+//                        else if (loaiGiai.contains("Khuyến khích")) diemAn = 0.006;
+//                    } 
+//                    else if (capGiai.equalsIgnoreCase("Cấp tỉnh") || capGiai.equalsIgnoreCase("Tỉnh")) {
+//                        if (loaiGiai.contains("Nhất")) diemAn = 0.005;
+//                        else if (loaiGiai.contains("Nhì")) diemAn = 0.004;
+//                        else if (loaiGiai.contains("Ba")) diemAn = 0.003;
+//                        else if (loaiGiai.contains("Khuyến khích")) diemAn = 0.002;
+//                    }
+//                    tongCuoi = diemThxtAnToan + diemAn;
+//                } 
+//                else {
+//                    // CÁC PHƯƠNG THỨC KHÁC: Tổng hợp và khóa trần 30đ
+//                    tongCuoi = diemThxtAnToan + diemUuTienKhuVuc + diemCongThem + doLechDiem;
+//                    tongCuoi = Math.min(30.0, tongCuoi); 
+//                }
+//
+//                // Làm tròn 3 chữ số thập phân cho chuẩn
+//                tongCuoi = Math.round(tongCuoi * 1000.0) / 1000.0; 
+//                nv.setDiemXetTuyen(tongCuoi);
+//            }
+//
+//            // --- BƯỚC 3: THUẬT TOÁN DOMINO CHÉM CHỈ TIÊU ---
+//            busNguyenVong.sapXepKetQuaTheoChiTieu();
+//            busNguyenVong.capNhatDiemChuanTuDong();
+//            
+//            // Tải lại bảng lên giao diện
+//            busNguyenVong.ds = null; 
+//            loadDataToTable(); 
+//            
+//            javax.swing.JOptionPane.showMessageDialog(this, "Hệ thống đã phân bổ chỉ tiêu và xét duyệt thành công!");
+//        }
+//    }
+    
+        private void thucHienTinhToanKetQua() {
         int confirm = javax.swing.JOptionPane.showConfirmDialog(this, 
             "CẢNH BÁO: Hành động này sẽ khóa sổ và xét duyệt toàn bộ nguyện vọng trên hệ thống.\n" +
             "Hệ thống sẽ tự động tổng hợp điểm, phân bổ chỉ tiêu và áp dụng tiêu chí phụ.\n" +
@@ -477,6 +546,8 @@ private void hienThiDialogSua() {
             
             // --- BƯỚC 1: LẤY ĐIỂM THÀNH PHẦN (Phục vụ cho Tiêu chí phụ Môn Toán lúc xếp hạng) ---
             busNguyenVong.napDiemAoChoDanhSach();
+            DAO.bangQuyDoiDAO qdDao = new DAO.bangQuyDoiDAO();
+            ArrayList<bangQuyDoiETT> dsQuyDoi = qdDao.layDanhSach();
 
             nganhToHopBUS busNganhToHop = new nganhToHopBUS(); 
             giaiThuongBUS gtBus = new giaiThuongBUS(); 
@@ -484,14 +555,52 @@ private void hienThiDialogSua() {
             // --- BƯỚC 2: GOM ĐIỂM THÀNH PHẨM TỪ DATABASE ---
             for (nguyenVongXetTuyenETT nv : busNguyenVong.ds) {
                 String phuongThuc = nv.getTtPhuongThuc();
+                String maNganh = nv.getNvMaNganh();
+                String toHop = nv.getTtThm();
 
-                // 1. Lấy độ lệch điểm (Nếu có)
+// 1. Lấy độ lệch điểm và HỆ SỐ MÔN (Mới thêm)
                 double doLechDiem = 0.0;
-                if (phuongThuc.equals("Xét THPT") || phuongThuc.equals("Đánh giá V-SAT")) {
-                    doLechDiem = busNganhToHop.layDoLechDiem(nv.getNvMaNganh(), nv.getTtThm()); 
+                double diemThxtMoi = 0.0; // Biến chứa điểm đã nhân hệ số mới
+
+                if (phuongThuc.equals("ĐGNL HCM")) {
+                    // ĐGNL không nhân hệ số môn, chỉ quy đổi
+                    diemThxtMoi = (nv.getDiemMon1() / 1200.0) * 30.0;
                 }
-                
-                // 2. Lấy các con số ĐÃ ĐƯỢC CHỐT SỔ TỪ FORM CON / EXCEL (Không tính lại hệ số môn)
+                else if (phuongThuc.equals("Xét THPT") || phuongThuc.equals("Đánh giá V-SAT")) {
+                    
+                    // Lấy Tổ Hợp hiện tại lên để soi Hệ số
+                    Entity.nganhToHopETT toHopHienTai = busNganhToHop.layNganhToHopBangKey(maNganh + "_" + toHop);
+                    
+                    if (toHopHienTai != null) {
+                        doLechDiem = toHopHienTai.getDoLech();
+                        
+                        // 🔥 TÍNH LẠI ĐIỂM THXT THEO HỆ SỐ MỚI NHẤT 🔥
+                        int hs1 = toHopHienTai.getHeSoMon1();
+                        int hs2 = toHopHienTai.getHeSoMon2();
+                        int hs3 = toHopHienTai.getHeSoMon3();
+                        int tongHeSo = hs1 + hs2 + hs3;
+                        
+                        // Nếu tổng hệ số = 0 thì mặc định chia 3 để tránh lỗi / by zero
+                        tongHeSo = (tongHeSo > 0) ? tongHeSo : 3; 
+
+                        if (phuongThuc.equals("Xét THPT")) {
+                            diemThxtMoi = (nv.getDiemMon1()*hs1 + nv.getDiemMon2()*hs2 + nv.getDiemMon3()*hs3) * 3 / tongHeSo;
+                        } else if (phuongThuc.equals("Đánh giá V-SAT")) {
+                            // VSAT Thang 150 -> Quy về 10, nhân hệ số, rồi quy về 30
+                            double d1 = CAL.AdmissionsConverter.quyDoiVsat(nv.getTenMon1(), nv.getDiemMon1(), dsQuyDoi);
+                            double d2 = CAL.AdmissionsConverter.quyDoiVsat(nv.getTenMon2(), nv.getDiemMon2(), dsQuyDoi);
+                            double d3 = CAL.AdmissionsConverter.quyDoiVsat(nv.getTenMon3(), nv.getDiemMon3(), dsQuyDoi);
+                            diemThxtMoi = ((d1*hs1 + d2*hs2 + d3*hs3) / tongHeSo) * 3.0;
+                        }
+                    }
+                }
+
+                // Cập nhật lại điểm THXT mới tính vào Object (Để lát nó Lưu xuống DB luôn)
+                if (!phuongThuc.equals("Xét tuyển thẳng")) {
+                     nv.setDiemThxt(Math.round(diemThxtMoi * 100.0) / 100.0);
+                }
+
+                // 2. Lấy các con số điểm cộng
                 double diemThxtAnToan = (nv.getDiemThxt() != null) ? nv.getDiemThxt() : 0.0;
                 double diemUuTienKhuVuc = (nv.getDiemUtqd() != null) ? nv.getDiemUtqd() : 0.0;
                 double diemCongThem = (nv.getDiemCong() != null) ? nv.getDiemCong() : 0.0;
@@ -523,12 +632,32 @@ private void hienThiDialogSua() {
                 } 
                 else {
                     // CÁC PHƯƠNG THỨC KHÁC: Tổng hợp và khóa trần 30đ
-                    tongCuoi = diemThxtAnToan + diemUuTienKhuVuc + diemCongThem + doLechDiem;
-                    tongCuoi = Math.min(30.0, tongCuoi); 
+//                    tongCuoi = diemThxtAnToan + diemUuTienKhuVuc + diemCongThem + doLechDiem;
+//                    tongCuoi = Math.min(30.0, tongCuoi); 
+                    // CÁC PHƯƠNG THỨC KHÁC: Tổng hợp và khóa trần 30đ
+                    
+                    // 🔥 BẮT ĐẦU LOGIC BÓP ĐIỂM ƯU TIÊN THEO CHUẨN BỘ GD 🔥
+                    // Lưu ý: Biến diemUuTienKhuVuc của ông lúc này chính là MĐƯT (Đã bốc từ DB lên)
+                    double diemXetMoc = diemThxtAnToan + diemCongThem; 
+                    double diemUuTienThucTe = diemUuTienKhuVuc; 
+                    
+                    // Nếu tổng điểm >= 22.5 thì áp dụng công thức 
+                    if (diemXetMoc >= 22.5) {
+                        // Công thức: [(30 - ĐTHXT - ĐC) / 7.5] * MĐƯT 
+                        diemUuTienThucTe = ((30.0 - diemThxtAnToan - diemCongThem) / 7.5) * diemUuTienKhuVuc;
+                        
+                        if (diemUuTienThucTe < 0) {
+                            diemUuTienThucTe = 0.0;
+                        }
+                    }
+
+                    // TÍNH TỔNG ĐIỂM CUỐI: Dùng điểm ưu tiên đã bóp [cite: 76]
+                    tongCuoi = diemThxtAnToan + diemUuTienThucTe + diemCongThem + doLechDiem;
+                    tongCuoi = Math.min(30.0, tongCuoi);
                 }
 
                 // Làm tròn 3 chữ số thập phân cho chuẩn
-                tongCuoi = Math.round(tongCuoi * 1000.0) / 1000.0; 
+                tongCuoi = Math.round(tongCuoi * 100.0) / 100.0; 
                 nv.setDiemXetTuyen(tongCuoi);
             }
 
@@ -607,5 +736,20 @@ private void hienThiDialogSua() {
         }
 
         setTableData(dataList);
+    }
+    
+    private void hienThiChiTietNV()
+    {
+        int row = table.getSelectedRow();
+        if (row != -1) {
+            int modelIndex = table.convertRowIndexToModel(row);
+            int absoluteIndex = (currentPage - 1) * rowsPerPage + modelIndex;
+            
+            nguyenVongXetTuyenETT nguyenVongCu = busNguyenVong.ds.get(absoluteIndex);
+            JFrame topFrame = (JFrame) SwingUtilities.windowForComponent(this);
+            
+            detailNguyenVong dialog = new detailNguyenVong(topFrame, true, nguyenVongCu);
+            dialog.setVisible(true);
+        }
     }
 }

@@ -7,6 +7,7 @@ import BUS.nganhToHopBUS;
 import Entity.diemCongETT;
 import Entity.toHopETT;
 import Entity.chungChiETT;
+import BUS.diemCongBUS;
 import Entity.nganhETT;
 import Entity.giaiThuongETT;
 import Entity.thiSinhXetTuyenETT;
@@ -332,8 +333,7 @@ public class insertDiemCong extends javax.swing.JDialog {
 
             // Chú ý: Entity của bạn là getDiemUt() hay getDiemUtxt()? 
             // Hãy sửa cho khớp với file thiSinhXetTuyenETT của bạn
-//            txtDiemUTXT.setText(String.valueOf(thiSinh.getDoiTuong())); 
-            txtDiemUTXT.setText("0");  // test trước
+            //txtDiemUTXT.setText(String.valueOf(thiSinh.getDoiTuong())); 
             capNhatDiemTuDong();
         }
     }//GEN-LAST:event_btnChonCCCDActionPerformed
@@ -381,70 +381,72 @@ public class insertDiemCong extends javax.swing.JDialog {
     }//GEN-LAST:event_btnThoatActionPerformed
 
     private void btnThemActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_btnThemActionPerformed
-         try {
-            diemCongETT dcNew = new diemCongETT();
+         if (!kiemTraHopLe()) {
+        JOptionPane.showMessageDialog(this, "Vui lòng nhập đầy đủ thông tin!");
+        return;
+    }
 
-            // 1. Thông tin
-            dcNew.setTsCccd(txtCCCD.getText().trim());
-            dcNew.setMaNganh(txtMaNganh.getText().trim());
-            dcNew.setMaToHop(txtMaToHop.getText().trim());
-            dcNew.setPhuongThuc(cboPT.getSelectedItem().toString());
-            dcNew.setGhiChu(txtGhiChu.getText().trim());
+    try {
+        diemCongETT dcNew = new diemCongETT();
 
-            // 2. Điểm
-            double dCC = Double.parseDouble(txtDiemCC.getText().isEmpty() ? "0" : txtDiemCC.getText());
+        // ===== 1. THÔNG TIN =====
+        dcNew.setTsCccd(txtCCCD.getText().trim());
+        dcNew.setMaNganh(txtMaNganh.getText().trim());
+        dcNew.setMaToHop(txtMaToHop.getText().trim());
+        dcNew.setPhuongThuc(cboPT.getSelectedItem().toString());
+        dcNew.setGhiChu(txtGhiChu.getText().trim());
 
-            double dUT = 0;
-            try {
-                String utStr = txtDiemUTXT.getText().trim().split(" ")[0];
-                dUT = Double.parseDouble(utStr);
-            } catch (Exception e) {
-                dUT = 0;
-            }
+        // ===== 2. ĐIỂM =====
+        double dCC = txtDiemCC.getText().isEmpty() ? 0 : Double.parseDouble(txtDiemCC.getText());
 
-            dcNew.setDiemCC(dCC);
-            dcNew.setDiemUtxt(dUT);
-
-            // 3. KEY (bắt buộc)
-            dcNew.setDcKeys(
-                txtCCCD.getText().trim() + "_" +
-                txtMaNganh.getText().trim() + "_" +
-                txtMaToHop.getText().trim() + "_" +
-                cboPT.getSelectedItem().toString()
-            );
-
-            // 🔥 SAVE DB (CHỈ 1 LẦN)
-            boolean saveOK = true;
-
-            org.hibernate.Session session = null;
-            org.hibernate.Transaction tx = null;
-
-            try {
-                session = CONFIG.HibernateUtil.getSessionFactory().openSession();
-                tx = session.beginTransaction();
-
-                session.save(dcNew);
-
-                tx.commit();
-
-            } catch (Exception e) {
-                saveOK = false;
-                if (tx != null) tx.rollback();
-                JOptionPane.showMessageDialog(this, "Lỗi lưu DB: " + e.getMessage());
-                e.printStackTrace();
-            }
-
-            // 🔥 chỉ đóng khi OK
-            if (saveOK) {
-                this.dc = dcNew;
-                xacNhan = true;
-                dispose();
-            }
-
+        double dUT = 0;
+        try {
+             dUT = txtDiemUTXT.getText().isEmpty() ? 0 : Double.parseDouble(txtDiemUTXT.getText());
         } catch (Exception e) {
-            JOptionPane.showMessageDialog(this, "Lỗi nhập dữ liệu!");
-            e.printStackTrace();
+            dUT = 0;
         }
+
+        double dTong = txtDiemTong.getText().isEmpty() ? 0 : Double.parseDouble(txtDiemTong.getText());
+
+        dcNew.setDiemCC(dCC);
+        dcNew.setDiemUtxt(dUT);
+        dcNew.setDiemTong(dTong); // 🔥 QUAN TRỌNG
+
+        // ===== 3. KEY =====
+        dcNew.setDcKeys(
+            txtCCCD.getText().trim() + "_" +
+            txtMaNganh.getText().trim() + "_" +
+            txtMaToHop.getText().trim() + "_" +
+            cboPT.getSelectedItem().toString()
+        );
+
+        // ===== 4. GỌI BUS (CHUẨN MVC) =====
+        diemCongBUS bus = new diemCongBUS();
+        diemCongETT existing = bus.layDiemCongChinhXac(
+            txtCCCD.getText().trim(),
+            txtMaNganh.getText().trim(),
+            txtMaToHop.getText().trim(),
+            cboPT.getSelectedItem().toString()
+        );
+
+        if (existing != null) {
+            JOptionPane.showMessageDialog(this, "Dữ liệu đã tồn tại!");
+            return;
+        }
+         boolean saveOK = bus.themDiemCong(dcNew);
+        if (saveOK) {
+            JOptionPane.showMessageDialog(this, "Thêm thành công!");
+            this.dc = dcNew;
+            xacNhan = true;
+            dispose();
+        } else {
+            JOptionPane.showMessageDialog(this, "Thêm thất bại!");
+        }
+
+    } catch (Exception e) {
+        JOptionPane.showMessageDialog(this, "Lỗi dữ liệu!");
+        e.printStackTrace();
+    }
     }//GEN-LAST:event_btnThemActionPerformed
      private void cboPTActionPerformed(java.awt.event.ActionEvent evt) {                                      
         // TODO add your handling code here:
@@ -452,77 +454,112 @@ public class insertDiemCong extends javax.swing.JDialog {
          capNhatDiemTuDong();  
     }                   
     public void capNhatDiemTuDong() {
-    if (cccd == null || cccd.trim().isEmpty()) return;
-    
-    double diemCongIELTS = 0.0;
-    double diemCongGiaiThuong = 0.0;
-    double diemGoc = 0.0;
+        if (cccd == null || cccd.trim().isEmpty()) return;
 
-    // --- 1. LUÔN LẤY ĐIỂM CHỨNG CHỈ & GIẢI THƯỞNG TRƯỚC ---
-    try (org.hibernate.Session session = CONFIG.HibernateUtil.getSessionFactory().openSession()) {
-        // Query chứng chỉ
-        String sqlIELTS = "SELECT diem_cong FROM xt_chungchi WHERE cccd = :cccd LIMIT 1";
-        Object resIELTS = session.createNativeQuery(sqlIELTS).setParameter("cccd", cccd).uniqueResult();
-        if (resIELTS != null) {
-            diemCongIELTS = ((Number) resIELTS).doubleValue();
-        }
+        double diemCC_de_Cong = 0.0;     // Lấy từ cột diem_cong (dành cho khối không có Anh)
+        double diemCC_de_ThayThe = 0.0; // Lấy từ cột diem_quydoi (để so sánh môn Anh)
+        double diemGT_de_Cong = 0.0;
+        double diemGocSauThayThe = 0.0;
 
-        // Query giải thưởng (Tạm thời lấy điểm không môn nếu chưa chọn tổ hợp)
-        String sqlGT = "SELECT ma_mon, diem_cong_co_mon, diem_cong_khong_mon FROM xt_giathuong WHERE cccd = :cccd LIMIT 1";
-        Object[] gtData = (Object[]) session.createNativeQuery(sqlGT).setParameter("cccd", cccd).uniqueResult();
-        if (gtData != null) {
-            String maMonGiai = (String) gtData[0];
-            double dCoMon = ((Number) gtData[1]).doubleValue();
-            double dKhongMon = ((Number) gtData[2]).doubleValue();
-            
-            // Nếu đã chọn tổ hợp thì check có môn, nếu chưa thì mặc định lấy điểm không môn
-            if (toHopMonDaChon != null) {
-                String m1 = toHopMonDaChon.getMon1();
-                String m2 = toHopMonDaChon.getMon2();
-                String m3 = toHopMonDaChon.getMon3();
-                diemCongGiaiThuong = (maMonGiai.equals(m1) || maMonGiai.equals(m2) || maMonGiai.equals(m3)) ? dCoMon : dKhongMon;
-            } else {
-                diemCongGiaiThuong = dKhongMon;
+        try (org.hibernate.Session session = CONFIG.HibernateUtil.getSessionFactory().openSession()) {
+            // 1. LẤY DỮ LIỆU CHỨNG CHỈ (Theo đúng tên cột diem_quydoi, diem_cong trong DB)
+            String sqlCC = "SELECT diem_quydoi, diem_cong FROM xt_chungchi WHERE cccd = :cccd LIMIT 1";
+            Object[] ccData = (Object[]) session.createNativeQuery(sqlCC).setParameter("cccd", cccd).uniqueResult();
+
+            if (ccData != null) {
+                diemCC_de_ThayThe = ((Number) ccData[0]).doubleValue(); 
+                diemCC_de_Cong = ((Number) ccData[1]).doubleValue();    
             }
+
+            // 2. LẤY DỮ LIỆU GIẢI THƯỞNG
+            String sqlGT = "SELECT ma_mon, diem_cong_co_mon, diem_cong_khong_mon " +
+                   "FROM xt_giathuong WHERE TRIM(cccd) = TRIM(:cccd) LIMIT 1";
+            Object[] gtData = (Object[]) session.createNativeQuery(sqlGT).setParameter("cccd", cccd).uniqueResult();
+
+            // 3. KIỂM TRA TỔ HỢP
+            boolean coMonAnh = false;
+            if (toHopMonDaChon != null) {
+                txtDiemCC.setText("0");
+                txtDiemUTXT.setText("0");
+                txtDiemTong.setText("0");
+                // Kiểm tra mã môn N1 (Tiếng Anh) trong tổ hợp
+                coMonAnh = "N1".equals(toHopMonDaChon.getMon1()) || 
+                           "N1".equals(toHopMonDaChon.getMon2()) || 
+                           "N1".equals(toHopMonDaChon.getMon3());
+
+                // Xử lý điểm Giải thưởng
+                if (gtData != null) {
+                    String maMonGiai = (String) gtData[0];
+                    double dCoMon = ((Number) gtData[1]).doubleValue();
+                    double dKhongMon = ((Number) gtData[2]).doubleValue();
+
+                    if (maMonGiai != null && (
+                        maMonGiai.equals(toHopMonDaChon.getMon1()) || 
+                        maMonGiai.equals(toHopMonDaChon.getMon2()) || 
+                        maMonGiai.equals(toHopMonDaChon.getMon3())
+                    )) {
+                        diemGT_de_Cong = dCoMon;
+                    } else {
+                        diemGT_de_Cong = dKhongMon;
+                    }
+                }
+                // 🔥 HIỂN THỊ ĐIỂM GIẢI THƯỞNG (UTXT)
+                txtDiemUTXT.setText(String.valueOf(diemGT_de_Cong));
+            }
+
+            // 4. TÍNH ĐIỂM GỐC VÀ SO SÁNH QUY ĐỔI MÔN ANH
+            BUS.diemThiBUS dtBus = new BUS.diemThiBUS();
+            Entity.diemThiETT dt = dtBus.layDiemTheoCCCD(cccd);
+
+            if (dt != null && toHopMonDaChon != null) {
+                // Sử dụng hàm phụ layDiemTuEntity ở dưới để tránh lỗi "cannot find symbol"
+                double d1 = layDiemTuEntity(dt, toHopMonDaChon.getMon1());
+                double d2 = layDiemTuEntity(dt, toHopMonDaChon.getMon2());
+                double d3 = layDiemTuEntity(dt, toHopMonDaChon.getMon3());
+
+                if (coMonAnh) {
+                    // Nếu tổ hợp có N1, so sánh Math.max giữa điểm thi và điểm quy đổi chứng chỉ
+                    if ("N1".equals(toHopMonDaChon.getMon1())) d1 = Math.max(d1, diemCC_de_ThayThe);
+                    if ("N1".equals(toHopMonDaChon.getMon2())) d2 = Math.max(d2, diemCC_de_ThayThe);
+                    if ("N1".equals(toHopMonDaChon.getMon3())) d3 = Math.max(d3, diemCC_de_ThayThe);
+
+                    // Khi đã dùng thay thế môn Anh thì không tính điểm cộng chứng chỉ nữa
+                    diemCC_de_Cong = 0; 
+                }
+                diemGocSauThayThe = d1 + d2 + d3;
+            }
+            System.out.println("TO HOP: " + (toHopMonDaChon == null ? "NULL" : toHopMonDaChon.getMatohop()));
+            System.out.println("GT DATA: " + gtData);
+            System.out.println("CCCD truyền vào: [" + cccd + "]");
+        } catch (Exception e) {
+            e.printStackTrace();
         }
-    } catch (Exception e) {
-        System.err.println("Lỗi lấy điểm cộng: " + e.getMessage());
+        // 6. KHỐNG CHẾ TRẦN ĐIỂM CỘNG 3.0 (Theo thang 30)
+        double tongDiemCongThucTe = diemCC_de_Cong + diemGT_de_Cong;
+        double tongDiemCongSauKhongChe = Math.min(tongDiemCongThucTe, 3.0);
+
+        // Cập nhật lên ô txtDiemCC (Hiển thị phần điểm được cộng thêm)
+        txtDiemCC.setText(String.valueOf(diemCC_de_Cong));
+
+        // 7. TÍNH TỔNG ĐIỂM XÉT TUYỂN CUỐI CÙNG
+        double tongCong = Math.min(diemCC_de_Cong + diemGT_de_Cong, 3.0);
+        txtDiemTong.setText(String.valueOf(tongCong));
     }
 
-    // Hiển thị ngay Điểm CC lên giao diện (Max là 3.0)
-    double tongDiemCong = Math.min(diemCongIELTS + diemCongGiaiThuong, 3.0);
-    txtDiemCC.setText(String.valueOf(tongDiemCong));
-
-    // --- 2. LOGIC TÍNH ĐIỂM GỐC (Chỉ chạy khi đủ thông tin Ngành/Tổ hợp/Phương thức) ---
-    if (cboPT.getSelectedItem() == null) return;
-    String maNganhInput = txtMaNganh.getText().trim();
-    String phuongThuc = cboPT.getSelectedItem().toString();
-
-    try {
-        BUS.diemThiBUS dtBus = new BUS.diemThiBUS();
-        Entity.diemThiETT diemThi = dtBus.layDiemTheoCCCD(cccd);
-        
-        if (diemThi != null) {
-            // ... Giữ nguyên logic tính diemGoc cho Xét THPT, ĐGNL, Tuyển thẳng như cũ của bạn ...
-            // Lưu ý: Trong khối "Xét THPT", bạn không cần query lại IELTS/GT nữa vì đã lấy ở trên
-        }
-
-        // --- 3. CẬP NHẬT ĐIỂM TỔNG ---
-        double diemUT = 0;
-        try {
-            // Lấy khéo léo giá trị từ txtDiemUTXT (Xử lý chuỗi "01 - Ưu tiên...")
-            String utStr = txtDiemUTXT.getText().split(" ")[0]; 
-            diemUT = Double.parseDouble(utStr);
-        } catch (Exception e) {
-            diemUT = 0;
-        }
-        
-        double tongKet = Math.round((diemGoc + tongDiemCong + diemUT) * 100.0) / 100.0;
-        tongKet = Math.min(tongKet, 3.0);
-        txtDiemTong.setText(String.valueOf(tongKet));
-
-    } catch (Exception e) {
-        e.printStackTrace();
+// HÀM PHỤ ĐỂ FIX LỖI "cannot find symbol" CHO NÍ NÈ
+private double layDiemTuEntity(Entity.diemThiETT dt, String maMon) {
+    if (maMon == null || dt == null) return 0.0;
+    // Ánh xạ các mã môn từ bảng xt_tohop_monthi sang các cột trong xt_diemthixettuyen
+    switch (maMon) {
+        case "TO": return dt.getTo() != null ? dt.getTo() : 0.0;
+        case "VA": return dt.getVa() != null ? dt.getVa() : 0.0;
+        case "LI": return dt.getLi() != null ? dt.getLi() : 0.0;
+        case "HO": return dt.getHo() != null ? dt.getHo() : 0.0;
+        case "SU": return dt.getSu() != null ? dt.getSu() : 0.0;
+        case "DI": return dt.getDi() != null ? dt.getDi() : 0.0;
+        case "SI": return dt.getSi() != null ? dt.getSi() : 0.0;
+        case "N1": return dt.getN1Thi() != null ? dt.getN1Thi() : 0.0; // Điểm thi Anh
+        default: return 0.0;
     }
 }
     // Hàm bổ trợ lấy điểm từ Entity diemThi dựa trên mã môn (Toán, Lý, Hóa...)
@@ -541,6 +578,9 @@ public class insertDiemCong extends javax.swing.JDialog {
         }
     }
     private boolean kiemTraHopLe() {
+        if (txtCCCD.getText().trim().isEmpty()) return false;
+        if (txtMaNganh.getText().trim().isEmpty()) return false;
+        if (txtMaToHop.getText().trim().isEmpty()) return false;
         return true;
     }
     public diemCongETT getDiemCong() {
