@@ -13,6 +13,9 @@ import org.apache.poi.ss.usermodel.Row;
 import org.apache.poi.ss.usermodel.Sheet;
 import org.apache.poi.ss.usermodel.Workbook;
 import org.apache.poi.xssf.usermodel.XSSFWorkbook;
+import org.apache.poi.ss.usermodel.CellStyle;
+import Entity.thiSinhXetTuyenETT; 
+import Entity.diemCongETT;
 import Entity.nguyenVongXetTuyenETT; // Nhớ import entity của ông nha
 
 public class ExcelHelper {
@@ -304,7 +307,218 @@ public class ExcelHelper {
             JOptionPane.showMessageDialog(parent, "Lỗi khi xuất: " + e.getMessage(), "Lỗi", JOptionPane.ERROR_MESSAGE);
         }
     }
-    
+
+    public static void xuatDanhSachThiSinhRaExcel(
+            ArrayList<thiSinhXetTuyenETT> ds,
+            java.awt.Component parent,
+            String tenBang) {
+
+        try {
+            if (ds == null || ds.isEmpty()) {
+                JOptionPane.showMessageDialog(parent, "Không có dữ liệu để xuất!", "Cảnh báo", JOptionPane.WARNING_MESSAGE);
+                return;
+            }
+
+            JFileChooser fileChooser = new JFileChooser();
+            fileChooser.setDialogTitle("Chọn vị trí lưu Danh sách Thí Sinh");
+            fileChooser.setFileFilter(new FileNameExtensionFilter("Excel Files (*.xlsx)", "xlsx"));
+            fileChooser.setSelectedFile(new File(tenBang + ".xlsx"));
+
+            if (fileChooser.showSaveDialog(parent) == JFileChooser.APPROVE_OPTION) {
+                String filePath = fileChooser.getSelectedFile().getAbsolutePath();
+                if (!filePath.toLowerCase().endsWith(".xlsx")) filePath += ".xlsx";
+
+                Workbook workbook = new XSSFWorkbook();
+                Sheet sheet = workbook.createSheet(tenBang);
+
+                // STYLE
+                org.apache.poi.ss.usermodel.CellStyle headerStyle = taoStyleTieuDe(workbook);
+                org.apache.poi.ss.usermodel.CellStyle dataStyle = taoStyleDuLieu(workbook);
+
+                // HEADER
+                String[] headers = {
+                    "ID", "CCCD", "SBD", "Họ", "Tên", "Ngày sinh",
+                    "SĐT", "Email", "Giới tính", "Nơi sinh",
+                    "Đối tượng", "Khu vực"
+                };
+
+                Row headerRow = sheet.createRow(0);
+                headerRow.setHeightInPoints(25);
+
+                for (int i = 0; i < headers.length; i++) {
+                    Cell cell = headerRow.createCell(i);
+                    cell.setCellValue(headers[i]);
+                    cell.setCellStyle(headerStyle);
+                }
+
+                // DATA
+                int rowNum = 1;
+                for (thiSinhXetTuyenETT ts : ds) {
+                    Row row = sheet.createRow(rowNum++);
+
+                    Object[] rowData = {
+                        ts.getIdThiSinh(),
+                        ts.getCccd(),
+                        ts.getSoBaoDanh(),
+                        ts.getHo(),
+                        ts.getTen(),
+                        ts.getNgaySinh() != null ? ts.getNgaySinh().toString() : "",
+                        ts.getDienThoai(),
+                        ts.getEmail(),
+                        ts.getGioiTinh(),
+                        ts.getNoiSinh(),
+                        ts.getDoiTuong(),
+                        ts.getKhuVuc()
+                    };
+
+                    for (int i = 0; i < rowData.length; i++) {
+                        Cell cell = row.createCell(i);
+                        cell.setCellStyle(dataStyle);
+
+                        if (rowData[i] instanceof Number) {
+                            cell.setCellValue(((Number) rowData[i]).doubleValue());
+                        } else {
+                            cell.setCellValue(rowData[i] != null ? rowData[i].toString() : "");
+                        }
+                    }
+                }
+
+                // AUTO SIZE
+                for (int i = 0; i < headers.length; i++) {
+                    sheet.autoSizeColumn(i);
+                    sheet.setColumnWidth(i, sheet.getColumnWidth(i) + 1000);
+                }
+
+                sheet.createFreezePane(0, 1);
+
+                // WRITE FILE
+                try (FileOutputStream out = new FileOutputStream(filePath)) {
+                    workbook.write(out);
+                }
+
+                workbook.close();
+
+                JOptionPane.showMessageDialog(parent,
+                        "Xuất file thành công!\n" + filePath,
+                        "Thành công",
+                        JOptionPane.INFORMATION_MESSAGE);
+            }
+
+        } catch (Exception e) {
+            e.printStackTrace();
+            JOptionPane.showMessageDialog(parent,
+                    "Lỗi khi xuất: " + e.getMessage(),
+                    "Lỗi",
+                    JOptionPane.ERROR_MESSAGE);
+        }
+    }
+    public static void xuatDanhSachDiemCongRaExcel(
+        ArrayList<diemCongETT> ds,
+        java.awt.Component parent,
+        String tenBang) {
+
+    try {
+        if (ds == null || ds.isEmpty()) {
+            JOptionPane.showMessageDialog(parent, "Không có dữ liệu để xuất!", "Cảnh báo", JOptionPane.WARNING_MESSAGE);
+            return;
+        }
+
+        JFileChooser fileChooser = new JFileChooser();
+        fileChooser.setDialogTitle("Chọn vị trí lưu Danh sách Điểm Cộng");
+        fileChooser.setFileFilter(new FileNameExtensionFilter("Excel Files (*.xlsx)", "xlsx"));
+        fileChooser.setSelectedFile(new File(tenBang + ".xlsx"));
+
+        if (fileChooser.showSaveDialog(parent) == JFileChooser.APPROVE_OPTION) {
+            String filePath = fileChooser.getSelectedFile().getAbsolutePath();
+            if (!filePath.toLowerCase().endsWith(".xlsx")) filePath += ".xlsx";
+
+            Workbook workbook = new XSSFWorkbook();
+            Sheet sheet = workbook.createSheet(tenBang);
+
+            // STYLE
+            CellStyle headerStyle = taoStyleTieuDe(workbook);
+            CellStyle dataStyle = taoStyleDuLieu(workbook);
+
+            // ✅ HEADER ĐÚNG
+            String[] headers = {
+                "ID",
+                "CCCD",
+                "Mã ngành",
+                "Mã tổ hợp",
+                "Phương thức",
+                "Điểm cộng",
+                "Điểm ưu tiên",
+                "Điểm tổng",
+                "Ghi chú"
+            };
+
+            Row headerRow = sheet.createRow(0);
+            headerRow.setHeightInPoints(25);
+
+            for (int i = 0; i < headers.length; i++) {
+                Cell cell = headerRow.createCell(i);
+                cell.setCellValue(headers[i]);
+                cell.setCellStyle(headerStyle);
+            }
+
+            // ✅ DATA ĐÚNG
+            int rowNum = 1;
+            for (diemCongETT dc : ds) {
+                Row row = sheet.createRow(rowNum++);
+
+                Object[] rowData = {
+                    dc.getIdDiemCong(),
+                    dc.getTsCccd(),
+                    dc.getMaNganh(),
+                    dc.getMaToHop(),
+                    dc.getPhuongThuc(),
+                    dc.getDiemCC(),
+                    dc.getDiemUtxt(),
+                    dc.getDiemTong(),
+                    dc.getGhiChu()
+                };
+
+                for (int i = 0; i < rowData.length; i++) {
+                    Cell cell = row.createCell(i);
+                    cell.setCellStyle(dataStyle);
+
+                    if (rowData[i] instanceof Number) {
+                        cell.setCellValue(((Number) rowData[i]).doubleValue());
+                    } else {
+                        cell.setCellValue(rowData[i] != null ? rowData[i].toString() : "");
+                    }
+                }
+            }
+
+            // AUTO SIZE
+            for (int i = 0; i < headers.length; i++) {
+                sheet.autoSizeColumn(i);
+                sheet.setColumnWidth(i, sheet.getColumnWidth(i) + 1000);
+            }
+
+            sheet.createFreezePane(0, 1);
+
+            // WRITE FILE
+            try (FileOutputStream out = new FileOutputStream(filePath)) {
+                workbook.write(out);
+            }
+
+            workbook.close();
+
+            JOptionPane.showMessageDialog(parent,
+                    "Xuất file thành công!\n" + filePath,
+                    "Thành công",
+                    JOptionPane.INFORMATION_MESSAGE);
+        }
+
+    } catch (Exception e) {
+        e.printStackTrace();
+        JOptionPane.showMessageDialog(parent,
+                "Lỗi khi xuất: " + e.getMessage(),
+                "Lỗi",
+                JOptionPane.ERROR_MESSAGE);
+    }
+}
     // =========================================================================
     // HÀM 3: ĐỌC FILE EXCEL TRẢ VỀ MẢNG DỮ LIỆU THÔ (DÙNG CHUNG CHO MỌI BẢNG)
     // =========================================================================

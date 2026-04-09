@@ -20,7 +20,7 @@ SET @@SESSION.SQL_LOG_BIN= 0;
 --
 -- GTID state at the beginning of the backup 
 --
-
+USE hethongquanlydiem;
 --
 -- Table structure for table `xt_bangquydoi`
 --

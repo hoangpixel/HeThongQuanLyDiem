@@ -8,14 +8,16 @@ import javax.swing.JFrame;
 import javax.swing.JLabel;
 import javax.swing.SwingUtilities;
 import BUS.thiSinhXetTuyenBUS;
+import EXCEL.ExcelHelper;
 import Entity.nguyenVongXetTuyenETT;
 import Entity.thiSinhXetTuyenETT;
 import FUNC_GUI.deleteNguyenVong;
 import javax.swing.table.DefaultTableModel;
-
+import FUNC_GUI.excelThiSinh;
 import FUNC_GUI.insertThiSinh; 
 import FUNC_GUI.updateThiSinh;
 import FUNC_GUI.deleteThiSinh;
+import FUNC_GUI.excelNguyenVong;
 import FUNC_GUI.updateNguyenVong;
 import java.util.ArrayList;
 import java.util.List;
@@ -34,6 +36,10 @@ public class thiSinhXetTuyenGUI extends BaseTableGUI {
         btnThem.addActionListener(e -> hienThiDialogThemMoi());
         btnSua.addActionListener(e ->hienThiDialogSuaTS());
         btnXoa.addActionListener(e ->hienThiDialogXoaTS());
+        btnExcel.addActionListener(e -> hienThiExcel());
+        btnTimKiem.addActionListener(e -> thucHienTimKiem());
+        loadComboBox();
+        btnReFresh.addActionListener(e -> thucHienRefresh());
         // ==============================================================
         // GẮN SỰ KIỆN DOUBLE-CLICK CHO TABLE ĐỂ XEM CHI TIẾT
         // ==============================================================
@@ -77,7 +83,17 @@ public class thiSinhXetTuyenGUI extends BaseTableGUI {
     // ==============================================================
     // Hàm load dữ liệu từ Database lên Table (Đã sửa để dùng được Phân trang)
     // ==============================================================
-    
+        public void loadComboBox() {
+        cbxTimKiem.removeAllItems();
+
+        cbxTimKiem.addItem("ID");
+        cbxTimKiem.addItem("CCCD");
+        cbxTimKiem.addItem("SBD");
+        cbxTimKiem.addItem("Họ");
+        cbxTimKiem.addItem("Tên");
+        cbxTimKiem.addItem("Điện thoại");
+        cbxTimKiem.addItem("Email");
+    }
     public void loadDataToTable() {
         if (busThiSinh.ds == null) {
             busThiSinh.layDanhSach();
@@ -231,5 +247,82 @@ public class thiSinhXetTuyenGUI extends BaseTableGUI {
         dialogChiTiet.add(new javax.swing.JButton("Cập nhật thông tin"));
         
         dialogChiTiet.setVisible(true);
+    }
+    public void thucHienTimKiem() {
+        String tim = txtTimKiem.getText().trim();
+        int index = cbxTimKiem.getSelectedIndex();
+
+        if (tim.isEmpty()) {
+            JOptionPane.showMessageDialog(this, "Vui lòng nhập nội dung cần tìm");
+            txtTimKiem.requestFocus();
+            return;
+        }
+
+        ArrayList<thiSinhXetTuyenETT> dskq = busThiSinh.timKiemCoBan(tim, index);
+
+        List<Vector> dsHienThi = new ArrayList<>();
+
+        for (thiSinhXetTuyenETT ts : dskq) {
+            Vector row = new Vector();
+            row.add(ts.getIdThiSinh());
+            row.add(ts.getCccd());
+            row.add(ts.getSoBaoDanh());
+            row.add(ts.getHo());
+            row.add(ts.getTen());
+            row.add(ts.getNgaySinh());
+            row.add(ts.getGioiTinh());
+            row.add(ts.getDienThoai());
+            row.add(ts.getEmail());
+            row.add(ts.getNoiSinh());
+            row.add(ts.getDoiTuong());
+            row.add(ts.getKhuVuc());
+
+            dsHienThi.add(row);
+        }
+
+        setTableData(dsHienThi);
+
+        if (dsHienThi.isEmpty()) {
+            JOptionPane.showMessageDialog(this, "Không tìm thấy dữ liệu phù hợp");
+        }
+    }
+    public void hienThiExcel()
+    {
+        JFrame topFrame = (JFrame) SwingUtilities.windowForComponent(this);
+        excelThiSinh dialog = new excelThiSinh(topFrame, true);
+        dialog.setVisible(true);
+        if(dialog.getXacNhanImport())
+        {
+            javax.swing.JFileChooser fileChooser = new javax.swing.JFileChooser();
+        fileChooser.setDialogTitle("Chọn file Excel để nhập dữ liệu");
+        javax.swing.filechooser.FileNameExtensionFilter filter = new javax.swing.filechooser.FileNameExtensionFilter("Excel Files (*.xls, *.xlsx)", "xls", "xlsx");
+        fileChooser.setFileFilter(filter);
+
+        int result = fileChooser.showOpenDialog(this);
+        if (result == javax.swing.JFileChooser.APPROVE_OPTION) {
+            // Lấy đường dẫn file
+            String filePath = fileChooser.getSelectedFile().getAbsolutePath();
+            
+            // Gọi BUS xử lý và nhận thông báo kết quả
+            String thongBao = busThiSinh.nhapDuLieuTuExcel(filePath);
+            
+            JOptionPane.showMessageDialog(this, thongBao, "Kết quả Nhập Excel", javax.swing.JOptionPane.INFORMATION_MESSAGE);
+            
+            // Xong xuôi thì làm mới lại cái bảng trên màn hình
+            thiSinhXetTuyenBUS.ds = null;
+            loadDataToTable();
+        }
+        }else if(dialog.getXacNhanExport())
+        {
+            ArrayList<thiSinhXetTuyenETT> fullDanhSach = busThiSinh.layDanhSach();
+            ExcelHelper.xuatDanhSachThiSinhRaExcel(fullDanhSach, this, "DanhSachThiSinh");
+        }
+    }
+    public void thucHienRefresh() {
+        txtTimKiem.setText("");
+        cbxTimKiem.setSelectedIndex(0);
+
+        thiSinhXetTuyenBUS.ds = null;
+        loadDataToTable();
     }
 }
