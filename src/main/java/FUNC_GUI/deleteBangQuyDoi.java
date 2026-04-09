@@ -22,10 +22,7 @@ public class deleteBangQuyDoi extends javax.swing.JDialog {
         setTitle("Xóa mốc quy đổi V-SAT");
         setLocationRelativeTo(parent);
 
-        labelXoa.setText("Xóa mốc quy đổi V-SAT");
-        groupBoxXoa.setBorder(javax.swing.BorderFactory.createTitledBorder(null, "Thực hiện xóa mốc quy đổi",
-                javax.swing.border.TitledBorder.DEFAULT_JUSTIFICATION, javax.swing.border.TitledBorder.DEFAULT_POSITION,
-                new java.awt.Font("Segoe UI", 1, 14)));
+        lblTitle.setText("Xóa mốc quy đổi V-SAT");
     }
 
     public boolean getXacNhanXoa() {
@@ -34,75 +31,101 @@ public class deleteBangQuyDoi extends javax.swing.JDialog {
 
     @SuppressWarnings("unchecked")
     // <editor-fold defaultstate="collapsed" desc="Generated
+    // <editor-fold defaultstate="collapsed" desc="Generated
     // Code">//GEN-BEGIN:initComponents
     private void initComponents() {
 
         jPanel1 = new javax.swing.JPanel();
-        labelXoa = new javax.swing.JLabel();
-        groupBoxXoa = new javax.swing.JPanel();
+        lblTitle = new javax.swing.JLabel();
+        jPanel3 = new javax.swing.JPanel();
+        lblMessage = new javax.swing.JLabel();
+        jPanel2 = new javax.swing.JPanel();
         btnThoat = new javax.swing.JButton();
         btnXoa = new javax.swing.JButton();
 
         setDefaultCloseOperation(javax.swing.WindowConstants.DISPOSE_ON_CLOSE);
-        setTitle("Xóa mốc quy đổi V-SAT");
+        setTitle("Xóa mốc quy đổi");
 
         jPanel1.setBackground(new java.awt.Color(153, 255, 255));
 
-        labelXoa.setFont(new java.awt.Font("Segoe UI", 1, 24)); // NOI18N
-        labelXoa.setText("Xóa mốc quy đổi V-SAT");
+        lblTitle.setFont(new java.awt.Font("Segoe UI", 1, 22)); // NOI18N
+        lblTitle.setText("Xóa mốc quy đổi");
 
         javax.swing.GroupLayout jPanel1Layout = new javax.swing.GroupLayout(jPanel1);
         jPanel1.setLayout(jPanel1Layout);
         jPanel1Layout.setHorizontalGroup(
                 jPanel1Layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
-                        .addGroup(javax.swing.GroupLayout.Alignment.TRAILING, jPanel1Layout.createSequentialGroup()
-                                .addContainerGap(javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE)
-                                .addComponent(labelXoa)
-                                .addGap(26, 26, 26)));
+                        .addGroup(jPanel1Layout.createSequentialGroup()
+                                .addGap(16, 16, 16)
+                                .addComponent(lblTitle)
+                                .addContainerGap(16, Short.MAX_VALUE)));
         jPanel1Layout.setVerticalGroup(
                 jPanel1Layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
-                        .addGroup(javax.swing.GroupLayout.Alignment.TRAILING, jPanel1Layout.createSequentialGroup()
-                                .addContainerGap(24, Short.MAX_VALUE)
-                                .addComponent(labelXoa)
-                                .addGap(22, 22, 22)));
+                        .addGroup(jPanel1Layout.createSequentialGroup()
+                                .addGap(12, 12, 12)
+                                .addComponent(lblTitle)
+                                .addGap(12, 12, 12)));
 
-        groupBoxXoa.setBackground(new java.awt.Color(255, 255, 255));
-        groupBoxXoa.setBorder(javax.swing.BorderFactory.createTitledBorder(null, "Thực hiện xóa mốc quy đổi",
+        jPanel3.setBackground(new java.awt.Color(255, 255, 255));
+        jPanel3.setBorder(javax.swing.BorderFactory.createTitledBorder(null, "Xác nhận",
                 javax.swing.border.TitledBorder.DEFAULT_JUSTIFICATION, javax.swing.border.TitledBorder.DEFAULT_POSITION,
                 new java.awt.Font("Segoe UI", 1, 14))); // NOI18N
 
+        lblMessage.setFont(new java.awt.Font("Segoe UI", 0, 14)); // NOI18N
+        lblMessage.setText("Bạn có chắc muốn xóa mốc này không?");
+
+        javax.swing.GroupLayout jPanel3Layout = new javax.swing.GroupLayout(jPanel3);
+        jPanel3.setLayout(jPanel3Layout);
+        jPanel3Layout.setHorizontalGroup(
+                jPanel3Layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
+                        .addGroup(jPanel3Layout.createSequentialGroup()
+                                .addGap(18, 18, 18)
+                                .addComponent(lblMessage, javax.swing.GroupLayout.PREFERRED_SIZE, 350,
+                                        javax.swing.GroupLayout.PREFERRED_SIZE)
+                                .addContainerGap(18, Short.MAX_VALUE)));
+        jPanel3Layout.setVerticalGroup(
+                jPanel3Layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
+                        .addGroup(jPanel3Layout.createSequentialGroup()
+                                .addGap(16, 16, 16)
+                                .addComponent(lblMessage)
+                                .addGap(16, 16, 16)));
+
+        jPanel2.setBackground(new java.awt.Color(255, 255, 255));
+        jPanel2.setBorder(javax.swing.BorderFactory.createTitledBorder(null, "Thao tác",
+                javax.swing.border.TitledBorder.DEFAULT_JUSTIFICATION, javax.swing.border.TitledBorder.DEFAULT_POSITION,
+                new java.awt.Font("Segoe UI", 1, 14))); // NOI18N
+
+        btnThoat.setBackground(new java.awt.Color(255, 102, 102));
         btnThoat.setFont(new java.awt.Font("Segoe UI", 1, 14)); // NOI18N
         btnThoat.setText("Thoát");
         btnThoat.setCursor(new java.awt.Cursor(java.awt.Cursor.HAND_CURSOR));
         btnThoat.addActionListener(this::btnThoatActionPerformed);
 
-        btnXoa.setBackground(new java.awt.Color(255, 51, 51));
         btnXoa.setFont(new java.awt.Font("Segoe UI", 1, 14)); // NOI18N
         btnXoa.setText("Xóa");
         btnXoa.setCursor(new java.awt.Cursor(java.awt.Cursor.HAND_CURSOR));
         btnXoa.addActionListener(this::btnXoaActionPerformed);
 
-        javax.swing.GroupLayout groupBoxXoaLayout = new javax.swing.GroupLayout(groupBoxXoa);
-        groupBoxXoa.setLayout(groupBoxXoaLayout);
-        groupBoxXoaLayout.setHorizontalGroup(
-                groupBoxXoaLayout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
-                        .addGroup(groupBoxXoaLayout.createSequentialGroup()
-                                .addGap(28, 28, 28)
+        javax.swing.GroupLayout jPanel2Layout = new javax.swing.GroupLayout(jPanel2);
+        jPanel2.setLayout(jPanel2Layout);
+        jPanel2Layout.setHorizontalGroup(
+                jPanel2Layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
+                        .addGroup(jPanel2Layout.createSequentialGroup()
+                                .addContainerGap(javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE)
                                 .addComponent(btnXoa, javax.swing.GroupLayout.PREFERRED_SIZE, 89,
                                         javax.swing.GroupLayout.PREFERRED_SIZE)
-                                .addGap(36, 36, 36)
+                                .addGap(67, 67, 67)
                                 .addComponent(btnThoat, javax.swing.GroupLayout.PREFERRED_SIZE, 89,
                                         javax.swing.GroupLayout.PREFERRED_SIZE)
-                                .addContainerGap(31, Short.MAX_VALUE)));
-        groupBoxXoaLayout.setVerticalGroup(
-                groupBoxXoaLayout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
-                        .addGroup(groupBoxXoaLayout.createSequentialGroup()
+                                .addGap(63, 63, 63)));
+        jPanel2Layout.setVerticalGroup(
+                jPanel2Layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
+                        .addGroup(jPanel2Layout.createSequentialGroup()
                                 .addGap(15, 15, 15)
-                                .addGroup(groupBoxXoaLayout
-                                        .createParallelGroup(javax.swing.GroupLayout.Alignment.BASELINE)
-                                        .addComponent(btnThoat, javax.swing.GroupLayout.PREFERRED_SIZE, 35,
+                                .addGroup(jPanel2Layout.createParallelGroup(javax.swing.GroupLayout.Alignment.BASELINE)
+                                        .addComponent(btnThoat, javax.swing.GroupLayout.PREFERRED_SIZE, 40,
                                                 javax.swing.GroupLayout.PREFERRED_SIZE)
-                                        .addComponent(btnXoa, javax.swing.GroupLayout.PREFERRED_SIZE, 35,
+                                        .addComponent(btnXoa, javax.swing.GroupLayout.PREFERRED_SIZE, 40,
                                                 javax.swing.GroupLayout.PREFERRED_SIZE))
                                 .addContainerGap(20, Short.MAX_VALUE)));
 
@@ -111,23 +134,28 @@ public class deleteBangQuyDoi extends javax.swing.JDialog {
         layout.setHorizontalGroup(
                 layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
                         .addGroup(layout.createSequentialGroup()
-                                .addContainerGap()
-                                .addGroup(layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING, false)
+                                .addGap(20, 20, 20)
+                                .addGroup(layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
                                         .addComponent(jPanel1, javax.swing.GroupLayout.DEFAULT_SIZE,
                                                 javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE)
-                                        .addComponent(groupBoxXoa, javax.swing.GroupLayout.DEFAULT_SIZE,
+                                        .addComponent(jPanel3, javax.swing.GroupLayout.DEFAULT_SIZE,
+                                                javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE)
+                                        .addComponent(jPanel2, javax.swing.GroupLayout.DEFAULT_SIZE,
                                                 javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE))
-                                .addContainerGap(javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE)));
+                                .addGap(20, 20, 20)));
         layout.setVerticalGroup(
                 layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
                         .addGroup(layout.createSequentialGroup()
-                                .addContainerGap()
+                                .addGap(20, 20, 20)
                                 .addComponent(jPanel1, javax.swing.GroupLayout.PREFERRED_SIZE,
                                         javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.PREFERRED_SIZE)
-                                .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED)
-                                .addComponent(groupBoxXoa, javax.swing.GroupLayout.PREFERRED_SIZE,
+                                .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.UNRELATED)
+                                .addComponent(jPanel3, javax.swing.GroupLayout.PREFERRED_SIZE,
                                         javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.PREFERRED_SIZE)
-                                .addContainerGap(javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE)));
+                                .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.UNRELATED)
+                                .addComponent(jPanel2, javax.swing.GroupLayout.PREFERRED_SIZE,
+                                        javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.PREFERRED_SIZE)
+                                .addContainerGap(20, Short.MAX_VALUE)));
 
         pack();
     }// </editor-fold>//GEN-END:initComponents
@@ -144,10 +172,12 @@ public class deleteBangQuyDoi extends javax.swing.JDialog {
     }// GEN-LAST:event_btnThoatActionPerformed
 
     // Variables declaration - do not modify//GEN-BEGIN:variables
-    public javax.swing.JButton btnThoat;
-    public javax.swing.JButton btnXoa;
-    public javax.swing.JPanel groupBoxXoa;
+    private javax.swing.JButton btnThoat;
+    private javax.swing.JButton btnXoa;
     private javax.swing.JPanel jPanel1;
-    public javax.swing.JLabel labelXoa;
+    private javax.swing.JPanel jPanel2;
+    private javax.swing.JPanel jPanel3;
+    private javax.swing.JLabel lblMessage;
+    private javax.swing.JLabel lblTitle;
     // End of variables declaration//GEN-END:variables
 }
