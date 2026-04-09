@@ -6,6 +6,7 @@ package FUNC_GUI;
 
 import BUS.bangQuyDoiBUS;
 import Entity.bangQuyDoiETT;
+import javax.swing.DefaultComboBoxModel;
 import javax.swing.JOptionPane;
 
 /**
@@ -26,8 +27,14 @@ public class insertBangQuyDoi extends javax.swing.JDialog {
                         bus.layDanhSach();
                 }
                 initComponents();
+            initPhuongThucOptions();
                 setTitle("Thêm mốc quy đổi V-SAT");
                 setLocationRelativeTo(parent);
+        }
+
+        private void initPhuongThucOptions() {
+            txtPhuongThuc.setModel(new DefaultComboBoxModel<>(new String[] { "Đánh giá V-SAT", "ĐGNL HCM" }));
+            txtPhuongThuc.setEditable(false);
         }
 
         public bangQuyDoiETT getQuyDoi() {
@@ -54,7 +61,7 @@ public class insertBangQuyDoi extends javax.swing.JDialog {
         jLabel8 = new javax.swing.JLabel();
         jLabel10 = new javax.swing.JLabel();
         txtMaQuyDoi = new javax.swing.JTextField();
-        txtPhuongThuc = new javax.swing.JTextField();
+        txtPhuongThuc = new javax.swing.JComboBox<>();
         txtToHop = new javax.swing.JTextField();
         txtMon = new javax.swing.JTextField();
         txtPhanVi = new javax.swing.JTextField();
@@ -285,7 +292,8 @@ public class insertBangQuyDoi extends javax.swing.JDialog {
         private void onCreate() {
                 bangQuyDoiETT obj = new bangQuyDoiETT();
                 obj.setMaQuyDoi(txtMaQuyDoi.getText() != null ? txtMaQuyDoi.getText().trim() : null);
-                obj.setPhuongThuc(txtPhuongThuc.getText() != null ? txtPhuongThuc.getText().trim() : null);
+            Object pt = txtPhuongThuc.getSelectedItem();
+            obj.setPhuongThuc(pt != null ? pt.toString().trim() : null);
                 obj.setToHop(txtToHop.getText() != null ? txtToHop.getText().trim() : null);
                 obj.setMon(txtMon.getText() != null ? txtMon.getText().trim() : null);
                 obj.setPhanVi(txtPhanVi.getText() != null ? txtPhanVi.getText().trim() : null);
@@ -347,7 +355,7 @@ public class insertBangQuyDoi extends javax.swing.JDialog {
     private javax.swing.JTextField txtMaQuyDoi;
     private javax.swing.JTextField txtMon;
     private javax.swing.JTextField txtPhanVi;
-    private javax.swing.JTextField txtPhuongThuc;
+    private javax.swing.JComboBox<String> txtPhuongThuc;
     private javax.swing.JTextField txtToHop;
     // End of variables declaration//GEN-END:variables
 }

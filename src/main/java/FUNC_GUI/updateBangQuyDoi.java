@@ -6,6 +6,7 @@ package FUNC_GUI;
 
 import BUS.bangQuyDoiBUS;
 import Entity.bangQuyDoiETT;
+import javax.swing.DefaultComboBoxModel;
 import javax.swing.JOptionPane;
 
 public class updateBangQuyDoi extends javax.swing.JDialog {
@@ -20,6 +21,7 @@ public class updateBangQuyDoi extends javax.swing.JDialog {
     public updateBangQuyDoi(java.awt.Frame parent, boolean modal, bangQuyDoiETT current) {
         super(parent, modal);
         initComponents();
+                initPhuongThucOptions();
         setTitle("Sửa mốc quy đổi V-SAT");
         setLocationRelativeTo(parent);
 
@@ -32,6 +34,11 @@ public class updateBangQuyDoi extends javax.swing.JDialog {
 
         fillForm();
     }
+
+        private void initPhuongThucOptions() {
+                txtPhuongThuc.setModel(new DefaultComboBoxModel<>(new String[] { "Đánh giá V-SAT", "ĐGNL HCM" }));
+                txtPhuongThuc.setEditable(false);
+        }
 
     public bangQuyDoiETT getQuyDoi() {
         return quyDoi;
@@ -59,7 +66,7 @@ public class updateBangQuyDoi extends javax.swing.JDialog {
         jLabel8 = new javax.swing.JLabel();
         jLabel10 = new javax.swing.JLabel();
         txtMaQuyDoi = new javax.swing.JTextField();
-        txtPhuongThuc = new javax.swing.JTextField();
+        txtPhuongThuc = new javax.swing.JComboBox<>();
         txtToHop = new javax.swing.JTextField();
         txtMon = new javax.swing.JTextField();
         txtPhanVi = new javax.swing.JTextField();
@@ -336,7 +343,10 @@ public class updateBangQuyDoi extends javax.swing.JDialog {
             return;
 
         txtMaQuyDoi.setText(nvl(quyDoi.getMaQuyDoi()));
-        txtPhuongThuc.setText(nvl(quyDoi.getPhuongThuc()));
+                String pt = quyDoi.getPhuongThuc() != null ? quyDoi.getPhuongThuc().trim() : "";
+                if (!pt.isEmpty()) {
+                        txtPhuongThuc.setSelectedItem(pt);
+                }
         txtToHop.setText(nvl(quyDoi.getToHop()));
         txtMon.setText(nvl(quyDoi.getMon()));
         txtPhanVi.setText(nvl(quyDoi.getPhanVi()));
@@ -365,7 +375,8 @@ public class updateBangQuyDoi extends javax.swing.JDialog {
         }
 
         quyDoi.setMaQuyDoi(newMa);
-        quyDoi.setPhuongThuc(txtPhuongThuc.getText() != null ? txtPhuongThuc.getText().trim() : null);
+        Object ptSel = txtPhuongThuc.getSelectedItem();
+        quyDoi.setPhuongThuc(ptSel != null ? ptSel.toString().trim() : null);
         quyDoi.setToHop(txtToHop.getText() != null ? txtToHop.getText().trim() : null);
         quyDoi.setMon(txtMon.getText() != null ? txtMon.getText().trim() : null);
         quyDoi.setPhanVi(txtPhanVi.getText() != null ? txtPhanVi.getText().trim() : null);
@@ -430,7 +441,7 @@ public class updateBangQuyDoi extends javax.swing.JDialog {
     private javax.swing.JTextField txtMaQuyDoi;
     private javax.swing.JTextField txtMon;
     private javax.swing.JTextField txtPhanVi;
-    private javax.swing.JTextField txtPhuongThuc;
+        private javax.swing.JComboBox<String> txtPhuongThuc;
     private javax.swing.JTextField txtToHop;
     // End of variables declaration//GEN-END:variables
 }

@@ -229,7 +229,7 @@
             </Property>
           </Properties>
         </Component>
-        <Component class="javax.swing.JTextField" name="txtPhuongThuc">
+        <Component class="javax.swing.JComboBox" name="txtPhuongThuc">
           <Properties>
             <Property name="background" type="java.awt.Color" editor="org.netbeans.beaninfo.editors.ColorEditor">
               <Color blue="f6" green="f6" red="f6" type="rgb"/>
