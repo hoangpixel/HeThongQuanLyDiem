@@ -4,6 +4,13 @@
  */
 package FUNC_GUI;
 
+import BUS.toHopBUS;
+import Entity.toHopETT;
+import SELECT_GUI.selectMon;
+import javax.swing.JFrame;
+import javax.swing.JOptionPane;
+import javax.swing.SwingUtilities;
+
 /**
  *
  * @author Dang Khoa
@@ -11,6 +18,15 @@ package FUNC_GUI;
 public class insertToHop extends javax.swing.JDialog {
     
     private static final java.util.logging.Logger logger = java.util.logging.Logger.getLogger(insertToHop.class.getName());
+    
+    private boolean xacNhan = false;
+    private String maToHop;
+    private String mon1;
+    private String mon2;
+    private String mon3;
+    private String tenToHop;
+    private toHopETT ketquaETT;
+    private toHopBUS bus = new toHopBUS();
 
     /**
      * Creates new form insertToHop
@@ -18,6 +34,7 @@ public class insertToHop extends javax.swing.JDialog {
     public insertToHop(java.awt.Frame parent, boolean modal) {
         super(parent, modal);
         initComponents();
+        setLocationRelativeTo(parent);
     }
 
     /**
@@ -44,7 +61,7 @@ public class insertToHop extends javax.swing.JDialog {
         txtMon1 = new javax.swing.JTextField();
         txtMon2 = new javax.swing.JTextField();
         txtMon3 = new javax.swing.JTextField();
-        txtTen = new javax.swing.JTextField();
+        txtTenToHop = new javax.swing.JTextField();
         btnMon1 = new javax.swing.JButton();
         btnMon2 = new javax.swing.JButton();
         btnMon3 = new javax.swing.JButton();
@@ -118,13 +135,16 @@ public class insertToHop extends javax.swing.JDialog {
 
         txtMon3.setBackground(new java.awt.Color(239, 239, 239));
 
-        txtTen.setBackground(new java.awt.Color(239, 239, 239));
+        txtTenToHop.setBackground(new java.awt.Color(239, 239, 239));
 
         btnMon1.setText("...");
+        btnMon1.addActionListener(this::btnMon1ActionPerformed);
 
         btnMon2.setText("...");
+        btnMon2.addActionListener(this::btnMon2ActionPerformed);
 
         btnMon3.setText("...");
+        btnMon3.addActionListener(this::btnMon3ActionPerformed);
 
         javax.swing.GroupLayout jPanel2Layout = new javax.swing.GroupLayout(jPanel2);
         jPanel2.setLayout(jPanel2Layout);
@@ -144,7 +164,7 @@ public class insertToHop extends javax.swing.JDialog {
                     .addComponent(txtMon1)
                     .addComponent(txtMon2)
                     .addComponent(txtMon3)
-                    .addComponent(txtTen, javax.swing.GroupLayout.DEFAULT_SIZE, 227, Short.MAX_VALUE))
+                    .addComponent(txtTenToHop, javax.swing.GroupLayout.DEFAULT_SIZE, 227, Short.MAX_VALUE))
                 .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.UNRELATED)
                 .addGroup(jPanel2Layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
                     .addComponent(btnMon2, javax.swing.GroupLayout.PREFERRED_SIZE, 40, javax.swing.GroupLayout.PREFERRED_SIZE)
@@ -176,7 +196,7 @@ public class insertToHop extends javax.swing.JDialog {
                 .addGap(18, 18, 18)
                 .addGroup(jPanel2Layout.createParallelGroup(javax.swing.GroupLayout.Alignment.BASELINE)
                     .addComponent(jLabel6)
-                    .addComponent(txtTen, javax.swing.GroupLayout.PREFERRED_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.PREFERRED_SIZE))
+                    .addComponent(txtTenToHop, javax.swing.GroupLayout.PREFERRED_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.PREFERRED_SIZE))
                 .addContainerGap(7, Short.MAX_VALUE))
         );
 
@@ -185,10 +205,12 @@ public class insertToHop extends javax.swing.JDialog {
 
         btnThem.setFont(new java.awt.Font("Segoe UI", 1, 14)); // NOI18N
         btnThem.setText("Thêm");
+        btnThem.addActionListener(this::btnThemActionPerformed);
 
         btnXoa.setBackground(new java.awt.Color(255, 101, 101));
         btnXoa.setFont(new java.awt.Font("Segoe UI", 1, 14)); // NOI18N
         btnXoa.setText("Xóa");
+        btnXoa.addActionListener(this::btnXoaActionPerformed);
 
         javax.swing.GroupLayout jPanel4Layout = new javax.swing.GroupLayout(jPanel4);
         jPanel4.setLayout(jPanel4Layout);
@@ -242,10 +264,110 @@ public class insertToHop extends javax.swing.JDialog {
         // TODO add your handling code here:
     }//GEN-LAST:event_txtMaToHopActionPerformed
 
-    /**
-     * @param args the command line arguments
-     */
+    private void btnXoaActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_btnXoaActionPerformed
+        // TODO add your handling code here:
+        xacNhan = false;
+        dispose();
+    }//GEN-LAST:event_btnXoaActionPerformed
 
+    private void btnMon1ActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_btnMon1ActionPerformed
+        JFrame topFrame = (JFrame) SwingUtilities.windowForComponent(this);
+        selectMon dialog = new selectMon(topFrame, true);
+        dialog.setVisible(true);
+        if(dialog.getXacNhan())
+        {
+            mon1 = dialog.getMaMon();
+            txtMon1.setText(mon1);
+        }        
+    }//GEN-LAST:event_btnMon1ActionPerformed
+
+    private void btnMon2ActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_btnMon2ActionPerformed
+        JFrame topFrame = (JFrame) SwingUtilities.windowForComponent(this);
+        selectMon dialog = new selectMon(topFrame, true);
+        dialog.setVisible(true);
+        if(dialog.getXacNhan())
+        {
+            mon2 = dialog.getMaMon();
+            txtMon2.setText(mon2);
+        }
+    }//GEN-LAST:event_btnMon2ActionPerformed
+
+    private void btnMon3ActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_btnMon3ActionPerformed
+        // TODO add your handling code here:
+        JFrame topFrame = (JFrame) SwingUtilities.windowForComponent(this);
+        selectMon dialog = new selectMon(topFrame, true);
+        dialog.setVisible(true);
+        if(dialog.getXacNhan())
+        {
+            mon3 = dialog.getMaMon();
+            txtMon3.setText(mon3);
+        }
+    }//GEN-LAST:event_btnMon3ActionPerformed
+
+    private void btnThemActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_btnThemActionPerformed
+        // TODO add your handling code here:
+         if (!kiemtra()) return;
+
+        // Lấy dữ liệu từ form, đúng tên field DB
+        toHopETT obj = new toHopETT();
+        obj.setMatohop(txtMaToHop.getText().trim().toUpperCase());
+        obj.setMon1(mon1);
+        obj.setMon2(mon2);
+        obj.setMon3(mon3);
+        obj.setTentohop(txtTenToHop.getText().trim());
+
+        boolean kq = bus.themToHop(obj);
+        if (kq) {
+            ketquaETT = obj;
+            JOptionPane.showMessageDialog(this, "Thêm tổ hợp thành công!");
+            xacNhan = true;
+            dispose();
+        } else {
+            JOptionPane.showMessageDialog(this, "Thêm thất bại! Mã tổ hợp có thể đã tồn tại.");
+        }
+    }//GEN-LAST:event_btnThemActionPerformed
+
+    private boolean  kiemtra(){
+        
+        if( txtMaToHop.getText().isEmpty() ){
+            JOptionPane.showMessageDialog(this, "Không được để trống mã tổ hợp");
+            txtMaToHop.requestFocus();
+            return false;
+        }
+        
+        if( txtMon1.getText().isEmpty() ){
+            JOptionPane.showMessageDialog(this, "Không được để trống tên môn");
+            txtMon1.requestFocus();
+            return false;
+        }
+        
+        if( txtMon2.getText().isEmpty() ){
+            JOptionPane.showMessageDialog(this, "Không được để trống môn 2");
+            txtMon2.requestFocus();
+            return false;
+        }
+        
+        if( txtMon3.getText().isEmpty() ){
+            JOptionPane.showMessageDialog(this, "Không được để trống môn 3");
+            txtMon3.requestFocus();
+            return false;
+        }
+        
+        if( txtTenToHop.getText().isEmpty() ){
+            JOptionPane.showMessageDialog(this, "Không được để trống tên tổ hợp");
+            txtTenToHop.requestFocus();
+            return false;
+        }
+        return true;
+    }
+
+    public boolean getXacNhan() {
+        return xacNhan;
+    }
+
+    public toHopETT getToHopETT() {
+        return ketquaETT;
+    }
     // Variables declaration - do not modify//GEN-BEGIN:variables
     private javax.swing.JButton btnMon1;
     private javax.swing.JButton btnMon2;
@@ -268,6 +390,6 @@ public class insertToHop extends javax.swing.JDialog {
     private javax.swing.JTextField txtMon1;
     private javax.swing.JTextField txtMon2;
     private javax.swing.JTextField txtMon3;
-    private javax.swing.JTextField txtTen;
+    private javax.swing.JTextField txtTenToHop;
     // End of variables declaration//GEN-END:variables
 }

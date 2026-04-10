@@ -19,5 +19,6 @@
         <mapping class="Entity.nganhETT" />
         <mapping class="Entity.nganhToHopETT" />
         <mapping class="Entity.bangQuyDoiETT"/>
+        <mapping class="Entity.taiKhoanETT"/>
     </session-factory>
 </hibernate-configuration>
