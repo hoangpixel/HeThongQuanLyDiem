@@ -87,7 +87,7 @@ public class toHopBUS {
     }
 
     // ===================== XÓA =====================
-    public boolean xoaNganhToHop(toHopETT ToHopCanXoa) {
+    public boolean xoaToHop(toHopETT ToHopCanXoa) {
         // 1. Xóa trong Database trước
         if (data.xoa(ToHopCanXoa)) {
 
@@ -104,4 +104,88 @@ public class toHopBUS {
         }
         return false;
     }
+    
+    public String nhapDuLieuTuExcel(String filePath) {
+        try {
+
+            // 1. Đọc dữ liệu từ Excel
+            ArrayList<ArrayList<String>> dataExcel = EXCEL.ExcelHelper.docFileExcel(filePath);
+
+            if (dataExcel.size() <= 1) {
+                return "File Excel trống hoặc chỉ có dòng tiêu đề!";
+            }
+
+            int soDongThanhCong = 0;
+            int soDongThatBai = 0;
+
+            // 2. Bỏ dòng header
+            for (int i = 1; i < dataExcel.size(); i++) {
+
+                ArrayList<String> row = dataExcel.get(i);
+
+                try {
+
+                    toHopETT th = new toHopETT();
+
+                    // Mapping cột Excel → Entity
+                    th.setMatohop(row.get(0));
+                    th.setMon1(row.get(1));
+                    th.setMon2(row.get(2));
+                    th.setMon3(row.get(3));
+                    th.setTentohop(row.get(4));
+
+                    // 3. Thêm vào database
+                    if (data.them(th)) {
+                        soDongThanhCong++;
+                    } else {
+                        soDongThatBai++;
+                    }
+
+                } catch (Exception ex) {
+                    soDongThatBai++;
+                }
+            }
+
+            return "Nhập thành công: " + soDongThanhCong +
+                   " dòng.\nLỗi/Trùng lặp: " + soDongThatBai + " dòng.";
+
+        } catch (Exception e) {
+            e.printStackTrace();
+            return "Lỗi khi đọc file Excel: " + e.getMessage();
+        }
+    }
+    
+    public ArrayList<toHopETT> timKiemCoBan(String tim, int index)
+    {
+        ArrayList<toHopETT> ketQua = new ArrayList<>();
+
+        for (toHopETT th : layDanhSach())
+        {
+            switch (index)
+            {
+                case 0:
+                    if (th.getMatohop().toLowerCase().contains(tim)) ketQua.add(th);
+                    break;
+
+                case 1:
+                    if (th.getMon1().toLowerCase().contains(tim)) ketQua.add(th);
+                    break;
+
+                case 2:
+                    if (th.getMon2().toLowerCase().contains(tim)) ketQua.add(th);
+                    break;
+
+                case 3:
+                    if (th.getMon3().toLowerCase().contains(tim)) ketQua.add(th);
+                    break;
+
+                case 4:
+                    if (th.getTentohop().toLowerCase().contains(tim)) ketQua.add(th);
+                    break;
+            }
+        }
+
+        return ketQua;
+    }
+    
 }

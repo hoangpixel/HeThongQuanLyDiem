@@ -465,7 +465,7 @@ private void styleComponents() {
 }
 
 // BỔ SUNG: Hàm phụ trợ để load và tự động thay đổi kích thước icon (chống bể hình)
-    private ImageIcon loadAndScaleIcon(String path, int size) {
+    protected ImageIcon loadAndScaleIcon(String path, int size) {
         try {
             java.net.URL imgURL = getClass().getResource("/IMG/" + path);
             if (imgURL != null) {

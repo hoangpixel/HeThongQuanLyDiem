@@ -4,6 +4,13 @@
  */
 package FUNC_GUI;
 
+import BUS.toHopBUS;
+import Entity.toHopETT;
+import SELECT_GUI.selectMon;
+import javax.swing.JFrame;
+import javax.swing.JOptionPane;
+import javax.swing.SwingUtilities;
+
 /**
  *
  * @author Dang Khoa
@@ -12,12 +19,36 @@ public class updateToHop extends javax.swing.JDialog {
     
     private static final java.util.logging.Logger logger = java.util.logging.Logger.getLogger(updateToHop.class.getName());
 
+    private boolean xacNhan = false;
+    private int id;
+    private String maToHop;
+    private String mon1;
+    private String mon2;
+    private String mon3;
+    private String tenToHop;
+    private toHopETT ketquaETT;
+    private toHopBUS bus = new toHopBUS();
     /**
      * Creates new form updateToHop
      */
-    public updateToHop(java.awt.Frame parent, boolean modal) {
+    public updateToHop(java.awt.Frame parent, boolean modal, toHopETT data) {
         super(parent, modal);
         initComponents();
+        
+        txtMaToHop.setText(data.getMatohop());
+        txtMon1.setText(data.getMon1());
+        txtMon2.setText(data.getMon2());
+        txtMon3.setText(data.getMon3());
+        txtTenToHop.setText(data.getTentohop());
+        
+        id = data.getIdtohop();
+        maToHop = data.getMatohop();
+        mon1 = data.getMon1();
+        mon2 = data.getMon2();
+        mon3 = data.getMon3();
+        tenToHop = data.getTentohop();
+        
+        setLocationRelativeTo(parent);
     }
 
     /**
@@ -36,7 +67,7 @@ public class updateToHop extends javax.swing.JDialog {
         btnXoa = new javax.swing.JButton();
         jPanel2 = new javax.swing.JPanel();
         jLabel2 = new javax.swing.JLabel();
-        txtToHop = new javax.swing.JTextField();
+        txtMaToHop = new javax.swing.JTextField();
         jLabel3 = new javax.swing.JLabel();
         txtMon1 = new javax.swing.JTextField();
         btnChonMon1 = new javax.swing.JButton();
@@ -48,7 +79,6 @@ public class updateToHop extends javax.swing.JDialog {
         btnChonMon3 = new javax.swing.JButton();
         txtMon3 = new javax.swing.JTextField();
         txtTenToHop = new javax.swing.JTextField();
-        btnChonTen = new javax.swing.JButton();
 
         setDefaultCloseOperation(javax.swing.WindowConstants.DISPOSE_ON_CLOSE);
 
@@ -79,10 +109,12 @@ public class updateToHop extends javax.swing.JDialog {
 
         btnSua.setFont(new java.awt.Font("Segoe UI", 1, 14)); // NOI18N
         btnSua.setText("Sửa");
+        btnSua.addActionListener(this::btnSuaActionPerformed);
 
         btnXoa.setBackground(new java.awt.Color(128, 255, 140));
         btnXoa.setFont(new java.awt.Font("Segoe UI", 1, 14)); // NOI18N
         btnXoa.setText("Xóa");
+        btnXoa.addActionListener(this::btnXoaActionPerformed);
 
         javax.swing.GroupLayout jPanel3Layout = new javax.swing.GroupLayout(jPanel3);
         jPanel3.setLayout(jPanel3Layout);
@@ -111,7 +143,7 @@ public class updateToHop extends javax.swing.JDialog {
         jLabel2.setFont(new java.awt.Font("Segoe UI", 0, 14)); // NOI18N
         jLabel2.setText("Mã Tổ Hợp (*) :");
 
-        txtToHop.setBackground(new java.awt.Color(239, 239, 239));
+        txtMaToHop.setBackground(new java.awt.Color(239, 239, 239));
 
         jLabel3.setFont(new java.awt.Font("Segoe UI", 0, 14)); // NOI18N
         jLabel3.setText("Môn 1 :");
@@ -119,6 +151,7 @@ public class updateToHop extends javax.swing.JDialog {
         txtMon1.setBackground(new java.awt.Color(239, 239, 239));
 
         btnChonMon1.setText("...");
+        btnChonMon1.addActionListener(this::btnChonMon1ActionPerformed);
 
         jLabel4.setFont(new java.awt.Font("Segoe UI", 0, 14)); // NOI18N
         jLabel4.setText("Môn 2 :");
@@ -132,21 +165,21 @@ public class updateToHop extends javax.swing.JDialog {
         txtMon2.setBackground(new java.awt.Color(239, 239, 239));
 
         btnChonMon2.setText("...");
+        btnChonMon2.addActionListener(this::btnChonMon2ActionPerformed);
 
         btnChonMon3.setText("...");
+        btnChonMon3.addActionListener(this::btnChonMon3ActionPerformed);
 
         txtMon3.setBackground(new java.awt.Color(239, 239, 239));
 
         txtTenToHop.setBackground(new java.awt.Color(239, 239, 239));
-
-        btnChonTen.setText("...");
 
         javax.swing.GroupLayout jPanel2Layout = new javax.swing.GroupLayout(jPanel2);
         jPanel2.setLayout(jPanel2Layout);
         jPanel2Layout.setHorizontalGroup(
             jPanel2Layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
             .addGroup(jPanel2Layout.createSequentialGroup()
-                .addContainerGap(javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE)
+                .addContainerGap(10, Short.MAX_VALUE)
                 .addGroup(jPanel2Layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
                     .addComponent(jLabel2)
                     .addComponent(jLabel3)
@@ -157,13 +190,12 @@ public class updateToHop extends javax.swing.JDialog {
                 .addGroup(jPanel2Layout.createParallelGroup(javax.swing.GroupLayout.Alignment.TRAILING, false)
                     .addComponent(txtMon3, javax.swing.GroupLayout.Alignment.LEADING, javax.swing.GroupLayout.DEFAULT_SIZE, 227, Short.MAX_VALUE)
                     .addComponent(txtMon2, javax.swing.GroupLayout.Alignment.LEADING)
-                    .addComponent(txtToHop, javax.swing.GroupLayout.Alignment.LEADING)
+                    .addComponent(txtMaToHop, javax.swing.GroupLayout.Alignment.LEADING)
                     .addComponent(txtTenToHop)
                     .addComponent(txtMon1, javax.swing.GroupLayout.Alignment.LEADING))
                 .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.UNRELATED)
                 .addGroup(jPanel2Layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
                     .addComponent(btnChonMon3, javax.swing.GroupLayout.PREFERRED_SIZE, 40, javax.swing.GroupLayout.PREFERRED_SIZE)
-                    .addComponent(btnChonTen, javax.swing.GroupLayout.PREFERRED_SIZE, 40, javax.swing.GroupLayout.PREFERRED_SIZE)
                     .addComponent(btnChonMon2, javax.swing.GroupLayout.PREFERRED_SIZE, 40, javax.swing.GroupLayout.PREFERRED_SIZE)
                     .addComponent(btnChonMon1, javax.swing.GroupLayout.PREFERRED_SIZE, 40, javax.swing.GroupLayout.PREFERRED_SIZE)))
         );
@@ -173,7 +205,7 @@ public class updateToHop extends javax.swing.JDialog {
                 .addContainerGap()
                 .addGroup(jPanel2Layout.createParallelGroup(javax.swing.GroupLayout.Alignment.BASELINE)
                     .addComponent(jLabel2)
-                    .addComponent(txtToHop, javax.swing.GroupLayout.PREFERRED_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.PREFERRED_SIZE))
+                    .addComponent(txtMaToHop, javax.swing.GroupLayout.PREFERRED_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.PREFERRED_SIZE))
                 .addGap(18, 18, 18)
                 .addGroup(jPanel2Layout.createParallelGroup(javax.swing.GroupLayout.Alignment.BASELINE)
                     .addComponent(jLabel3)
@@ -192,9 +224,8 @@ public class updateToHop extends javax.swing.JDialog {
                 .addGap(18, 18, 18)
                 .addGroup(jPanel2Layout.createParallelGroup(javax.swing.GroupLayout.Alignment.BASELINE)
                     .addComponent(jLabel6)
-                    .addComponent(txtTenToHop, javax.swing.GroupLayout.PREFERRED_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.PREFERRED_SIZE)
-                    .addComponent(btnChonTen))
-                .addContainerGap(javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE))
+                    .addComponent(txtTenToHop, javax.swing.GroupLayout.PREFERRED_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.PREFERRED_SIZE))
+                .addContainerGap(7, Short.MAX_VALUE))
         );
 
         javax.swing.GroupLayout layout = new javax.swing.GroupLayout(getContentPane());
@@ -224,12 +255,116 @@ public class updateToHop extends javax.swing.JDialog {
         pack();
     }// </editor-fold>//GEN-END:initComponents
 
+    private void btnChonMon1ActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_btnChonMon1ActionPerformed
+        // TODO add your handling code here:
+        JFrame topFrame = (JFrame) SwingUtilities.windowForComponent(this);
+        selectMon dialog = new selectMon(topFrame, true);
+        dialog.setVisible(true);
+        if(dialog.getXacNhan())
+        {
+            mon1 = dialog.getMaMon();
+            txtMon1.setText(mon1);
+        }        
+    }//GEN-LAST:event_btnChonMon1ActionPerformed
 
+    private void btnChonMon2ActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_btnChonMon2ActionPerformed
+        // TODO add your handling code here:
+        JFrame topFrame = (JFrame) SwingUtilities.windowForComponent(this);
+        selectMon dialog = new selectMon(topFrame, true);
+        dialog.setVisible(true);
+        if(dialog.getXacNhan())
+        {
+            mon2 = dialog.getMaMon();
+            txtMon2.setText(mon2);
+        }
+    }//GEN-LAST:event_btnChonMon2ActionPerformed
+
+    private void btnChonMon3ActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_btnChonMon3ActionPerformed
+        // TODO add your handling code here:
+        JFrame topFrame = (JFrame) SwingUtilities.windowForComponent(this);
+        selectMon dialog = new selectMon(topFrame, true);
+        dialog.setVisible(true);
+        if(dialog.getXacNhan())
+        {
+            mon3 = dialog.getMaMon();
+            txtMon3.setText(mon3);
+        }
+    }//GEN-LAST:event_btnChonMon3ActionPerformed
+
+    private void btnXoaActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_btnXoaActionPerformed
+        // TODO add your handling code here:
+        xacNhan = false;
+        dispose();
+    }//GEN-LAST:event_btnXoaActionPerformed
+
+    private void btnSuaActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_btnSuaActionPerformed
+        // TODO add your handling code here:
+        if (!kiemtra()) return;
+
+        // Lấy dữ liệu từ form, đúng tên field DB
+        toHopETT obj = new toHopETT();
+        obj.setIdtohop(id);
+        obj.setMatohop(txtMaToHop.getText().trim().toUpperCase());
+        obj.setMon1(mon1);
+        obj.setMon2(mon2);
+        obj.setMon3(mon3);
+        obj.setTentohop(txtTenToHop.getText().trim());
+
+        boolean kq = bus.suaToHop(obj);
+        if (kq) {
+            ketquaETT = obj;
+            JOptionPane.showMessageDialog(this, "Sửa tổ hợp thành công!");
+            xacNhan = true;
+            dispose();
+        } else {
+            JOptionPane.showMessageDialog(this, "Sửa tổ hợp thất bại!");
+        }
+    }//GEN-LAST:event_btnSuaActionPerformed
+    private boolean  kiemtra(){
+        
+        if( txtMaToHop.getText().isEmpty() ){
+            JOptionPane.showMessageDialog(this, "Không được để trống mã tổ hợp");
+            txtMaToHop.requestFocus();
+            return false;
+        }
+        
+        if( txtMon1.getText().isEmpty() ){
+            JOptionPane.showMessageDialog(this, "Không được để trống tên môn");
+            txtMon1.requestFocus();
+            return false;
+        }
+        
+        if( txtMon2.getText().isEmpty() ){
+            JOptionPane.showMessageDialog(this, "Không được để trống môn 2");
+            txtMon2.requestFocus();
+            return false;
+        }
+        
+        if( txtMon3.getText().isEmpty() ){
+            JOptionPane.showMessageDialog(this, "Không được để trống môn 3");
+            txtMon3.requestFocus();
+            return false;
+        }
+        
+        if( txtTenToHop.getText().isEmpty() ){
+            JOptionPane.showMessageDialog(this, "Không được để trống tên tổ hợp");
+            txtTenToHop.requestFocus();
+            return false;
+        }
+        return true;
+    }
+
+    public boolean getXacNhan() {
+        return xacNhan;
+    }
+
+    public toHopETT getToHopETT() {
+        return ketquaETT;
+    }
     // Variables declaration - do not modify//GEN-BEGIN:variables
     private javax.swing.JButton btnChonMon1;
     private javax.swing.JButton btnChonMon2;
     private javax.swing.JButton btnChonMon3;
-    private javax.swing.JButton btnChonTen;
     private javax.swing.JButton btnSua;
     private javax.swing.JButton btnXoa;
     private javax.swing.JLabel jLabel1;
@@ -241,10 +376,10 @@ public class updateToHop extends javax.swing.JDialog {
     private javax.swing.JPanel jPanel1;
     private javax.swing.JPanel jPanel2;
     private javax.swing.JPanel jPanel3;
+    private javax.swing.JTextField txtMaToHop;
     private javax.swing.JTextField txtMon1;
     private javax.swing.JTextField txtMon2;
     private javax.swing.JTextField txtMon3;
     private javax.swing.JTextField txtTenToHop;
-    private javax.swing.JTextField txtToHop;
     // End of variables declaration//GEN-END:variables
 }
