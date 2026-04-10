@@ -21,14 +21,69 @@ public class chungChiBUS {
         }
         return ds;
     }
+
+    public boolean themCC(chungChiETT cc) {
+        boolean isSuccess = data.themCC(cc);
+        if (isSuccess) {
+            if (ds != null) {
+                ds.add(cc);
+            }
+        }
+        return isSuccess;
+    }
+
+    public boolean suaCC(chungChiETT ccMoi) {
+        if (data.suaCC(ccMoi)) { 
+
+            if (ds != null) {
+                for (int i = 0; i < ds.size(); i++) {
+                    // Dùng ID làm khóa định danh duy nhất
+                    if (ds.get(i).getIdCc() == ccMoi.getIdCc()) {
+                        ds.set(i, ccMoi); 
+                        break;
+                    }
+                }
+            }
+            return true;
+        }
+        return false;
+    }
     
-    // Gọi xuống DAO để dò điểm IELTS
-    public double[] layDiemIELTS(String cccd) {
+    public boolean xoaCC(int idCc) {
+        if (data.xoaCC(idCc)) {
+            // Xóa trên RAM để GUI render lại chính xác
+            if (ds != null) {
+                ds.removeIf(item -> item.getIdCc() == idCc);
+            }
+            return true;
+        }
+        return false;
+    }
+    
+    public boolean kiemTraRong(String text) {
+        return text == null || text.trim().isEmpty();
+    }
+
+    public boolean kiemTraSoThuc(String text) {
+        try {
+            Double.parseDouble(text);
+            return true;
+        } catch (NumberFormatException e) {
+            return false;
+        }
+    }
+    
+    public boolean checkToHopCoMonAnh(String cccd) {
         if (cccd == null || cccd.trim().isEmpty()) {
+            return false;
+        }
+        return data.checkToHopCoMonAnh(cccd);
+    }
+    
+    public double[] layDiemIELTS(String cccd) {
+        if (kiemTraRong(cccd)) {
             return new double[]{0.0, 0.0};
         }
-        
-        chungChiDAO dao = new chungChiDAO();
-        return dao.layDiemIELTS(cccd);
+        return data.layDiemIELTS(cccd);
     }
 }

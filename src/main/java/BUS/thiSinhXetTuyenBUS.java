@@ -1,9 +1,10 @@
 package BUS;
-import static BUS.nguyenVongXetTuyenBUS.ds;
 import DAO.nguyenVongXetTuyenDAO;
 import DAO.thiSinhXetTuyenDAO;
+import Entity.nguyenVongXetTuyenETT;
 import Entity.thiSinhXetTuyenETT;
 import java.util.ArrayList;
+import java.util.HashMap;
 /*
  * Click nbfs://nbhost/SystemFileSystem/Templates/Licenses/license-default.txt to change this license
  * Click nbfs://nbhost/SystemFileSystem/Templates/Classes/Class.java to edit this template
@@ -203,5 +204,103 @@ public class thiSinhXetTuyenBUS {
         public String layDoiTuongTheoCCCD(String cccd) {
         // Gọi thẳng xuống DAO
         return dao.layDoiTuongTheoCCCD(cccd);
+    }
+    public ArrayList<thiSinhXetTuyenETT> timKiemCoBan(String key, int index) {
+        if (ds == null) layDanhSach();
+
+        ArrayList<thiSinhXetTuyenETT> result = new ArrayList<>();
+
+        for (thiSinhXetTuyenETT ts : ds) {
+            switch (index) {
+                case 0: if (String.valueOf(ts.getIdThiSinh()).contains(key)) result.add(ts); break;
+                case 1: if (ts.getCccd().contains(key)) result.add(ts); break;
+                case 2: if (ts.getSoBaoDanh().contains(key)) result.add(ts); break;
+                case 3: if (ts.getHo().toLowerCase().contains(key.toLowerCase())) result.add(ts); break;
+                case 4: if (ts.getTen().toLowerCase().contains(key.toLowerCase())) result.add(ts); break;
+                case 5: if (ts.getDienThoai().contains(key)) result.add(ts); break;
+                case 6: if (ts.getEmail().toLowerCase().contains(key.toLowerCase())) result.add(ts); break;
+            }
+        }
+
+        return result;
+    }
+    private double parseDoubleSafe(String val) {
+        try {
+            if (val == null || val.trim().isEmpty()) return 0.0;
+            return Double.parseDouble(val.trim());
+        } catch (Exception e) {
+            return 0.0;
+        }
+    }
+
+    public String nhapDuLieuTuExcel(String filePath) {
+        try {
+            ArrayList<ArrayList<String>> data = EXCEL.ExcelHelper.docFileExcel(filePath);
+
+            if (data.size() <= 1) {
+                return "File Excel trống hoặc chỉ có mỗi dòng Tiêu đề!";
+            }
+
+            int soDongThanhCong = 0;
+            int soDongThatBai = 0;
+
+            for (int i = 1; i < data.size(); i++) {
+                ArrayList<String> row = data.get(i);
+
+                try {
+                    thiSinhXetTuyenETT ts = new thiSinhXetTuyenETT();
+
+                    // mapping
+                    ts.setCccd(row.get(0));
+                    ts.setSoBaoDanh(row.get(1));
+                    ts.setHo(row.get(2));
+                    ts.setTen(row.get(3));
+
+                    // parse ngày
+                    String dateStr = row.get(4);
+                    java.sql.Date sqlDate = null;
+
+                    try {
+                        sqlDate = java.sql.Date.valueOf(dateStr);
+                    } catch (Exception e1) {
+                        try {
+                            java.text.SimpleDateFormat sdf = new java.text.SimpleDateFormat("dd/MM/yyyy");
+                            java.util.Date utilDate = sdf.parse(dateStr);
+                            sqlDate = new java.sql.Date(utilDate.getTime());
+                        } catch (Exception e2) {
+                            sqlDate = null;
+                        }
+                    }
+
+                    ts.setNgaySinh(sqlDate);
+
+                    ts.setDienThoai(row.get(5));
+                    ts.setEmail(row.get(6));
+                    ts.setGioiTinh(row.get(7));
+                    ts.setNoiSinh(row.get(8));
+                    ts.setDoiTuong(row.get(9));
+                    ts.setKhuVuc(row.get(10));
+
+                    ts.setPassword("123456");
+
+                    if (dao.themThiSinh(ts)) {
+                        soDongThanhCong++;
+                    } else {
+                        soDongThatBai++;
+                    }
+
+                } catch (Exception ex) {
+                    System.out.println("❌ Lỗi dòng " + i + ": " + ex.getMessage());
+                    soDongThatBai++;
+                }
+            }
+
+            return "Nhập thành công: " + soDongThanhCong +
+                   " dòng.\nLỗi: " + soDongThatBai + " dòng.";
+
+        } catch (Exception e) {
+            e.printStackTrace();
+            return "Lỗi khi đọc file Excel: " + e.getMessage();
+        }
     }
 }

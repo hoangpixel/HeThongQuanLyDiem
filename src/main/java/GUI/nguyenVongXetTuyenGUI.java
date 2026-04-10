@@ -564,7 +564,8 @@ private void hienThiDialogSua() {
 
                 if (phuongThuc.equals("ĐGNL HCM")) {
                     // ĐGNL không nhân hệ số môn, chỉ quy đổi
-                    diemThxtMoi = (nv.getDiemMon1() / 1200.0) * 30.0;
+                    double diemDgnlGoc = (nv.getDiemMon1() > 0) ? nv.getDiemMon1() : 0.0;
+                    diemThxtMoi = CAL.AdmissionsConverter.quyDoiDiemChung(phuongThuc, toHop, "", diemDgnlGoc, dsQuyDoi);
                 }
                 else if (phuongThuc.equals("Xét THPT") || phuongThuc.equals("Đánh giá V-SAT")) {
                     
@@ -586,10 +587,10 @@ private void hienThiDialogSua() {
                         if (phuongThuc.equals("Xét THPT")) {
                             diemThxtMoi = (nv.getDiemMon1()*hs1 + nv.getDiemMon2()*hs2 + nv.getDiemMon3()*hs3) * 3 / tongHeSo;
                         } else if (phuongThuc.equals("Đánh giá V-SAT")) {
-                            // VSAT Thang 150 -> Quy về 10, nhân hệ số, rồi quy về 30
-                            double d1 = CAL.AdmissionsConverter.quyDoiVsat(nv.getTenMon1(), nv.getDiemMon1(), dsQuyDoi);
-                            double d2 = CAL.AdmissionsConverter.quyDoiVsat(nv.getTenMon2(), nv.getDiemMon2(), dsQuyDoi);
-                            double d3 = CAL.AdmissionsConverter.quyDoiVsat(nv.getTenMon3(), nv.getDiemMon3(), dsQuyDoi);
+//                            // VSAT Thang 150 -> Quy về 10, nhân hệ số, rồi quy về 30
+                            double d1 = CAL.AdmissionsConverter.quyDoiDiemChung(phuongThuc, toHop, nv.getTenMon1(), nv.getDiemMon1(), dsQuyDoi);
+                            double d2 = CAL.AdmissionsConverter.quyDoiDiemChung(phuongThuc, toHop, nv.getTenMon2(), nv.getDiemMon2(), dsQuyDoi);
+                            double d3 = CAL.AdmissionsConverter.quyDoiDiemChung(phuongThuc, toHop, nv.getTenMon3(), nv.getDiemMon3(), dsQuyDoi);
                             diemThxtMoi = ((d1*hs1 + d2*hs2 + d3*hs3) / tongHeSo) * 3.0;
                         }
                     }

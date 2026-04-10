@@ -24,7 +24,7 @@ public class chungChiETT{
     private String loaiChungChi;
 
     @Column(name = "diem_chung_chi")
-    private Double diemChungChi;
+    private String diemChungChi;
 
     @Column(name = "diem_quydoi")
     private Double diemQuyDoi;
@@ -47,7 +47,7 @@ public class chungChiETT{
         return loaiChungChi;
     }
 
-    public Double getDiemChungChi() {
+    public String getDiemChungChi() {
         return diemChungChi;
     }
 
@@ -71,7 +71,7 @@ public class chungChiETT{
         this.loaiChungChi = loaiChungChi;
     }
 
-    public void setDiemChungChi(Double diemChungChi) {
+    public void setDiemChungChi(String diemChungChi) {
         this.diemChungChi = diemChungChi;
     }
 

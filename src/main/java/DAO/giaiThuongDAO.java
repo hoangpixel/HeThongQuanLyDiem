@@ -9,6 +9,7 @@ import Entity.giaiThuongETT;
 import java.util.ArrayList;
 import java.util.List;
 import org.hibernate.Session;
+import org.hibernate.Transaction;
 
 /**
  *
@@ -48,5 +49,36 @@ public class giaiThuongDAO {
             e.printStackTrace();
         }
         return ketQua;
+    }
+    
+    public boolean themGiaiThuong(giaiThuongETT ett) {
+        Transaction tx = null;
+        try (Session session = HibernateUtil.getSessionFactory().openSession()) {
+            tx = session.beginTransaction();
+            session.persist(ett);
+            tx.commit();
+            return true;
+        } catch (Exception e) { if (tx != null) tx.rollback(); return false; }
+    }
+
+    public boolean suaGiaiThuong(giaiThuongETT ett) {
+        Transaction tx = null;
+        try (Session session = HibernateUtil.getSessionFactory().openSession()) {
+            tx = session.beginTransaction();
+            session.merge(ett);
+            tx.commit();
+            return true;
+        } catch (Exception e) { if (tx != null) tx.rollback(); return false; }
+    }
+
+    public boolean xoaGiaiThuong(int idGt) {
+        Transaction tx = null;
+        try (Session session = HibernateUtil.getSessionFactory().openSession()) {
+            tx = session.beginTransaction();
+            giaiThuongETT ett = session.get(giaiThuongETT.class, idGt);
+            if (ett != null) session.remove(ett);
+            tx.commit();
+            return true;
+        } catch (Exception e) { if (tx != null) tx.rollback(); return false; }
     }
 }

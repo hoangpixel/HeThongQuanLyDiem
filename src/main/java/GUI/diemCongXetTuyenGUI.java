@@ -12,13 +12,16 @@ import javax.swing.JOptionPane;
 
 import BUS.diemCongBUS;
 import BUS.thiSinhXetTuyenBUS;
+import EXCEL.ExcelHelper;
 import Entity.diemCongETT;
 import Entity.thiSinhXetTuyenETT;
-
+import FUNC_GUI.excelDiemCong;
 import FUNC_GUI.insertDiemCong;
 import FUNC_GUI.updateDiemCong;
 import FUNC_GUI.deleteDiemCong;
 import FUNC_GUI.deleteNguyenVong;
+import FUNC_GUI.excelThiSinh;
+import java.util.ArrayList;
 /*
  * Click nbfs://nbhost/SystemFileSystem/Templates/Licenses/license-default.txt to change this license
  * Click nbfs://nbhost/SystemFileSystem/Templates/Classes/Class.java to edit this template
@@ -30,17 +33,20 @@ import FUNC_GUI.deleteNguyenVong;
  */
 
 public class diemCongXetTuyenGUI extends BaseTableGUI {
+    diemCongBUS busDiemCong =new diemCongBUS();
     private boolean xacNhan = false;
     public diemCongXetTuyenGUI() {
         super();
 
         setTableNameForTitle("Quản lý Điểm cộng");
         headerTable();
-
+        loadComboBox();
         btnThem.addActionListener(e -> hienThiDialogThem());
         btnSua.addActionListener(e -> hienThiDialogSua());
         btnXoa.addActionListener(e -> hienThiDialogXoa());
-
+        btnExcel.addActionListener(e -> hienThiExcel());
+        btnTimKiem.addActionListener(e -> thucHienTimKiem());
+        btnReFresh.addActionListener(e -> thucHienRefresh());
         table.addMouseListener(new MouseAdapter() {
             public void mouseClicked(MouseEvent evt) {
                 if (evt.getClickCount() == 2) {
@@ -68,7 +74,14 @@ public class diemCongXetTuyenGUI extends BaseTableGUI {
 
         tableModel.setColumnIdentifiers(header);
     }
+    public void loadComboBox() {
+        cbxTimKiem.removeAllItems();
 
+        cbxTimKiem.addItem("CCCD");
+        cbxTimKiem.addItem("Mã ngành");
+        cbxTimKiem.addItem("Mã tổ hợp");
+        cbxTimKiem.addItem("Phương thức");
+    }
     // ================= LOAD DATA =================
     public void loadDataToTable() {
         diemCongBUS bus = new diemCongBUS();
@@ -201,6 +214,97 @@ public class diemCongXetTuyenGUI extends BaseTableGUI {
     }
     public boolean isXacNhan() {
         return xacNhan;
+    }
+     public void hienThiExcel()
+    {
+        JFrame topFrame = (JFrame) SwingUtilities.windowForComponent(this);
+        excelDiemCong dialog = new excelDiemCong(topFrame, true);
+        dialog.setVisible(true);
+        if(dialog.getXacNhanImport())
+        {
+            javax.swing.JFileChooser fileChooser = new javax.swing.JFileChooser();
+        fileChooser.setDialogTitle("Chọn file Excel để nhập dữ liệu");
+        javax.swing.filechooser.FileNameExtensionFilter filter = new javax.swing.filechooser.FileNameExtensionFilter("Excel Files (*.xls, *.xlsx)", "xls", "xlsx");
+        fileChooser.setFileFilter(filter);
+
+        int result = fileChooser.showOpenDialog(this);
+        if (result == javax.swing.JFileChooser.APPROVE_OPTION) {
+            // Lấy đường dẫn file
+            String filePath = fileChooser.getSelectedFile().getAbsolutePath();
+            
+            // Gọi BUS xử lý và nhận thông báo kết quả
+            String thongBao = busDiemCong.nhapDuLieuTuExcel(filePath);
+            
+            JOptionPane.showMessageDialog(this, thongBao, "Kết quả Nhập Excel", javax.swing.JOptionPane.INFORMATION_MESSAGE);
+            
+            // Xong xuôi thì làm mới lại cái bảng trên màn hình
+            diemCongBUS.ds = null;
+            loadDataToTable();
+        }
+        }else if(dialog.getXacNhanExport())
+        {
+            ArrayList<diemCongETT> fullDanhSach = busDiemCong.layDanhSach();
+            ExcelHelper.xuatDanhSachDiemCongRaExcel(fullDanhSach, this, "DanhSachDiemCong");
+        }
+    }
+    public void thucHienTimKiem() {
+        String tim = txtTimKiem.getText().trim();
+        int index = cbxTimKiem.getSelectedIndex();
+
+        if (tim.isEmpty()) {
+            JOptionPane.showMessageDialog(this, "Vui lòng nhập nội dung cần tìm");
+            return;
+        }
+
+        if (diemCongBUS.ds == null) busDiemCong.layDanhSach();
+
+        ArrayList<diemCongETT> result = new ArrayList<>();
+
+        for (diemCongETT dc : diemCongBUS.ds) {
+            switch (index) {
+                case 0:
+                    if (dc.getTsCccd().contains(tim)) result.add(dc);
+                    break;
+                case 1:
+                    if (dc.getMaNganh().contains(tim)) result.add(dc);
+                    break;
+                case 2:
+                    if (dc.getMaToHop().contains(tim)) result.add(dc);
+                    break;
+                case 3:
+                    if (dc.getPhuongThuc().toLowerCase().contains(tim.toLowerCase())) result.add(dc);
+                    break;
+            }
+        }
+
+        ArrayList<Vector> data = new ArrayList<>();
+
+        for (diemCongETT dc : result) {
+            Vector row = new Vector();
+            row.add(dc.getIdDiemCong());
+            row.add(dc.getTsCccd());
+            row.add(dc.getMaNganh());
+            row.add(dc.getMaToHop());
+            row.add(dc.getPhuongThuc());
+            row.add(dc.getDiemCC());
+            row.add(dc.getDiemUtxt());
+            row.add(dc.getDiemTong());
+            row.add(dc.getGhiChu());
+            data.add(row);
+        }
+
+        setTableData(data);
+
+        if (data.isEmpty()) {
+            JOptionPane.showMessageDialog(this, "Không tìm thấy dữ liệu");
+        }
+    }
+    public void thucHienRefresh() {
+        txtTimKiem.setText("");
+        cbxTimKiem.setSelectedIndex(0);
+
+        diemCongBUS.ds = null;
+        loadDataToTable();
     }
 }
 
