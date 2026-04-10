@@ -6,7 +6,7 @@ import java.awt.*;
 
 public class navbarGUI extends JPanel {
 
-    public JButton btnThiSinh, btnDiemThi, btnNganh, btnToHopMon, btnNganhToHop, btnBangQuyDoi, btnDiemCong, btnNguyenVong, btnDangXuat;
+    public JButton btnThiSinh, btnDiemThi, btnNganh, btnToHopMon, btnNganhToHop, btnBangQuyDoi, btnDiemCong, btnNguyenVong, btnDangXuat,btnTaiKhoan,btnChungChi,btnGiaiThuong;
 
     public navbarGUI() {
         setLayout(new BoxLayout(this, BoxLayout.Y_AXIS));
@@ -38,9 +38,12 @@ public class navbarGUI extends JPanel {
         btnDiemThi = createButton("6. Quản lý Điểm thi");
         btnDiemCong = createButton("7. Điểm cộng & Ưu tiên");
         btnNguyenVong = createButton("8. Nguyện vọng xét tuyển");
+        btnTaiKhoan = createButton("9. Tài Khoản");
+        btnChungChi = createButton("10. Chứng Chỉ");
+        btnGiaiThuong = createButton("11. Giải Thưởng");
         
         // Đưa các nút vào mảng để dùng vòng lặp gắn khoảng cách (Strut) cho đều
-        JButton[] menus = {btnThiSinh, btnNganh, btnToHopMon, btnNganhToHop, btnBangQuyDoi, btnDiemThi, btnDiemCong, btnNguyenVong};
+        JButton[] menus = {btnThiSinh, btnNganh, btnToHopMon, btnNganhToHop, btnBangQuyDoi, btnDiemThi, btnDiemCong, btnNguyenVong, btnTaiKhoan, btnChungChi, btnGiaiThuong};
         for (JButton btn : menus) {
             add(btn);
             add(Box.createVerticalStrut(10)); // Khoảng trống 10px giữa mỗi nút cho thoáng
