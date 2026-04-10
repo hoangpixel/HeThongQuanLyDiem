@@ -36,13 +36,13 @@ public class bangQuyDoiVSATGUI extends BaseTableGUI {
         btnTimKiem.addActionListener(e -> thucHienTimKiem());
         // Giả sử cột Phương thức nằm ở vị trí số 3, Tổ hợp số 4 (Nhớ đếm index từ 0
         // nha)
-        table.getColumnModel().getColumn(3).setMinWidth(0);
-        table.getColumnModel().getColumn(3).setMaxWidth(0);
-        table.getColumnModel().getColumn(3).setWidth(0);
-
-        table.getColumnModel().getColumn(4).setMinWidth(0);
-        table.getColumnModel().getColumn(4).setMaxWidth(0);
-        table.getColumnModel().getColumn(4).setWidth(0);
+//        table.getColumnModel().getColumn(3).setMinWidth(0);
+//        table.getColumnModel().getColumn(3).setMaxWidth(0);
+//        table.getColumnModel().getColumn(3).setWidth(0);
+//
+//        table.getColumnModel().getColumn(4).setMinWidth(0);
+//        table.getColumnModel().getColumn(4).setMaxWidth(0);
+//        table.getColumnModel().getColumn(4).setWidth(0);
         loadDataToTable();
     }
 

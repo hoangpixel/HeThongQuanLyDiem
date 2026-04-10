@@ -1,6 +1,11 @@
 package MAIN;
 
+import BUS.phanQuyenBUS;
+import BUS.taiKhoanBUS;
 import GUI.contentGUI;
+import static MAIN.main.loadFont;
+import static MAIN.main.setGlobalFont;
+import com.formdev.flatlaf.FlatLightLaf;
 import javax.swing.*;
 import javax.swing.border.EmptyBorder;
 import java.awt.*;
@@ -207,23 +212,56 @@ private void styleInput(JTextField txt) {
     }
 
     // ================= LOGIN =================
-    private void login() {
-        String user = txtTaiKhoan.getText();
+//    private void login() {
+//        String user = txtTaiKhoan.getText();
+//        String pass = new String(txtMatKhau.getPassword());
+//
+//        if (user.equals("admin") && pass.equals("123")) {
+//            this.dispose();
+//            openMain();
+//        } else {
+//            JOptionPane.showMessageDialog(this, "Sai tài khoản hoặc mật khẩu!");
+//        }
+//    }
+    
+        private void login() {
+        String user = txtTaiKhoan.getText().trim();
         String pass = new String(txtMatKhau.getPassword());
-
-        if (user.equals("admin") && pass.equals("123")) {
+        taiKhoanBUS tkBus = new taiKhoanBUS();
+        if (tkBus.login(user, pass)) {
+            phanQuyenBUS pqBus = new phanQuyenBUS();
+            pqBus.loadQuyenLenRAM(taiKhoanBUS.taiKhoanHienTai.getIdTaiKhoan());
+            JOptionPane.showMessageDialog(this, "Đăng nhập thành công!");
             this.dispose();
             openMain();
         } else {
             JOptionPane.showMessageDialog(this, "Sai tài khoản hoặc mật khẩu!");
         }
     }
-
+        
     private void openMain() {
         SwingUtilities.invokeLater(() -> new contentGUI().setVisible(true));
     }
 
     public static void main(String[] args) {
+        
+                try {
+            // 1. TẢI FONT TRƯỚC
+            Font appFont = loadFont("/font/Saira-Regular.ttf", 14f);
+
+            // 2. ÉP FONT CHO FLATLAF (BẮT BUỘC PHẢI ĐẶT TRƯỚC SETUP)
+            UIManager.put("defaultFont", appFont);
+            
+            // (Tuỳ chọn) Chắc cú hơn, ép luôn toàn bộ các key UI của Swing
+            setGlobalFont(appFont);
+
+            // 3. KHỞI TẠO GIAO DIỆN FLATLAF
+            FlatLightLaf.setup();
+
+        } catch (Exception e) {
+            e.printStackTrace();
+        }
+        
         try {
             UIManager.setLookAndFeel(new com.formdev.flatlaf.FlatLightLaf());
         } catch (Exception e) {}

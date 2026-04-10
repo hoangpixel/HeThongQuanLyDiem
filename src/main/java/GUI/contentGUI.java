@@ -31,8 +31,8 @@ public class contentGUI extends JFrame {
         contentPanel.add(new NganhGUI(), "nganh");
         contentPanel.add(new bangQuyDoiVSATGUI(), "bangquydoi");
         contentPanel.add(new nganhToHopGUI(), "nganhtohop");
-        contentPanel.add(new toHopGUI(), "tohop");
-        contentPanel.add(new taiKhoanGUI(), "taikhoan");
+//        contentPanel.add(new toHopGUI(), "tohop");
+//        contentPanel.add(new taiKhoanGUI(), "taikhoan");
         
         add(contentPanel, BorderLayout.CENTER);
 
