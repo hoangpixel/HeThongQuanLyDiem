@@ -49,8 +49,50 @@ public class nguyenVongXetTuyenGUI extends BaseTableForNguyenVongGUIonly {
         table.getColumnModel().getColumn(9).setMaxWidth(0);
         table.getColumnModel().getColumn(9).setWidth(0);
         loadComboBox();
+        phanQuyenGiaoDien();
     }
     
+private void phanQuyenGiaoDien() {
+        String bangHienTai = "xt_nguyenvongxettuyen";
+        
+        // 1. Kiểm tra quyền XEM tổng (Không có quyền thì đuổi ra)
+        if (!BUS.phanQuyenBUS.checkQuyenXem(bangHienTai)) {
+//            JOptionPane.showMessageDialog(this, "Bạn không có quyền xem chức năng này!");
+            // this.dispose(); 
+            return;
+        }
+        
+        // 2. Trạng thái nút bấm LÚC VỪA MỞ FORM (Chưa click chọn dòng nào)
+        btnThem.setEnabled(BUS.phanQuyenBUS.checkQuyenThem(bangHienTai)); 
+        btnSua.setEnabled(false); 
+        btnXoa.setEnabled(false);
+        btnChiTiet.setEnabled(false);
+
+        // 3. 🔥 BÍ QUYẾT: DÙNG INVOKELATER ĐỂ CHẮC CHẮN CHẠY SAU CÙNG 🔥
+        table.getSelectionModel().addListSelectionListener(e -> {
+            if (!e.getValueIsAdjusting()) {
+                
+                // Bắt đầu ép code chạy sau cùng
+                javax.swing.SwingUtilities.invokeLater(new Runnable() {
+                    public void run() {
+                        boolean isSelected = table.getSelectedRow() != -1;
+                        
+                        if (isSelected) {
+                            // Lúc này Form Cha đã bật true xong xuôi rồi, mình dập lại bằng quyền
+                            btnSua.setEnabled(BUS.phanQuyenBUS.checkQuyenSua(bangHienTai));
+                            btnXoa.setEnabled(BUS.phanQuyenBUS.checkQuyenXoa(bangHienTai));
+                            btnChiTiet.setEnabled(BUS.phanQuyenBUS.checkQuyenXem(bangHienTai)); 
+                        } else {
+                            btnSua.setEnabled(false);
+                            btnXoa.setEnabled(false);
+                            btnChiTiet.setEnabled(false);
+                        }
+                    }
+                });
+                
+            }
+        });
+    }
     
     public void loadComboBox() {
         cbxTimKiem.removeAllItems();

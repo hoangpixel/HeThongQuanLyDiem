@@ -212,21 +212,16 @@ private void styleInput(JTextField txt) {
     }
 
     // ================= LOGIN =================
-//    private void login() {
-//        String user = txtTaiKhoan.getText();
-//        String pass = new String(txtMatKhau.getPassword());
-//
-//        if (user.equals("admin") && pass.equals("123")) {
-//            this.dispose();
-//            openMain();
-//        } else {
-//            JOptionPane.showMessageDialog(this, "Sai tài khoản hoặc mật khẩu!");
-//        }
-//    }
     
-        private void login() {
-        String user = txtTaiKhoan.getText().trim();
-        String pass = new String(txtMatKhau.getPassword());
+private void login() {
+        // Thêm .trim() để triệt tiêu khoảng trắng thừa ở Tài khoản
+        String user = txtTaiKhoan.getText().trim(); 
+        String pass = new String(txtMatKhau.getPassword()); 
+
+        // IN RA CONSOLE ĐỂ DEBUG: Nhìn kỹ xem giữa 2 dấu ngoặc vuông có khoảng trắng không nha!
+        System.out.println("🕵️ User đang nhập: [" + user + "]");
+        System.out.println("🕵️ Pass đang nhập: [" + pass + "]");
+
         taiKhoanBUS tkBus = new taiKhoanBUS();
         if (tkBus.login(user, pass)) {
             phanQuyenBUS pqBus = new phanQuyenBUS();

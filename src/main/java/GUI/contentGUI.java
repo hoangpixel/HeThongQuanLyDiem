@@ -19,20 +19,43 @@ public class contentGUI extends JFrame {
         navbarGUI nav = new navbarGUI();
         add(nav, BorderLayout.WEST);
 
-        // 👉 Content bên phải
+// 👉 Content bên phải
         contentPanel = new JPanel();
         cardLayout = new CardLayout();
         contentPanel.setLayout(cardLayout);
 
-        // 👉 Thêm panel của bạn
-        contentPanel.add(new nguyenVongXetTuyenGUI(), "nguyenvong");
-        contentPanel.add(new thiSinhXetTuyenGUI(), "thisinh");
-        contentPanel.add(new diemCongXetTuyenGUI(), "diemcong");
-        contentPanel.add(new NganhGUI(), "nganh");
-        contentPanel.add(new bangQuyDoiVSATGUI(), "bangquydoi");
-        contentPanel.add(new nganhToHopGUI(), "nganhtohop");
-//        contentPanel.add(new toHopGUI(), "tohop");
-//        contentPanel.add(new taiKhoanGUI(), "taikhoan");
+        // 1. 🔥 TẠO TRANG CHÀO MỪNG VÀ ADD VÀO ĐẦU TIÊN 🔥
+        JPanel pnlWelcome = new JPanel(new BorderLayout());
+        pnlWelcome.setBackground(Color.WHITE);
+        JLabel lblWelcome = new JLabel("CHÀO MỪNG BẠN ĐẾN VỚI HỆ THỐNG TUYỂN SINH", SwingConstants.CENTER);
+        lblWelcome.setFont(new Font("Segoe UI", Font.BOLD, 28));
+        lblWelcome.setForeground(new Color(52, 152, 219)); // Màu xanh cho đẹp
+        pnlWelcome.add(lblWelcome, BorderLayout.CENTER);
+        
+        contentPanel.add(pnlWelcome, "welcome"); // Đưa lên đầu tiên để làm mặc định!
+
+        // 2. 👉 Thêm các panel của ông bình thường ở dưới
+        // (Lưu ý: Ông có thể bọc if kiểm tra quyền ở đây để khỏi tốn RAM load mấy form không có quyền)
+        if (BUS.phanQuyenBUS.checkQuyenXem("xt_nguyenvongxettuyen")) {
+            contentPanel.add(new nguyenVongXetTuyenGUI(), "nguyenvong");
+        }
+        if (BUS.phanQuyenBUS.checkQuyenXem("xt_thisinhxettuyen25")) {
+            contentPanel.add(new thiSinhXetTuyenGUI(), "thisinh");
+        }
+        if (BUS.phanQuyenBUS.checkQuyenXem("xt_diemcongxettuyen")) {
+            contentPanel.add(new diemCongXetTuyenGUI(), "diemcong");
+        }
+        if (BUS.phanQuyenBUS.checkQuyenXem("xt_nganh")) {
+            contentPanel.add(new NganhGUI(), "nganh");
+        }
+        if (BUS.phanQuyenBUS.checkQuyenXem("xt_bangquydoi")) {
+            contentPanel.add(new bangQuyDoiVSATGUI(), "bangquydoi");
+        }
+        if (BUS.phanQuyenBUS.checkQuyenXem("xt_nganh_tohop")) {
+            contentPanel.add(new nganhToHopGUI(), "nganhtohop");
+        }
+        // contentPanel.add(new toHopGUI(), "tohop");
+        // contentPanel.add(new taiKhoanGUI(), "taikhoan");
         
         add(contentPanel, BorderLayout.CENTER);
 
@@ -57,7 +80,7 @@ public class contentGUI extends JFrame {
         
         nav.btnNganhToHop.addActionListener(e -> {
             cardLayout.show(contentPanel, "nganhtohop");
-        });
+        }); 
          nav.btnToHopMon.addActionListener(e -> {
             cardLayout.show(contentPanel, "tohop");
         });
