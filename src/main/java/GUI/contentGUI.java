@@ -31,6 +31,8 @@ public class contentGUI extends JFrame {
         contentPanel.add(new NganhGUI(), "nganh");
         contentPanel.add(new bangQuyDoiVSATGUI(), "bangquydoi");
         contentPanel.add(new nganhToHopGUI(), "nganhtohop");
+        contentPanel.add(new toHopGUI(), "tohop");
+        contentPanel.add(new taiKhoanGUI(), "taikhoan");
         
         add(contentPanel, BorderLayout.CENTER);
 
@@ -55,6 +57,12 @@ public class contentGUI extends JFrame {
         
         nav.btnNganhToHop.addActionListener(e -> {
             cardLayout.show(contentPanel, "nganhtohop");
+        });
+         nav.btnToHopMon.addActionListener(e -> {
+            cardLayout.show(contentPanel, "tohop");
+        });
+          nav.btnTaiKhoan.addActionListener(e -> {
+            cardLayout.show(contentPanel, "taikhoan");
         });
     }
 }
