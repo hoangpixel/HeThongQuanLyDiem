@@ -19,6 +19,8 @@ import Entity.thiSinhXetTuyenETT;
 import Entity.diemCongETT;
 import Entity.nguyenVongXetTuyenETT; // Nhớ import entity của ông nha
 import Entity.phanQuyenETT;
+import Entity.taiKhoanETT;
+
 
 public class ExcelHelper {
 
@@ -627,7 +629,6 @@ public class ExcelHelper {
         }
     }
     
-    
         public static void xuatDanhSachPhanQuyenRaExcel(ArrayList<phanQuyenETT> ds, java.awt.Component parent, String tenBang) {
         try {
             if (ds == null || ds.isEmpty()) {
@@ -710,6 +711,116 @@ public class ExcelHelper {
             JOptionPane.showMessageDialog(parent, "Lỗi khi xuất: " + e.getMessage(), "Lỗi", JOptionPane.ERROR_MESSAGE);
         }
     }
+
+    public static void xuatDanhSachTaiKhoanRaExcel(ArrayList<taiKhoanETT> ds, java.awt.Component parent, String tenBang) {
+
+        try {
+
+            if (ds == null || ds.isEmpty()) {
+                JOptionPane.showMessageDialog(parent, "Không có dữ liệu để xuất!", "Cảnh báo", JOptionPane.WARNING_MESSAGE);
+                return;
+            }
+
+            JFileChooser fileChooser = new JFileChooser();
+            fileChooser.setDialogTitle("Chọn vị trí lưu Danh sách Tài khoản");
+            fileChooser.setFileFilter(new FileNameExtensionFilter("Excel Files (*.xlsx)", "xlsx"));
+            fileChooser.setSelectedFile(new File(tenBang + ".xlsx"));
+
+            if (fileChooser.showSaveDialog(parent) == JFileChooser.APPROVE_OPTION) {
+
+                String filePath = fileChooser.getSelectedFile().getAbsolutePath();
+                if (!filePath.toLowerCase().endsWith(".xlsx")) filePath += ".xlsx";
+
+                Workbook workbook = new XSSFWorkbook();
+                Sheet sheet = workbook.createSheet(tenBang);
+
+                // ===== STYLE =====
+                CellStyle headerStyle = taoStyleTieuDe(workbook);
+                CellStyle dataStyle = taoStyleDuLieu(workbook);
+
+                // ===== HEADER =====
+                String[] headers = {
+                    "ID",
+                    "Tên đăng nhập",
+                    "Mật khẩu",
+                    "Họ tên",
+                    "Trạng thái"
+                };
+
+                Row headerRow = sheet.createRow(0);
+                headerRow.setHeightInPoints(25);
+
+                for (int i = 0; i < headers.length; i++) {
+
+                    Cell cell = headerRow.createCell(i);
+                    cell.setCellValue(headers[i]);
+                    cell.setCellStyle(headerStyle);
+                }
+
+                // ===== DATA =====
+                int rowNum = 1;
+
+                for (taiKhoanETT tk : ds) {
+
+                    Row row = sheet.createRow(rowNum++);
+
+                    Object[] rowData = {
+
+                        tk.getIdTaiKhoan(),
+                        tk.getTenDangNhap() != null ? tk.getTenDangNhap() : "",
+                        "******", // không xuất password thật
+                        tk.getHoTen() != null ? tk.getHoTen() : "",
+                        tk.getTrangThai() == 1 ? "Hoạt động" : "Bị khóa"
+
+                    };
+
+                    for (int i = 0; i < rowData.length; i++) {
+
+                        Cell cell = row.createCell(i);
+                        cell.setCellStyle(dataStyle);
+
+                        if (rowData[i] instanceof Number) {
+                            cell.setCellValue(((Number) rowData[i]).doubleValue());
+                        } else {
+                            cell.setCellValue(rowData[i].toString());
+                        }
+                    }
+                }
+
+                // ===== AUTO SIZE =====
+                for (int i = 0; i < headers.length; i++) {
+
+                    sheet.autoSizeColumn(i);
+                    sheet.setColumnWidth(i, sheet.getColumnWidth(i) + 1000);
+                }
+
+                sheet.createFreezePane(0, 1);
+
+                // ===== GHI FILE =====
+                try (FileOutputStream out = new FileOutputStream(filePath)) {
+
+                    workbook.write(out);
+                }
+
+                workbook.close();
+
+                JOptionPane.showMessageDialog(parent,
+                        "Xuất file thành công!\n" + filePath,
+                        "Thành công",
+                        JOptionPane.INFORMATION_MESSAGE);
+            }
+
+        } catch (Exception e) {
+
+            e.printStackTrace();
+
+            JOptionPane.showMessageDialog(parent,
+                    "Lỗi khi xuất: " + e.getMessage(),
+                    "Lỗi",
+                    JOptionPane.ERROR_MESSAGE);
+        }
+    }
+    
     // =========================================================================
     // HÀM 3: ĐỌC FILE EXCEL TRẢ VỀ MẢNG DỮ LIỆU THÔ (DÙNG CHUNG CHO MỌI BẢNG)
     // =========================================================================

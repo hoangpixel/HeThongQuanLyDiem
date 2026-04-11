@@ -79,21 +79,27 @@ public class taiKhoanBUS {
 
     // ========== CẬP NHẬT TÀI KHOẢN ==========
     public boolean capNhatTaiKhoan(taiKhoanETT tk) {
-        if (tk == null) throw new IllegalArgumentException("Tài khoản không hợp lệ!");
+        
+        if (tk == null)
+            throw new IllegalArgumentException("Tài khoản không hợp lệ!");
         if (tk.getHoTen() == null || tk.getHoTen().trim().isEmpty())
             throw new IllegalArgumentException("Họ tên không được để trống!");
+        // Lấy tài khoản cũ
+        taiKhoanETT tkCu = data.layTheoUsername(tk.getTenDangNhap());
+        if (tkCu == null)
+            throw new IllegalArgumentException("Tài khoản không tồn tại!");
+        // Giữ lại mật khẩu cũ
+        tk.setMatKhau(tkCu.getMatKhau());
         return data.capNhatTaiKhoan(tk);
     }
-
-    // ========== ĐỔI MẬT KHẨU ==========
-    public boolean doiMatKhau(String username, String matKhauCu, String matKhauMoi, String xacNhan) {
-        if (matKhauMoi == null || matKhauMoi.length() < 6)
-            throw new IllegalArgumentException("Mật khẩu mới phải có ít nhất 6 ký tự!");
-        if (!matKhauMoi.equals(xacNhan))
-            throw new IllegalArgumentException("Xác nhận mật khẩu không khớp!");
-        if (data.kiemTraDangNhap(username, matKhauCu) == null)
-            throw new IllegalArgumentException("Mật khẩu cũ không chính xác!");
-        return data.doiMatKhau(username, matKhauMoi);
+    
+    // ========== XÓA TÀI KHOẢN ==========
+    public boolean xoaTaiKhoan(String username) {
+        if (username == null || username.trim().isEmpty())
+            throw new IllegalArgumentException("Tên đăng nhập không hợp lệ!");
+        if (data.layTheoUsername(username.trim()) == null)
+            throw new IllegalArgumentException("Tài khoản không tồn tại!");
+        return data.xoaTaiKhoan(username.trim());
     }
 
     // ========== KHOÁ / MỞ KHOÁ ==========
@@ -114,5 +120,44 @@ public class taiKhoanBUS {
         taiKhoanETT tk = data.layTheoUsername(username);
         return tk != null && tk.getTrangThai() != null && tk.getTrangThai() == 1;
     }
-}
 
+    public String nhapDuLieuTuExcel(String filePath) {
+
+        try {
+            // 1. Đọc dữ liệu Excel
+            ArrayList<ArrayList<String>> dataExcel = EXCEL.ExcelHelper.docFileExcel(filePath);
+            if (dataExcel.size() <= 1) {
+                return "File Excel trống hoặc chỉ có dòng tiêu đề!";
+            }
+            int soDongThanhCong = 0;
+            int soDongThatBai = 0;
+            // 2. Bỏ dòng header
+            for (int i = 1; i < dataExcel.size(); i++) {
+                ArrayList<String> row = dataExcel.get(i);
+                try {
+                    taiKhoanETT tk = new taiKhoanETT();
+
+                    // Mapping cột Excel → Entity
+                    tk.setTenDangNhap(row.get(0));
+                    tk.setMatKhau(MD5Util.md5(row.get(1))); // mã hóa mật khẩu
+                    tk.setHoTen(row.get(2));
+                    tk.setTrangThai(Integer.parseInt(row.get(3)));
+
+                    // 3. Thêm vào database
+                    if (data.themTaiKhoan(tk)) {
+                        soDongThanhCong++;
+                    } else {
+                        soDongThatBai++;
+                    }
+                } catch (Exception ex) {
+                    soDongThatBai++;
+                }
+            }
+            return "Nhập thành công: " + soDongThanhCong +
+                   " dòng.\nLỗi/Trùng lặp: " + soDongThatBai + " dòng.";
+        } catch (Exception e) {
+            e.printStackTrace();
+            return "Lỗi khi đọc file Excel: " + e.getMessage();
+        }
+    }
+}

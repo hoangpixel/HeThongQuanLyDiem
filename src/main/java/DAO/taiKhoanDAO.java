@@ -20,7 +20,7 @@ public class taiKhoanDAO {
     public taiKhoanETT kiemTraDangNhap(String username, String password) {
         try (Session session = CONFIG.HibernateUtil.getSessionFactory().openSession()) {
             // Lưu ý: Tên Class và Tên Thuộc tính phải khớp với Entity của ông nha
-            String hql = "FROM taiKhoanETT WHERE tenDangNhap = :user AND matKhau = :pass AND trangThai = 1";
+            String hql = "FROM taiKhoanETT WHERE ten_dang_nhap = :user AND mat_khau = :pass AND trang_thai = 1";
             Query<taiKhoanETT> query = session.createQuery(hql, taiKhoanETT.class);
             query.setParameter("user", username);
             query.setParameter("pass", MD5Util.md5(password)); // Nhớ mã hóa MD5 nếu DB ông lưu mã hóa
@@ -94,22 +94,15 @@ public class taiKhoanDAO {
         }
     }
     
-    public boolean doiMatKhau(String username, String passwordMoi) {
+    public boolean xoaTaiKhoan(String username) {
         try (Session session = CONFIG.HibernateUtil.getSessionFactory().openSession()) {
-
             session.beginTransaction();
-
-            String hql = "UPDATE taiKhoanETT SET matKhau = :pass WHERE tenDangNhap = :user";
+            String hql = "DELETE FROM taiKhoanETT WHERE ten_dang_nhap = :user";
             Query<Integer> query = session.createQuery(hql, Integer.class);
-            query.setParameter("pass", MD5Util.md5(passwordMoi));
             query.setParameter("user", username);
-
             int result = query.executeUpdate();
-
             session.getTransaction().commit();
-
             return result > 0;
-
         } catch (Exception e) {
             e.printStackTrace();
             return false;
@@ -121,7 +114,7 @@ public class taiKhoanDAO {
 
             session.beginTransaction();
 
-            String hql = "UPDATE taiKhoanETT SET trangThai = :tt WHERE tenDangNhap = :user";
+            String hql = "UPDATE taiKhoanETT SET trang_Thai = :tt WHERE ten_dang_nhap = :user";
             Query<Integer> query = session.createQuery(hql, Integer.class);
             query.setParameter("tt", trangThai);
             query.setParameter("user", username);

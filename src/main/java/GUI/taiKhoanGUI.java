@@ -6,6 +6,13 @@ package GUI;
 
 import BUS.taiKhoanBUS;
 import Entity.taiKhoanETT;
+import FUNC_GUI.deleteTaiKhoan;
+import FUNC_GUI.detailTaiKhoan;
+import FUNC_GUI.insertTaiKhoan;
+import FUNC_GUI.updateTaiKhoan;
+import EXCEL.ExcelHelper;
+import FUNC_GUI.excelTaiKhoan;
+
 import java.util.ArrayList;
 import java.util.List;
 import java.util.Vector;
@@ -28,7 +35,7 @@ public class taiKhoanGUI extends BaseTableForNguyenVongGUIonly {
         btnSua.addActionListener(e -> hienThiDialogSua());
         btnXoa.addActionListener(e -> hienThiDialogXoa());
         btnTinhToanKetQua.addActionListener(e -> thucHienKhoaTaiKhoan());
-        btnExcel.addActionListener(e -> hienThiExcel());
+        btnExcel.addActionListener(e -> thucHienExcel());
         btnReFresh.addActionListener(e -> thucHienRefresh());
         btnTimKiem.addActionListener(e -> thucHienTimKiem());
         btnChiTiet.addActionListener(e -> hienThiChiTiet());
@@ -123,11 +130,10 @@ public class taiKhoanGUI extends BaseTableForNguyenVongGUIonly {
 
     // ===== THÊM =====
     private void hienThiDialogThemMoi() {
-        // TODO: Mở dialog thêm tài khoản
-        // JFrame topFrame = (JFrame) SwingUtilities.getWindowAncestor(this);
-        // insertTaiKhoan dialog = new insertTaiKhoan(topFrame, true);
-        // dialog.setVisible(true);
-        // if (dialog.xacNhanThem()) { loadDataToTable(); }
+        JFrame topFrame = (JFrame) SwingUtilities.getWindowAncestor(this);
+        insertTaiKhoan dialog = new insertTaiKhoan(topFrame, true);
+        dialog.setVisible(true);
+        if (dialog.getXacNhan()) { loadDataToTable(); }
         JOptionPane.showMessageDialog(this, "Mở form THÊM tài khoản");
     }
 
@@ -142,41 +148,61 @@ public class taiKhoanGUI extends BaseTableForNguyenVongGUIonly {
         int modelIndex = table.convertRowIndexToModel(row);
         int absoluteIndex = (currentPage - 1) * rowsPerPage + modelIndex;
 
-        // taiKhoanETT tk = bus.layTheoUsername(tableModel.getValueAt(row, 1).toString());
-        // JFrame topFrame = (JFrame) SwingUtilities.windowForComponent(this);
-        // updateTaiKhoan dialog = new updateTaiKhoan(topFrame, true, tk);
-        // dialog.setVisible(true);
-        // if (dialog.xacNhanThem()) {
-        //     Vector rowData = new Vector();
-        //     rowData.add(...);
-        //     fullDataList.set(absoluteIndex, rowData);
-        //     renderCurrentPage();
-        // }
+        taiKhoanETT tk = bus.layTheoUsername(tableModel.getValueAt(row, 1).toString());
+        JFrame topFrame = (JFrame) SwingUtilities.windowForComponent(this);
+        updateTaiKhoan dialog = new updateTaiKhoan(topFrame, true, tk);
+        dialog.setVisible(true);
+        if (dialog.getXacNhan()) {
+            taiKhoanETT tkMoi = dialog.getTaiKhoanETT();
+    
+            Vector<Object> rowData = new Vector<>();
+            rowData.add(tkMoi.getIdTaiKhoan());
+            rowData.add(tkMoi.getTenDangNhap());
+            rowData.add(tkMoi.getMatKhau());
+            rowData.add(tkMoi.getHoTen());
+            rowData.add(tkMoi.getTrangThai() == 1 ? "Hoạt động" : "Bị khóa");
+
+            fullDataList.set(absoluteIndex, rowData);
+            renderCurrentPage();
+         }
         JOptionPane.showMessageDialog(this, "Mở form SỬA tài khoản");
     }
 
     // ===== XÓA =====
     private void hienThiDialogXoa() {
+        
         int row = table.getSelectedRow();
-        if (row == -1) return;
 
-        String tenDangNhap = tableModel.getValueAt(row, 1).toString();
+        if (row != -1) {
 
-        int confirm = JOptionPane.showConfirmDialog(this,
-                "Bạn có chắc muốn xóa tài khoản \"" + tenDangNhap + "\" không?",
-                "Xác nhận xóa",
-                JOptionPane.YES_NO_OPTION,
-                JOptionPane.WARNING_MESSAGE);
+            JFrame topFrame = (JFrame) SwingUtilities.windowForComponent(this);
+            deleteTaiKhoan dialog = new deleteTaiKhoan(topFrame, true);
+            dialog.setVisible(true);
 
-        if (confirm == JOptionPane.YES_OPTION) {
-            int modelIndex = table.convertRowIndexToModel(row);
-            int absoluteIndex = (currentPage - 1) * rowsPerPage + modelIndex;
+            if (dialog.getXacNhanXoa()) {
 
-            // TODO: bus.xoaTaiKhoan(tenDangNhap)
-            fullDataList.remove(absoluteIndex);
-            totalPages = (int) Math.ceil((double) fullDataList.size() / rowsPerPage);
-            if (currentPage > totalPages && totalPages > 0) currentPage = totalPages;
-            renderCurrentPage();
+                int modelIndex = table.convertRowIndexToModel(row);
+                int absoluteIndex = (currentPage - 1) * rowsPerPage + modelIndex;
+
+                String username = tableModel.getValueAt(row, 1).toString();
+
+                try {
+                    if (bus.xoaTaiKhoan(username)) {
+                        fullDataList.remove(absoluteIndex);
+                        totalPages = (int) Math.ceil((double) fullDataList.size() / rowsPerPage);
+                        if (currentPage > totalPages && totalPages > 0) {
+                            currentPage = totalPages;
+                        }
+                        renderCurrentPage();
+                    } else {
+                        JOptionPane.showMessageDialog(this, "Xóa tài khoản thất bại!");
+                    }
+                } catch (IllegalArgumentException ex) {
+                    JOptionPane.showMessageDialog(this, ex.getMessage());
+                }
+            }
+        } else {
+            JOptionPane.showMessageDialog(this, "Vui lòng chọn tài khoản cần xóa!");
         }
     }
 
@@ -224,9 +250,57 @@ public class taiKhoanGUI extends BaseTableForNguyenVongGUIonly {
     }
 
     // ===== EXCEL =====
-    public void hienThiExcel() {
-        // TODO: Xử lý xuất/nhập Excel tài khoản
-        JOptionPane.showMessageDialog(this, "Chức năng Excel đang phát triển!");
+    private void thucHienExcel(){
+
+        JFrame topFrame = (JFrame) SwingUtilities.windowForComponent(this);
+        excelTaiKhoan dialog = new excelTaiKhoan(topFrame, true);
+        dialog.setVisible(true);
+
+        // ================= IMPORT =================
+
+        if(dialog.getXacNhanImport())
+        {
+            JFileChooser fileChooser = new JFileChooser();
+            fileChooser.setDialogTitle("Chọn file Excel để nhập dữ liệu");
+
+            javax.swing.filechooser.FileNameExtensionFilter filter =
+                    new javax.swing.filechooser.FileNameExtensionFilter(
+                            "Excel Files (*.xls, *.xlsx)", "xls", "xlsx");
+
+            fileChooser.setFileFilter(filter);
+
+            int result = fileChooser.showOpenDialog(this);
+
+            if (result == JFileChooser.APPROVE_OPTION)
+            {
+                String filePath = fileChooser.getSelectedFile().getAbsolutePath();
+
+                String thongBao = bus.nhapDuLieuTuExcel(filePath);
+
+                JOptionPane.showMessageDialog(
+                        this,
+                        thongBao,
+                        "Kết quả Nhập Excel",
+                        JOptionPane.INFORMATION_MESSAGE
+                );
+
+                // Refresh bảng
+                loadDataToTable();
+            }
+        }
+
+        // ================= EXPORT =================
+
+        else if(dialog.getXacNhanExport()){
+
+            ArrayList<taiKhoanETT> fullDanhSach = new ArrayList<>(bus.layTatCa());
+
+            ExcelHelper.xuatDanhSachTaiKhoanRaExcel(
+                    fullDanhSach,
+                    this,
+                    "DanhSachTaiKhoan"
+            );
+        }
     }
 
     // ===== REFRESH =====
@@ -236,10 +310,24 @@ public class taiKhoanGUI extends BaseTableForNguyenVongGUIonly {
         loadDataToTable();
     }
 
-    // ===== CHI TIẾT (ẩn nhưng vẫn giữ override phòng khi cần) =====
+    // ===== CHI TIẾT =====
     private void hienThiChiTiet() {
         int row = table.getSelectedRow();
-        if (row == -1) return;
-        // TODO: Mở dialog chi tiết nếu cần sau này
+        if (row == -1) {
+            JOptionPane.showMessageDialog(this, "Vui lòng chọn một tài khoản để xem chi tiết!");
+            return;
+        }
+
+        String tenDangNhap = tableModel.getValueAt(row, 1).toString();
+        taiKhoanETT tk = bus.layTheoUsername(tenDangNhap);
+
+        if (tk == null) {
+            JOptionPane.showMessageDialog(this, "Không tìm thấy tài khoản!", "Lỗi", JOptionPane.ERROR_MESSAGE);
+            return;
+        }
+
+        JFrame topFrame = (JFrame) SwingUtilities.getWindowAncestor(this);
+        detailTaiKhoan dialog = new detailTaiKhoan(topFrame, true, tk);
+        dialog.setVisible(true);
     }
 }
