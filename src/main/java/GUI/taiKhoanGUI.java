@@ -115,8 +115,9 @@ public class taiKhoanGUI extends BaseTableForNguyenVongGUIonly {
         }
 
         List<Vector> ketQua = new ArrayList<>();
+        int[] colMap = {1, 3, 4}; // tên đăng nhập, họ tên, trạng thái
         for (Vector row : fullDataList) {
-            String giaTriCot = row.get(index + 1) != null ? row.get(index + 1).toString().toLowerCase() : "";
+            String giaTriCot = row.get(colMap[index]).toString().toLowerCase();
             if (giaTriCot.contains(tim)) {
                 ketQua.add(row);
             }
@@ -134,7 +135,6 @@ public class taiKhoanGUI extends BaseTableForNguyenVongGUIonly {
         insertTaiKhoan dialog = new insertTaiKhoan(topFrame, true);
         dialog.setVisible(true);
         if (dialog.getXacNhan()) { loadDataToTable(); }
-        JOptionPane.showMessageDialog(this, "Mở form THÊM tài khoản");
     }
 
     // ===== SỬA =====
@@ -158,14 +158,13 @@ public class taiKhoanGUI extends BaseTableForNguyenVongGUIonly {
             Vector<Object> rowData = new Vector<>();
             rowData.add(tkMoi.getIdTaiKhoan());
             rowData.add(tkMoi.getTenDangNhap());
-            rowData.add(tkMoi.getMatKhau());
+            rowData.add("******");
             rowData.add(tkMoi.getHoTen());
             rowData.add(tkMoi.getTrangThai() == 1 ? "Hoạt động" : "Bị khóa");
 
             fullDataList.set(absoluteIndex, rowData);
             renderCurrentPage();
          }
-        JOptionPane.showMessageDialog(this, "Mở form SỬA tài khoản");
     }
 
     // ===== XÓA =====

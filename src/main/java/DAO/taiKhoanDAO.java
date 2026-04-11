@@ -98,7 +98,7 @@ public class taiKhoanDAO {
         try (Session session = CONFIG.HibernateUtil.getSessionFactory().openSession()) {
             session.beginTransaction();
             String hql = "DELETE FROM taiKhoanETT WHERE ten_dang_nhap = :user";
-            Query<Integer> query = session.createQuery(hql, Integer.class);
+            Query query = session.createQuery(hql);
             query.setParameter("user", username);
             int result = query.executeUpdate();
             session.getTransaction().commit();
@@ -115,10 +115,9 @@ public class taiKhoanDAO {
             session.beginTransaction();
 
             String hql = "UPDATE taiKhoanETT SET trang_Thai = :tt WHERE ten_dang_nhap = :user";
-            Query<Integer> query = session.createQuery(hql, Integer.class);
+            Query query = session.createQuery(hql);
             query.setParameter("tt", trangThai);
             query.setParameter("user", username);
-
             int result = query.executeUpdate();
 
             session.getTransaction().commit();
