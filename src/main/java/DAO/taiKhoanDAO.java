@@ -3,6 +3,7 @@
  * Click nbfs://nbhost/SystemFileSystem/Templates/Classes/Class.java to edit this template
  */
 package DAO;
+import CONFIG.HibernateUtil;
 import Entity.taiKhoanETT;
 import org.hibernate.Session;
 import org.hibernate.query.Query;
@@ -137,4 +138,20 @@ public class taiKhoanDAO {
         }
     }
     
+    public ArrayList<taiKhoanETT> layDanhSach()
+    {
+        ArrayList<taiKhoanETT> ds = new ArrayList<>();
+        
+        try (Session session = HibernateUtil.getSessionFactory().openSession()) {
+            List<taiKhoanETT> listTuDB = session.createQuery(
+                "FROM taiKhoanETT", 
+                taiKhoanETT.class).list();
+            ds = new ArrayList<>(listTuDB);
+            
+        } catch (Exception e) {
+            e.printStackTrace();
+        }
+        
+        return ds;
+    }
 }

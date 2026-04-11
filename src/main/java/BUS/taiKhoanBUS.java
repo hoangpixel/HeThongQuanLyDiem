@@ -15,8 +15,16 @@ import java.util.List;
  */
 public class taiKhoanBUS {
     taiKhoanDAO data = new taiKhoanDAO();
+    public static ArrayList<taiKhoanETT> ds;
     
-    
+    public ArrayList<taiKhoanETT> layDanhSach()
+    {
+        if(ds == null)
+        {
+            ds = data.layDanhSach();
+        }
+        return ds;
+    }
     
     // Biến static lưu tài khoản đang đăng nhập để xài toàn cục
     public static taiKhoanETT taiKhoanHienTai = null;

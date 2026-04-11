@@ -18,6 +18,7 @@ import org.apache.poi.ss.usermodel.CellStyle;
 import Entity.thiSinhXetTuyenETT; 
 import Entity.diemCongETT;
 import Entity.nguyenVongXetTuyenETT; // Nhớ import entity của ông nha
+import Entity.phanQuyenETT;
 
 public class ExcelHelper {
 
@@ -626,6 +627,89 @@ public class ExcelHelper {
         }
     }
     
+    
+        public static void xuatDanhSachPhanQuyenRaExcel(ArrayList<phanQuyenETT> ds, java.awt.Component parent, String tenBang) {
+        try {
+            if (ds == null || ds.isEmpty()) {
+                JOptionPane.showMessageDialog(parent, "Không có dữ liệu để xuất!", "Cảnh báo", JOptionPane.WARNING_MESSAGE);
+                return;
+            }
+
+            JFileChooser fileChooser = new JFileChooser();
+            fileChooser.setDialogTitle("Chọn vị trí lưu Danh sách Phân quyền");
+            fileChooser.setFileFilter(new FileNameExtensionFilter("Excel Files (*.xlsx)", "xlsx"));
+            fileChooser.setSelectedFile(new File(tenBang + ".xlsx"));
+
+            if (fileChooser.showSaveDialog(parent) == JFileChooser.APPROVE_OPTION) {
+                String filePath = fileChooser.getSelectedFile().getAbsolutePath();
+                if (!filePath.toLowerCase().endsWith(".xlsx")) filePath += ".xlsx";
+
+                Workbook workbook = new XSSFWorkbook();
+                Sheet sheet = workbook.createSheet(tenBang);
+
+                // --- 1. GỌI HÀM LẤY STYLE CHUNG (SẠCH SẼ CHƯA!) ---
+                org.apache.poi.ss.usermodel.CellStyle headerStyle = taoStyleTieuDe(workbook);
+                org.apache.poi.ss.usermodel.CellStyle dataStyle = taoStyleDuLieu(workbook);
+
+                // --- 2. IN HEADER ---
+                String[] headers = {
+                    "ID tài khoản", "Tên bảng", "Xem", "Thêm", "Sửa", 
+                    "Xóa"
+                };
+                Row headerRow = sheet.createRow(0);
+                headerRow.setHeightInPoints(25);
+                
+                for (int i = 0; i < headers.length; i++) {
+                    Cell cell = headerRow.createCell(i);
+                    cell.setCellValue(headers[i]);
+                    cell.setCellStyle(headerStyle); // Khoác áo VIP cho Header
+                }
+
+                // --- 3. IN DATA ---
+                int rowNum = 1;
+                for (phanQuyenETT nv : ds) {
+                    Row row = sheet.createRow(rowNum++);
+                    
+                    Object[] rowData = {
+                        nv.getIdTaiKhoan(),
+                        nv.getTenBang()!= null ? nv.getTenBang() : "",
+                        nv.getQuyenXem(),
+                        nv.getQuyenThem(),
+                        nv.getQuyenSua(),
+                        nv.getQuyenXoa(),
+                    };
+
+                    for (int i = 0; i < rowData.length; i++) {
+                        Cell cell = row.createCell(i);
+                        cell.setCellStyle(dataStyle); // Gắn Style Dữ liệu
+                        
+                        if (rowData[i] instanceof Number) {
+                            cell.setCellValue(((Number) rowData[i]).doubleValue());
+                        } else {
+                            cell.setCellValue(rowData[i].toString());
+                        }
+                    }
+                }
+
+                // --- 4. TÚT TÁT LẠI CỘT CHO ĐẸP ---
+                for (int i = 0; i < headers.length; i++) {
+                    sheet.autoSizeColumn(i);
+                    sheet.setColumnWidth(i, sheet.getColumnWidth(i) + 1000); 
+                }
+                sheet.createFreezePane(0, 1); // Khóa tiêu đề
+
+                // Xuất file
+                try (FileOutputStream out = new FileOutputStream(filePath)) {
+                    workbook.write(out);
+                }
+                workbook.close();
+                JOptionPane.showMessageDialog(parent, "Xuất file thành công!\n" + filePath, "Thành công", JOptionPane.INFORMATION_MESSAGE);
+            }
+        } catch (Exception e) {
+            e.printStackTrace();
+            JOptionPane.showMessageDialog(parent, "Lỗi khi xuất: " + e.getMessage(), "Lỗi", JOptionPane.ERROR_MESSAGE);
+        }
+    }
     // =========================================================================
     // HÀM 3: ĐỌC FILE EXCEL TRẢ VỀ MẢNG DỮ LIỆU THÔ (DÙNG CHUNG CHO MỌI BẢNG)
     // =========================================================================

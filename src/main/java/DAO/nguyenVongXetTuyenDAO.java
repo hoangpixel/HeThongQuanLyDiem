@@ -86,7 +86,7 @@ public ArrayList<nguyenVongXetTuyenETT> layDanhSach() {
             transaction = session.beginTransaction();
             
             // 1. Tìm đối tượng dưới DB dựa vào ID
-            Entity.nguyenVongXetTuyenETT nvToDelete = session.get(Entity.nguyenVongXetTuyenETT.class, nv.getIdNv());
+            nguyenVongXetTuyenETT nvToDelete = session.get(nguyenVongXetTuyenETT.class, nv.getIdNv());
             
             // 2. Nếu tìm thấy thì đem đi hủy
             if (nvToDelete != null) {

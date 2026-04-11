@@ -6,7 +6,7 @@ import java.awt.*;
 
 public class navbarGUI extends JPanel {
 
-    public JButton btnThiSinh, btnDiemThi, btnNganh, btnToHopMon, btnNganhToHop, btnBangQuyDoi, btnDiemCong, btnNguyenVong, btnDangXuat, btnTaiKhoan, btnChungChi, btnGiaiThuong;
+    public JButton btnThiSinh, btnDiemThi, btnPhanQuyen,btnNganh, btnToHopMon, btnNganhToHop, btnBangQuyDoi, btnDiemCong, btnNguyenVong, btnDangXuat, btnTaiKhoan, btnChungChi, btnGiaiThuong;
 
     public navbarGUI() {
         setLayout(new BoxLayout(this, BoxLayout.Y_AXIS));
@@ -41,7 +41,7 @@ public class navbarGUI extends JPanel {
         lblWelcome.setFont(new Font("Segoe UI", Font.PLAIN, 12));
         lblWelcome.setAlignmentX(Component.CENTER_ALIGNMENT);
 
-        JLabel lblName = new JLabel("👤 " + tenNguoiDung);
+        JLabel lblName = new JLabel(" " + tenNguoiDung);
         lblName.setForeground(new Color(46, 204, 113)); // Màu xanh lá nổi bật
         lblName.setFont(new Font("Segoe UI", Font.BOLD, 16));
         lblName.setAlignmentX(Component.CENTER_ALIGNMENT);
@@ -60,27 +60,41 @@ public class navbarGUI extends JPanel {
         add(Box.createVerticalStrut(20));
 
         // ================= MENU BUTTONS (CÓ ICON UNICODE) =================
-        btnThiSinh = createButton("🎓 1. Quản lý Thí sinh");
-        btnNganh = createButton("🏫 2. Quản lý Ngành học");
-        btnToHopMon = createButton("📚 3. Quản lý Tổ hợp môn");
-        btnNganhToHop = createButton("🔗 4. Tổ hợp - Ngành");
-        btnBangQuyDoi = createButton("⚖️ 5. Bảng quy đổi V-SAT");
-        btnDiemThi = createButton("📝 6. Quản lý Điểm thi");
-        btnDiemCong = createButton("⭐ 7. Điểm cộng & Ưu tiên");
-        btnNguyenVong = createButton("🎯 8. Nguyện vọng xét tuyển");
-        btnTaiKhoan = createButton("🔐 9. Quản lý Tài Khoản");
-        btnChungChi = createButton("📜 10. Chứng Chỉ");
-        btnGiaiThuong = createButton("🏆 11. Giải Thưởng");
+        btnThiSinh = createButton("1. Quản lý Thí sinh");
+        btnNganh = createButton("2. Quản lý Ngành học");
+        btnToHopMon = createButton("3. Quản lý Tổ hợp môn");
+        btnNganhToHop = createButton("4. Tổ hợp - Ngành");
+        btnBangQuyDoi = createButton("5. Bảng quy đổi V-SAT");
+        btnDiemThi = createButton("6. Quản lý Điểm thi");
+        btnDiemCong = createButton("7. Điểm cộng & Ưu tiên");
+        btnNguyenVong = createButton("8. Nguyện vọng xét tuyển");
+        btnTaiKhoan = createButton("9. Quản lý Tài Khoản");
+        btnChungChi = createButton("10. Chứng Chỉ");
+        btnGiaiThuong = createButton("11. Giải Thưởng");
+        btnPhanQuyen = createButton("12. Phân quyền");
         
-        JButton[] menus = {btnThiSinh, btnNganh, btnToHopMon, btnNganhToHop, btnBangQuyDoi, btnDiemThi, btnDiemCong, btnNguyenVong, btnTaiKhoan, btnChungChi, btnGiaiThuong};
+        JButton[] menus = {btnThiSinh, btnNganh,btnToHopMon, btnNganhToHop, btnBangQuyDoi, btnDiemThi, btnDiemCong, btnNguyenVong, btnTaiKhoan, btnChungChi, btnGiaiThuong, btnPhanQuyen};
         
         String[] tables = {
             "xt_thisinhxettuyen25", "xt_nganh", "xt_tohop_monthi", "xt_nganh_tohop", "xt_bangquydoi", 
-            "xt_diemthixettuyen", "xt_diemcongxettuyen", "xt_nguyenvongxettuyen", "xt_taikhoan", "xt_chungchi", "xt_giathuong"
+            "xt_diemthixettuyen", "xt_diemcongxettuyen", "xt_nguyenvongxettuyen", "xt_taikhoan", "xt_chungchi", "xt_giathuong", "xt_phanquyen"
         };
 
+//        for (int i = 0; i < menus.length; i++) {
+//            if (BUS.phanQuyenBUS.checkQuyenXem(tables[i])) {
+//                add(menus[i]);
+//                add(Box.createVerticalStrut(8)); 
+//            }
+//        }
+        boolean isAdmin = false;
+
+        // Kiểm tra tài khoản hiện tại có phải admin không
+        if (BUS.taiKhoanBUS.taiKhoanHienTai != null) {
+            isAdmin = BUS.taiKhoanBUS.taiKhoanHienTai.getIdTaiKhoan()== 1;
+        }
+
         for (int i = 0; i < menus.length; i++) {
-            if (BUS.phanQuyenBUS.checkQuyenXem(tables[i])) {
+            if (isAdmin || BUS.phanQuyenBUS.checkQuyenXem(tables[i])) {
                 add(menus[i]);
                 add(Box.createVerticalStrut(8)); 
             }

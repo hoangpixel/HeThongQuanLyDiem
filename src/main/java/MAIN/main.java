@@ -15,41 +15,41 @@ import javax.swing.plaf.FontUIResource;
 
 public class main {
 
-    public static void main(String[] args) {
-        try {
-            // 1. TẢI FONT TRƯỚC
-            Font appFont = loadFont("/font/Saira-Regular.ttf", 14f);
-
-            // 2. ÉP FONT CHO FLATLAF (BẮT BUỘC PHẢI ĐẶT TRƯỚC SETUP)
-            UIManager.put("defaultFont", appFont);
-            
-            // (Tuỳ chọn) Chắc cú hơn, ép luôn toàn bộ các key UI của Swing
-            setGlobalFont(appFont);
-
-            // 3. KHỞI TẠO GIAO DIỆN FLATLAF
-            FlatLightLaf.setup();
-
-        } catch (Exception e) {
-            e.printStackTrace();
-        }
-
-        // 4. CHẠY UI TRÊN LUỒNG EVENT DISPATCH THREAD
-        SwingUtilities.invokeLater(() -> {
-            contentGUI frame = new contentGUI();
-            frame.setVisible(true);
-
-            // 5. Check DB
-            if (HibernateUtil.getSessionFactory() == null) {
-                String detail = HibernateUtil.getLastInitErrorMessage();
-                String msg = "Không thể kết nối Database nên dữ liệu sẽ không tải được.\n"
-                        + "Hãy kiểm tra MySQL đang chạy và cấu hình trong hibernate.cfg.xml (username/password).";
-                if (detail != null && !detail.trim().isEmpty()) {
-                    msg += "\n\nChi tiết: " + detail;
-                }
-                JOptionPane.showMessageDialog(frame, msg);
-            }
-        });
-    }
+//    public static void main(String[] args) {
+//        try {
+//            // 1. TẢI FONT TRƯỚC
+//            Font appFont = loadFont("/font/Saira-Regular.ttf", 14f);
+//
+//            // 2. ÉP FONT CHO FLATLAF (BẮT BUỘC PHẢI ĐẶT TRƯỚC SETUP)
+//            UIManager.put("defaultFont", appFont);
+//            
+//            // (Tuỳ chọn) Chắc cú hơn, ép luôn toàn bộ các key UI của Swing
+//            setGlobalFont(appFont);
+//
+//            // 3. KHỞI TẠO GIAO DIỆN FLATLAF
+//            FlatLightLaf.setup();
+//
+//        } catch (Exception e) {
+//            e.printStackTrace();
+//        }
+//
+//        // 4. CHẠY UI TRÊN LUỒNG EVENT DISPATCH THREAD
+//        SwingUtilities.invokeLater(() -> {
+//            contentGUI frame = new contentGUI();
+//            frame.setVisible(true);
+//
+//            // 5. Check DB
+//            if (HibernateUtil.getSessionFactory() == null) {
+//                String detail = HibernateUtil.getLastInitErrorMessage();
+//                String msg = "Không thể kết nối Database nên dữ liệu sẽ không tải được.\n"
+//                        + "Hãy kiểm tra MySQL đang chạy và cấu hình trong hibernate.cfg.xml (username/password).";
+//                if (detail != null && !detail.trim().isEmpty()) {
+//                    msg += "\n\nChi tiết: " + detail;
+//                }
+//                JOptionPane.showMessageDialog(frame, msg);
+//            }
+//        });
+//    }
 
     // ================== LOAD FONT ==================
     public static Font loadFont(String path, float size) {

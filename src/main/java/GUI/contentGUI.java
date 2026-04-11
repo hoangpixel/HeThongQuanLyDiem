@@ -1,5 +1,6 @@
 package GUI;
 
+import BUS.phanQuyenBUS;
 import java.awt.*;
 import javax.swing.*;
 
@@ -7,6 +8,7 @@ public class contentGUI extends JFrame {
 
     private JPanel contentPanel;
     private CardLayout cardLayout;
+    boolean isAdmin = false;
 
     public contentGUI() {
         setTitle("Hệ thống quản lý điểm");
@@ -34,25 +36,33 @@ public class contentGUI extends JFrame {
         
         contentPanel.add(pnlWelcome, "welcome"); // Đưa lên đầu tiên để làm mặc định!
 
+        if (BUS.taiKhoanBUS.taiKhoanHienTai != null) 
+        {
+            isAdmin = BUS.taiKhoanBUS.taiKhoanHienTai.getIdTaiKhoan()== 1;
+        }
+        
         // 2. 👉 Thêm các panel của ông bình thường ở dưới
         // (Lưu ý: Ông có thể bọc if kiểm tra quyền ở đây để khỏi tốn RAM load mấy form không có quyền)
-        if (BUS.phanQuyenBUS.checkQuyenXem("xt_nguyenvongxettuyen")) {
+        if (isAdmin || phanQuyenBUS.checkQuyenXem("xt_nguyenvongxettuyen")) {
             contentPanel.add(new nguyenVongXetTuyenGUI(), "nguyenvong");
         }
-        if (BUS.phanQuyenBUS.checkQuyenXem("xt_thisinhxettuyen25")) {
+        if (isAdmin || phanQuyenBUS.checkQuyenXem("xt_thisinhxettuyen25")) {
             contentPanel.add(new thiSinhXetTuyenGUI(), "thisinh");
         }
-        if (BUS.phanQuyenBUS.checkQuyenXem("xt_diemcongxettuyen")) {
+        if (isAdmin || phanQuyenBUS.checkQuyenXem("xt_diemcongxettuyen")) {
             contentPanel.add(new diemCongXetTuyenGUI(), "diemcong");
         }
-        if (BUS.phanQuyenBUS.checkQuyenXem("xt_nganh")) {
+        if (isAdmin || phanQuyenBUS.checkQuyenXem("xt_nganh")) {
             contentPanel.add(new NganhGUI(), "nganh");
         }
-        if (BUS.phanQuyenBUS.checkQuyenXem("xt_bangquydoi")) {
+        if (isAdmin || phanQuyenBUS.checkQuyenXem("xt_bangquydoi")) {
             contentPanel.add(new bangQuyDoiVSATGUI(), "bangquydoi");
         }
-        if (BUS.phanQuyenBUS.checkQuyenXem("xt_nganh_tohop")) {
+        if (isAdmin || phanQuyenBUS.checkQuyenXem("xt_nganh_tohop")) {
             contentPanel.add(new nganhToHopGUI(), "nganhtohop");
+        }
+        if (isAdmin || phanQuyenBUS.checkQuyenXem("xt_phanquyen")) {
+            contentPanel.add(new phanQuyenGUI(), "phanquyen");
         }
         // contentPanel.add(new toHopGUI(), "tohop");
         // contentPanel.add(new taiKhoanGUI(), "taikhoan");
@@ -87,5 +97,8 @@ public class contentGUI extends JFrame {
           nav.btnTaiKhoan.addActionListener(e -> {
             cardLayout.show(contentPanel, "taikhoan");
         });
+          nav.btnPhanQuyen.addActionListener(e -> {
+            cardLayout.show(contentPanel, "phanquyen");
+        });  
     }
 }
