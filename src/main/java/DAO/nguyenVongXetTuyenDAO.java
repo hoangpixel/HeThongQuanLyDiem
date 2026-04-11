@@ -151,5 +151,28 @@ public ArrayList<nguyenVongXetTuyenETT> layDanhSach() {
         } catch (Exception e) { e.printStackTrace(); return 0.0; }
     }
     
-    
+    public boolean capNhatKetQuaHangLoat(List<nguyenVongXetTuyenETT> danhSach) {
+        org.hibernate.Transaction transaction = null;
+        try (Session session = CONFIG.HibernateUtil.getSessionFactory().openSession()) {
+            transaction = session.beginTransaction();
+            
+            for (int i = 0; i < danhSach.size(); i++) {
+                // update() nhanh hơn saveOrUpdate() vì ta biết chắc chắn nó đã tồn tại
+                session.update(danhSach.get(i)); 
+                
+                // Cứ 50 dòng thì flush và clear để xả RAM cho đỡ nặng
+                if (i % 50 == 0) { 
+                    session.flush();
+                    session.clear();
+                }
+            }
+            
+            transaction.commit();
+            return true;
+        } catch (Exception e) {
+            if (transaction != null) transaction.rollback();
+            e.printStackTrace();
+            return false;
+        }
+    }
 }

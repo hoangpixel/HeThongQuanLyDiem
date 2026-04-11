@@ -8,6 +8,7 @@ import DAO.nguyenVongXetTuyenDAO;
 import Entity.nguyenVongXetTuyenETT;
 import java.util.ArrayList;
 import java.util.HashMap;
+import java.util.LinkedHashMap;
 
 /**
  *
@@ -132,9 +133,25 @@ public class nguyenVongXetTuyenBUS {
             mapChiTieu.put(nganh.getManganh() + "_Xét tuyển thẳng", nganh.getSl_xtt() != null ? nganh.getSl_xtt() : 0);
             mapToHopGoc.put(nganh.getManganh(), nganh.getN_tohopgoc());
         }
-
+        
+        BUS.giaiThuongBUS gtBus = new BUS.giaiThuongBUS();
+        BUS.quyTacGiaiThuongBUS qtBus = new BUS.quyTacGiaiThuongBUS();
+        qtBus.loadQuyTac();
+        
+        HashMap<String, Integer> mapUuTienGiai = new HashMap<>();
+        for (nguyenVongXetTuyenETT nv : ds) {
+            if (nv.getTtPhuongThuc().equals("Xét tuyển thẳng")) {
+                String[] ttGiai = gtBus.layCapVaLoaiGiai(nv.getNnCccd());
+                Entity.quyTacGiaiThuongETT quyTac = qtBus.layQuyTac(ttGiai[0], ttGiai[1]);
+                if (quyTac != null) {
+                    mapUuTienGiai.put(nv.getNnCccd(), quyTac.getDoUuTien());
+                }
+            }
+        }
+        
         // BƯỚC 2: GOM NHÓM NGUYỆN VỌNG THEO TỪNG HỌC SINH
-        HashMap<String, ArrayList<nguyenVongXetTuyenETT>> mapHocSinh = new HashMap<>();
+//        HashMap<String, ArrayList<nguyenVongXetTuyenETT>> mapHocSinh = new HashMap<>();
+        LinkedHashMap<String, ArrayList<nguyenVongXetTuyenETT>> mapHocSinh = new java.util.LinkedHashMap<>();
         for (nguyenVongXetTuyenETT nv : ds) {
             String cccd = nv.getNnCccd();
             if (!mapHocSinh.containsKey(cccd)) {
@@ -156,7 +173,8 @@ public class nguyenVongXetTuyenBUS {
 
         // BƯỚC 3: VÒNG LẶP DOMINO (CHÉM DÂY CHUYỀN)
         boolean coSuThayDoi = true;
-        HashMap<String, ArrayList<nguyenVongXetTuyenETT>> mapRoXetTuyen = new HashMap<>();
+//        HashMap<String, ArrayList<nguyenVongXetTuyenETT>> mapRoXetTuyen = new HashMap<>();
+        LinkedHashMap<String, ArrayList<nguyenVongXetTuyenETT>> mapRoXetTuyen = new java.util.LinkedHashMap<>();
 
         // Vòng lặp sẽ chạy liên tục cho đến khi không còn ai bị rớt nữa mới dừng
         while (coSuThayDoi) {
@@ -193,17 +211,26 @@ public class nguyenVongXetTuyenBUS {
                     int diemCompare = Double.compare(nv2.getDiemXetTuyen(), nv1.getDiemXetTuyen());
                     if (diemCompare != 0) return diemCompare;
                     
-                    // Ưu tiên 2 (MỚI): TỔ HỢP GỐC - Bằng điểm thì ưu tiên thằng có Tổ hợp = Tổ hợp gốc
+                    // ============================================================
+                    // 🔥 MỚI: Ưu tiên 1.5 - ĐỘ ƯU TIÊN GIẢI THƯỞNG 🔥
+                    // Nếu 2 đứa cùng 30 điểm Tuyển Thẳng, lôi cái Ưu Tiên Giải ra đọ!
+                    // ============================================================
+                    int uuTien1 = mapUuTienGiai.getOrDefault(nv1.getNnCccd(), 0);
+                    int uuTien2 = mapUuTienGiai.getOrDefault(nv2.getNnCccd(), 0);
+                    int uuTienCompare = Integer.compare(uuTien2, uuTien1); // nv2 so với nv1 để xếp Giảm Dần
+                    if (uuTienCompare != 0) return uuTienCompare;
+                    
+                    // Ưu tiên 2: TỔ HỢP GỐC
                     boolean isNv1Goc = nv1.getTtThm() != null && nv1.getTtThm().equals(toHopGoc);
                     boolean isNv2Goc = nv2.getTtThm() != null && nv2.getTtThm().equals(toHopGoc);
-                    if (isNv1Goc && !isNv2Goc) return -1; // nv1 là con ruột -> Xếp trên
-                    if (!isNv1Goc && isNv2Goc) return 1;  // nv2 là con ruột -> Xếp trên
+                    if (isNv1Goc && !isNv2Goc) return -1; 
+                    if (!isNv1Goc && isNv2Goc) return 1;  
 
-                    // Ưu tiên 3: Điểm Môn 1 (Toán) - Cùng là con ruột (hoặc cùng không phải) thì xét điểm Toán
+                    // Ưu tiên 3: Điểm Môn 1 (Toán) 
                     int diemToanCompare = Double.compare(nv2.getDiemMon1(), nv1.getDiemMon1());
                     if (diemToanCompare != 0) return diemToanCompare;
 
-                    // Ưu tiên 4: Thứ tự nguyện vọng (Nhỏ xuống Lớn)
+                    // Ưu tiên 4: Thứ tự nguyện vọng 
                     return Integer.compare(nv1.getNvTt(), nv2.getNvTt());
                 });
 
@@ -231,8 +258,13 @@ public class nguyenVongXetTuyenBUS {
                         nguyenVongXetTuyenETT nguoiTiepTheo = roHienTai.get(diemCatThucTe);
                         boolean isNguoiTiepTheoGoc = nguoiTiepTheo.getTtThm() != null && nguoiTiepTheo.getTtThm().equals(toHopGoc);
                         
-                        // ĐỒNG ĐIỂM HOÀN TOÀN TỪ ƯU TIÊN 1 TỚI ƯU TIÊN 4
+                        // 🔥 MỚI: Lấy độ ưu tiên của 2 đứa ra để so sánh
+                        int uuTienNguoiCuoi = mapUuTienGiai.getOrDefault(nguoiCuoiCungDau.getNnCccd(), 0);
+                        int uuTienNguoiTiepTheo = mapUuTienGiai.getOrDefault(nguoiTiepTheo.getNnCccd(), 0);
+                        
+                        // ĐỒNG ĐIỂM HOÀN TOÀN TỪ ƯU TIÊN 1 TỚI ƯU TIÊN 4 (Thêm check uuTienNguoiTiepTheo == uuTienNguoiCuoi)
                         if (nguoiTiepTheo.getDiemXetTuyen() == nguoiCuoiCungDau.getDiemXetTuyen() &&
+                            uuTienNguoiTiepTheo == uuTienNguoiCuoi && // 🚀 CHỐT CHẶN TIÊU CHÍ PHỤ CỦA GIẢI THƯỞNG
                             isNguoiTiepTheoGoc == isNguoiCuoiGoc && 
                             nguoiTiepTheo.getDiemMon1() == nguoiCuoiCungDau.getDiemMon1() &&
                             nguoiTiepTheo.getNvTt() == nguoiCuoiCungDau.getNvTt()) {
@@ -283,78 +315,83 @@ public class nguyenVongXetTuyenBUS {
                 }
                 
                 // Lưu phán quyết xuống Database
-                data.suaNguyenVong(nv);
+//                data.suaNguyenVong(nv);
             }
         }
-        
+        // 🔥 BƯỚC 5 (MỚI): GỌI DAO LƯU MỘT CỤC (BATCH UPDATE) 🔥
+        if (data.capNhatKetQuaHangLoat(ds)) {
+            System.out.println("CẮT CHỈ TIÊU & LƯU DATABASE HOÀN TẤT!");
+        } else {
+            System.out.println("LỖI LƯU DATABASE KHI CẮT CHỈ TIÊU!");
+        }
         System.out.println("CẮT CHỈ TIÊU HOÀN TẤT!");
     }
     
     
-    public void napDiemAoChoDanhSach() {
-        if (ds == null || ds.isEmpty()) return;
-
-        for (Entity.nguyenVongXetTuyenETT nv : ds) {
-            String cccd = nv.getNnCccd();
-            String maToHop = nv.getTtThm();
-            String phuongThuc = nv.getTtPhuongThuc();
-
-            // 1. Lấy điểm ĐGNL HCM
-            if (phuongThuc.equals("ĐGNL HCM")) {
-                nv.setDiemMon1(data.layDiemDGNL(cccd));
-            } 
-            // 2. Lấy điểm 3 môn cho V-SAT hoặc THPT
-            else if (maToHop != null && !maToHop.equals("Không")) {
-                
-                String[] toHop = data.layMonTuToHop(maToHop);
-
-                if (toHop != null) {
-                    String m1 = toHop[0];
-                    String m2 = toHop[1];
-                    String m3 = toHop[2];
-
-                    nv.setTenMon1(m1);
-                    nv.setTenMon2(m2);
-                    nv.setTenMon3(m3);
-
-                    // Gỡ bẫy môn Tiếng Anh (Lấy N1_THI để map với cột Database)
-                    String col1 = m1.equals("N1") ? "N1_THI" : m1;
-                    String col2 = m2.equals("N1") ? "N1_THI" : m2;
-                    String col3 = m3.equals("N1") ? "N1_THI" : m3;
-
-                    // Gọi DAO lấy 1 mảng 3 con điểm
-                    double[] diemThi = data.layDiemThiBaMon(cccd, col1, col2, col3);
-                    double diem1 = diemThi[0];
-                    double diem2 = diemThi[1];
-                    double diem3 = diemThi[2];
-                    
-                    nv.setDiemMon1(diem1);
-                    nv.setDiemMon2(diem2);
-                    nv.setDiemMon3(diem3);
-                    
-                    // (MỞ RỘNG: Dò thêm IELTS để Tiêu chí phụ chính xác 100%)
-                    if ("N1".equals(m1) || "N1".equals(m2) || "N1".equals(m3)) {
-                        double ieltsQD = data.layDiemIELTS(cccd);
-                        if (ieltsQD > 0) { // Có chứng chỉ mới tráo
-                            if ("N1".equals(m1)) nv.setDiemMon1(Math.max(diem1, ieltsQD));
-                            if ("N1".equals(m2)) nv.setDiemMon2(Math.max(diem2, ieltsQD));
-                            if ("N1".equals(m3)) nv.setDiemMon3(Math.max(diem3, ieltsQD));
-                        }
-                    }
-                }
-            }
-        }
-    }
+//    public void napDiemAoChoDanhSach() {
+//        if (ds == null || ds.isEmpty()) return;
+//
+//        for (Entity.nguyenVongXetTuyenETT nv : ds) {
+//            String cccd = nv.getNnCccd();
+//            String maToHop = nv.getTtThm();
+//            String phuongThuc = nv.getTtPhuongThuc();
+//
+//            // 1. Lấy điểm ĐGNL HCM
+//            if (phuongThuc.equals("ĐGNL HCM")) {
+//                nv.setDiemMon1(data.layDiemDGNL(cccd));
+//            } 
+//            // 2. Lấy điểm 3 môn cho V-SAT hoặc THPT
+//            else if (maToHop != null && !maToHop.equals("Không")) {
+//                
+//                String[] toHop = data.layMonTuToHop(maToHop);
+//
+//                if (toHop != null) {
+//                    String m1 = toHop[0];
+//                    String m2 = toHop[1];
+//                    String m3 = toHop[2];
+//
+//                    nv.setTenMon1(m1);
+//                    nv.setTenMon2(m2);
+//                    nv.setTenMon3(m3);
+//
+//                    // Gỡ bẫy môn Tiếng Anh (Lấy N1_THI để map với cột Database)
+//                    String col1 = m1.equals("N1") ? "N1_THI" : m1;
+//                    String col2 = m2.equals("N1") ? "N1_THI" : m2;
+//                    String col3 = m3.equals("N1") ? "N1_THI" : m3;
+//
+//                    // Gọi DAO lấy 1 mảng 3 con điểm
+//                    double[] diemThi = data.layDiemThiBaMon(cccd, col1, col2, col3);
+//                    double diem1 = diemThi[0];
+//                    double diem2 = diemThi[1];
+//                    double diem3 = diemThi[2];
+//                    
+//                    nv.setDiemMon1(diem1);
+//                    nv.setDiemMon2(diem2);
+//                    nv.setDiemMon3(diem3);
+//                    
+//                    // (MỞ RỘNG: Dò thêm IELTS để Tiêu chí phụ chính xác 100%)
+//                    if ("N1".equals(m1) || "N1".equals(m2) || "N1".equals(m3)) {
+//                        double ieltsQD = data.layDiemIELTS(cccd);
+//                        if (ieltsQD > 0) { // Có chứng chỉ mới tráo
+//                            if ("N1".equals(m1)) nv.setDiemMon1(Math.max(diem1, ieltsQD));
+//                            if ("N1".equals(m2)) nv.setDiemMon2(Math.max(diem2, ieltsQD));
+//                            if ("N1".equals(m3)) nv.setDiemMon3(Math.max(diem3, ieltsQD));
+//                        }
+//                    }
+//                }
+//            }
+//        }
+//    }
     
     
     public void capNhatDiemChuanTuDong() {
         if (ds == null || ds.isEmpty()) return;
 
         // 1. TẠO MAP CHỨA DATA LỌC (LOGIC TẦNG BUS)
-        java.util.HashMap<String, Double> diemChuanMap = new java.util.HashMap<>();
+        HashMap<String, Double> diemChuanMap = new HashMap<>();
 
         // Quét qua để tìm "Kẻ thủ khoa ngược" (Đứa đậu với điểm thấp nhất)
-        for (Entity.nguyenVongXetTuyenETT nv : ds) {
+        for (nguyenVongXetTuyenETT nv : ds) {
             if ("Đã đậu".equals(nv.getNvKetQua())) {
                 String key = nv.getNvMaNganh() + "_" + nv.getTtPhuongThuc();
                 double diem = nv.getDiemXetTuyen();
@@ -370,9 +407,9 @@ public class nguyenVongXetTuyenBUS {
         nganhDAO nDao = new nganhDAO(); 
         
         if (nDao.capNhatDanhSachDiemChuan(diemChuanMap)) {
-            System.out.println("✅ Đã chốt điểm chuẩn tự động thành công (Clean Code)!");
+            System.out.println("Đã chốt điểm chuẩn tự động thành công!");
         } else {
-            System.out.println("❌ Có lỗi xảy ra khi chốt điểm chuẩn!");
+            System.out.println("Có lỗi xảy ra khi chốt điểm chuẩn!");
         }
     }
     
