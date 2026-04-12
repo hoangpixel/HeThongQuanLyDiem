@@ -206,14 +206,41 @@ public class nguyenVongXetTuyenBUS {
                 String toHopGoc = mapToHopGoc.getOrDefault(maNganhHienTai, "");
 
                 // SẮP XẾP CAO CẤP V2: Đưa Tổ Hợp Gốc vào làm "Thái Thượng Hoàng"
+//                roHienTai.sort((nv1, nv2) -> {
+//                    // Ưu tiên 1: Điểm Xét Tuyển (Cao xuống Thấp)
+//                    int diemCompare = Double.compare(nv2.getDiemXetTuyen(), nv1.getDiemXetTuyen());
+//                    if (diemCompare != 0) return diemCompare;
+//                    
+//                    // ============================================================
+//                    // 🔥 MỚI: Ưu tiên 1.5 - ĐỘ ƯU TIÊN GIẢI THƯỞNG 🔥
+//                    // Nếu 2 đứa cùng 30 điểm Tuyển Thẳng, lôi cái Ưu Tiên Giải ra đọ!
+//                    // ============================================================
+//                    int uuTien1 = mapUuTienGiai.getOrDefault(nv1.getNnCccd(), 0);
+//                    int uuTien2 = mapUuTienGiai.getOrDefault(nv2.getNnCccd(), 0);
+//                    int uuTienCompare = Integer.compare(uuTien2, uuTien1); // nv2 so với nv1 để xếp Giảm Dần
+//                    if (uuTienCompare != 0) return uuTienCompare;
+//                    
+//                    // Ưu tiên 2: TỔ HỢP GỐC
+//                    boolean isNv1Goc = nv1.getTtThm() != null && nv1.getTtThm().equals(toHopGoc);
+//                    boolean isNv2Goc = nv2.getTtThm() != null && nv2.getTtThm().equals(toHopGoc);
+//                    if (isNv1Goc && !isNv2Goc) return -1; 
+//                    if (!isNv1Goc && isNv2Goc) return 1;  
+//
+//                    // Ưu tiên 3: Điểm Môn 1 (Toán) 
+//                    int diemToanCompare = Double.compare(nv2.getDiemMon1(), nv1.getDiemMon1());
+//                    if (diemToanCompare != 0) return diemToanCompare;
+//
+//                    // Ưu tiên 4: Thứ tự nguyện vọng 
+//                    return Integer.compare(nv1.getNvTt(), nv2.getNvTt());
+//                });
+// SẮP XẾP CAO CẤP V2: Đưa Tổ Hợp Gốc vào làm "Thái Thượng Hoàng"
                 roHienTai.sort((nv1, nv2) -> {
                     // Ưu tiên 1: Điểm Xét Tuyển (Cao xuống Thấp)
                     int diemCompare = Double.compare(nv2.getDiemXetTuyen(), nv1.getDiemXetTuyen());
                     if (diemCompare != 0) return diemCompare;
                     
                     // ============================================================
-                    // 🔥 MỚI: Ưu tiên 1.5 - ĐỘ ƯU TIÊN GIẢI THƯỞNG 🔥
-                    // Nếu 2 đứa cùng 30 điểm Tuyển Thẳng, lôi cái Ưu Tiên Giải ra đọ!
+                    // 🔥 Ưu tiên 1.5 - ĐỘ ƯU TIÊN GIẢI THƯỞNG 🔥
                     // ============================================================
                     int uuTien1 = mapUuTienGiai.getOrDefault(nv1.getNnCccd(), 0);
                     int uuTien2 = mapUuTienGiai.getOrDefault(nv2.getNnCccd(), 0);
@@ -231,7 +258,15 @@ public class nguyenVongXetTuyenBUS {
                     if (diemToanCompare != 0) return diemToanCompare;
 
                     // Ưu tiên 4: Thứ tự nguyện vọng 
-                    return Integer.compare(nv1.getNvTt(), nv2.getNvTt());
+                    int nvTtCompare = Integer.compare(nv1.getNvTt(), nv2.getNvTt());
+                    if (nvTtCompare != 0) return nvTtCompare;
+
+                    // =========================================================
+                    // 🔥 MỚI: ƯU TIÊN 5 (CHỐT HẠ): AI NỘP TRƯỚC ĐẬU TRƯỚC 
+                    // Dựa vào ID Nguyện Vọng (Khóa chính trong DB). ID nhỏ hơn -> Xếp lên trên.
+                    // (BOSS LƯU Ý: Nếu Entity của ông đặt tên hàm là getId() hay getMaNv() thì đổi lại cho đúng chỗ này nha)
+                    // =========================================================
+                    return Integer.compare(nv1.getIdNv(), nv2.getIdNv()); 
                 });
 
                 int chiTieu = mapChiTieu.getOrDefault(keyRo, 0);

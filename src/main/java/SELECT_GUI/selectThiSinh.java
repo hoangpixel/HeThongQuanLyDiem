@@ -72,9 +72,9 @@ public class selectThiSinh extends javax.swing.JDialog {
         row.add(ct.getHo());
         row.add(ct.getTen());
         row.add(ct.getNgaySinh());
-        row.add(ct.getDienThoai());
-        row.add(ct.getGioiTinh());
-        row.add(ct.getEmail());
+//        row.add(ct.getDienThoai());
+//        row.add(ct.getGioiTinh());
+//        row.add(ct.getEmail());
         row.add(ct.getNoiSinh());
         row.add(ct.getDoiTuong());
         row.add(ct.getKhuVuc());
@@ -102,9 +102,9 @@ public class selectThiSinh extends javax.swing.JDialog {
         headerVec.add("Họ");
         headerVec.add("Tên");
         headerVec.add("Ngày sinh");
-        headerVec.add("SĐT");
-        headerVec.add("Giới tính");
-        headerVec.add("Email");
+//        headerVec.add("SĐT");
+//        headerVec.add("Giới tính");
+//        headerVec.add("Email");
         headerVec.add("Nơi sinh");
         headerVec.add("Đối tượng");
         headerVec.add("Khu vực");

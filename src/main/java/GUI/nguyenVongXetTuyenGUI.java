@@ -201,36 +201,6 @@ private void hienThiDialogThemMoi() {
     insertNguyenVong dialog = new insertNguyenVong(topFrame, true);
     dialog.setVisible(true);
 
-//    if (dialog.xacNhanThem()) {
-//        nguyenVongXetTuyenETT nv = dialog.getNguyenVong();
-//
-//        // 🔥 Convert object → Vector
-//        Vector row = new Vector();
-//        row.add(nv.getIdNv());
-//        row.add(nv.getNnCccd());
-//        row.add(nv.getNvMaNganh());
-//        row.add(nv.getNvTt());
-//        row.add(nv.getDiemThxt());
-//        row.add(nv.getDiemUtqd());
-//        row.add(nv.getDiemCong());
-//        row.add(nv.getDiemXetTuyen());
-//        row.add(nv.getNvKetQua());
-//        row.add(nv.getNvKeys());
-//        row.add(nv.getTtPhuongThuc());
-//        row.add(nv.getTtThm());
-//
-//        // 🔥 ADD vào fullDataList (QUAN TRỌNG)
-//        fullDataList.add(row);
-//
-//        // 🔥 Cập nhật lại totalPages
-//        totalPages = (int) Math.ceil((double) fullDataList.size() / rowsPerPage);
-//
-//        // 🔥 Nếu muốn nhảy tới trang cuối
-//        currentPage = totalPages;
-//
-//        // 🔥 Render lại
-//        renderCurrentPage();
-//    }
 if (dialog.xacNhanThem()) {
         nguyenVongXetTuyenETT nv = dialog.getNguyenVong();
 

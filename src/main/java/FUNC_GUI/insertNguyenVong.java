@@ -43,6 +43,7 @@ public class insertNguyenVong extends javax.swing.JDialog {
     public String maNganh;
     public String phuongThuc;
     public double doLechDiem = 0.0;
+    private Double diemUuTienGoc = null;
     
     public Entity.toHopETT toHopMonDaChon = null;
     /**
@@ -354,15 +355,19 @@ public class insertNguyenVong extends javax.swing.JDialog {
     }//GEN-LAST:event_btnThoatActionPerformed
 
     private void btnThemActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_btnThemActionPerformed
-        // TODO add your handling code here:
-if(!kiemTraHopLe()) {
+// TODO add your handling code here:
+        if(!kiemTraHopLe()) 
+        {
             return;
         }
         
         int thuTuNV = (int) txtThuTuNV.getValue();
         double diemTHXT = Double.valueOf(txtDiemTHXT.getText().trim());
-        double diemUTQD = Double.valueOf(txtDiemUuTien.getText().trim());
-        double diemCong = Double.valueOf(txtDiemCong.getText().trim());
+        double diemCong = Double.valueOf(txtDiemCong.getText().trim()); // Điểm cộng lấy từ UI (đã bị chặn max 3.0 bên kia)
+        
+        // Lấy Điểm Ưu Tiên GỐC từ biến lưu trong RAM (Ví dụ: 2.5)
+        double diemUTQDGoc = (this.diemUuTienGoc != null) ? this.diemUuTienGoc : 0.0;
+        
         String ketQuaNV = "Chờ xét";
         String key = cccd + "_" + thuTuNV;
         String phuongThuc = cboPT.getSelectedItem().toString();
@@ -370,67 +375,73 @@ if(!kiemTraHopLe()) {
         double diemXetTuyen = 0.0;
 
         // =====================================================================
-        // 🔥 BẮT ĐẦU CHIA NHÁNH TÍNH ĐIỂM CHO THẰNG CON 🔥
+        // 🔥 BẮT ĐẦU TÍNH ĐIỂM ĐỂ LƯU VÀO DB 🔥
         // =====================================================================
         
-if (phuongThuc.equals("Xét tuyển thẳng")) {
-            // 1. NHÁNH TUYỂN THẲNG: Móc Sách Luật ra dò
+        if (phuongThuc.equals("Xét tuyển thẳng")) {
             BUS.giaiThuongBUS gtBus = new BUS.giaiThuongBUS();
             BUS.quyTacGiaiThuongBUS qtBus = new BUS.quyTacGiaiThuongBUS();
-            qtBus.loadQuyTac(); // Đảm bảo đã load luật lên RAM
+            qtBus.loadQuyTac(); 
             
             String[] ttGiai = gtBus.layCapVaLoaiGiai(cccd);
-            String capGiai = ttGiai[0];
-            String loaiGiai = ttGiai[1];
-            
-            Entity.quyTacGiaiThuongETT quyTac = qtBus.layQuyTac(capGiai, loaiGiai);
+            Entity.quyTacGiaiThuongETT quyTac = qtBus.layQuyTac(ttGiai[0], ttGiai[1]);
             
             if (quyTac != null && quyTac.getXetTuyenThang() == 1) {
-                // ĐẬU TUYỂN THẲNG -> Chốt cứng 30.0 điểm. 
-                // (Việc đọ giải Nhất/Nhì sẽ do Thuật toán Domino ở Form Cha lo!)
-                diemXetTuyen = 30.0;
+                diemXetTuyen = 30.0; 
             } else {
-                // Xạo xạo nộp hồ sơ Tuyển Thẳng mà không có giải -> Trượt thẳng cẳng (0đ)
-                diemXetTuyen = 0.0; 
+                diemXetTuyen = 0.0;  
+                diemTHXT = 0.0; 
             }
             
         } else {
-            // 2. NHÁNH BÌNH THƯỜNG (Xét THPT, V-SAT, ĐGNL...): Tính hệ số & Bóp điểm
+            // NHÁNH BÌNH THƯỜNG (Xét THPT, V-SAT, ĐGNL)
             nganhToHopBUS busNganhToHop = new nganhToHopBUS();
             double doLechDiem = 0.0;
             if (phuongThuc.equals("Xét THPT") || phuongThuc.equals("Đánh giá V-SAT")) {
                 doLechDiem = busNganhToHop.layDoLechDiem(maNganh, toHopMon);
             }
             
-            double diemUuTienThucTe = diemUTQD; 
+            // 🚨 ĐỒNG BỘ CHỐT CHẶN 3.0 CỦA THẦY VÀO NÚT THÊM
+            double diemUTQDTamTinh = diemUTQDGoc; 
+            if ((diemCong + diemUTQDTamTinh) > 3.0) {
+                if (diemCong >= 3.0) {
+                    diemUTQDTamTinh = 0.0;
+                } else {
+                    diemUTQDTamTinh = 3.0 - diemCong; // Bị cắt gọt để vừa khít 3.0
+                }
+            }
+            
+            double diemUuTienThucTe = diemUTQDTamTinh; 
             double diemXetMoc = diemTHXT + diemCong;        
             
+            // Tính toán bóp điểm (Dựa vào điểm ưu tiên Tạm Tính đã bị cắt gọt)
             if (diemXetMoc >= 22.5) {
-                diemUuTienThucTe = ((30.0 - diemTHXT - diemCong) / 7.5) * diemUTQD;
+                diemUuTienThucTe = ((30.0 - diemTHXT - diemCong) / 7.5) * diemUTQDTamTinh;
                 if (diemUuTienThucTe < 0) diemUuTienThucTe = 0.0;
             }
 
-            // Tính tổng điểm
+            // Tính Tổng Điểm Xét Tuyển
             diemXetTuyen = diemTHXT + diemUuTienThucTe + diemCong + doLechDiem;
-            diemXetTuyen = Math.min(30.0, diemXetTuyen); // Đóng trần 30 điểm
+            diemXetTuyen = Math.min(30.0, diemXetTuyen); 
         }
 
-        // =====================================================================
-        
-        // 🚨 CHÚ Ý CỰC KỲ QUAN TRỌNG: 
-        // Đổi thành làm tròn 3 CHỮ SỐ (1000.0) thay vì 100.0 như lúc trước
-        // Để nó không vô tình làm tròn số 30.009 thành 30.01 nha Boss!
+        // Làm tròn 2 chữ số
         diemXetTuyen = Math.round(diemXetTuyen * 100.0) / 100.0;
         
-        // Gán vào Object và ném xuống Database
+        // =====================================================================
+        // ĐÓNG GÓI VÀ NÉM XUỐNG DATABASE
+        // =====================================================================
         nguyenVongXetTuyenETT ct = new nguyenVongXetTuyenETT();
         ct.setNnCccd(cccd);
         ct.setNvMaNganh(maNganh);
         ct.setNvTt(thuTuNV);
         ct.setDiemThxt(diemTHXT);
-        ct.setDiemUtqd(diemUTQD);
+        
+        // 🚀 LƯU Ý LỚN: Vẫn lưu diemUTQDGoc (ví dụ 2.5) nguyên vẹn xuống DB để in giấy tờ!
+        ct.setDiemUtqd(diemUTQDGoc); 
+        
         ct.setDiemCong(diemCong);
-        ct.setDiemXetTuyen(diemXetTuyen); // Thằng Cha chỉ cần mỗi con số này nè!
+        ct.setDiemXetTuyen(diemXetTuyen); 
         ct.setNvKetQua(ketQuaNV);
         ct.setNvKeys(key);
         ct.setTtPhuongThuc(phuongThuc);
@@ -452,49 +463,7 @@ if (phuongThuc.equals("Xét tuyển thẳng")) {
 
     private void btnChonCCCThiSinhActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_btnChonCCCThiSinhActionPerformed
         // TODO add your handling code here:
-//        JFrame topFrame = (JFrame) SwingUtilities.getWindowAncestor(this);
-//        selectThiSinh dialog = new selectThiSinh(topFrame, true);
-//        dialog.setVisible(true);
-//        
-//        if(dialog.getXacNhan())
-//        {
-//            thiSinhXetTuyenETT thiSinh = dialog.getThiSinh();
-//            cccd = thiSinh.getCccd();
-//            txtCCCD.setText(cccd);
-//            
-//            // --- CODE MỚI: TỰ ĐỘNG BỐC ĐIỂM KHU VỰC ---
-//            thiSinhXetTuyenBUS tsBus = new thiSinhXetTuyenBUS();
-//            String khuVuc = tsBus.layKhuVucTheoCCCD(cccd);
-//            
-//            double diemKhuVuc = 0.0;
-//            if (khuVuc != null && !khuVuc.isEmpty()) {
-//                // Ép về chữ in hoa hết cho chắc ăn, lỡ DB nhập chữ thường
-//                switch (khuVuc.trim().toUpperCase()) {
-//                    case "KV1":
-//                        diemKhuVuc = 0.75;
-//                        break;
-//                    case "KV2-NT":
-//                    case "KV2NT": // Bắt luôn phòng hờ viết liền
-//                        diemKhuVuc = 0.50;
-//                        break;
-//                    case "KV2":
-//                        diemKhuVuc = 0.25;
-//                        break;
-//                    case "KV3":
-//                    default:
-//                        diemKhuVuc = 0.0;
-//                        break;
-//                }
-//            }
-//            
-//            // Đập thẳng điểm Khu vực lên giao diện
-//            txtDiemUuTien.setText(String.valueOf(diemKhuVuc));
-//            // ------------------------------------------
-//
-//            btnChonToHop.setEnabled(true);
-//        }
-
-JFrame topFrame = (JFrame) SwingUtilities.getWindowAncestor(this);
+        JFrame topFrame = (JFrame) SwingUtilities.getWindowAncestor(this);
         selectThiSinh dialog = new selectThiSinh(topFrame, true);
         dialog.setVisible(true);
         
@@ -558,11 +527,13 @@ JFrame topFrame = (JFrame) SwingUtilities.getWindowAncestor(this);
                 }
             }
             
-            // 3. CỘNG LẠI THÀNH MỨC ĐIỂM ƯU TIÊN GỐC (MĐƯT)
             double mucDiemUuTienGoc = diemKhuVuc + diemDoiTuong;
             
             // Đập thẳng tổng điểm lên giao diện
             txtDiemUuTien.setText(String.valueOf(mucDiemUuTienGoc));
+            
+            // 🔥 LƯU VÀO RAM CHO HÀM TÍNH ĐIỂM SAU NÀY DÙNG:
+            this.diemUuTienGoc = mucDiemUuTienGoc; 
             // ------------------------------------------
 
             btnChonToHop.setEnabled(true);
@@ -805,7 +776,141 @@ JFrame topFrame = (JFrame) SwingUtilities.getWindowAncestor(this);
 //            e.printStackTrace();
 //        }
 //    }
-    public void capNhatDiemTuDong() {
+//    public void capNhatDiemTuDong() {
+//        if (cccd == null || cccd.trim().isEmpty()) return;
+//        if (cboPT.getSelectedItem() == null) return;
+//
+//        String maNganh = txtMaNganh.getText().trim();
+//        String phuongThuc = cboPT.getSelectedItem().toString();
+//        
+//        try {
+//            double diemCongIELTS = 0.0;
+//            double diemCongGiaiThuong = 0.0;
+//            double diemGoc = 0.0;
+//
+//            // =========================================================
+//            // 🔥 NHÁNH 1: XÉT TUYỂN THẲNG (Không cần biết có điểm thi hay chưa)
+//            // =========================================================
+//            if (phuongThuc.equals("Xét tuyển thẳng")) {
+//                BUS.giaiThuongBUS gtBus = new BUS.giaiThuongBUS();
+//                BUS.quyTacGiaiThuongBUS qtBus = new BUS.quyTacGiaiThuongBUS();
+//                qtBus.loadQuyTac(); 
+//                
+//                String[] ttGiai = gtBus.layCapVaLoaiGiai(cccd);
+//                Entity.quyTacGiaiThuongETT quyTac = qtBus.layQuyTac(ttGiai[0], ttGiai[1]);
+//                
+//                if (quyTac != null && quyTac.getXetTuyenThang() == 1) {
+//                    diemGoc = 30.0; // Có giải xịn -> Lên 30 ngay trên UI
+//                } else {
+//                    diemGoc = 0.0;  // Không có giải xịn -> Hiện 0đ cho chừa
+//                }
+//            } 
+//            // =========================================================
+//            // 🔥 NHÁNH 2: CÁC PHƯƠNG THỨC CẦN ĐIỂM THI (THPT, V-SAT, ĐGNL)
+//            // =========================================================
+//            else {
+//                diemThiBUS dtBus = new diemThiBUS();
+//                diemThiETT diemThi = dtBus.layDiemTheoCCCD(cccd);
+//
+//                if (diemThi != null) { // Phải có điểm thi mới tính tiếp được
+//                    
+//                    // Gộp chung Xét THPT và V-SAT vì cả 2 đều dùng Tổ hợp 3 môn
+//                    if ((phuongThuc.equals("Xét THPT") || phuongThuc.equals("Đánh giá V-SAT")) && toHopMonDaChon != null) {
+//                        String mon1 = toHopMonDaChon.getMon1(); 
+//                        String mon2 = toHopMonDaChon.getMon2();
+//                        String mon3 = toHopMonDaChon.getMon3();
+//
+//                        bangQuyDoiDAO qdDao = new DAO.bangQuyDoiDAO();
+//                        ArrayList<Entity.bangQuyDoiETT> dsQuyDoi = qdDao.layDanhSach();
+//                        
+//                        double diem1 = layDiemTheoMaMon(diemThi, mon1);
+//                        double diem2 = layDiemTheoMaMon(diemThi, mon2);
+//                        double diem3 = layDiemTheoMaMon(diemThi, mon3);
+//                        
+//                        double w1 = 1.0, w2 = 1.0, w3 = 1.0; 
+//
+//                        if (!maNganh.isEmpty()) {
+//                            nganhToHopBUS nthBus = new nganhToHopBUS();
+//                            double[] heSo = nthBus.layHeSoMon(maNganh, toHopMonDaChon.getMatohop()); // Đảm bảo lấy đúng mã tổ hợp nha
+//                            w1 = heSo[0]; w2 = heSo[1]; w3 = heSo[2];
+//                        }
+//
+//                        // CHỈ Xét THPT mới dò điểm IELTS và Giải thưởng
+//                        if (phuongThuc.equals("Xét THPT")) {
+//                            // Dò IELTS
+//                            chungChiBUS ccBus = new chungChiBUS();
+//                            double[] ielts = ccBus.layDiemIELTS(cccd);
+//                            double diemQuyDoi = ielts[0];
+//                            diemCongIELTS = ielts[1];
+//                            
+//                            boolean coTiengAnh = "N1".equals(mon1) || "N1".equals(mon2) || "N1".equals(mon3);
+//
+//                            if (coTiengAnh) {
+//                                if ("N1".equals(mon1)) diem1 = Math.max(diem1, diemQuyDoi);
+//                                if ("N1".equals(mon2)) diem2 = Math.max(diem2, diemQuyDoi);
+//                                if ("N1".equals(mon3)) diem3 = Math.max(diem3, diemQuyDoi);
+//                                diemCongIELTS = 0.0; // Reset
+//                            } 
+//
+//                            // Dò Giải Thưởng cộng điểm
+//                            giaiThuongBUS gtBus = new giaiThuongBUS();
+//                            Object[] gtData = gtBus.layGiaiThuong(cccd);
+//                            if (gtData != null) {
+//                                String maMonGiai = (String) gtData[0];
+//                                double diemCoMon = gtData[1] == null ? 0.0 : ((Number) gtData[1]).doubleValue();
+//                                double diemKhongMon = gtData[2] == null ? 0.0 : ((Number) gtData[2]).doubleValue();
+//                                
+//                                if (maMonGiai.equals(mon1) || maMonGiai.equals(mon2) || maMonGiai.equals(mon3)) {
+//                                    diemCongGiaiThuong = diemCoMon; 
+//                                } else {
+//                                    diemCongGiaiThuong = diemKhongMon; 
+//                                }
+//                            }
+//                        }
+//
+//                        // TÍNH ĐIỂM CHUẨN HÓA THEO PHƯƠNG THỨC
+//                        double W = w1 + w2 + w3;
+//                        if (W > 0) {
+//                            if (phuongThuc.equals("Đánh giá V-SAT")) {
+//                                double d1 = CAL.AdmissionsConverter.quyDoiDiemChung(phuongThuc, toHopMonDaChon.getMatohop(), mon1, diem1, dsQuyDoi);
+//                                double d2 = CAL.AdmissionsConverter.quyDoiDiemChung(phuongThuc, toHopMonDaChon.getMatohop(), mon2, diem2, dsQuyDoi);
+//                                double d3 = CAL.AdmissionsConverter.quyDoiDiemChung(phuongThuc, toHopMonDaChon.getMatohop(), mon3, diem3, dsQuyDoi);
+//                                diemGoc = ((d1 * w1 + d2 * w2 + d3 * w3) / W) * 3.0;
+//                            } else {
+//                                diemGoc = ((diem1 * w1 + diem2 * w2 + diem3 * w3) / W) * 3.0;
+//                            }
+//                        }
+//                        diemGoc = Math.round(diemGoc * 100.0) / 100.0;
+//                    } 
+//                    else if (phuongThuc.equals("ĐGNL HCM")) {
+//                        if (toHopMonDaChon != null) {
+//                            bangQuyDoiDAO qdDao = new DAO.bangQuyDoiDAO();
+//                            ArrayList<bangQuyDoiETT> dsQuyDoi = qdDao.layDanhSach();
+//                            double diemDgnlGoc = diemThi.getNl1() != null ? diemThi.getNl1() : 0.0;
+//                            diemGoc = CAL.AdmissionsConverter.quyDoiDiemChung(phuongThuc, toHopMonDaChon.getMatohop(), "", diemDgnlGoc, dsQuyDoi);
+//                        } else {
+//                            diemGoc = 0.0;
+//                        }
+//                    }
+//                }
+//            }
+//
+//            // --- GÓC DỌN DẸP LẠI PHẦN HIỂN THỊ CUỐI HÀM ---
+//            txtDiemTHXT.setText(String.valueOf(diemGoc));
+//
+//            double tongDiemCong = diemCongIELTS + diemCongGiaiThuong;
+//            txtDiemCong.setText(String.valueOf(tongDiemCong));
+//
+//            txtDiemTHXT.setEditable(false);
+//            txtDiemCong.setEditable(false);
+//            txtDiemUuTien.setEditable(false); 
+//
+//        } catch (Exception e) {
+//            e.printStackTrace();
+//        }
+//    }
+    
+public void capNhatDiemTuDong() {
         if (cccd == null || cccd.trim().isEmpty()) return;
         if (cboPT.getSelectedItem() == null) return;
 
@@ -818,7 +923,7 @@ JFrame topFrame = (JFrame) SwingUtilities.getWindowAncestor(this);
             double diemGoc = 0.0;
 
             // =========================================================
-            // 🔥 NHÁNH 1: XÉT TUYỂN THẲNG (Không cần biết có điểm thi hay chưa)
+            // 🔥 NHÁNH 1: XÉT TUYỂN THẲNG
             // =========================================================
             if (phuongThuc.equals("Xét tuyển thẳng")) {
                 BUS.giaiThuongBUS gtBus = new BUS.giaiThuongBUS();
@@ -829,21 +934,20 @@ JFrame topFrame = (JFrame) SwingUtilities.getWindowAncestor(this);
                 Entity.quyTacGiaiThuongETT quyTac = qtBus.layQuyTac(ttGiai[0], ttGiai[1]);
                 
                 if (quyTac != null && quyTac.getXetTuyenThang() == 1) {
-                    diemGoc = 30.0; // Có giải xịn -> Lên 30 ngay trên UI
+                    diemGoc = 30.0; 
                 } else {
-                    diemGoc = 0.0;  // Không có giải xịn -> Hiện 0đ cho chừa
+                    diemGoc = 0.0;  
                 }
             } 
             // =========================================================
-            // 🔥 NHÁNH 2: CÁC PHƯƠNG THỨC CẦN ĐIỂM THI (THPT, V-SAT, ĐGNL)
+            // 🔥 NHÁNH 2: CÁC PHƯƠNG THỨC CẦN ĐIỂM THI
             // =========================================================
             else {
                 diemThiBUS dtBus = new diemThiBUS();
                 diemThiETT diemThi = dtBus.layDiemTheoCCCD(cccd);
 
-                if (diemThi != null) { // Phải có điểm thi mới tính tiếp được
+                if (diemThi != null) { 
                     
-                    // Gộp chung Xét THPT và V-SAT vì cả 2 đều dùng Tổ hợp 3 môn
                     if ((phuongThuc.equals("Xét THPT") || phuongThuc.equals("Đánh giá V-SAT")) && toHopMonDaChon != null) {
                         String mon1 = toHopMonDaChon.getMon1(); 
                         String mon2 = toHopMonDaChon.getMon2();
@@ -856,65 +960,65 @@ JFrame topFrame = (JFrame) SwingUtilities.getWindowAncestor(this);
                         double diem2 = layDiemTheoMaMon(diemThi, mon2);
                         double diem3 = layDiemTheoMaMon(diemThi, mon3);
                         
+                        // ĐỐI VỚI V-SAT, ĐIỂM BAN ĐẦU CÓ THỂ LÀ THANG ĐIỂM LẺ, NÊN CẦN QUY ĐỔI SANG THANG 10 TRƯỚC
+                        if (phuongThuc.equals("Đánh giá V-SAT")) {
+                            diem1 = CAL.AdmissionsConverter.quyDoiDiemChung(phuongThuc, toHopMonDaChon.getMatohop(), mon1, diem1, dsQuyDoi);
+                            diem2 = CAL.AdmissionsConverter.quyDoiDiemChung(phuongThuc, toHopMonDaChon.getMatohop(), mon2, diem2, dsQuyDoi);
+                            diem3 = CAL.AdmissionsConverter.quyDoiDiemChung(phuongThuc, toHopMonDaChon.getMatohop(), mon3, diem3, dsQuyDoi);
+                        }
+                        
                         double w1 = 1.0, w2 = 1.0, w3 = 1.0; 
 
                         if (!maNganh.isEmpty()) {
                             nganhToHopBUS nthBus = new nganhToHopBUS();
-                            double[] heSo = nthBus.layHeSoMon(maNganh, toHopMonDaChon.getMatohop()); // Đảm bảo lấy đúng mã tổ hợp nha
+                            double[] heSo = nthBus.layHeSoMon(maNganh, toHopMonDaChon.getMatohop()); 
                             w1 = heSo[0]; w2 = heSo[1]; w3 = heSo[2];
                         }
 
-                        // CHỈ Xét THPT mới dò điểm IELTS và Giải thưởng
-                        if (phuongThuc.equals("Xét THPT")) {
-                            // Dò IELTS
-                            chungChiBUS ccBus = new chungChiBUS();
-                            double[] ielts = ccBus.layDiemIELTS(cccd);
-                            double diemQuyDoi = ielts[0];
-                            diemCongIELTS = ielts[1];
+                        // 🔥 MỞ KHÓA CHO CẢ THPT VÀ V-SAT 🔥
+                        // Dò IELTS
+                        chungChiBUS ccBus = new chungChiBUS();
+                        double[] ielts = ccBus.layDiemIELTS(cccd);
+                        double diemQuyDoi = ielts[0];
+                        diemCongIELTS = ielts[1];
+                        
+                        boolean coTiengAnh = "N1".equals(mon1) || "N1".equals(mon2) || "N1".equals(mon3);
+
+                        if (coTiengAnh) {
+                            // SO SÁNH VÀ LẤY ĐIỂM CAO HƠN (Đã xử lý chung cho cả THPT và V-SAT vì diem1, diem2, diem3 đều đã ở thang 10)
+                            if ("N1".equals(mon1)) diem1 = Math.max(diem1, diemQuyDoi);
+                            if ("N1".equals(mon2)) diem2 = Math.max(diem2, diemQuyDoi);
+                            if ("N1".equals(mon3)) diem3 = Math.max(diem3, diemQuyDoi);
+                            diemCongIELTS = 0.0; // Reset điểm cộng khuyến khích
+                        } 
+
+                        // Dò Giải Thưởng cộng điểm
+                        giaiThuongBUS gtBus = new giaiThuongBUS();
+                        Object[] gtData = gtBus.layGiaiThuong(cccd);
+                        if (gtData != null) {
+                            String maMonGiai = (String) gtData[0];
+                            double diemCoMon = gtData[1] == null ? 0.0 : ((Number) gtData[1]).doubleValue();
+                            double diemKhongMon = gtData[2] == null ? 0.0 : ((Number) gtData[2]).doubleValue();
                             
-                            boolean coTiengAnh = "N1".equals(mon1) || "N1".equals(mon2) || "N1".equals(mon3);
-
-                            if (coTiengAnh) {
-                                if ("N1".equals(mon1)) diem1 = Math.max(diem1, diemQuyDoi);
-                                if ("N1".equals(mon2)) diem2 = Math.max(diem2, diemQuyDoi);
-                                if ("N1".equals(mon3)) diem3 = Math.max(diem3, diemQuyDoi);
-                                diemCongIELTS = 0.0; // Reset
-                            } 
-
-                            // Dò Giải Thưởng cộng điểm
-                            giaiThuongBUS gtBus = new giaiThuongBUS();
-                            Object[] gtData = gtBus.layGiaiThuong(cccd);
-                            if (gtData != null) {
-                                String maMonGiai = (String) gtData[0];
-                                double diemCoMon = gtData[1] == null ? 0.0 : ((Number) gtData[1]).doubleValue();
-                                double diemKhongMon = gtData[2] == null ? 0.0 : ((Number) gtData[2]).doubleValue();
-                                
-                                if (maMonGiai.equals(mon1) || maMonGiai.equals(mon2) || maMonGiai.equals(mon3)) {
-                                    diemCongGiaiThuong = diemCoMon; 
-                                } else {
-                                    diemCongGiaiThuong = diemKhongMon; 
-                                }
+                            if (maMonGiai.equals(mon1) || maMonGiai.equals(mon2) || maMonGiai.equals(mon3)) {
+                                diemCongGiaiThuong = diemCoMon; 
+                            } else {
+                                diemCongGiaiThuong = diemKhongMon; 
                             }
                         }
 
                         // TÍNH ĐIỂM CHUẨN HÓA THEO PHƯƠNG THỨC
                         double W = w1 + w2 + w3;
                         if (W > 0) {
-                            if (phuongThuc.equals("Đánh giá V-SAT")) {
-                                double d1 = CAL.AdmissionsConverter.quyDoiDiemChung(phuongThuc, toHopMonDaChon.getMatohop(), mon1, diem1, dsQuyDoi);
-                                double d2 = CAL.AdmissionsConverter.quyDoiDiemChung(phuongThuc, toHopMonDaChon.getMatohop(), mon2, diem2, dsQuyDoi);
-                                double d3 = CAL.AdmissionsConverter.quyDoiDiemChung(phuongThuc, toHopMonDaChon.getMatohop(), mon3, diem3, dsQuyDoi);
-                                diemGoc = ((d1 * w1 + d2 * w2 + d3 * w3) / W) * 3.0;
-                            } else {
-                                diemGoc = ((diem1 * w1 + diem2 * w2 + diem3 * w3) / W) * 3.0;
-                            }
+                            // V-SAT đã được quy đổi sang thang 10 ở trên rồi, nên công thức tính điểm gốc giờ dùng chung
+                            diemGoc = ((diem1 * w1 + diem2 * w2 + diem3 * w3) / W) * 3.0;
                         }
                         diemGoc = Math.round(diemGoc * 100.0) / 100.0;
                     } 
                     else if (phuongThuc.equals("ĐGNL HCM")) {
                         if (toHopMonDaChon != null) {
                             bangQuyDoiDAO qdDao = new DAO.bangQuyDoiDAO();
-                            ArrayList<bangQuyDoiETT> dsQuyDoi = qdDao.layDanhSach();
+                            ArrayList<Entity.bangQuyDoiETT> dsQuyDoi = qdDao.layDanhSach();
                             double diemDgnlGoc = diemThi.getNl1() != null ? diemThi.getNl1() : 0.0;
                             diemGoc = CAL.AdmissionsConverter.quyDoiDiemChung(phuongThuc, toHopMonDaChon.getMatohop(), "", diemDgnlGoc, dsQuyDoi);
                         } else {
@@ -924,11 +1028,40 @@ JFrame topFrame = (JFrame) SwingUtilities.getWindowAncestor(this);
                 }
             }
 
+            // =========================================================
+            // 🔥 PHẦN MỚI: TÍNH ĐIỂM ƯU TIÊN THỰC TẾ TRƯỚC KHI IN LÊN UI
+            // =========================================================
+            double tongDiemCong = diemCongIELTS + diemCongGiaiThuong;
+            
+            double diemUTQDGoc = (this.diemUuTienGoc != null) ? this.diemUuTienGoc : 0.0; 
+            
+            // 🚨 CHỐT CHẶN MỚI TỪ YÊU CẦU CỦA THẦY: Tổng (Điểm Cộng + Điểm ƯT Gốc) không vượt quá 3.0
+            if ((tongDiemCong + diemUTQDGoc) > 3.0) {
+                // Ưu tiên giữ lại điểm cộng chứng chỉ/giải thưởng, nếu còn dư "room" thì mới cộng tới điểm ưu tiên khu vực/đối tượng
+                if (tongDiemCong >= 3.0) {
+                    tongDiemCong = 3.0;
+                    diemUTQDGoc = 0.0; // Điểm cộng đã chiếm trọn quota 3.0
+                } else {
+                    diemUTQDGoc = 3.0 - tongDiemCong; // Phần còn lại dành cho điểm ưu tiên
+                }
+            }
+            
+            double diemUuTienThucTe = diemUTQDGoc;
+            
+            double diemXetMoc = diemGoc + tongDiemCong; 
+            
+            // Công thức bóp điểm của Bộ GD
+            if (diemXetMoc >= 22.5) {
+                diemUuTienThucTe = ((30.0 - diemGoc - tongDiemCong) / 7.5) * diemUTQDGoc;
+                if (diemUuTienThucTe < 0) diemUuTienThucTe = 0.0;
+            }
+            
+            diemUuTienThucTe = Math.round(diemUuTienThucTe * 100.0) / 100.0;
+
             // --- GÓC DỌN DẸP LẠI PHẦN HIỂN THỊ CUỐI HÀM ---
             txtDiemTHXT.setText(String.valueOf(diemGoc));
-
-            double tongDiemCong = diemCongIELTS + diemCongGiaiThuong;
             txtDiemCong.setText(String.valueOf(tongDiemCong));
+            txtDiemUuTien.setText(String.valueOf(diemUuTienThucTe)); 
 
             txtDiemTHXT.setEditable(false);
             txtDiemCong.setEditable(false);
@@ -938,6 +1071,7 @@ JFrame topFrame = (JFrame) SwingUtilities.getWindowAncestor(this);
             e.printStackTrace();
         }
     }
+    
 // =====================================================================
     // HÀM PHỤ TRỢ: Lấy điểm chính xác dựa vào mã môn (Phiên bản Full Database)
     // =====================================================================
