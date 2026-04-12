@@ -2,11 +2,11 @@ package GUI;
 
 import BUS.nganhBUS;
 import Entity.nganhETT;
+import Entity.nguyenVongXetTuyenETT;
 import FUNC_GUI.insertNganh;
 import FUNC_GUI.updateNganh;
-import FUNC_GUI.updateNguyenVong;
 import FUNC_GUI.deleteNganh;
-import FUNC_GUI.deleteNguyenVong;
+import FUNC_GUI.detailNguyenVong;
 
 import java.util.ArrayList;
 import java.util.List;
@@ -234,4 +234,19 @@ public class NganhGUI extends BaseTableGUI {
 
     javax.swing.JOptionPane.showMessageDialog(this, "Đã đồng bộ dữ liệu mới nhất từ Database");
     }
+
+//    private void hienThiChiTietNV()
+//    {
+//        int row = table.getSelectedRow();
+//        if (row != -1) {
+//            int modelIndex = table.convertRowIndexToModel(row);
+//            int absoluteIndex = (currentPage - 1) * rowsPerPage + modelIndex;
+//            
+//            nganhETT nganhCu = busNganh.ds.get(absoluteIndex);
+//            JFrame topFrame = (JFrame) SwingUtilities.windowForComponent(this);
+//            
+//            detailNganh dialog = new detailNganh(topFrame, true, nganhCu);
+//            dialog.setVisible(true);
+//        }
+//    }
 }

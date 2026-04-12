@@ -22,5 +22,8 @@
         <mapping class="Entity.taiKhoanETT"/>
         <mapping class="Entity.phanQuyenETT"/>
         <mapping class="Entity.quyTacGiaiThuongETT"/>
+        <mapping class="Entity.chungChiETT"/>
+        <mapping class="Entity.giaiThuongETT"/>
+
     </session-factory>
 </hibernate-configuration>

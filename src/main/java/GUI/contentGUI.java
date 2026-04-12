@@ -64,6 +64,12 @@ public class contentGUI extends JFrame {
         if (isAdmin || phanQuyenBUS.checkQuyenXem("xt_phanquyen")) {
             contentPanel.add(new phanQuyenGUI(), "phanquyen");
         }
+        if (isAdmin || phanQuyenBUS.checkQuyenXem("xt_chungchi")) {
+            contentPanel.add(new chungChiGUI(), "chungchi");
+        }
+        if (isAdmin || phanQuyenBUS.checkQuyenXem("xt_giathuong")) {
+            contentPanel.add(new giaiThuongGUI(), "giaithuong");
+        }
         if (isAdmin || phanQuyenBUS.checkQuyenXem("xt_taikhoan")) {
             contentPanel.add(new taiKhoanGUI(), "taikhoan");
         }
@@ -100,6 +106,12 @@ public class contentGUI extends JFrame {
         });
           nav.btnTaiKhoan.addActionListener(e -> {
             cardLayout.show(contentPanel, "taikhoan");
+        });
+          nav.btnChungChi.addActionListener(e -> {
+            cardLayout.show(contentPanel, "chungchi");
+        });
+          nav.btnGiaiThuong.addActionListener(e -> {
+            cardLayout.show(contentPanel, "giaithuong");
         });
           nav.btnPhanQuyen.addActionListener(e -> {
             cardLayout.show(contentPanel, "phanquyen");

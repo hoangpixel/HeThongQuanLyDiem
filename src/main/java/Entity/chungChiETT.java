@@ -15,6 +15,7 @@ public class chungChiETT{
 
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
+    @Column(name = "id_cc")
     private int idCc;
 
     @Column(name = "cccd")

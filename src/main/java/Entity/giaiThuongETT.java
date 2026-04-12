@@ -10,11 +10,12 @@ import jakarta.persistence.*;
  * @author mhoang
  */
 @Entity
-@Table(name = "xt_giaithuong")
+@Table(name = "xt_giathuong")
 public class giaiThuongETT{
 
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
+    @Column(name = "id_gt")
     private int idGt;
 
     @Column(name = "cccd")
