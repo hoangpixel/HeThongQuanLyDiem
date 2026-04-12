@@ -14,6 +14,10 @@ import javax.swing.SwingUtilities;
 
 public class bangQuyDoiVSATGUI extends BaseTableGUI {
 
+    private static final String PT_VSAT = "Đánh giá V-SAT";
+    private static final String PT_DGNL = "ĐGNL HCM";
+    private static final String KHONG = "Không";
+
     private final bangQuyDoiBUS bus = new bangQuyDoiBUS();
 
     public bangQuyDoiVSATGUI() {
@@ -36,13 +40,13 @@ public class bangQuyDoiVSATGUI extends BaseTableGUI {
         btnTimKiem.addActionListener(e -> thucHienTimKiem());
         // Giả sử cột Phương thức nằm ở vị trí số 3, Tổ hợp số 4 (Nhớ đếm index từ 0
         // nha)
-//        table.getColumnModel().getColumn(3).setMinWidth(0);
-//        table.getColumnModel().getColumn(3).setMaxWidth(0);
-//        table.getColumnModel().getColumn(3).setWidth(0);
-//
-//        table.getColumnModel().getColumn(4).setMinWidth(0);
-//        table.getColumnModel().getColumn(4).setMaxWidth(0);
-//        table.getColumnModel().getColumn(4).setWidth(0);
+        // table.getColumnModel().getColumn(3).setMinWidth(0);
+        // table.getColumnModel().getColumn(3).setMaxWidth(0);
+        // table.getColumnModel().getColumn(3).setWidth(0);
+        //
+        // table.getColumnModel().getColumn(4).setMinWidth(0);
+        // table.getColumnModel().getColumn(4).setMaxWidth(0);
+        // table.getColumnModel().getColumn(4).setWidth(0);
         loadDataToTable();
     }
 
@@ -70,9 +74,9 @@ public class bangQuyDoiVSATGUI extends BaseTableGUI {
                 Vector row = new Vector();
                 row.add(item.getIdqd());
                 row.add(item.getMaQuyDoi());
-                row.add(item.getMon());
+                row.add(formatMon(item));
                 row.add(item.getPhuongThuc());
-                row.add(item.getToHop());
+                row.add(formatToHop(item));
                 row.add(item.getPhanVi());
                 row.add(item.getDiemA());
                 row.add(item.getDiemB());
@@ -99,9 +103,9 @@ public class bangQuyDoiVSATGUI extends BaseTableGUI {
                     Vector row = new Vector();
                     row.add(item.getIdqd());
                     row.add(item.getMaQuyDoi());
-                    row.add(item.getMon());
+                    row.add(formatMon(item));
                     row.add(item.getPhuongThuc());
-                    row.add(item.getToHop());
+                    row.add(formatToHop(item));
                     row.add(item.getPhanVi());
                     row.add(item.getDiemA());
                     row.add(item.getDiemB());
@@ -150,9 +154,9 @@ public class bangQuyDoiVSATGUI extends BaseTableGUI {
                 Vector rowData = new Vector();
                 rowData.add(moi.getIdqd());
                 rowData.add(moi.getMaQuyDoi());
-                rowData.add(moi.getMon());
+                rowData.add(formatMon(moi));
                 rowData.add(moi.getPhuongThuc());
-                rowData.add(moi.getToHop());
+                rowData.add(formatToHop(moi));
                 rowData.add(moi.getPhanVi());
                 rowData.add(moi.getDiemA());
                 rowData.add(moi.getDiemB());
@@ -259,9 +263,9 @@ public class bangQuyDoiVSATGUI extends BaseTableGUI {
                 Vector row = new Vector();
                 row.add(item.getIdqd());
                 row.add(item.getMaQuyDoi());
-                row.add(item.getMon());
+                row.add(formatMon(item));
                 row.add(item.getPhuongThuc());
-                row.add(item.getToHop());
+                row.add(formatToHop(item));
                 row.add(item.getPhanVi());
                 row.add(item.getDiemA());
                 row.add(item.getDiemB());
@@ -275,5 +279,29 @@ public class bangQuyDoiVSATGUI extends BaseTableGUI {
         if (filtered.isEmpty()) {
             JOptionPane.showMessageDialog(this, "Không tìm thấy dữ liệu phù hợp");
         }
+    }
+
+    private String formatToHop(bangQuyDoiETT item) {
+        if (item == null) {
+            return null;
+        }
+        String phuongThuc = item.getPhuongThuc() != null ? item.getPhuongThuc().trim() : "";
+        String toHop = item.getToHop() != null ? item.getToHop().trim() : "";
+        if (PT_VSAT.equals(phuongThuc) && toHop.isEmpty()) {
+            return KHONG;
+        }
+        return item.getToHop();
+    }
+
+    private String formatMon(bangQuyDoiETT item) {
+        if (item == null) {
+            return null;
+        }
+        String phuongThuc = item.getPhuongThuc() != null ? item.getPhuongThuc().trim() : "";
+        String mon = item.getMon() != null ? item.getMon().trim() : "";
+        if (PT_DGNL.equals(phuongThuc) && mon.isEmpty()) {
+            return KHONG;
+        }
+        return item.getMon();
     }
 }

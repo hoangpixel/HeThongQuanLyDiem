@@ -41,7 +41,7 @@ CREATE TABLE `xt_bangquydoi` (
   `d_phanvi` varchar(45) DEFAULT NULL,
   PRIMARY KEY (`idqd`),
   UNIQUE KEY `d_maquydoi_UNIQUE` (`d_maquydoi`)
-) ENGINE=InnoDB AUTO_INCREMENT=98 DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_0900_ai_ci;
+) ENGINE=InnoDB AUTO_INCREMENT=98 DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_unicode_ci;
 /*!40101 SET character_set_client = @saved_cs_client */;
 
 --
@@ -102,7 +102,7 @@ CREATE TABLE `xt_diemcongxetuyen` (
   `dc_keys` varchar(45) NOT NULL,
   PRIMARY KEY (`iddiemcong`),
   UNIQUE KEY `dc_keys_UNIQUE` (`dc_keys`)
-) ENGINE=InnoDB AUTO_INCREMENT=9 DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_0900_ai_ci;
+) ENGINE=InnoDB AUTO_INCREMENT=9 DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_unicode_ci;
 /*!40101 SET character_set_client = @saved_cs_client */;
 
 --
@@ -149,7 +149,7 @@ CREATE TABLE `xt_diemthixettuyen` (
   `NK6` double DEFAULT NULL,
   PRIMARY KEY (`iddiemthi`),
   UNIQUE KEY `cccd_UNIQUE` (`cccd`)
-) ENGINE=InnoDB AUTO_INCREMENT=81 DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_0900_ai_ci;
+) ENGINE=InnoDB AUTO_INCREMENT=81 DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_unicode_ci;
 /*!40101 SET character_set_client = @saved_cs_client */;
 
 --
@@ -300,7 +300,7 @@ CREATE TABLE `xt_nguyenvongxettuyen` (
   `tt_thm` varchar(45) DEFAULT NULL,
   PRIMARY KEY (`idnv`),
   UNIQUE KEY `nv_keys_UNIQUE` (`nv_keys`)
-) ENGINE=InnoDB AUTO_INCREMENT=49 DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_0900_ai_ci;
+) ENGINE=InnoDB AUTO_INCREMENT=49 DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_unicode_ci;
 /*!40101 SET character_set_client = @saved_cs_client */;
 
 --
@@ -329,7 +329,7 @@ CREATE TABLE `xt_phanquyen` (
   `quyen_xoa` int DEFAULT NULL,
   PRIMARY KEY (`id_tai_khoan`,`ten_bang`),
   CONSTRAINT `xt_phanquyen_ibfk_1` FOREIGN KEY (`id_tai_khoan`) REFERENCES `xt_taikhoan` (`id_tai_khoan`) ON DELETE CASCADE
-) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_0900_ai_ci;
+) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_unicode_ci;
 /*!40101 SET character_set_client = @saved_cs_client */;
 
 --
@@ -356,7 +356,7 @@ CREATE TABLE `xt_quytac_giaithuong` (
   `xet_tuyen_thang` int DEFAULT NULL,
   `do_uu_tien` int DEFAULT '0',
   PRIMARY KEY (`id_quytac`)
-) ENGINE=InnoDB AUTO_INCREMENT=9 DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_0900_ai_ci;
+) ENGINE=InnoDB AUTO_INCREMENT=9 DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_unicode_ci;
 /*!40101 SET character_set_client = @saved_cs_client */;
 
 --
@@ -384,7 +384,7 @@ CREATE TABLE `xt_taikhoan` (
   `trang_thai` int DEFAULT NULL,
   PRIMARY KEY (`id_tai_khoan`),
   UNIQUE KEY `ten_dang_nhap` (`ten_dang_nhap`)
-) ENGINE=InnoDB AUTO_INCREMENT=3 DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_0900_ai_ci;
+) ENGINE=InnoDB AUTO_INCREMENT=3 DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_unicode_ci;
 /*!40101 SET character_set_client = @saved_cs_client */;
 
 --
@@ -428,7 +428,7 @@ CREATE TABLE `xt_thisinhxettuyen25` (
   `updatedAt` datetime(6) DEFAULT NULL,
   PRIMARY KEY (`idthisinh`),
   UNIQUE KEY `cccd_UNIQUE` (`cccd`)
-) ENGINE=InnoDB AUTO_INCREMENT=124 DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_0900_ai_ci;
+) ENGINE=InnoDB AUTO_INCREMENT=124 DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_unicode_ci;
 /*!40101 SET character_set_client = @saved_cs_client */;
 
 --
