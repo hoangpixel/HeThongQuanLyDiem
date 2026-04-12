@@ -64,8 +64,12 @@ public class contentGUI extends JFrame {
         if (isAdmin || phanQuyenBUS.checkQuyenXem("xt_phanquyen")) {
             contentPanel.add(new phanQuyenGUI(), "phanquyen");
         }
-        // contentPanel.add(new toHopGUI(), "tohop");
-        // contentPanel.add(new taiKhoanGUI(), "taikhoan");
+        if (isAdmin || phanQuyenBUS.checkQuyenXem("xt_taikhoan")) {
+            contentPanel.add(new taiKhoanGUI(), "taikhoan");
+        }
+        if (isAdmin || phanQuyenBUS.checkQuyenXem("xt_tohop_monthi")) {
+            contentPanel.add(new toHopGUI(), "tohop");
+        }
         
         add(contentPanel, BorderLayout.CENTER);
 

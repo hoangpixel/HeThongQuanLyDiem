@@ -9,6 +9,7 @@ import Entity.toHopETT;
 import FUNC_GUI.insertToHop;
 import FUNC_GUI.updateToHop;
 import FUNC_GUI.deleteToHop;
+import FUNC_GUI.detailToHop;
 import EXCEL.ExcelHelper;
 import FUNC_GUI.excelToHop;
 
@@ -39,6 +40,8 @@ public class toHopGUI extends BaseTableGUI {
         btnThem.addActionListener(e -> hienThiDialogThem());
         btnSua.addActionListener(e -> hienThiDialogSua());
         btnXoa.addActionListener(e -> hienThiDialogXoa());
+        btnChiTiet.addActionListener(e -> hienThiDialogChiTiet());
+        btnExcel.addActionListener(e -> thucHienExcel());
         btnReFresh.addActionListener(e -> thucHienRefresh());
 
         loadDataToTable();
@@ -203,6 +206,31 @@ public class toHopGUI extends BaseTableGUI {
         } else {
             JOptionPane.showMessageDialog(this, "Vui lòng chọn tổ hợp cần xóa!");
         }
+    }
+    
+    // ================= CHI TIẾT =================
+
+    private void hienThiDialogChiTiet() {
+        int row = table.getSelectedRow();
+
+        if (row == -1) {
+            JOptionPane.showMessageDialog(this, "Vui lòng chọn một tổ hợp để xem chi tiết!");
+            return;
+        }
+
+        int modelIndex = table.convertRowIndexToModel(row);
+        int absoluteIndex = (currentPage - 1) * rowsPerPage + modelIndex;
+
+        toHopETT th = busToHop.ds.get(absoluteIndex);
+
+        if (th == null) {
+            JOptionPane.showMessageDialog(this, "Không tìm thấy tổ hợp!", "Lỗi", JOptionPane.ERROR_MESSAGE);
+            return;
+        }
+
+        JFrame topFrame = (JFrame) SwingUtilities.getWindowAncestor(this);
+        detailToHop dialog = new detailToHop(topFrame, true, th);
+        dialog.setVisible(true);
     }
 
     // ================= REFRESH =================

@@ -307,6 +307,7 @@ public class taiKhoanGUI extends BaseTableForNguyenVongGUIonly {
         cbxTimKiem.setSelectedIndex(0);
         txtTimKiem.setText(null);
         loadDataToTable();
+        JOptionPane.showMessageDialog(this, "Đã đồng bộ dữ liệu tài khoản"); // thêm dòng này
     }
 
     // ===== CHI TIẾT =====

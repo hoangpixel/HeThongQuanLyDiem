@@ -10,6 +10,7 @@ import org.hibernate.query.Query;
 import java.util.ArrayList;
 import java.util.List;
 import UTIL.MD5Util;
+import org.hibernate.Transaction;
 /**
  *
  * @author mhoang
@@ -20,7 +21,7 @@ public class taiKhoanDAO {
     public taiKhoanETT kiemTraDangNhap(String username, String password) {
         try (Session session = CONFIG.HibernateUtil.getSessionFactory().openSession()) {
             // Lưu ý: Tên Class và Tên Thuộc tính phải khớp với Entity của ông nha
-            String hql = "FROM taiKhoanETT WHERE ten_dang_nhap = :user AND mat_khau = :pass AND trang_thai = 1";
+            String hql = "FROM taiKhoanETT WHERE tenDangNhap = :user AND matKhau = :pass AND trangThai = 1";
             Query<taiKhoanETT> query = session.createQuery(hql, taiKhoanETT.class);
             query.setParameter("user", username);
             query.setParameter("pass", MD5Util.md5(password)); // Nhớ mã hóa MD5 nếu DB ông lưu mã hóa
@@ -95,39 +96,38 @@ public class taiKhoanDAO {
     }
     
     public boolean xoaTaiKhoan(String username) {
+        Transaction transaction = null;
         try (Session session = CONFIG.HibernateUtil.getSessionFactory().openSession()) {
-            session.beginTransaction();
-            String hql = "DELETE FROM taiKhoanETT WHERE ten_dang_nhap = :user";
-            Query query = session.createQuery(hql);
-            query.setParameter("user", username);
-            int result = query.executeUpdate();
-            session.getTransaction().commit();
-            return result > 0;
+            transaction = session.beginTransaction();
+            taiKhoanETT tk = layTheoUsername(username);
+            if (tk != null) {
+                session.remove(session.merge(tk));
+                transaction.commit();
+                return true;
+            }
         } catch (Exception e) {
+            if (transaction != null) transaction.rollback();
             e.printStackTrace();
-            return false;
         }
+        return false;
     }
     
     public boolean doiTrangThai(String username, int trangThai) {
+        Transaction transaction = null;
         try (Session session = CONFIG.HibernateUtil.getSessionFactory().openSession()) {
-
-            session.beginTransaction();
-
-            String hql = "UPDATE taiKhoanETT SET trang_Thai = :tt WHERE ten_dang_nhap = :user";
-            Query query = session.createQuery(hql);
-            query.setParameter("tt", trangThai);
-            query.setParameter("user", username);
-            int result = query.executeUpdate();
-
-            session.getTransaction().commit();
-
-            return result > 0;
-
+            transaction = session.beginTransaction();
+            taiKhoanETT tk = layTheoUsername(username);
+            if (tk != null) {
+                tk.setTrangThai(trangThai);
+                session.merge(tk);
+                transaction.commit();
+                return true;
+            }
         } catch (Exception e) {
+            if (transaction != null) transaction.rollback();
             e.printStackTrace();
-            return false;
         }
+        return false;
     }
     
     public ArrayList<taiKhoanETT> layDanhSach()

@@ -128,6 +128,7 @@ public class detailTaiKhoan extends javax.swing.JDialog {
         txtHoTen.setEditable(false);
         txtHoTen.setBackground(new java.awt.Color(239, 239, 239));
 
+        txtMatKhau.setEditable(false);
         txtMatKhau.setBackground(new java.awt.Color(239, 239, 239));
 
         javax.swing.GroupLayout jPanel2Layout = new javax.swing.GroupLayout(jPanel2);

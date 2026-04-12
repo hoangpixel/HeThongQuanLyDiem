@@ -128,7 +128,6 @@ public class updateTaiKhoan extends javax.swing.JDialog {
         jLabel5.setFont(new java.awt.Font("Segoe UI", 0, 14)); // NOI18N
         jLabel5.setText("Mật Khẩu Mới :");
 
-        txtMatKhauMoi.setEditable(false);
         txtMatKhauMoi.setBackground(new java.awt.Color(239, 239, 239));
 
         javax.swing.GroupLayout jPanel2Layout = new javax.swing.GroupLayout(jPanel2);
