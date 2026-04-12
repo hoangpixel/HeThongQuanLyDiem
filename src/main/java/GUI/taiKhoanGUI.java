@@ -134,8 +134,34 @@ public class taiKhoanGUI extends BaseTableForNguyenVongGUIonly {
         JFrame topFrame = (JFrame) SwingUtilities.getWindowAncestor(this);
         insertTaiKhoan dialog = new insertTaiKhoan(topFrame, true);
         dialog.setVisible(true);
-        if (dialog.getXacNhan()) { loadDataToTable(); }
+
+        if (dialog.getXacNhan()) {
+            taiKhoanETT tk = dialog.getTaiKhoanETT();
+
+            // 1. Thêm thẳng vào RAM (bus.ds) - không gọi lại DB
+            bus.ds.add(tk);
+
+            // 2. Convert → Vector và thêm vào fullDataList
+            Vector row = new Vector();
+            row.add(tk.getIdTaiKhoan());
+            row.add(tk.getTenDangNhap());
+            row.add("******");
+            row.add(tk.getHoTen());
+            row.add(tk.getTrangThai() == 1 ? "Hoạt động" : "Bị khóa");
+
+            fullDataList.add(row);
+
+            // 3. Tính lại tổng trang
+            totalPages = (int) Math.ceil((double) fullDataList.size() / rowsPerPage);
+
+            // 4. Nhảy tới trang cuối (chứa record vừa thêm)
+            currentPage = totalPages;
+
+            // 5. Render lại
+            renderCurrentPage();
+        }
     }
+
 
     // ===== SỬA =====
     private void hienThiDialogSua() {
@@ -145,17 +171,25 @@ public class taiKhoanGUI extends BaseTableForNguyenVongGUIonly {
             return;
         }
 
+        // 1. Tính index thực sự trong fullDataList (chống lỗi phân trang)
         int modelIndex = table.convertRowIndexToModel(row);
         int absoluteIndex = (currentPage - 1) * rowsPerPage + modelIndex;
 
-        taiKhoanETT tk = bus.layTheoUsername(tableModel.getValueAt(row, 1).toString());
+        // 2. Lấy object gốc từ RAM của bus (không gọi DB)
+        taiKhoanETT tkCu = bus.ds.get(absoluteIndex);
+
         JFrame topFrame = (JFrame) SwingUtilities.windowForComponent(this);
-        updateTaiKhoan dialog = new updateTaiKhoan(topFrame, true, tk);
+        updateTaiKhoan dialog = new updateTaiKhoan(topFrame, true, tkCu);
         dialog.setVisible(true);
+
         if (dialog.getXacNhan()) {
             taiKhoanETT tkMoi = dialog.getTaiKhoanETT();
-    
-            Vector<Object> rowData = new Vector<>();
+
+            // 3. Cập nhật lại RAM (bus.ds) tại đúng vị trí
+            bus.ds.set(absoluteIndex, tkMoi);
+
+            // 4. Convert → Vector và đè vào fullDataList
+            Vector rowData = new Vector();
             rowData.add(tkMoi.getIdTaiKhoan());
             rowData.add(tkMoi.getTenDangNhap());
             rowData.add("******");
@@ -163,48 +197,58 @@ public class taiKhoanGUI extends BaseTableForNguyenVongGUIonly {
             rowData.add(tkMoi.getTrangThai() == 1 ? "Hoạt động" : "Bị khóa");
 
             fullDataList.set(absoluteIndex, rowData);
+
+            // 5. Render lại đúng trang hiện tại (không mất trang)
             renderCurrentPage();
-         }
+        }
     }
 
     // ===== XÓA =====
     private void hienThiDialogXoa() {
-        
         int row = table.getSelectedRow();
 
-        if (row != -1) {
-
-            JFrame topFrame = (JFrame) SwingUtilities.windowForComponent(this);
-            deleteTaiKhoan dialog = new deleteTaiKhoan(topFrame, true);
-            dialog.setVisible(true);
-
-            if (dialog.getXacNhanXoa()) {
-
-                int modelIndex = table.convertRowIndexToModel(row);
-                int absoluteIndex = (currentPage - 1) * rowsPerPage + modelIndex;
-
-                String username = tableModel.getValueAt(row, 1).toString();
-
-                try {
-                    if (bus.xoaTaiKhoan(username)) {
-                        fullDataList.remove(absoluteIndex);
-                        totalPages = (int) Math.ceil((double) fullDataList.size() / rowsPerPage);
-                        if (currentPage > totalPages && totalPages > 0) {
-                            currentPage = totalPages;
-                        }
-                        renderCurrentPage();
-                    } else {
-                        JOptionPane.showMessageDialog(this, "Xóa tài khoản thất bại!");
-                    }
-                } catch (IllegalArgumentException ex) {
-                    JOptionPane.showMessageDialog(this, ex.getMessage());
-                }
-            }
-        } else {
+        if (row == -1) {
             JOptionPane.showMessageDialog(this, "Vui lòng chọn tài khoản cần xóa!");
+            return;
+        }
+
+        JFrame topFrame = (JFrame) SwingUtilities.windowForComponent(this);
+        deleteTaiKhoan dialog = new deleteTaiKhoan(topFrame, true);
+        dialog.setVisible(true);
+
+        if (dialog.getXacNhanXoa()) {
+            // 1. Tính index thực sự
+            int modelIndex = table.convertRowIndexToModel(row);
+            int absoluteIndex = (currentPage - 1) * rowsPerPage + modelIndex;
+
+            String username = tableModel.getValueAt(row, 1).toString();
+
+            try {
+                if (bus.xoaTaiKhoan(username)) {
+
+                    // 2. Xóa đồng thời khỏi RAM bus.ds và fullDataList
+                    bus.ds.remove(absoluteIndex);
+                    fullDataList.remove(absoluteIndex);
+
+                    // 3. Tính lại tổng trang
+                    totalPages = (int) Math.ceil((double) fullDataList.size() / rowsPerPage);
+
+                    // 4. Nếu trang hiện tại bị rỗng thì lùi về trang trước
+                    if (currentPage > totalPages && totalPages > 0) {
+                        currentPage = totalPages;
+                    }
+
+                    // 5. Render lại
+                    renderCurrentPage();
+
+                } else {
+                    JOptionPane.showMessageDialog(this, "Xóa tài khoản thất bại!");
+                }
+            } catch (IllegalArgumentException ex) {
+                JOptionPane.showMessageDialog(this, ex.getMessage());
+            }
         }
     }
-
     // ===== KHÓA / MỞ KHÓA =====
     private void thucHienKhoaTaiKhoan() {
         int row = table.getSelectedRow();

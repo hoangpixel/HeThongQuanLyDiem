@@ -74,23 +74,43 @@ public class taiKhoanBUS {
         tk.setMatKhau(MD5Util.md5(matKhau));
         tk.setHoTen(hoTen.trim());
         tk.setTrangThai(1);
-        return data.themTaiKhoan(tk);
+
+        boolean isSuccess = data.themTaiKhoan(tk);
+        if (isSuccess) {
+            if (ds != null) {
+                ds.add(tk); // Cập nhật RAM luôn, không cần load lại DB
+            }
+        }
+        return isSuccess;
     }
 
     // ========== CẬP NHẬT TÀI KHOẢN ==========
     public boolean capNhatTaiKhoan(taiKhoanETT tk) {
-        
         if (tk == null)
             throw new IllegalArgumentException("Tài khoản không hợp lệ!");
         if (tk.getHoTen() == null || tk.getHoTen().trim().isEmpty())
             throw new IllegalArgumentException("Họ tên không được để trống!");
-        // Lấy tài khoản cũ
+
         taiKhoanETT tkCu = data.layTheoUsername(tk.getTenDangNhap());
         if (tkCu == null)
             throw new IllegalArgumentException("Tài khoản không tồn tại!");
-        // Giữ lại mật khẩu cũ
-        tk.setMatKhau(tkCu.getMatKhau());
-        return data.capNhatTaiKhoan(tk);
+
+        if (!tk.getMatKhau().equals(tkCu.getMatKhau())) {
+            tk.setMatKhau(MD5Util.md5(tk.getMatKhau()));
+        }
+
+        if (data.capNhatTaiKhoan(tk)) {
+            if (ds != null) {
+                for (int i = 0; i < ds.size(); i++) {
+                    if (ds.get(i).getTenDangNhap().equals(tk.getTenDangNhap())) {
+                        ds.set(i, tk); // Đè object mới vào vị trí cũ
+                        break;
+                    }
+                }
+            }
+            return true;
+        }
+        return false;
     }
     
     // ========== XÓA TÀI KHOẢN ==========
@@ -99,7 +119,19 @@ public class taiKhoanBUS {
             throw new IllegalArgumentException("Tên đăng nhập không hợp lệ!");
         if (data.layTheoUsername(username.trim()) == null)
             throw new IllegalArgumentException("Tài khoản không tồn tại!");
-        return data.xoaTaiKhoan(username.trim());
+
+        if (data.xoaTaiKhoan(username.trim())) {
+            if (ds != null) {
+                for (int i = 0; i < ds.size(); i++) {
+                    if (ds.get(i).getTenDangNhap().equals(username.trim())) {
+                        ds.remove(i);
+                        break;
+                    }
+                }
+            }
+            return true;
+        }
+        return false;
     }
 
     // ========== KHOÁ / MỞ KHOÁ ==========

@@ -211,9 +211,13 @@ public class updateTaiKhoan extends javax.swing.JDialog {
         // ✅ Kiểm tra mật khẩu mới: nếu để trống thì giữ mật khẩu cũ
         String matKhauMoi = new String(txtMatKhauMoi.getPassword()).trim();
         if (matKhauMoi.isEmpty()) {
-            obj.setMatKhau(taiKhoanCu.getMatKhau()); // giữ mật khẩu cũ
+            // Để trống → truyền mật khẩu cũ (đã hash) vào
+            // BUS sẽ thấy nó BẰNG với DB → không hash lại
+            obj.setMatKhau(taiKhoanCu.getMatKhau());
         } else {
-            obj.setMatKhau(matKhauMoi); // cập nhật mật khẩu mới
+            // Có nhập → truyền plaintext vào
+            // BUS sẽ thấy nó KHÁC với DB (vì DB đang lưu hash) → hash rồi lưu
+            obj.setMatKhau(matKhauMoi);
         }
 
         obj.setHoTen(txtHoTen.getText().trim());
