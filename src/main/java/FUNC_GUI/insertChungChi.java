@@ -13,6 +13,7 @@ import Entity.chungChiETT;
 import BUS.chungChiBUS;
 import CONFIG.HibernateUtil;
 import java.sql.SQLException;
+import javax.swing.JFrame;
 import org.hibernate.Session;
 /**
  *
@@ -32,6 +33,8 @@ public class insertChungChi extends javax.swing.JDialog {
         txtDiemCong.setEditable(false);
         pnlToeic4.setVisible(false); 
         pnlNormal.setVisible(true);
+        
+        this.pack();
     }
     public void initCertData() {
         certificateData.put("Tiếng Anh - IELTS", new String[]{"4.0", "4.5", "5.0", "5.5", "6.0", "6.5", "7.0", "7.5", "8.0", "8.5", "9.0"});
@@ -221,6 +224,7 @@ public class insertChungChi extends javax.swing.JDialog {
 
         txtNghe.setBackground(new java.awt.Color(246, 246, 246));
         txtNghe.addCaretListener(this::txtNgheCaretUpdate);
+        txtNghe.addActionListener(this::txtNgheActionPerformed);
 
         txtNoi.setBackground(new java.awt.Color(246, 246, 246));
         txtNoi.addCaretListener(this::txtNoiCaretUpdate);
@@ -240,7 +244,7 @@ public class insertChungChi extends javax.swing.JDialog {
                 .addGroup(pnlToeic4Layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
                     .addGroup(pnlToeic4Layout.createSequentialGroup()
                         .addGroup(pnlToeic4Layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
-                            .addComponent(jLabel8, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE)
+                            .addComponent(jLabel8, javax.swing.GroupLayout.DEFAULT_SIZE, 123, Short.MAX_VALUE)
                             .addComponent(jLabel6, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE))
                         .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED)
                         .addGroup(pnlToeic4Layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
@@ -446,8 +450,9 @@ public class insertChungChi extends javax.swing.JDialog {
         }
 
         // Refresh lại giao diện
-        this.revalidate();
-        this.repaint();
+//        this.revalidate();
+//        this.repaint();
+        this.pack();
     }//GEN-LAST:event_cboLoaiChungChiActionPerformed
 
     private void txtCCCDActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_txtCCCDActionPerformed
@@ -485,7 +490,18 @@ public class insertChungChi extends javax.swing.JDialog {
 
     private void btnChonCCCDThiSinhActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_btnChonCCCDThiSinhActionPerformed
         // TODO add your handling code here:
+        JFrame topFrame = (JFrame) javax.swing.SwingUtilities.getWindowAncestor(this);
+        SELECT_GUI.selectThiSinh dialog = new SELECT_GUI.selectThiSinh(topFrame, true);
+        dialog.setVisible(true);
+
+        if (dialog.getXacNhan()) {
+            txtCCCD.setText(dialog.getThiSinh().getCccd());
+        }
     }//GEN-LAST:event_btnChonCCCDThiSinhActionPerformed
+
+    private void txtNgheActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_txtNgheActionPerformed
+        // TODO add your handling code here:
+    }//GEN-LAST:event_txtNgheActionPerformed
     
     private void updateResultToeic4() {
     try {

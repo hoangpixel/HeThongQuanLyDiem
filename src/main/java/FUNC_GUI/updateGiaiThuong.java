@@ -23,6 +23,7 @@ public class updateGiaiThuong extends javax.swing.JDialog {
         initComponents();
         
         txtCCCD.setEditable(false);
+        btnChonCCCDThiSinh.setEnabled(false);
         txtDiemCongCoMon.setEditable(false);
         txtDiemCongKhongMon.setEditable(false);
         
