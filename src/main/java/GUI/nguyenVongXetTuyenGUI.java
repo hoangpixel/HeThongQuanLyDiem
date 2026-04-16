@@ -65,6 +65,7 @@ public class nguyenVongXetTuyenGUI extends BaseTableForNguyenVongGUIonly {
         btnXoa.setEnabled(false);
         btnChiTiet.setEnabled(false);
         btnExcel.setEnabled(phanQuyenBUS.checkQuyenThem(bangHienTai));
+        btnTinhToanKetQua.setEnabled(phanQuyenBUS.checkQuyenThem(bangHienTai));
 
         table.getSelectionModel().addListSelectionListener(e -> {
             if (!e.getValueIsAdjusting()) {

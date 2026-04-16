@@ -706,6 +706,13 @@ public class insertPhanQuyen extends javax.swing.JDialog {
     private ArrayList<phanQuyenETT> danhSachThenPhanQuyen = new ArrayList<>();
     private void btnThemActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_btnThemActionPerformed
         // TODO add your handling code here:
+        
+        if(txtIdTaiKhoan.getText().isEmpty())
+        {
+            JOptionPane.showMessageDialog(this, "Vui lòng chọn tài khoản cần cấp quyền!");
+            return;
+        }
+        
         ArrayList<phanQuyenETT> dsQuyenMoi = new ArrayList<>();
         dsQuyenMoi.add(layQuyenTuRow(idTaiKhoan, "xt_nguyenvongxettuyen", ckXemNV, ckThemNV, ckSuaNV, ckXoaNV));
         dsQuyenMoi.add(layQuyenTuRow(idTaiKhoan, "xt_bangquydoi", ckXemQD, ckThemQD, ckSuaQD, ckXoaQD));

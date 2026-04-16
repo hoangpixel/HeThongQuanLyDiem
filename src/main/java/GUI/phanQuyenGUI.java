@@ -285,13 +285,26 @@ private void thucHienThem() {
         }
     }
     
-    private void thucHienChiTiet()
-    {
+private void thucHienChiTiet() {
         int row = table.getSelectedRow();
         if (row != -1) {
             int modelIndex = table.convertRowIndexToModel(row);
             int absoluteIndex = (currentPage - 1) * rowsPerPage + modelIndex;
             
+            // 👉 1. KIỂM TRA NULL TRƯỚC KHI LẤY DỮ LIỆU
+            if (busPhanQuyen.ds == null) {
+                JOptionPane.showMessageDialog(this, "Lỗi: Danh sách quyền chưa được nạp từ Database!", "Lỗi dữ liệu", JOptionPane.ERROR_MESSAGE);
+                // GỌI HÀM NẠP DỮ LIỆU Ở ĐÂY (Ví dụ: busPhanQuyen.docDanhSach();)
+                return; // Dừng hàm lại, không chạy cái get() ở dưới nữa
+            }
+            
+            // 👉 2. CHECK LUÔN LỠ CÁI VỊ TRÍ CLICK NÓ VƯỢT QUÁ SỐ LƯỢNG MẢNG
+            if (absoluteIndex < 0 || absoluteIndex >= busPhanQuyen.ds.size()) {
+                JOptionPane.showMessageDialog(this, "Lỗi: Không tìm thấy dữ liệu ở dòng này!", "Lỗi", JOptionPane.ERROR_MESSAGE);
+                return;
+            }
+
+            // Nếu vượt qua 2 ải trên thì lấy ra an toàn tuyệt đối
             phanQuyenETT pq = busPhanQuyen.ds.get(absoluteIndex);
             JFrame topFrame = (JFrame) SwingUtilities.windowForComponent(this);
             
