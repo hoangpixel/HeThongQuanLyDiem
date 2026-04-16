@@ -56,15 +56,15 @@ public class nguyenVongXetTuyenGUI extends BaseTableForNguyenVongGUIonly {
     {
         String bangHienTai = "xt_nguyenvongxettuyen";
         
-        if (!BUS.phanQuyenBUS.checkQuyenXem(bangHienTai)) {
+        if (!phanQuyenBUS.checkQuyenXem(bangHienTai)) {
             return;
         }
         
-        btnThem.setEnabled(BUS.phanQuyenBUS.checkQuyenThem(bangHienTai)); 
+        btnThem.setEnabled(phanQuyenBUS.checkQuyenThem(bangHienTai)); 
         btnSua.setEnabled(false); 
         btnXoa.setEnabled(false);
         btnChiTiet.setEnabled(false);
-        btnExcel.setEnabled(BUS.phanQuyenBUS.checkQuyenThem(bangHienTai));
+        btnExcel.setEnabled(phanQuyenBUS.checkQuyenThem(bangHienTai));
 
         table.getSelectionModel().addListSelectionListener(e -> {
             if (!e.getValueIsAdjusting()) {
@@ -74,9 +74,9 @@ public class nguyenVongXetTuyenGUI extends BaseTableForNguyenVongGUIonly {
                         boolean isSelected = table.getSelectedRow() != -1;
                         
                         if (isSelected) {
-                            btnSua.setEnabled(BUS.phanQuyenBUS.checkQuyenSua(bangHienTai));
-                            btnXoa.setEnabled(BUS.phanQuyenBUS.checkQuyenXoa(bangHienTai));
-                            btnChiTiet.setEnabled(BUS.phanQuyenBUS.checkQuyenXem(bangHienTai)); 
+                            btnSua.setEnabled(phanQuyenBUS.checkQuyenSua(bangHienTai));
+                            btnXoa.setEnabled(phanQuyenBUS.checkQuyenXoa(bangHienTai));
+                            btnChiTiet.setEnabled(phanQuyenBUS.checkQuyenXem(bangHienTai)); 
                         } else {
                             btnSua.setEnabled(false);
                             btnXoa.setEnabled(false);
