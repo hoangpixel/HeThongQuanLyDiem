@@ -6,69 +6,79 @@ package FUNC_GUI;
 
 import Entity.nganhETT;
 
-import javax.swing.JFrame;
-import javax.swing.JOptionPane;
 import javax.swing.SwingUtilities;
 /**
  *
  * @author Dat
  */
-public class insertNganh extends javax.swing.JDialog {
+public class detailNganh extends javax.swing.JDialog {
     
-    public boolean xacNhan = false;
     public nganhETT nganh;
     
-    public insertNganh(java.awt.Frame parent, boolean modal) {
+    public detailNganh(java.awt.Frame parent, boolean modal, nganhETT data) {
         super(parent, modal);
         initComponents();
         setLocationRelativeTo(parent);
+        this.nganh = data;
         
-        txtDiemTrungTuyen.setEditable(false);
-        txtDiemTrungTuyen.setFocusable(false);
-        txtChiTieu.setEditable(false); // Khóa không cho gõ tay
-        txtChiTieu.setFocusable(false); // Không cho nhấn Tab nhảy vào ô này
-        txtChiTieu.setBackground(new java.awt.Color(240, 240, 240)); // Đổi màu xám cho đúng chất ô hiển thị
-        txtChiTieu.setText("0");
+        // 1. Đổ dữ liệu vào các ô Text
+        txtMaNganh.setText(data.getManganh());
+        txtTenNganh.setText(data.getTennganh());
+        txtToHopGoc.setText(data.getN_tohopgoc());
+        txtChiTieu.setText(data.getN_chitieu() != null ? String.valueOf(data.getN_chitieu()) : "0");
+        
+        txtDiemSanTHPT.setText(data.getN_diemsanthpt() != null ? String.valueOf(data.getN_diemsanthpt()) : "");
+        txtDiemSanVSAT.setText(data.getN_diemsanvsat() != null ? String.valueOf(data.getN_diemsanvsat()) : "");
+        txtDiemSanDGNL.setText(data.getN_diemsandgnl() != null ? String.valueOf(data.getN_diemsandgnl()) : "");
+        txtDiemTrungTuyen.setText(data.getN_diemtrungtuyen() != null ? String.valueOf(data.getN_diemtrungtuyen()) : "");
+        
+        // Load số lượng phương thức
+        thietLapOChon(chkTuyenThang, txtTuyenThang, data.getN_tuyenthang(), data.getSl_xtt());
+        thietLapOChon(chkThiDGNL, txtThiDGNL, data.getN_dgnl(), data.getSl_dgnl());
+        thietLapOChon(chkThiTHPT, txtThiTHPT, data.getN_thpt(), data.getSl_thpt());
+        thietLapOChon(chkThiVSAT, txtThiVSAT, data.getN_vsat(), data.getSl_vsat());
 
-        // Mở khóa để người dùng tự gõ thông tin cơ bản
-        txtMaNganh.setEditable(true);
-        txtTenNganh.setEditable(true);
-        txtToHopGoc.setEditable(true);
-        txtChiTieu.setEditable(true);
-        txtDiemSanTHPT.setEditable(true);
-        txtDiemSanVSAT.setEditable(true);
-        txtDiemSanDGNL.setEditable(true);
-        
-        // Khóa các ô số lượng phương thức ban đầu
+        // 2. KHÓA TOÀN BỘ Ô NHẬP LIỆU (Vì đây là form xem chi tiết)
+        txtMaNganh.setEditable(false);
+        txtTenNganh.setEditable(false);
+        txtToHopGoc.setEditable(false);
+        txtChiTieu.setEditable(false);
+        txtDiemSanTHPT.setEditable(false);
+        txtDiemSanVSAT.setEditable(false);
+        txtDiemSanDGNL.setEditable(false);
         txtDiemTrungTuyen.setEditable(false);
-        txtDiemTrungTuyen.setText("30");
-        txtTuyenThang.setEnabled(false);
-        txtThiDGNL.setEnabled(false);
-        txtThiTHPT.setEnabled(false);
-        txtThiVSAT.setEnabled(false);
         
-        // Lắp ráp ổ khóa thông minh: tích vào ô vuông thì mới mở ô nhập số
-        chkTuyenThang.addActionListener(evt -> {
-            boolean isSelected = chkTuyenThang.isSelected();
-            txtTuyenThang.setEnabled(isSelected);
-            txtTuyenThang.setEditable(isSelected);
+        // Đổi màu nền cho đồng bộ giao diện "chỉ đọc"
+        java.awt.Color readOnlyColor = new java.awt.Color(246, 246, 246);
+        txtMaNganh.setBackground(readOnlyColor);
+        txtTenNganh.setBackground(readOnlyColor);
+        txtToHopGoc.setBackground(readOnlyColor);
+        txtChiTieu.setBackground(readOnlyColor);
+        txtDiemSanTHPT.setBackground(readOnlyColor);
+        txtDiemSanVSAT.setBackground(readOnlyColor);
+        txtDiemSanDGNL.setBackground(readOnlyColor);
+        txtDiemTrungTuyen.setBackground(readOnlyColor);
+        
+        // Ép focus vào nút thoát để tránh nháy con trỏ trong ô text
+        SwingUtilities.invokeLater(() -> {
+            btnThoat.requestFocusInWindow();
         });
-        chkThiDGNL.addActionListener(evt -> {
-            boolean isSelected = chkThiDGNL.isSelected();
-            txtThiDGNL.setEnabled(isSelected);
-            txtThiDGNL.setEditable(isSelected);
-        });
-        chkThiTHPT.addActionListener(evt -> {
-            boolean isSelected = chkThiTHPT.isSelected();
-            txtThiTHPT.setEnabled(isSelected);
-            txtThiTHPT.setEditable(isSelected);
-        });
-        chkThiVSAT.addActionListener(evt -> {
-            boolean isSelected = chkThiVSAT.isSelected();
-            txtThiVSAT.setEnabled(isSelected);
-            txtThiVSAT.setEditable(isSelected);
-        });
+    }
 
+    // Hàm phụ trợ để hiển thị checkbox và số lượng (đã khóa tương tác)
+    private void thietLapOChon(javax.swing.JCheckBox cb, javax.swing.JTextField txt, String n_val, Object sl_val) {
+        int soLuong = 0;
+        if (sl_val != null) {
+            try { soLuong = Integer.parseInt(sl_val.toString()); } catch (Exception e) {}
+        }
+        
+        boolean active = ("1".equals(n_val)) || (soLuong > 0);
+        cb.setSelected(active);
+        cb.setEnabled(false); // Khóa checkbox
+        
+        txt.setText(sl_val != null ? String.valueOf(sl_val) : "0");
+        txt.setEditable(false);
+        txt.setBackground(new java.awt.Color(246, 246, 246));
     }
 
     @SuppressWarnings("unchecked")
@@ -98,20 +108,19 @@ public class insertNganh extends javax.swing.JDialog {
         chkTuyenThang = new javax.swing.JCheckBox();
         chkThiVSAT = new javax.swing.JCheckBox();
         jLabel5 = new javax.swing.JLabel();
-        txtDiemSanDGNL = new javax.swing.JTextField();
         jLabel6 = new javax.swing.JLabel();
         txtDiemSanVSAT = new javax.swing.JTextField();
+        txtDiemSanDGNL = new javax.swing.JTextField();
         jPanel2 = new javax.swing.JPanel();
         btnThoat = new javax.swing.JButton();
-        btnThem = new javax.swing.JButton();
         jPanel3 = new javax.swing.JPanel();
         jLabel9 = new javax.swing.JLabel();
 
         setDefaultCloseOperation(javax.swing.WindowConstants.DISPOSE_ON_CLOSE);
-        setTitle("Thêm Ngành");
+        setTitle("Sửa Ngành");
 
         jPanel1.setBackground(new java.awt.Color(255, 255, 255));
-        jPanel1.setBorder(javax.swing.BorderFactory.createTitledBorder(null, "Thêm Ngành", javax.swing.border.TitledBorder.DEFAULT_JUSTIFICATION, javax.swing.border.TitledBorder.DEFAULT_POSITION, new java.awt.Font("Segoe UI", 1, 14))); // NOI18N
+        jPanel1.setBorder(javax.swing.BorderFactory.createTitledBorder(null, "Chi tiết Ngành", javax.swing.border.TitledBorder.DEFAULT_JUSTIFICATION, javax.swing.border.TitledBorder.DEFAULT_POSITION, new java.awt.Font("Segoe UI", 1, 14))); // NOI18N
 
         jLabel1.setFont(new java.awt.Font("Segoe UI", 0, 14)); // NOI18N
         jLabel1.setText("Tên ngành :");
@@ -135,7 +144,6 @@ public class insertNganh extends javax.swing.JDialog {
         jLabel11.setText("Điểm trúng tuyển :");
 
         txtDiemTrungTuyen.setEditable(false);
-        txtDiemTrungTuyen.setText("30");
         txtDiemTrungTuyen.addActionListener(this::txtDiemTrungTuyenActionPerformed);
 
         chkThiDGNL.setFont(new java.awt.Font("Segoe UI", 0, 14)); // NOI18N
@@ -144,7 +152,6 @@ public class insertNganh extends javax.swing.JDialog {
 
         chkThiTHPT.setFont(new java.awt.Font("Segoe UI", 0, 14)); // NOI18N
         chkThiTHPT.setText("Thi THPT");
-        chkThiTHPT.addActionListener(this::chkThiTHPTActionPerformed);
 
         txtTuyenThang.setEditable(false);
         txtTuyenThang.addActionListener(this::txtTuyenThangActionPerformed);
@@ -202,16 +209,16 @@ public class insertNganh extends javax.swing.JDialog {
         chkThiVSAT.addActionListener(this::chkThiVSATActionPerformed);
 
         jLabel5.setFont(new java.awt.Font("Segoe UI", 0, 14)); // NOI18N
-        jLabel5.setText("Điểm sàn ĐGNL :");
-
-        txtDiemSanDGNL.setEditable(false);
-        txtDiemSanDGNL.addActionListener(this::txtDiemSanDGNLActionPerformed);
+        jLabel5.setText("Điểm sàn V-SAT:");
 
         jLabel6.setFont(new java.awt.Font("Segoe UI", 0, 14)); // NOI18N
-        jLabel6.setText("Điểm sàn V-SAT :");
+        jLabel6.setText("Điểm sàn ĐGNL :");
 
         txtDiemSanVSAT.setEditable(false);
         txtDiemSanVSAT.addActionListener(this::txtDiemSanVSATActionPerformed);
+
+        txtDiemSanDGNL.setEditable(false);
+        txtDiemSanDGNL.addActionListener(this::txtDiemSanDGNLActionPerformed);
 
         javax.swing.GroupLayout jPanel1Layout = new javax.swing.GroupLayout(jPanel1);
         jPanel1.setLayout(jPanel1Layout);
@@ -248,18 +255,16 @@ public class insertNganh extends javax.swing.JDialog {
                                     .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED)
                                     .addComponent(txtDiemSanTHPT, javax.swing.GroupLayout.PREFERRED_SIZE, 188, javax.swing.GroupLayout.PREFERRED_SIZE))
                                 .addGroup(jPanel1Layout.createSequentialGroup()
-                                    .addComponent(jLabel5, javax.swing.GroupLayout.PREFERRED_SIZE, 123, javax.swing.GroupLayout.PREFERRED_SIZE)
+                                    .addGroup(jPanel1Layout.createParallelGroup(javax.swing.GroupLayout.Alignment.TRAILING)
+                                        .addComponent(jLabel5, javax.swing.GroupLayout.PREFERRED_SIZE, 123, javax.swing.GroupLayout.PREFERRED_SIZE)
+                                        .addComponent(jLabel6, javax.swing.GroupLayout.PREFERRED_SIZE, 123, javax.swing.GroupLayout.PREFERRED_SIZE)
+                                        .addComponent(jLabel11, javax.swing.GroupLayout.PREFERRED_SIZE, 123, javax.swing.GroupLayout.PREFERRED_SIZE))
                                     .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED)
-                                    .addComponent(txtDiemSanDGNL, javax.swing.GroupLayout.PREFERRED_SIZE, 188, javax.swing.GroupLayout.PREFERRED_SIZE))
-                                .addGroup(jPanel1Layout.createSequentialGroup()
-                                    .addComponent(jLabel6, javax.swing.GroupLayout.PREFERRED_SIZE, 123, javax.swing.GroupLayout.PREFERRED_SIZE)
-                                    .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED)
-                                    .addComponent(txtDiemSanVSAT, javax.swing.GroupLayout.PREFERRED_SIZE, 188, javax.swing.GroupLayout.PREFERRED_SIZE)))
+                                    .addGroup(jPanel1Layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
+                                        .addComponent(txtDiemSanVSAT, javax.swing.GroupLayout.PREFERRED_SIZE, 188, javax.swing.GroupLayout.PREFERRED_SIZE)
+                                        .addComponent(txtDiemSanDGNL, javax.swing.GroupLayout.PREFERRED_SIZE, 188, javax.swing.GroupLayout.PREFERRED_SIZE)
+                                        .addComponent(txtDiemTrungTuyen, javax.swing.GroupLayout.PREFERRED_SIZE, 188, javax.swing.GroupLayout.PREFERRED_SIZE))))
                             .addGap(49, 49, 49)))
-                    .addGroup(jPanel1Layout.createSequentialGroup()
-                        .addComponent(jLabel11, javax.swing.GroupLayout.PREFERRED_SIZE, 123, javax.swing.GroupLayout.PREFERRED_SIZE)
-                        .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED)
-                        .addComponent(txtDiemTrungTuyen, javax.swing.GroupLayout.PREFERRED_SIZE, 188, javax.swing.GroupLayout.PREFERRED_SIZE))
                     .addGroup(jPanel1Layout.createSequentialGroup()
                         .addComponent(chkTuyenThang, javax.swing.GroupLayout.PREFERRED_SIZE, 123, javax.swing.GroupLayout.PREFERRED_SIZE)
                         .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED)
@@ -285,7 +290,7 @@ public class insertNganh extends javax.swing.JDialog {
                 .addGroup(jPanel1Layout.createParallelGroup(javax.swing.GroupLayout.Alignment.BASELINE)
                     .addComponent(jLabel2)
                     .addComponent(txtMaNganh, javax.swing.GroupLayout.PREFERRED_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.PREFERRED_SIZE))
-                .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.UNRELATED)
+                .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED)
                 .addGroup(jPanel1Layout.createParallelGroup(javax.swing.GroupLayout.Alignment.BASELINE)
                     .addComponent(jLabel1)
                     .addComponent(txtTenNganh, javax.swing.GroupLayout.PREFERRED_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.PREFERRED_SIZE))
@@ -305,15 +310,15 @@ public class insertNganh extends javax.swing.JDialog {
                 .addGap(10, 10, 10)
                 .addGroup(jPanel1Layout.createParallelGroup(javax.swing.GroupLayout.Alignment.BASELINE)
                     .addComponent(txtDiemSanVSAT, javax.swing.GroupLayout.PREFERRED_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.PREFERRED_SIZE)
-                    .addComponent(jLabel6))
-                .addGap(8, 8, 8)
-                .addGroup(jPanel1Layout.createParallelGroup(javax.swing.GroupLayout.Alignment.BASELINE)
-                    .addComponent(txtDiemSanDGNL, javax.swing.GroupLayout.PREFERRED_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.PREFERRED_SIZE)
                     .addComponent(jLabel5))
                 .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.UNRELATED)
                 .addGroup(jPanel1Layout.createParallelGroup(javax.swing.GroupLayout.Alignment.BASELINE)
-                    .addComponent(jLabel11)
-                    .addComponent(txtDiemTrungTuyen, javax.swing.GroupLayout.PREFERRED_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.PREFERRED_SIZE))
+                    .addComponent(txtDiemSanDGNL, javax.swing.GroupLayout.PREFERRED_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.PREFERRED_SIZE)
+                    .addComponent(jLabel6))
+                .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.UNRELATED)
+                .addGroup(jPanel1Layout.createParallelGroup(javax.swing.GroupLayout.Alignment.BASELINE)
+                    .addComponent(txtDiemTrungTuyen, javax.swing.GroupLayout.PREFERRED_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.PREFERRED_SIZE)
+                    .addComponent(jLabel11))
                 .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.UNRELATED)
                 .addGroup(jPanel1Layout.createParallelGroup(javax.swing.GroupLayout.Alignment.BASELINE)
                     .addComponent(chkTuyenThang)
@@ -328,7 +333,7 @@ public class insertNganh extends javax.swing.JDialog {
                     .addComponent(txtThiTHPT, javax.swing.GroupLayout.PREFERRED_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.PREFERRED_SIZE))
                 .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.UNRELATED)
                 .addGroup(jPanel1Layout.createParallelGroup(javax.swing.GroupLayout.Alignment.BASELINE)
-                    .addComponent(chkThiVSAT, javax.swing.GroupLayout.PREFERRED_SIZE, 24, javax.swing.GroupLayout.PREFERRED_SIZE)
+                    .addComponent(chkThiVSAT)
                     .addComponent(txtThiVSAT, javax.swing.GroupLayout.PREFERRED_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.PREFERRED_SIZE))
                 .addContainerGap(javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE))
         );
@@ -336,7 +341,7 @@ public class insertNganh extends javax.swing.JDialog {
         jLabel1.getAccessibleContext().setAccessibleName("asd");
 
         jPanel2.setBackground(new java.awt.Color(255, 255, 255));
-        jPanel2.setBorder(javax.swing.BorderFactory.createTitledBorder(null, "Xử lý thêm Ngành", javax.swing.border.TitledBorder.DEFAULT_JUSTIFICATION, javax.swing.border.TitledBorder.DEFAULT_POSITION, new java.awt.Font("Segoe UI", 1, 14))); // NOI18N
+        jPanel2.setBorder(javax.swing.BorderFactory.createTitledBorder(null, "Xử lý CT Ngành", javax.swing.border.TitledBorder.DEFAULT_JUSTIFICATION, javax.swing.border.TitledBorder.DEFAULT_POSITION, new java.awt.Font("Segoe UI", 1, 14))); // NOI18N
         jPanel2.setToolTipText("");
 
         btnThoat.setBackground(new java.awt.Color(255, 102, 102));
@@ -345,45 +350,36 @@ public class insertNganh extends javax.swing.JDialog {
         btnThoat.setCursor(new java.awt.Cursor(java.awt.Cursor.HAND_CURSOR));
         btnThoat.addActionListener(this::btnThoatActionPerformed);
 
-        btnThem.setFont(new java.awt.Font("Segoe UI", 1, 14)); // NOI18N
-        btnThem.setText("Thêm");
-        btnThem.setCursor(new java.awt.Cursor(java.awt.Cursor.HAND_CURSOR));
-        btnThem.addActionListener(this::btnThemActionPerformed);
-
         javax.swing.GroupLayout jPanel2Layout = new javax.swing.GroupLayout(jPanel2);
         jPanel2.setLayout(jPanel2Layout);
         jPanel2Layout.setHorizontalGroup(
             jPanel2Layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
-            .addGroup(javax.swing.GroupLayout.Alignment.TRAILING, jPanel2Layout.createSequentialGroup()
-                .addContainerGap(javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE)
-                .addComponent(btnThem, javax.swing.GroupLayout.PREFERRED_SIZE, 89, javax.swing.GroupLayout.PREFERRED_SIZE)
-                .addGap(40, 40, 40)
+            .addGroup(jPanel2Layout.createSequentialGroup()
+                .addGap(145, 145, 145)
                 .addComponent(btnThoat, javax.swing.GroupLayout.PREFERRED_SIZE, 89, javax.swing.GroupLayout.PREFERRED_SIZE)
-                .addGap(80, 80, 80))
+                .addContainerGap(javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE))
         );
         jPanel2Layout.setVerticalGroup(
             jPanel2Layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
-            .addGroup(jPanel2Layout.createSequentialGroup()
-                .addContainerGap()
-                .addGroup(jPanel2Layout.createParallelGroup(javax.swing.GroupLayout.Alignment.TRAILING, false)
-                    .addComponent(btnThoat, javax.swing.GroupLayout.DEFAULT_SIZE, 40, Short.MAX_VALUE)
-                    .addComponent(btnThem, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE))
-                .addContainerGap(javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE))
+            .addGroup(javax.swing.GroupLayout.Alignment.TRAILING, jPanel2Layout.createSequentialGroup()
+                .addContainerGap(javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE)
+                .addComponent(btnThoat, javax.swing.GroupLayout.PREFERRED_SIZE, 40, javax.swing.GroupLayout.PREFERRED_SIZE)
+                .addContainerGap())
         );
 
-        jPanel3.setBackground(new java.awt.Color(153, 255, 153));
+        jPanel3.setBackground(new java.awt.Color(255, 255, 204));
 
         jLabel9.setFont(new java.awt.Font("Segoe UI", 1, 24)); // NOI18N
-        jLabel9.setText("Thêm Ngành");
+        jLabel9.setText("Chi tiết Ngành");
 
         javax.swing.GroupLayout jPanel3Layout = new javax.swing.GroupLayout(jPanel3);
         jPanel3.setLayout(jPanel3Layout);
         jPanel3Layout.setHorizontalGroup(
             jPanel3Layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
-            .addGroup(javax.swing.GroupLayout.Alignment.TRAILING, jPanel3Layout.createSequentialGroup()
-                .addContainerGap(javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE)
+            .addGroup(jPanel3Layout.createSequentialGroup()
+                .addGap(112, 112, 112)
                 .addComponent(jLabel9)
-                .addGap(119, 119, 119))
+                .addContainerGap(javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE))
         );
         jPanel3Layout.setVerticalGroup(
             jPanel3Layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
@@ -401,8 +397,10 @@ public class insertNganh extends javax.swing.JDialog {
                 .addContainerGap()
                 .addGroup(layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
                     .addComponent(jPanel2, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE)
-                    .addComponent(jPanel1, javax.swing.GroupLayout.Alignment.TRAILING, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE)
-                    .addComponent(jPanel3, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE))
+                    .addComponent(jPanel3, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE)
+                    .addGroup(layout.createSequentialGroup()
+                        .addComponent(jPanel1, javax.swing.GroupLayout.PREFERRED_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.PREFERRED_SIZE)
+                        .addGap(0, 0, Short.MAX_VALUE)))
                 .addContainerGap())
         );
         layout.setVerticalGroup(
@@ -420,64 +418,9 @@ public class insertNganh extends javax.swing.JDialog {
         pack();
     }// </editor-fold>//GEN-END:initComponents
 
-    // CÁC HÀM XỬ LÝ SỰ KIỆN NÚT BẤM (EVENTS)
-
     private void btnThoatActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_btnThoatActionPerformed
-        xacNhan = false;
         dispose();
     }//GEN-LAST:event_btnThoatActionPerformed
-
-    private void btnThemActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_btnThemActionPerformed
-
-            if(!kiemTraHopLe()) {
-                return;
-            }
-
-        BUS.nganhBUS busNganh = new BUS.nganhBUS();
-        nganhETT nganhMoi = new nganhETT();
-
-        nganhMoi.setManganh(txtMaNganh.getText().trim());
-        nganhMoi.setTennganh(txtTenNganh.getText().trim());
-        nganhMoi.setN_tohopgoc(txtToHopGoc.getText().trim());
-
-        nganhMoi.setN_chitieu(Integer.parseInt(txtChiTieu.getText())); 
-
-        try {
-            if(!txtDiemSanTHPT.getText().trim().isEmpty()) 
-                nganhMoi.setN_diemsanthpt(Double.parseDouble(txtDiemSanTHPT.getText().trim()));
-
-            if(!txtDiemSanVSAT.getText().trim().isEmpty()) 
-                nganhMoi.setN_diemsanvsat(Double.parseDouble(txtDiemSanVSAT.getText().trim()));
-
-            if(!txtDiemSanDGNL.getText().trim().isEmpty()) 
-                nganhMoi.setN_diemsandgnl(Double.parseDouble(txtDiemSanDGNL.getText().trim()));
-
-            if(!txtDiemTrungTuyen.getText().trim().isEmpty()) 
-                nganhMoi.setN_diemtrungtuyen(Double.parseDouble(txtDiemTrungTuyen.getText().trim()));
-        } catch(NumberFormatException e) {
-        }
-
-        nganhMoi.setN_tuyenthang(chkTuyenThang.isSelected() ? "1" : "0");
-        nganhMoi.setSl_xtt(chkTuyenThang.isSelected() ? Integer.parseInt(txtTuyenThang.getText().trim()) : 0);
-
-        nganhMoi.setN_dgnl(chkThiDGNL.isSelected() ? "1" : "0");
-        nganhMoi.setSl_dgnl(chkThiDGNL.isSelected() ? Integer.parseInt(txtThiDGNL.getText().trim()) : 0);
-
-        nganhMoi.setN_thpt(chkThiTHPT.isSelected() ? "1" : "0");
-        nganhMoi.setSl_thpt(chkThiTHPT.isSelected() ? Integer.parseInt(txtThiTHPT.getText().trim()) : 0);
-
-        nganhMoi.setN_vsat(chkThiVSAT.isSelected() ? "1" : "0");
-        nganhMoi.setSl_vsat(chkThiVSAT.isSelected() ? Integer.parseInt(txtThiVSAT.getText().trim()) : 0);
-
-        if(busNganh.themNganh(nganhMoi)) {
-            xacNhan = true;
-            JOptionPane.showMessageDialog(this, "Thêm ngành thành công");
-            this.nganh = nganhMoi;
-            dispose();
-        } else {
-            JOptionPane.showMessageDialog(this, "Thêm ngành thất bại");
-        }
-    }//GEN-LAST:event_btnThemActionPerformed
 
     private void txtMaNganhActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_txtMaNganhActionPerformed
         // TODO add your handling code here:
@@ -485,48 +428,14 @@ public class insertNganh extends javax.swing.JDialog {
 
     private void txtTenNganhActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_txtTenNganhActionPerformed
         // TODO add your handling code here:
-        // 1. Triệu hồi Dialog chọn Tổ hợp (re-use lại cái bạn đã có)
-        JFrame topFrame = (JFrame) SwingUtilities.getWindowAncestor(this);
-        SELECT_GUI.selectToHop dialog = new SELECT_GUI.selectToHop(topFrame, true);
-        dialog.setVisible(true);
-
-        // 2. Nếu người dùng chọn xong và bấm xác nhận
-        if (dialog.getXacNhan()) {
-            Entity.toHopETT selectedToHop = dialog.getToHopETT();
-            // 3. Đổ mã tổ hợp vào ô text
-            txtToHopGoc.setText(selectedToHop.getMatohop());
-        }
     }//GEN-LAST:event_txtTenNganhActionPerformed
 
     private void btnChonToHopGocActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_btnChonToHopGocActionPerformed
         // TODO add your handling code here:
-        // 1. Triệu hồi Dialog chọn Tổ hợp (re-use lại cái bạn đã có)
-        JFrame topFrame = (JFrame) SwingUtilities.getWindowAncestor(this);
-        SELECT_GUI.selectToHop dialog = new SELECT_GUI.selectToHop(topFrame, true);
-        dialog.setVisible(true);
-
-        // 2. Nếu người dùng chọn xong và bấm xác nhận
-        if (dialog.getXacNhan()) {
-            Entity.toHopETT selectedToHop = dialog.getToHopETT();
-            // 3. Đổ mã tổ hợp vào ô text
-            txtToHopGoc.setText(selectedToHop.getMatohop());
-        }
     }//GEN-LAST:event_btnChonToHopGocActionPerformed
 
     private void txtToHopGocActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_txtToHopGocActionPerformed
         // TODO add your handling code here:
-        // 1. Khởi tạo Dialog chọn Tổ hợp (Dùng lại cái bạn đã làm cho Nguyện vọng)
-        JFrame topFrame = (JFrame) SwingUtilities.getWindowAncestor(this);
-        SELECT_GUI.selectToHop dialog = new SELECT_GUI.selectToHop(topFrame, true);
-        dialog.setVisible(true);
-
-        // 2. Nếu người dùng chọn xong và bấm nút "Xác nhận" trên Dialog
-        if (dialog.getXacNhan()) {
-        Entity.toHopETT selectedToHop = dialog.getToHopETT();
-        
-            // 3. Đổ Mã tổ hợp vào ô Textbox
-            txtToHopGoc.setText(selectedToHop.getMatohop()); 
-        }
     }//GEN-LAST:event_txtToHopGocActionPerformed
 
     private void txtDiemTrungTuyenActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_txtDiemTrungTuyenActionPerformed
@@ -559,173 +468,42 @@ public class insertNganh extends javax.swing.JDialog {
 
     private void chkTuyenThangActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_chkTuyenThangActionPerformed
         // TODO add your handling code here:
-        boolean isSelected = chkTuyenThang.isSelected();
-        txtTuyenThang.setEnabled(isSelected);
-        txtTuyenThang.setEditable(isSelected);
-        if (!isSelected) {
-            txtTuyenThang.setText("0"); // Trả về 0 khi bỏ chọn
-        }
-        tuDongTinhTong(); // Tính lại tổng ngay lập tức
     }//GEN-LAST:event_chkTuyenThangActionPerformed
 
     private void chkThiDGNLActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_chkThiDGNLActionPerformed
         // TODO add your handling code here:
-        boolean isSelected = chkThiDGNL.isSelected();
-        txtThiDGNL.setEnabled(isSelected);
-        txtThiDGNL.setEditable(isSelected);
-        if (!isSelected) {
-            txtThiDGNL.setText("0"); // Trả về 0 khi bỏ chọn
-        }
-        tuDongTinhTong(); // Tính lại tổng ngay lập tức
     }//GEN-LAST:event_chkThiDGNLActionPerformed
 
     private void chkThiVSATActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_chkThiVSATActionPerformed
         // TODO add your handling code here:
-        boolean isSelected = chkThiVSAT.isSelected();
-        txtThiVSAT.setEnabled(isSelected);
-        txtThiVSAT.setEditable(isSelected);
-        if (!isSelected) {
-            txtThiVSAT.setText("0"); // Trả về 0 khi bỏ chọn
-        }
-        tuDongTinhTong(); // Tính lại tổng ngay lập tức
     }//GEN-LAST:event_chkThiVSATActionPerformed
 
     private void txtTuyenThangKeyReleased(java.awt.event.KeyEvent evt) {//GEN-FIRST:event_txtTuyenThangKeyReleased
         // TODO add your handling code here:
-        tuDongTinhTong();
     }//GEN-LAST:event_txtTuyenThangKeyReleased
 
     private void txtThiDGNLKeyReleased(java.awt.event.KeyEvent evt) {//GEN-FIRST:event_txtThiDGNLKeyReleased
         // TODO add your handling code here:
-        tuDongTinhTong();
     }//GEN-LAST:event_txtThiDGNLKeyReleased
 
     private void txtThiTHPTKeyReleased(java.awt.event.KeyEvent evt) {//GEN-FIRST:event_txtThiTHPTKeyReleased
         // TODO add your handling code here:
-        tuDongTinhTong();
     }//GEN-LAST:event_txtThiTHPTKeyReleased
 
     private void txtThiVSATKeyReleased(java.awt.event.KeyEvent evt) {//GEN-FIRST:event_txtThiVSATKeyReleased
         // TODO add your handling code here:
-        tuDongTinhTong();
     }//GEN-LAST:event_txtThiVSATKeyReleased
-
-    private void chkThiTHPTActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_chkThiTHPTActionPerformed
-        // TODO add your handling code here:
-        boolean isSelected = chkThiTHPT.isSelected();
-        txtThiTHPT.setEnabled(isSelected);
-        txtThiTHPT.setEditable(isSelected);
-        if (!isSelected) {
-            txtThiTHPT.setText("0"); // Trả về 0 khi bỏ chọn
-        }
-        tuDongTinhTong(); // Tính lại tổng ngay lập tức
-    }//GEN-LAST:event_chkThiTHPTActionPerformed
-
-    private void txtDiemSanDGNLActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_txtDiemSanDGNLActionPerformed
-        // TODO add your handling code here:
-    }//GEN-LAST:event_txtDiemSanDGNLActionPerformed
 
     private void txtDiemSanVSATActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_txtDiemSanVSATActionPerformed
         // TODO add your handling code here:
     }//GEN-LAST:event_txtDiemSanVSATActionPerformed
 
-    // CÁC HÀM XỬ LÝ LOGIC PHỤ TRỢ
-
-    // Kiểm tra người dùng nhập có đúng không
-    public boolean kiemTraHopLe() {
-        if(txtMaNganh.getText().trim().isEmpty()) {
-            JOptionPane.showMessageDialog(this, "Không được để trống Mã ngành");
-            txtMaNganh.requestFocus();
-            return false;
-        }
-        
-        if(txtTenNganh.getText().trim().isEmpty()) {
-            JOptionPane.showMessageDialog(this, "Không được để trống Tên ngành");
-            txtTenNganh.requestFocus();
-            return false;
-        }
-        
-        if(txtChiTieu.getText().trim().isEmpty()) {
-            JOptionPane.showMessageDialog(this, "Không được để trống Tổng chỉ tiêu");
-            txtChiTieu.requestFocus();
-            return false;
-        }
-        
-        // Coi số chỉ tiêu có bị gõ nhầm thành chữ cái không
-        try { 
-            Integer.parseInt(txtChiTieu.getText().trim()); 
-        } catch (Exception e) { 
-            JOptionPane.showMessageDialog(this, "Tổng chỉ tiêu phải là một con số"); 
-            txtChiTieu.requestFocus();
-            return false; 
-        }
-        
-        if (chkTuyenThang.isSelected()) {
-            try { Integer.parseInt(txtTuyenThang.getText().trim()); } 
-            catch (Exception e) { JOptionPane.showMessageDialog(this, "Chỉ tiêu Tuyển thẳng phải là con số"); return false; }
-        }
-        if (chkThiDGNL.isSelected()) {
-            try { Integer.parseInt(txtThiDGNL.getText().trim()); } 
-            catch (Exception e) { JOptionPane.showMessageDialog(this, "Chỉ tiêu ĐGNL phải là con số"); return false; }
-        }
-        if (chkThiTHPT.isSelected()) {
-            try { Integer.parseInt(txtThiTHPT.getText().trim()); } 
-            catch (Exception e) { JOptionPane.showMessageDialog(this, "Chỉ tiêu THPT phải là con số"); return false; }
-        }
-        if (chkThiVSAT.isSelected()) {
-            try { Integer.parseInt(txtThiVSAT.getText().trim()); } 
-            catch (Exception e) { JOptionPane.showMessageDialog(this, "Chỉ tiêu V-SAT phải là con số"); return false; }
-        }
-        
-        try {
-            if (!txtDiemSanTHPT.getText().trim().isEmpty()) Double.parseDouble(txtDiemSanTHPT.getText().trim());
-            if (!txtDiemSanVSAT.getText().trim().isEmpty()) Double.parseDouble(txtDiemSanVSAT.getText().trim());
-            if (!txtDiemSanDGNL.getText().trim().isEmpty()) Double.parseDouble(txtDiemSanDGNL.getText().trim());
-        } catch (Exception e) {
-            JOptionPane.showMessageDialog(this, "Điểm sàn phải là một con số hợp lệ (ví dụ: 18.5)");
-            return false;
-        }
-        return true;
-    }
-
-    private void tuDongTinhTong() {
-        int xttt = 0, dgnl = 0, vsat = 0, thpt = 0;
-    
-        try {
-            // Chỉ lấy giá trị nếu ô đó đang được chọn (Enabled)
-            if (txtTuyenThang.isEnabled() && !txtTuyenThang.getText().trim().isEmpty()) {
-                xttt = Integer.parseInt(txtTuyenThang.getText().trim());
-            }
-            if (txtThiDGNL.isEnabled() && !txtThiDGNL.getText().trim().isEmpty()) {
-                dgnl = Integer.parseInt(txtThiDGNL.getText().trim());
-            }
-            if (txtThiVSAT.isEnabled() && !txtThiVSAT.getText().trim().isEmpty()) {
-                vsat = Integer.parseInt(txtThiVSAT.getText().trim());
-            }
-            if (txtThiTHPT.isEnabled() && !txtThiTHPT.getText().trim().isEmpty()) {
-                thpt = Integer.parseInt(txtThiTHPT.getText().trim());
-            }
-        } catch (NumberFormatException e) {
-            // Nếu user gõ chữ, ta bỏ qua không cộng phần tử đó
-        }
-
-    // Thực hiện công thức: n_chitieu = sl_xttt + sl_dgnl + sl_vsat + sl_thpt
-    int tong = xttt + dgnl + vsat + thpt;
-    txtChiTieu.setText(String.valueOf(tong));
-}
-    
-    public boolean xacNhanThem() {
-        return xacNhan;
-    }
-    
-    public nganhETT getNganh() {
-        return nganh;
-    }
-    
+    private void txtDiemSanDGNLActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_txtDiemSanDGNLActionPerformed
+        // TODO add your handling code here:
+    }//GEN-LAST:event_txtDiemSanDGNLActionPerformed
 
     // Variables declaration - do not modify//GEN-BEGIN:variables
     private javax.swing.JButton btnChonToHopGoc;
-    private javax.swing.JButton btnThem;
     private javax.swing.JButton btnThoat;
     private javax.swing.JCheckBox chkThiDGNL;
     private javax.swing.JCheckBox chkThiTHPT;

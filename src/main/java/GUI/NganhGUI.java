@@ -1,12 +1,13 @@
 package GUI;
 
 import BUS.nganhBUS;
+import BUS.phanQuyenBUS;
 import Entity.nganhETT;
 import Entity.nguyenVongXetTuyenETT;
 import FUNC_GUI.insertNganh;
 import FUNC_GUI.updateNganh;
 import FUNC_GUI.deleteNganh;
-import FUNC_GUI.detailNguyenVong;
+import FUNC_GUI.detailNganh;
 
 import java.util.ArrayList;
 import java.util.List;
@@ -14,6 +15,7 @@ import java.util.Vector;
 import javax.swing.JFrame;
 import javax.swing.JOptionPane;
 import javax.swing.SwingUtilities;
+import EXCEL.ExcelHelper;
 /*
  * Click nbfs://nbhost/SystemFileSystem/Templates/Licenses/license-default.txt to change this license
  * Click nbfs://nbhost/SystemFileSystem/Templates/Classes/Class.java to edit this template
@@ -29,9 +31,7 @@ public class NganhGUI extends BaseTableGUI {
     private nganhBUS busNganh = new nganhBUS();
 
     public NganhGUI() {
-        super(); // Kế thừa toàn bộ giao diện chuẩn từ BaseTableGUI
-        
-        // 1. Đặt tên hiển thị cho GroupBox và kẻ lại dàn cột
+        super();
         setTableNameForTitle("Ngành Học"); 
         headerTable();
         
@@ -39,12 +39,54 @@ public class NganhGUI extends BaseTableGUI {
         btnThem.addActionListener(e -> hienThiDialogThem());
         btnSua.addActionListener(e -> hienThiDialogSua());
         btnXoa.addActionListener(e -> hienThiDialogXoa());
-        btnReFresh.addActionListener(e -> thucHienRefresh()); // Bấm nút Refresh là load lại kho
+        btnExcel.addActionListener(e -> hienThiExcel());
+        btnReFresh.addActionListener(e -> thucHienRefresh());
+        btnTimKiem.addActionListener(e -> thucHienTimKiem());
+        btnChiTiet.addActionListener(e -> hienThiChiTietNganh());
         
         // 3. Vừa mở phòng ra là tự động bưng dữ liệu lên bàn ngay
         loadDataToTable();
+        loadComboBox();
+        phanQuyenGiaoDien();
     }
 
+    private void phanQuyenGiaoDien() 
+    {
+        String bangHienTai = "xt_nganh";
+        
+        if (!phanQuyenBUS.checkQuyenXem(bangHienTai)) {
+            return;
+        }
+        
+        btnThem.setEnabled(phanQuyenBUS.checkQuyenThem(bangHienTai)); 
+        btnSua.setEnabled(false); 
+        btnXoa.setEnabled(false);
+        btnChiTiet.setEnabled(false);
+        btnExcel.setEnabled(phanQuyenBUS.checkQuyenThem(bangHienTai));
+
+        table.getSelectionModel().addListSelectionListener(e -> {
+            if (!e.getValueIsAdjusting()) {
+                
+                SwingUtilities.invokeLater(new Runnable() {
+                    public void run() {
+                        boolean isSelected = table.getSelectedRow() != -1;
+                        
+                        if (isSelected) {
+                            btnSua.setEnabled(phanQuyenBUS.checkQuyenSua(bangHienTai));
+                            btnXoa.setEnabled(phanQuyenBUS.checkQuyenXoa(bangHienTai));
+                            btnChiTiet.setEnabled(phanQuyenBUS.checkQuyenXem(bangHienTai)); 
+                        } else {
+                            btnSua.setEnabled(false);
+                            btnXoa.setEnabled(false);
+                            btnChiTiet.setEnabled(false);
+                        }
+                    }
+                });
+                
+            }
+        });
+    }
+    
     // Thiết lập danh sách các cột hiển thị (Header)
     public void headerTable() {
         Vector<String> header = new Vector<>();
@@ -53,9 +95,25 @@ public class NganhGUI extends BaseTableGUI {
         header.add("Tên Ngành");
         header.add("Tổ Hợp Gốc");
         header.add("Chỉ Tiêu");
-        header.add("Điểm Sàn");
+        header.add("Điểm Sàn THPT");
+        header.add("Điểm Sàn V-SAT");
+        header.add("Điểm Sàn ĐGNL");
         header.add("Điểm Chuẩn");
         tableModel.setColumnIdentifiers(header);
+    }
+    
+    public void loadComboBox() {
+        cbxTimKiem.removeAllItems();
+
+        cbxTimKiem.addItem("ID Ngành");
+        cbxTimKiem.addItem("Mã Ngành");
+        cbxTimKiem.addItem("Tên Ngành");
+        cbxTimKiem.addItem("Tổ Hợp Gốc");
+        cbxTimKiem.addItem("Chỉ Tiêu");
+        cbxTimKiem.addItem("Sàn THPT");
+        cbxTimKiem.addItem("Sàn V-SAT");
+        cbxTimKiem.addItem("Sàn ĐGNL");
+        cbxTimKiem.addItem("Điểm Chuẩn");
     }
 
     // Lệnh lôi dữ liệu từ kho (Database) qua BUS rồi đẩy lên bảng Swing
@@ -73,7 +131,9 @@ public class NganhGUI extends BaseTableGUI {
             row.add(item.getTennganh());
             row.add(item.getN_tohopgoc());
             row.add(item.getN_chitieu());
-            row.add(item.getN_diemsan() != null ? item.getN_diemsan() : "");
+            row.add(item.getN_diemsanthpt() != null ? item.getN_diemsanthpt() : "");
+            row.add(item.getN_diemsanvsat() != null ? item.getN_diemsanvsat() : "");
+            row.add(item.getN_diemsandgnl() != null ? item.getN_diemsandgnl() : "");
             row.add(item.getN_diemtrungtuyen() != null ? item.getN_diemtrungtuyen() : "");
             dataList.add(row);
         }
@@ -101,7 +161,9 @@ public class NganhGUI extends BaseTableGUI {
             row.add(nv.getTennganh());
             row.add(nv.getN_tohopgoc());
             row.add(nv.getN_chitieu());
-            row.add(nv.getN_diemsan() != null ? nv.getN_diemsan() : "");
+            row.add(nv.getN_diemsanthpt() != null ? nv.getN_diemsanthpt() : "");
+            row.add(nv.getN_diemsanvsat() != null ? nv.getN_diemsanvsat() : "");
+            row.add(nv.getN_diemsandgnl() != null ? nv.getN_diemsandgnl() : "");
             row.add(nv.getN_diemtrungtuyen() != null ? nv.getN_diemtrungtuyen() : "");
         
             // Nếu bảng hiển thị các cột sl_... thì add thêm vào đây
@@ -149,7 +211,9 @@ public class NganhGUI extends BaseTableGUI {
                 rowData.add(nvMoi.getN_chitieu());
             
                 // Xử lý hiển thị điểm (nếu null thì hiện chuỗi rỗng)
-                rowData.add(nvMoi.getN_diemsan() != null ? nvMoi.getN_diemsan() : "");
+                rowData.add(nvMoi.getN_diemsanthpt() != null ? nvMoi.getN_diemsanthpt() : "");
+                rowData.add(nvMoi.getN_diemsanvsat() != null ? nvMoi.getN_diemsanvsat() : "");
+                rowData.add(nvMoi.getN_diemsandgnl() != null ? nvMoi.getN_diemsandgnl() : "");
                 rowData.add(nvMoi.getN_diemtrungtuyen() != null ? nvMoi.getN_diemtrungtuyen() : "");
 
                 // 🔥 Đè Vector mới vào đúng vị trí cũ trong danh sách RAM
@@ -220,7 +284,9 @@ public class NganhGUI extends BaseTableGUI {
         row.add(item.getTennganh());
         row.add(item.getN_tohopgoc());
         row.add(item.getN_chitieu());
-        row.add(item.getN_diemsan() != null ? item.getN_diemsan() : "");
+        row.add(item.getN_diemsanthpt() != null ? item.getN_diemsanthpt() : "");
+        row.add(item.getN_diemsanvsat() != null ? item.getN_diemsanvsat() : "");
+        row.add(item.getN_diemsandgnl() != null ? item.getN_diemsandgnl() : "");
         row.add(item.getN_diemtrungtuyen() != null ? item.getN_diemtrungtuyen() : "");
         
         fullDataList.add(row);
@@ -234,19 +300,95 @@ public class NganhGUI extends BaseTableGUI {
 
     javax.swing.JOptionPane.showMessageDialog(this, "Đã đồng bộ dữ liệu mới nhất từ Database");
     }
+    
+    public void hienThiExcel()
+    {
+        JFrame topFrame = (JFrame) SwingUtilities.windowForComponent(this);
+        // Lưu ý: Cậu cần tạo một JDialog tên là excelNganh tương tự cái của Nguyện Vọng
+        FUNC_GUI.excelNganh dialog = new FUNC_GUI.excelNganh(topFrame, true);
+        dialog.setVisible(true);
+        
+        if(dialog.getXacNhanImport())
+        {
+            javax.swing.JFileChooser fileChooser = new javax.swing.JFileChooser();
+            fileChooser.setDialogTitle("Chọn file Excel để nhập dữ liệu Ngành học");
+            javax.swing.filechooser.FileNameExtensionFilter filter = new javax.swing.filechooser.FileNameExtensionFilter("Excel Files (*.xls, *.xlsx)", "xls", "xlsx");
+            fileChooser.setFileFilter(filter);
 
-//    private void hienThiChiTietNV()
-//    {
-//        int row = table.getSelectedRow();
-//        if (row != -1) {
-//            int modelIndex = table.convertRowIndexToModel(row);
-//            int absoluteIndex = (currentPage - 1) * rowsPerPage + modelIndex;
-//            
-//            nganhETT nganhCu = busNganh.ds.get(absoluteIndex);
-//            JFrame topFrame = (JFrame) SwingUtilities.windowForComponent(this);
-//            
-//            detailNganh dialog = new detailNganh(topFrame, true, nganhCu);
-//            dialog.setVisible(true);
-//        }
-//    }
+            int result = fileChooser.showOpenDialog(this);
+            if (result == javax.swing.JFileChooser.APPROVE_OPTION) {
+                // Lấy đường dẫn file
+                String filePath = fileChooser.getSelectedFile().getAbsolutePath();
+                
+                // Gọi BUS xử lý và nhận thông báo kết quả
+                String thongBao = busNganh.nhapDuLieuTuExcel(filePath);
+                
+                JOptionPane.showMessageDialog(this, thongBao, "Kết quả Nhập Excel", javax.swing.JOptionPane.INFORMATION_MESSAGE);
+                
+                // Xong xuôi thì làm mới lại bảng (Dùng luôn hàm Refresh bạn đã viết cho khỏe)
+                thucHienRefresh();
+            }
+        } 
+        else if(dialog.getXacNhanExport())
+        {
+            // Lấy danh sách ngành mới nhất
+            java.util.ArrayList<Entity.nganhETT> fullDanhSach = busNganh.layDanhSach();
+            
+            // Cậu nhớ bổ sung hàm xuatDanhSachNganhRaExcel bên trong class ExcelHelper nhé
+            ExcelHelper.xuatDanhSachNganhRaExcel(fullDanhSach, this, "DanhSachNganhHoc");
+        }
+    }
+
+    public void thucHienTimKiem()
+    {
+        String tim = txtTimKiem.getText().trim();
+        int index = cbxTimKiem.getSelectedIndex();
+        
+        if(tim.isEmpty())
+        {
+            JOptionPane.showMessageDialog(this, "Vui lòng nhập nội dung cần tìm");
+            txtTimKiem.requestFocus();
+            return;
+        }
+
+        ArrayList<nganhETT> dskq = busNganh.timKiemCoBan(tim, index);
+        List<Vector> dsHienThi = new ArrayList<>();
+        
+        for (nganhETT ct : dskq) 
+        {
+            Vector row = new Vector();
+            row.add(ct.getIdnganh());
+            row.add(ct.getManganh());
+            row.add(ct.getTennganh());
+            row.add(ct.getN_tohopgoc());
+            row.add(ct.getN_chitieu());
+            row.add(ct.getN_diemsanthpt() != null ? ct.getN_diemsanthpt() : "");
+            row.add(ct.getN_diemsanvsat() != null ? ct.getN_diemsanvsat() : "");
+            row.add(ct.getN_diemsandgnl() != null ? ct.getN_diemsandgnl() : "");
+            row.add(ct.getN_diemtrungtuyen() != null ? ct.getN_diemtrungtuyen() : "");
+
+            dsHienThi.add(row);
+        }
+
+        setTableData(dsHienThi);
+        if(dsHienThi.isEmpty())
+        {
+            JOptionPane.showMessageDialog(this, "Không tìm thấy dữ liệu phù hợp");
+        }
+    }
+
+    private void hienThiChiTietNganh()
+    {
+        int row = table.getSelectedRow();
+        if (row != -1) {
+            int modelIndex = table.convertRowIndexToModel(row);
+            int absoluteIndex = (currentPage - 1) * rowsPerPage + modelIndex;
+            
+            nganhETT nganhCu = busNganh.ds.get(absoluteIndex);
+            JFrame topFrame = (JFrame) SwingUtilities.windowForComponent(this);
+            
+            detailNganh dialog = new detailNganh(topFrame, true, nganhCu);
+            dialog.setVisible(true);
+        }
+    }
 }

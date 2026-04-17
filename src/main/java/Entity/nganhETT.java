@@ -34,8 +34,14 @@ public class nganhETT {
     @Column(name = "n_chitieu")
     private Integer n_chitieu;
 
-    @Column(name = "n_diemsan")
-    private Double n_diemsan;
+    @Column(name = "n_diemsanthpt")
+    private Double n_diemsanthpt;
+    
+    @Column(name = "n_diemsanvsat")
+    private Double n_diemsanvsat;
+    
+    @Column(name = "n_diemsandgnl")
+    private Double n_diemsandgnl;
 
     @Column(name = "n_diemtrungtuyen")
     private Double n_diemtrungtuyen;
@@ -97,8 +103,16 @@ public class nganhETT {
         return n_chitieu;
     }
 
-    public Double getN_diemsan() {
-        return n_diemsan;
+    public Double getN_diemsanthpt() {
+        return n_diemsanthpt;
+    }
+    
+    public Double getN_diemsanvsat() {
+        return n_diemsanvsat;
+    }
+    
+    public Double getN_diemsandgnl() {
+        return n_diemsandgnl;
     }
 
     public Double getN_diemtrungtuyen() {
@@ -157,8 +171,16 @@ public class nganhETT {
         this.n_chitieu = n_chitieu;
     }
 
-    public void setN_diemsan(Double n_diemsan) {
-        this.n_diemsan = n_diemsan;
+    public void setN_diemsanthpt(Double n_diemsanthpt) {
+        this.n_diemsanthpt = n_diemsanthpt;
+    }
+    
+    public void setN_diemsanvsat(Double n_diemsanvsat) {
+        this.n_diemsanvsat = n_diemsanvsat;
+    }
+    
+    public void setN_diemsandgnl(Double n_diemsandgnl) {
+        this.n_diemsandgnl = n_diemsandgnl;
     }
 
     public void setN_diemtrungtuyen(Double n_diemtrungtuyen) {

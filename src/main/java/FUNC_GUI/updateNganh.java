@@ -28,11 +28,17 @@ public class updateNganh extends javax.swing.JDialog {
         // 1. Đổ thông tin cơ bản
         txtMaNganh.setText(data.getManganh());
         txtMaNganh.setEditable(false);
+        txtMaNganh.setFocusable(false);
         txtTenNganh.setText(data.getTennganh());
         txtToHopGoc.setText(data.getN_tohopgoc());
         txtChiTieu.setText(data.getN_chitieu() != null ? String.valueOf(data.getN_chitieu()) : "0");
-        txtDiemSanTHPT.setText(data.getN_diemsan() != null ? String.valueOf(data.getN_diemsan()) : "");
+        txtDiemSanTHPT.setText(data.getN_diemsanthpt() != null ? String.valueOf(data.getN_diemsanthpt()) : "");
+        txtDiemSanVSAT.setText(data.getN_diemsanvsat() != null ? String.valueOf(data.getN_diemsanvsat()) : "");
+        txtDiemSanDGNL.setText(data.getN_diemsandgnl() != null ? String.valueOf(data.getN_diemsandgnl()) : "");
         txtDiemTrungTuyen.setText(data.getN_diemtrungtuyen() != null ? String.valueOf(data.getN_diemtrungtuyen()) : "");
+        txtDiemSanTHPT.setEditable(true);
+        txtDiemSanVSAT.setEditable(true);
+        txtDiemSanDGNL.setEditable(true);
 
         // 2. Cấu hình ô Tổng chỉ tiêu
         txtChiTieu.setEditable(false);
@@ -44,7 +50,10 @@ public class updateNganh extends javax.swing.JDialog {
         thietLapOChon(chkThiDGNL, txtThiDGNL, data.getN_dgnl(), data.getSl_dgnl());
         thietLapOChon(chkThiTHPT, txtThiTHPT, data.getN_thpt(), data.getSl_thpt());
         thietLapOChon(chkThiVSAT, txtThiVSAT, data.getN_vsat(), data.getSl_vsat());
-
+        
+        SwingUtilities.invokeLater(() -> {
+        btnThoat.requestFocusInWindow();
+        });
         // 4. Tính toán tổng lần đầu tiên khi mở form
         //tuDongTinhTong();
     }
@@ -411,7 +420,9 @@ public class updateNganh extends javax.swing.JDialog {
         nganh.setN_chitieu(Integer.parseInt(txtChiTieu.getText().trim()));
 
         try {
-            nganh.setN_diemsan(txtDiemSanTHPT.getText().isEmpty() ? null : Double.valueOf(txtDiemSanTHPT.getText()));
+            nganh.setN_diemsanthpt(txtDiemSanTHPT.getText().isEmpty() ? null : Double.valueOf(txtDiemSanTHPT.getText()));
+            nganh.setN_diemsanvsat(txtDiemSanVSAT.getText().isEmpty() ? null : Double.valueOf(txtDiemSanVSAT.getText()));
+            nganh.setN_diemsandgnl(txtDiemSanDGNL.getText().isEmpty() ? null : Double.valueOf(txtDiemSanDGNL.getText()));
             nganh.setN_diemtrungtuyen(txtDiemTrungTuyen.getText().isEmpty() ? null : Double.valueOf(txtDiemTrungTuyen.getText()));
         } catch(Exception e){e.printStackTrace();}
 
@@ -579,6 +590,16 @@ public class updateNganh extends javax.swing.JDialog {
         if (chkThiVSAT.isSelected()) {
             try { Integer.parseInt(txtThiVSAT.getText().trim()); } 
             catch (Exception e) { JOptionPane.showMessageDialog(this, "Chỉ tiêu V-SAT phải là con số"); return false; }
+        }
+        
+        try {
+            if (!txtDiemSanTHPT.getText().trim().isEmpty()) Double.parseDouble(txtDiemSanTHPT.getText().trim());
+            if (!txtDiemSanVSAT.getText().trim().isEmpty()) Double.parseDouble(txtDiemSanVSAT.getText().trim());
+            if (!txtDiemSanDGNL.getText().trim().isEmpty()) Double.parseDouble(txtDiemSanDGNL.getText().trim());
+            if (!txtDiemTrungTuyen.getText().trim().isEmpty()) Double.parseDouble(txtDiemTrungTuyen.getText().trim());
+        } catch (Exception e) {
+            JOptionPane.showMessageDialog(this, "Các ô Điểm sàn và Điểm trúng tuyển phải là con số hợp lệ (ví dụ: 18.5)");
+            return false;
         }
         
         return true;

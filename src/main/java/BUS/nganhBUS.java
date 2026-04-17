@@ -107,5 +107,170 @@ public class nganhBUS {
         nganhDAO dao = new nganhDAO();
         return dao.capNhatChiTieuThucTe();
     }
-}
 
+    public ArrayList<nganhETT> timKiemCoBan(String tim, int index)
+    {
+        if(ds == null)
+        {
+            layDanhSach();
+        }
+        
+        ArrayList<nganhETT> dskq = new ArrayList<nganhETT>();
+        String tuKhoa = tim.trim().toLowerCase();
+        
+        for(nganhETT ct : ds)
+        {
+            switch (index) {
+                case 0: // Tìm theo ID Ngành
+                    if(String.valueOf(ct.getIdnganh()).toLowerCase().contains(tuKhoa))
+                    {
+                        dskq.add(ct);
+                    }
+                    break;
+                case 1: // Tìm theo Mã Ngành
+                    if(ct.getManganh() != null && ct.getManganh().toLowerCase().contains(tuKhoa))
+                    {
+                        dskq.add(ct);
+                    }
+                    break;
+                case 2: // Tìm theo Tên Ngành
+                    if(ct.getTennganh() != null && ct.getTennganh().toLowerCase().contains(tuKhoa))
+                    {
+                        dskq.add(ct);
+                    }
+                    break;
+                case 3: // Tìm theo Tổ hợp gốc
+                    if(ct.getN_tohopgoc() != null && ct.getN_tohopgoc().toLowerCase().contains(tuKhoa))
+                    {
+                        dskq.add(ct);
+                    }
+                    break;
+                case 4: // Tìm theo Chỉ tiêu
+                    if(ct.getN_chitieu() != null && String.valueOf(ct.getN_chitieu()).toLowerCase().contains(tuKhoa))
+                    {
+                        dskq.add(ct);
+                    }
+                    break;
+                case 5: // Tìm theo Sàn THPT
+                    if(ct.getN_diemsanthpt() != null && String.valueOf(ct.getN_diemsanthpt()).toLowerCase().contains(tuKhoa))
+                    {
+                        dskq.add(ct);
+                    }
+                    break;
+                case 6: // Tìm theo Sàn V-SAT
+                    if(ct.getN_diemsanvsat() != null && String.valueOf(ct.getN_diemsanvsat()).toLowerCase().contains(tuKhoa))
+                    {
+                        dskq.add(ct);
+                    }
+                    break;
+                case 7: // Tìm theo Sàn ĐGNL
+                    if(ct.getN_diemsandgnl() != null && String.valueOf(ct.getN_diemsandgnl()).toLowerCase().contains(tuKhoa))
+                    {
+                        dskq.add(ct);
+                    }
+                    break;
+                case 8: // Tìm theo Điểm chuẩn
+                    if(ct.getN_diemtrungtuyen() != null && String.valueOf(ct.getN_diemtrungtuyen()).toLowerCase().contains(tuKhoa))
+                    {
+                        dskq.add(ct);
+                    }
+                    break;
+                default:
+                    throw new AssertionError();
+            }
+        }
+        return dskq;
+    }
+
+    public String nhapDuLieuTuExcel(String filePath) {
+        try {
+            java.util.ArrayList<java.util.ArrayList<String>> data = EXCEL.ExcelHelper.docFileExcel(filePath);
+            
+            if (data.size() <= 1) {
+                return "File Excel trống hoặc chỉ có mỗi dòng Tiêu đề!";
+            }
+
+            int soDongThemMoi = 0;
+            int soDongCapNhat = 0;
+            int soDongThatBai = 0;
+            DAO.nganhDAO dao = new DAO.nganhDAO(); 
+
+            // Cập nhật RAM mới nhất trước khi xử lý để đối chiếu
+            if (this.ds == null) this.layDanhSach();
+
+            for (int i = 1; i < data.size(); i++) {
+                java.util.ArrayList<String> row = data.get(i);
+                
+                try {
+                    // --- ĐỌC ID ĐỂ XÁC ĐỊNH LÀ THÊM HAY SỬA ---
+                    int idNganh = (int) parseDoubleSafe(row.get(0)); // Cột A: ID Ngành
+                    boolean isUpdate = (idNganh > 0);
+                    Entity.nganhETT ng = null;
+                    
+                    // Nếu là Cập nhật, moi cái cũ trong RAM ra để giữ nguyên mấy cái Checkbox
+                    if (isUpdate) {
+                        for (Entity.nganhETT item : this.ds) {
+                            if (item.getIdnganh() == idNganh) {
+                                ng = item;
+                                break;
+                            }
+                        }
+                    }
+                    
+                    // Nếu không tìm thấy (hoặc ID = 0 là thêm mới), tạo mới tinh
+                    if (ng == null) {
+                        ng = new Entity.nganhETT();
+                        isUpdate = false;
+                        
+                        // Mặc định cho dòng mới tinh không có trong Excel
+                        ng.setN_tuyenthang("0"); ng.setSl_xtt(0);
+                        ng.setN_dgnl("0");       ng.setSl_dgnl(0);
+                        ng.setN_thpt("0");       ng.setSl_thpt(0);
+                        ng.setN_vsat("0");       ng.setSl_vsat(0);
+                    }
+
+                    // --- CHỈ GHI ĐÈ NHỮNG CỘT CÓ TRONG EXCEL ---
+                    ng.setManganh(row.get(1));
+                    ng.setTennganh(row.get(2));
+                    ng.setN_tohopgoc(row.get(3));
+                    ng.setN_chitieu((int) parseDoubleSafe(row.get(4)));
+                    ng.setN_diemsanthpt(parseDoubleForNganh(row.get(5)));
+                    ng.setN_diemsanvsat(parseDoubleForNganh(row.get(6)));
+                    ng.setN_diemsandgnl(parseDoubleForNganh(row.get(7)));
+                    ng.setN_diemtrungtuyen(parseDoubleForNganh(row.get(8)));
+
+                    // --- QUYẾT ĐỊNH THÊM HAY SỬA XUỐNG DB ---
+                    boolean success;
+                    if (isUpdate) {
+                        success = dao.suaNganh(ng); // GỌI HÀM SỬA
+                        if (success) soDongCapNhat++; else soDongThatBai++;
+                    } else {
+                        success = dao.themNganh(ng); // GỌI HÀM THÊM
+                        if (success) soDongThemMoi++; else soDongThatBai++;
+                    }
+                } catch (Exception ex) {
+                    soDongThatBai++; 
+                }
+            }
+            // Thông báo kết quả chi tiết
+            return "Thêm mới: " + soDongThemMoi + " dòng.\nCập nhật: " + soDongCapNhat + " dòng.\nLỗi/Bỏ qua: " + soDongThatBai + " dòng.";
+
+        } catch (Exception e) {
+            e.printStackTrace();
+            return "Lỗi khi đọc file Excel: " + e.getMessage();
+        }
+    }
+
+    // --- CÁC HÀM PHỤ TRỢ ---
+    private double parseDoubleSafe(String value) {
+        if (value == null || value.trim().isEmpty()) return 0.0;
+        try { return Double.parseDouble(value.trim()); } 
+        catch (Exception e) { return 0.0; }
+    }
+
+    private Double parseDoubleForNganh(String value) {
+        if (value == null || value.trim().isEmpty()) return null;
+        try { return Double.valueOf(value.trim()); } 
+        catch (Exception e) { return null; }
+    }
+}

@@ -52,7 +52,9 @@ public class selectNganh extends javax.swing.JDialog {
             row.add(ct.getTennganh());
             row.add(ct.getN_tohopgoc());
             row.add(ct.getN_chitieu());
-            row.add(ct.getN_diemsan());
+            row.add(ct.getN_diemsanthpt());
+            row.add(ct.getN_diemsanvsat());
+            row.add(ct.getN_diemsandgnl());
             row.add(ct.getN_diemtrungtuyen());
             row.add(ct.getN_tuyenthang());
             row.add(ct.getN_dgnl());
