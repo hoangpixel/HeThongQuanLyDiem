@@ -211,6 +211,15 @@ public class taiKhoanGUI extends BaseTableForNguyenVongGUIonly {
             JOptionPane.showMessageDialog(this, "Vui lòng chọn tài khoản cần xóa!");
             return;
         }
+        
+        // Lấy id từ table
+        int id = Integer.parseInt(tableModel.getValueAt(row, 0).toString());
+
+        // Không cho xóa id = 1
+        if (id == 1) {
+            JOptionPane.showMessageDialog(this, "Không thể xóa tài khoản Admin!!!");
+            return;
+        }
 
         JFrame topFrame = (JFrame) SwingUtilities.windowForComponent(this);
         deleteTaiKhoan dialog = new deleteTaiKhoan(topFrame, true);

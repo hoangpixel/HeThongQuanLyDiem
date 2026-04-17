@@ -861,7 +861,7 @@ CREATE TABLE `xt_tohop_monthi` (
   `tentohop` varchar(100) CHARACTER SET utf8mb3 COLLATE utf8mb3_general_ci DEFAULT NULL,
   PRIMARY KEY (`idtohop`),
   UNIQUE KEY `matohop_UNIQUE` (`matohop`)
-) ENGINE=InnoDB AUTO_INCREMENT=5 DEFAULT CHARSET=utf8mb3 COLLATE=utf8mb3_unicode_ci;
+) ENGINE=InnoDB AUTO_INCREMENT=13 DEFAULT CHARSET=utf8mb3 COLLATE=utf8mb3_unicode_ci;
 /*!40101 SET character_set_client = @saved_cs_client */;
 
 --
@@ -870,7 +870,19 @@ CREATE TABLE `xt_tohop_monthi` (
 
 LOCK TABLES `xt_tohop_monthi` WRITE;
 /*!40000 ALTER TABLE `xt_tohop_monthi` DISABLE KEYS */;
-INSERT INTO `xt_tohop_monthi` VALUES (1,'A00','TO','LI','HO','Toán, Vật lý, Hóa học'),(2,'A01','TO','LI','N1','Toán, Vật lý, Tiếng Anh'),(3,'D01','TO','VA','N1','Toán, Ngữ văn, Tiếng Anh'),(4,'C00','VA','SU','DI',NULL);
+INSERT INTO `xt_tohop_monthi` VALUES
+(1,'A00','TO','LI','HO','Toán, Vật lý, Hóa học'),
+(2,'A01','TO','LI','N1','Toán, Vật lý, Tiếng Anh'),
+(3,'B00','TO','HO','SI','Toán, Hóa học, Sinh học'),
+(4,'C00','VA','SU','DI','Ngữ văn, Lịch sử, Địa lí'),
+(5,'C03','TO','VA','SU','Toán, Ngữ văn, Lịch sử'),
+(6,'C04','TO','VA','DI','Toán, Ngữ văn, Địa lí'),
+(7,'C19','VA','SU','GD','Văn - Sử - GDCD'),
+(8,'D01','TO','VA','N1','Toán, Ngữ văn, Tiếng Anh'),
+(9,'H00','VA','NK3','NK4','Ngữ văn, Hình họa, Trang trí'),
+(10,'M01','VA','NK1','NK2','Ngữ văn, Kể chuyện - Đọc diễn cảm, Hát - Nhạc'),
+(11,'M02','TO','NK1','NK2','Toán, Kể chuyện - Đọc diễn cảm, Hát - Nhạc'),
+(12,'N01','VA','NK5','NK6','Ngữ văn, Hát - Nhạc cụ, Xướng âm - Thẩm âm, Tiết tấu');
 /*!40000 ALTER TABLE `xt_tohop_monthi` ENABLE KEYS */;
 UNLOCK TABLES;
 SET @@SESSION.SQL_LOG_BIN = @MYSQLDUMP_TEMP_LOG_BIN;
