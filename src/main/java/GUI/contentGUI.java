@@ -52,6 +52,9 @@ public class contentGUI extends JFrame {
         if (isAdmin || phanQuyenBUS.checkQuyenXem("xt_diemcongxettuyen")) {
             contentPanel.add(new diemCongXetTuyenGUI(), "diemcong");
         }
+        if (isAdmin || phanQuyenBUS.checkQuyenXem("xt_diemthixettuyen")) {
+            contentPanel.add(new diemThiXetTuyenGUI(), "diemthi");
+        }
         if (isAdmin || phanQuyenBUS.checkQuyenXem("xt_nganh")) {
             contentPanel.add(new NganhGUI(), "nganh");
         }
@@ -89,6 +92,9 @@ public class contentGUI extends JFrame {
         });
         nav.btnDiemCong.addActionListener(e -> {
             cardLayout.show(contentPanel, "diemcong");
+        });
+        nav.btnDiemThi.addActionListener(e -> {
+            cardLayout.show(contentPanel, "diemthi");
         });
         nav.btnNganh.addActionListener(e -> {
             cardLayout.show(contentPanel, "nganh");
