@@ -3,6 +3,7 @@ package GUI;
 import BUS.bangQuyDoiBUS;
 import Entity.bangQuyDoiETT;
 import FUNC_GUI.deleteBangQuyDoi;
+import FUNC_GUI.detailBangQuyDoi;
 import FUNC_GUI.insertBangQuyDoi;
 import FUNC_GUI.updateBangQuyDoi;
 import java.util.ArrayList;
@@ -36,6 +37,7 @@ public class bangQuyDoiVSATGUI extends BaseTableGUI {
         btnThem.addActionListener(e -> hienThiDialogThem());
         btnSua.addActionListener(e -> hienThiDialogSua());
         btnXoa.addActionListener(e -> hienThiDialogXoa());
+        btnChiTiet.addActionListener(e -> thucHienChiTiet());
         btnReFresh.addActionListener(e -> thucHienRefresh());
         btnTimKiem.addActionListener(e -> thucHienTimKiem());
         // Giả sử cột Phương thức nằm ở vị trí số 3, Tổ hợp số 4 (Nhớ đếm index từ 0
@@ -48,6 +50,34 @@ public class bangQuyDoiVSATGUI extends BaseTableGUI {
         // table.getColumnModel().getColumn(4).setMaxWidth(0);
         // table.getColumnModel().getColumn(4).setWidth(0);
         loadDataToTable();
+    }
+
+    private void thucHienChiTiet() {
+        try {
+            int row = table.getSelectedRow();
+            if (row == -1) {
+                JOptionPane.showMessageDialog(this, "Vui lòng chọn một mốc quy đổi trên bảng để xem chi tiết!");
+                return;
+            }
+
+            int modelIndex = table.convertRowIndexToModel(row);
+            int absoluteIndex = (currentPage - 1) * rowsPerPage + modelIndex;
+
+            if (bangQuyDoiBUS.ds == null || absoluteIndex < 0 || absoluteIndex >= bangQuyDoiBUS.ds.size()) {
+                JOptionPane.showMessageDialog(this, "Không tìm thấy dữ liệu tương ứng để xem chi tiết");
+                return;
+            }
+
+            bangQuyDoiETT current = bangQuyDoiBUS.ds.get(absoluteIndex);
+            java.awt.Window owner = SwingUtilities.getWindowAncestor(this);
+            java.awt.Frame frameOwner = owner instanceof java.awt.Frame ? (java.awt.Frame) owner : null;
+            detailBangQuyDoi dialog = new detailBangQuyDoi(frameOwner, true, current);
+            dialog.setLocationRelativeTo(owner);
+            dialog.setVisible(true);
+        } catch (Exception ex) {
+            ex.printStackTrace();
+            JOptionPane.showMessageDialog(this, "Lỗi mở form Chi tiết: " + ex.getMessage());
+        }
     }
 
     public void headerTable() {

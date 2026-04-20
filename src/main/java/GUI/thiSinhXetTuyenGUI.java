@@ -19,6 +19,7 @@ import FUNC_GUI.updateThiSinh;
 import FUNC_GUI.deleteThiSinh;
 import FUNC_GUI.excelNguyenVong;
 import FUNC_GUI.updateNguyenVong;
+import FUNC_GUI.detailThiSinhXetTuyen;
 import java.util.ArrayList;
 import java.util.List;
 import javax.swing.JOptionPane;
@@ -36,6 +37,7 @@ public class thiSinhXetTuyenGUI extends BaseTableGUI {
         btnThem.addActionListener(e -> hienThiDialogThemMoi());
         btnSua.addActionListener(e ->hienThiDialogSuaTS());
         btnXoa.addActionListener(e ->hienThiDialogXoaTS());
+        btnChiTiet.addActionListener(e -> thucHienChiTiet());
         btnExcel.addActionListener(e -> hienThiExcel());
         btnTimKiem.addActionListener(e -> thucHienTimKiem());
         loadComboBox();
@@ -57,6 +59,15 @@ public class thiSinhXetTuyenGUI extends BaseTableGUI {
         
         // 3. GỌI HÀM TẢI DỮ LIỆU LÊN BẢNG KHI VỪA MỞ FORM LÊN (Đã mở khóa)
         loadDataToTable();
+    }
+
+    private void thucHienChiTiet() {
+        int selectedRow = table.getSelectedRow();
+        if (selectedRow == -1) {
+            JOptionPane.showMessageDialog(this, "Vui lòng chọn một thí sinh trên bảng để xem chi tiết!");
+            return;
+        }
+        hienThiDialogChiTiet(selectedRow);
     }
     
     // ==============================================================
@@ -227,26 +238,44 @@ public class thiSinhXetTuyenGUI extends BaseTableGUI {
     // HÀM HIỂN THỊ DIALOG KHI DOUBLE CLICK (XEM CHI TIẾT / SỬA)
     // ==============================================================
     private void hienThiDialogChiTiet(int rowIndex) {
-        String idThiSinh = table.getValueAt(rowIndex, 0) != null ? table.getValueAt(rowIndex, 0).toString() : "";
-        String cccd = table.getValueAt(rowIndex, 1) != null ? table.getValueAt(rowIndex, 1).toString() : "";
-        String ho = table.getValueAt(rowIndex, 3) != null ? table.getValueAt(rowIndex, 3).toString() : "";
-        String ten = table.getValueAt(rowIndex, 4) != null ? table.getValueAt(rowIndex, 4).toString() : "";
+        Object idVal = table.getValueAt(rowIndex, 0);
+        if (idVal == null) {
+            JOptionPane.showMessageDialog(this, "Không lấy được ID thí sinh");
+            return;
+        }
 
-        JDialog dialogChiTiet = new JDialog();
-        dialogChiTiet.setTitle("Chi tiết Thí Sinh: " + cccd);
-        dialogChiTiet.setSize(400, 300);
-        dialogChiTiet.setLocationRelativeTo(null); 
-        dialogChiTiet.setModal(true); 
-        
-        dialogChiTiet.setLayout(new java.awt.FlowLayout(java.awt.FlowLayout.LEFT, 15, 15));
-        
-        dialogChiTiet.add(new JLabel("ID Thí sinh: " + idThiSinh));
-        dialogChiTiet.add(new JLabel("CCCD: " + cccd));
-        dialogChiTiet.add(new JLabel("Họ tên: " + ho + " " + ten));
-        
-        dialogChiTiet.add(new javax.swing.JButton("Cập nhật thông tin"));
-        
-        dialogChiTiet.setVisible(true);
+        int id;
+        try {
+            id = Integer.parseInt(String.valueOf(idVal));
+        } catch (NumberFormatException ex) {
+            JOptionPane.showMessageDialog(this, "ID thí sinh không hợp lệ");
+            return;
+        }
+
+        if (busThiSinh.ds == null) {
+            busThiSinh.layDanhSach();
+        }
+
+        thiSinhXetTuyenETT current = null;
+        if (busThiSinh.ds != null) {
+            for (thiSinhXetTuyenETT ts : busThiSinh.ds) {
+                if (ts != null && ts.getIdThiSinh() == id) {
+                    current = ts;
+                    break;
+                }
+            }
+        }
+
+        if (current == null) {
+            JOptionPane.showMessageDialog(this, "Không tìm thấy dữ liệu thí sinh");
+            return;
+        }
+
+        java.awt.Window owner = SwingUtilities.getWindowAncestor(this);
+        java.awt.Frame frameOwner = owner instanceof java.awt.Frame ? (java.awt.Frame) owner : null;
+        detailThiSinhXetTuyen dialog = new detailThiSinhXetTuyen(frameOwner, true, current);
+        dialog.setLocationRelativeTo(owner);
+        dialog.setVisible(true);
     }
     public void thucHienTimKiem() {
         String tim = txtTimKiem.getText().trim();

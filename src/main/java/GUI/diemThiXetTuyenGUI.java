@@ -4,6 +4,8 @@ import BUS.diemThiBUS;
 import BUS.phanQuyenBUS;
 import Entity.diemThiETT;
 import EXCEL.ExcelHelper;
+import FUNC_GUI.deleteDiemThi;
+import FUNC_GUI.detailDiemThi;
 import FUNC_GUI.insertDiemThi;
 import FUNC_GUI.updateDiemThi;
 
@@ -86,42 +88,45 @@ public class diemThiXetTuyenGUI extends BaseTableGUI {
                 if (item == null) {
                     continue;
                 }
-                Vector row = new Vector();
-                row.add(item.getIddiemthi());
-                row.add(item.getCccd());
-                row.add(item.getSobaodanh());
-                row.add(item.getdPhuongthuc());
-
-                row.add(item.getTo());
-                row.add(item.getLi());
-                row.add(item.getHo());
-                row.add(item.getSi());
-                row.add(item.getSu());
-                row.add(item.getDi());
-                row.add(item.getVa());
-
-                row.add(item.getN1Thi());
-                row.add(item.getN1Cc());
-
-                row.add(item.getCncn());
-                row.add(item.getCnnn());
-                row.add(item.getTi());
-                row.add(item.getKtpl());
-
-                row.add(item.getNl1());
-
-                row.add(item.getNk1());
-                row.add(item.getNk2());
-                row.add(item.getNk3());
-                row.add(item.getNk4());
-                row.add(item.getNk5());
-                row.add(item.getNk6());
-
-                dataList.add(row);
+                dataList.add(toRow(item));
             }
         }
 
         setTableData(dataList);
+    }
+
+    private Vector toRow(diemThiETT item) {
+        Vector row = new Vector();
+        row.add(item.getIddiemthi());
+        row.add(item.getCccd());
+        row.add(item.getSobaodanh());
+        row.add(item.getdPhuongthuc());
+
+        row.add(item.getTo());
+        row.add(item.getLi());
+        row.add(item.getHo());
+        row.add(item.getSi());
+        row.add(item.getSu());
+        row.add(item.getDi());
+        row.add(item.getVa());
+
+        row.add(item.getN1Thi());
+        row.add(item.getN1Cc());
+
+        row.add(item.getCncn());
+        row.add(item.getCnnn());
+        row.add(item.getTi());
+        row.add(item.getKtpl());
+
+        row.add(item.getNl1());
+
+        row.add(item.getNk1());
+        row.add(item.getNk2());
+        row.add(item.getNk3());
+        row.add(item.getNk4());
+        row.add(item.getNk5());
+        row.add(item.getNk6());
+        return row;
     }
 
     private void phanQuyenGiaoDien() {
@@ -200,7 +205,15 @@ public class diemThiXetTuyenGUI extends BaseTableGUI {
                 return;
             }
 
-            loadDataToTable();
+            // Update thẳng lên bảng (không gọi lại load)
+            Vector row = toRow(obj);
+            fullDataList.add(row);
+            totalPages = (int) Math.ceil((double) fullDataList.size() / rowsPerPage);
+            if (totalPages == 0) {
+                totalPages = 1;
+            }
+            currentPage = totalPages;
+            renderCurrentPage();
         } catch (Exception ex) {
             ex.printStackTrace();
             JOptionPane.showMessageDialog(this, "Lỗi mở form Thêm: " + ex.getMessage());
@@ -252,7 +265,30 @@ public class diemThiXetTuyenGUI extends BaseTableGUI {
                 return;
             }
 
-            loadDataToTable();
+            // Update thẳng lên bảng (không gọi lại load)
+            Vector newRow = toRow(updated);
+            boolean replaced = false;
+            for (int i = 0; i < fullDataList.size(); i++) {
+                Object rowId = fullDataList.get(i).get(0);
+                if (rowId != null && String.valueOf(rowId).equals(String.valueOf(id))) {
+                    fullDataList.set(i, newRow);
+                    replaced = true;
+                    break;
+                }
+            }
+
+            // fallback: nếu vì lý do nào đó không match theo ID, cập nhật theo row đang chọn
+            if (!replaced) {
+                int row = table.getSelectedRow();
+                if (row != -1) {
+                    int modelIndex = table.convertRowIndexToModel(row);
+                    int absoluteIndex = (currentPage - 1) * rowsPerPage + modelIndex;
+                    if (absoluteIndex >= 0 && absoluteIndex < fullDataList.size()) {
+                        fullDataList.set(absoluteIndex, newRow);
+                    }
+                }
+            }
+            renderCurrentPage();
         } catch (Exception ex) {
             ex.printStackTrace();
             JOptionPane.showMessageDialog(this, "Lỗi mở form Sửa: " + ex.getMessage());
@@ -267,8 +303,14 @@ public class diemThiXetTuyenGUI extends BaseTableGUI {
                 return;
             }
 
-            int ok = JOptionPane.showConfirmDialog(this, "Xóa bảng điểm thi ID = " + id + "?", "Xác nhận", JOptionPane.YES_NO_OPTION);
-            if (ok != JOptionPane.YES_OPTION) {
+            java.awt.Window owner = SwingUtilities.getWindowAncestor(this);
+            java.awt.Frame frameOwner = owner instanceof java.awt.Frame ? (java.awt.Frame) owner : null;
+            deleteDiemThi dialog = new deleteDiemThi(frameOwner, true);
+            dialog.setLocationRelativeTo(owner);
+            dialog.setMessage("Bạn có chắc muốn xóa bảng điểm thi ID = " + id + " không?");
+            dialog.setVisible(true);
+
+            if (!dialog.getXacNhanXoa()) {
                 return;
             }
 
@@ -354,38 +396,7 @@ public class diemThiXetTuyenGUI extends BaseTableGUI {
             }
 
             if (value != null && value.toLowerCase().contains(keyLower)) {
-                Vector row = new Vector();
-                row.add(item.getIddiemthi());
-                row.add(item.getCccd());
-                row.add(item.getSobaodanh());
-                row.add(item.getdPhuongthuc());
-
-                row.add(item.getTo());
-                row.add(item.getLi());
-                row.add(item.getHo());
-                row.add(item.getSi());
-                row.add(item.getSu());
-                row.add(item.getDi());
-                row.add(item.getVa());
-
-                row.add(item.getN1Thi());
-                row.add(item.getN1Cc());
-
-                row.add(item.getCncn());
-                row.add(item.getCnnn());
-                row.add(item.getTi());
-                row.add(item.getKtpl());
-
-                row.add(item.getNl1());
-
-                row.add(item.getNk1());
-                row.add(item.getNk2());
-                row.add(item.getNk3());
-                row.add(item.getNk4());
-                row.add(item.getNk5());
-                row.add(item.getNk6());
-
-                filtered.add(row);
+                filtered.add(toRow(item));
             }
         }
 
@@ -411,19 +422,10 @@ public class diemThiXetTuyenGUI extends BaseTableGUI {
             return;
         }
 
-        StringBuilder sb = new StringBuilder();
-        sb.append("ID: ").append(current.getIddiemthi()).append('\n');
-        sb.append("CCCD: ").append(current.getCccd()).append('\n');
-        sb.append("SBD: ").append(current.getSobaodanh()).append('\n');
-        sb.append("Phương thức: ").append(current.getdPhuongthuc()).append('\n');
-        sb.append("TO: ").append(current.getTo()).append(" | LI: ").append(current.getLi()).append(" | HO: ").append(current.getHo()).append('\n');
-        sb.append("SI: ").append(current.getSi()).append(" | SU: ").append(current.getSu()).append(" | DI: ").append(current.getDi()).append(" | VA: ").append(current.getVa()).append('\n');
-        sb.append("N1_THI: ").append(current.getN1Thi()).append(" | N1_CC: ").append(current.getN1Cc()).append('\n');
-        sb.append("CNCN: ").append(current.getCncn()).append(" | CNNN: ").append(current.getCnnn()).append(" | TI: ").append(current.getTi()).append(" | KTPL: ").append(current.getKtpl()).append('\n');
-        sb.append("NL1: ").append(current.getNl1()).append('\n');
-        sb.append("NK1: ").append(current.getNk1()).append(" | NK2: ").append(current.getNk2()).append(" | NK3: ").append(current.getNk3()).append('\n');
-        sb.append("NK4: ").append(current.getNk4()).append(" | NK5: ").append(current.getNk5()).append(" | NK6: ").append(current.getNk6()).append('\n');
-
-        JOptionPane.showMessageDialog(this, sb.toString(), "Chi tiết điểm thi", JOptionPane.INFORMATION_MESSAGE);
+        java.awt.Window owner = SwingUtilities.getWindowAncestor(this);
+        java.awt.Frame frameOwner = owner instanceof java.awt.Frame ? (java.awt.Frame) owner : null;
+        detailDiemThi dialog = new detailDiemThi(frameOwner, true, current);
+        dialog.setLocationRelativeTo(owner);
+        dialog.setVisible(true);
     }
 }
