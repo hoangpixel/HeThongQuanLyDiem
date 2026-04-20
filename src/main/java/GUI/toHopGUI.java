@@ -43,6 +43,16 @@ public class toHopGUI extends BaseTableGUI {
         btnChiTiet.addActionListener(e -> hienThiDialogChiTiet());
         btnExcel.addActionListener(e -> thucHienExcel());
         btnReFresh.addActionListener(e -> thucHienRefresh());
+        btnTimKiem.addActionListener(e -> thucHienTimKiem());
+        
+        // Override lại ComboBox sau khi base khởi tạo xong
+        cbxTimKiem.removeAllItems();
+        cbxTimKiem.addItem("ID Tổ Hợp");
+        cbxTimKiem.addItem("Mã Tổ Hợp");
+        cbxTimKiem.addItem("Môn 1");
+        cbxTimKiem.addItem("Môn 2");
+        cbxTimKiem.addItem("Môn 3");
+        cbxTimKiem.addItem("Tên Tổ Hợp");
 
         loadDataToTable();
     }

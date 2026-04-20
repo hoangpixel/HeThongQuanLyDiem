@@ -157,35 +157,57 @@ public class toHopBUS {
     
     public ArrayList<toHopETT> timKiemCoBan(String tim, int index)
     {
+        if (ds == null)
+        {
+            layDanhSach();
+        }
         ArrayList<toHopETT> ketQua = new ArrayList<>();
 
-        for (toHopETT th : layDanhSach())
+        for (toHopETT th : ds)
         {
             switch (index)
             {
-                case 0:
-                    if (th.getMatohop().toLowerCase().contains(tim)) ketQua.add(th);
+                case 0: // ID Tổ Hợp
+                    if (String.valueOf(th.getIdtohop()).contains(tim))
+                    {
+                        ketQua.add(th);
+                    }
                     break;
-
-                case 1:
-                    if (th.getMon1().toLowerCase().contains(tim)) ketQua.add(th);
+                case 1: // Mã Tổ Hợp
+                    if (th.getMatohop() != null && th.getMatohop().toLowerCase().contains(tim))
+                    {
+                        ketQua.add(th);
+                    }
                     break;
-
-                case 2:
-                    if (th.getMon2().toLowerCase().contains(tim)) ketQua.add(th);
+                case 2: // Môn 1
+                    if (th.getMon1() != null && th.getMon1().toLowerCase().contains(tim))
+                    {
+                        ketQua.add(th);
+                    }
                     break;
-
-                case 3:
-                    if (th.getMon3().toLowerCase().contains(tim)) ketQua.add(th);
+                case 3: // Môn 2
+                    if (th.getMon2() != null && th.getMon2().toLowerCase().contains(tim))
+                    {
+                        ketQua.add(th);
+                    }
                     break;
-
-                case 4:
-                    if (th.getTentohop().toLowerCase().contains(tim)) ketQua.add(th);
+                case 4: // Môn 3
+                    if (th.getMon3() != null && th.getMon3().toLowerCase().contains(tim))
+                    {
+                        ketQua.add(th);
+                    }
+                    break;
+                case 5: // Tên Tổ Hợp
+                    if (th.getTentohop() != null && th.getTentohop().toLowerCase().contains(tim))
+                    {
+                        ketQua.add(th);
+                    }
+                    break;
+                default:
                     break;
             }
         }
-
         return ketQua;
     }
-    
+  
 }
