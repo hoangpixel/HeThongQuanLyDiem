@@ -11,6 +11,7 @@ import javax.swing.table.DefaultTableModel;
 import javax.swing.JOptionPane;
 
 import BUS.diemCongBUS;
+import BUS.phanQuyenBUS;
 import BUS.thiSinhXetTuyenBUS;
 import EXCEL.ExcelHelper;
 import Entity.diemCongETT;
@@ -57,8 +58,45 @@ public class diemCongXetTuyenGUI extends BaseTableGUI {
         });
 
         loadDataToTable();
+        phanQuyenGiaoDien();
     }
-    
+     private void phanQuyenGiaoDien() 
+    {
+        String bangHienTai = "xt_diemcongxettuyen";
+        
+        if (!phanQuyenBUS.checkQuyenXem(bangHienTai)) {
+            return;
+        }
+        
+        btnThem.setEnabled(phanQuyenBUS.checkQuyenThem(bangHienTai)); 
+        btnSua.setEnabled(false); 
+        btnXoa.setEnabled(false);
+        btnChiTiet.setEnabled(false);
+        btnExcel.setEnabled(phanQuyenBUS.checkQuyenThem(bangHienTai));
+//        btnTinhToanKetQua.setEnabled(phanQuyenBUS.checkQuyenThem(bangHienTai));
+
+        table.getSelectionModel().addListSelectionListener(e -> {
+            if (!e.getValueIsAdjusting()) {
+                
+                SwingUtilities.invokeLater(new Runnable() {
+                    public void run() {
+                        boolean isSelected = table.getSelectedRow() != -1;
+                        
+                        if (isSelected) {
+                            btnSua.setEnabled(phanQuyenBUS.checkQuyenSua(bangHienTai));
+                            btnXoa.setEnabled(phanQuyenBUS.checkQuyenXoa(bangHienTai));
+                            btnChiTiet.setEnabled(phanQuyenBUS.checkQuyenXem(bangHienTai)); 
+                        } else {
+                            btnSua.setEnabled(false);
+                            btnXoa.setEnabled(false);
+                            btnChiTiet.setEnabled(false);
+                        }
+                    }
+                });
+                
+            }
+        });
+    }
     // ================= HEADER =================
     public void headerTable() {
         Vector<String> header = new Vector<>();

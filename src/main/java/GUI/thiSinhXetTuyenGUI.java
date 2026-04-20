@@ -1,5 +1,6 @@
 package GUI;
 
+import BUS.phanQuyenBUS;
 import java.awt.event.MouseAdapter;
 import java.awt.event.MouseEvent;
 import java.util.Vector;
@@ -39,6 +40,7 @@ public class thiSinhXetTuyenGUI extends BaseTableGUI {
         btnExcel.addActionListener(e -> hienThiExcel());
         btnTimKiem.addActionListener(e -> thucHienTimKiem());
         loadComboBox();
+        phanQuyenGiaoDien();
         btnReFresh.addActionListener(e -> thucHienRefresh());
         // ==============================================================
         // GẮN SỰ KIỆN DOUBLE-CLICK CHO TABLE ĐỂ XEM CHI TIẾT
@@ -127,6 +129,43 @@ public class thiSinhXetTuyenGUI extends BaseTableGUI {
     // ==============================================================
     // HÀM MỞ FORM JDIALOG ĐỂ THÊM THÍ SINH MỚI
     // ==============================================================
+    private void phanQuyenGiaoDien() 
+    {
+        String bangHienTai = "xt_thisinhxettuyen";
+        
+        if (!phanQuyenBUS.checkQuyenXem(bangHienTai)) {
+            return;
+        }
+        
+        btnThem.setEnabled(phanQuyenBUS.checkQuyenThem(bangHienTai)); 
+        btnSua.setEnabled(false); 
+        btnXoa.setEnabled(false);
+        btnChiTiet.setEnabled(false);
+        btnExcel.setEnabled(phanQuyenBUS.checkQuyenThem(bangHienTai));
+//        btnTinhToanKetQua.setEnabled(phanQuyenBUS.checkQuyenThem(bangHienTai));
+
+        table.getSelectionModel().addListSelectionListener(e -> {
+            if (!e.getValueIsAdjusting()) {
+                
+                SwingUtilities.invokeLater(new Runnable() {
+                    public void run() {
+                        boolean isSelected = table.getSelectedRow() != -1;
+                        
+                        if (isSelected) {
+                            btnSua.setEnabled(phanQuyenBUS.checkQuyenSua(bangHienTai));
+                            btnXoa.setEnabled(phanQuyenBUS.checkQuyenXoa(bangHienTai));
+                            btnChiTiet.setEnabled(phanQuyenBUS.checkQuyenXem(bangHienTai)); 
+                        } else {
+                            btnSua.setEnabled(false);
+                            btnXoa.setEnabled(false);
+                            btnChiTiet.setEnabled(false);
+                        }
+                    }
+                });
+                
+            }
+        });
+    }
     private void hienThiDialogThemMoi() {
         JFrame topFrame = (JFrame) SwingUtilities.getWindowAncestor(this);
         insertThiSinh dialog = new insertThiSinh(topFrame, true);
