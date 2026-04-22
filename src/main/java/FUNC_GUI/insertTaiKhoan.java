@@ -7,6 +7,7 @@ package FUNC_GUI;
 import BUS.taiKhoanBUS;
 import Entity.taiKhoanETT;
 import javax.swing.JOptionPane;
+import UTIL.MD5Util;
 
 /**
  *
@@ -139,7 +140,7 @@ public class insertTaiKhoan extends javax.swing.JDialog {
 
         btnXoa.setBackground(new java.awt.Color(255, 101, 101));
         btnXoa.setFont(new java.awt.Font("Segoe UI", 1, 14)); // NOI18N
-        btnXoa.setText("Xóa");
+        btnXoa.setText("Thoát");
         btnXoa.addActionListener(this::btnXoaActionPerformed);
 
         javax.swing.GroupLayout jPanel3Layout = new javax.swing.GroupLayout(jPanel3);
@@ -204,23 +205,31 @@ public class insertTaiKhoan extends javax.swing.JDialog {
     private void btnThemActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_btnThemActionPerformed
         // TODO add your handling code here:
        if (!kiemtra()) return;
+       
+        String tenDangNhap = txtTenDangNhap.getText().trim();
+        String matKhau = new String(txtMatKhau.getPassword()).trim();
+        String hoTen = txtHoTen.getText().trim();
 
-        try {
-            tenDangNhap = txtTenDangNhap.getText().trim();
-            matKhau = new String(txtMatKhau.getPassword()).trim(); // getPassword() của JPasswordField
-            hoTen = txtHoTen.getText().trim();
+        // Kiểm tra username đã tồn tại chưa (cần hỏi DB vì RAM có thể chưa có)
+        if (bus.layTheoUsername(tenDangNhap) != null) {
+            JOptionPane.showMessageDialog(this, "Tên đăng nhập đã tồn tại!");
+            txtTenDangNhap.requestFocus();
+            return;
+        }
 
-            boolean kq = bus.themTaiKhoan(tenDangNhap, matKhau, hoTen);
-            if (kq) {
-                ketquaETT = bus.layTheoUsername(tenDangNhap);
-                JOptionPane.showMessageDialog(this, "Thêm tài khoản thành công!");
-                xacNhan = true;
-                dispose();
-            } else {
-                JOptionPane.showMessageDialog(this, "Thêm thất bại!");
-            }
-        } catch (IllegalArgumentException e) {
-            JOptionPane.showMessageDialog(this, e.getMessage());
+        taiKhoanETT tk = new taiKhoanETT();
+        tk.setTenDangNhap(tenDangNhap);
+        tk.setMatKhau(MD5Util.md5(matKhau)); // Hash mật khẩu ở GUI trước khi truyền xuống
+        tk.setHoTen(hoTen);
+        tk.setTrangThai(1);
+
+        if (bus.themTaiKhoan(tk)) {
+            ketquaETT = tk;
+            JOptionPane.showMessageDialog(this, "Thêm tài khoản thành công!");
+            xacNhan = true;
+            dispose();
+        } else {
+            JOptionPane.showMessageDialog(this, "Thêm tài khoản thất bại!");
         }
     }
     
@@ -230,22 +239,27 @@ public class insertTaiKhoan extends javax.swing.JDialog {
 
     private boolean kiemtra() {
         if (txtTenDangNhap.getText().trim().isEmpty()) {
-            JOptionPane.showMessageDialog(this, "Không được để trống tên đăng nhập");
+            JOptionPane.showMessageDialog(this, "Tên đăng nhập không được để trống!");
             txtTenDangNhap.requestFocus();
             return false;
         }
-        if (new String(txtMatKhau.getPassword()).trim().isEmpty()) {
-            JOptionPane.showMessageDialog(this, "Không được để trống mật khẩu");
+        String matKhau = new String(txtMatKhau.getPassword()).trim();
+        if (matKhau.isEmpty()) {
+            JOptionPane.showMessageDialog(this, "Mật khẩu không được để trống!");
+            txtMatKhau.requestFocus();
+            return false;
+        }
+        if (matKhau.length() < 6) {
+            JOptionPane.showMessageDialog(this, "Mật khẩu phải có ít nhất 6 ký tự!");
             txtMatKhau.requestFocus();
             return false;
         }
         if (txtHoTen.getText().trim().isEmpty()) {
-            JOptionPane.showMessageDialog(this, "Không được để trống họ tên");
+            JOptionPane.showMessageDialog(this, "Họ tên không được để trống!");
             txtHoTen.requestFocus();
             return false;
         }
         return true;
-
     }//GEN-LAST:event_btnThemActionPerformed
 
     // Variables declaration - do not modify//GEN-BEGIN:variables

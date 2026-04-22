@@ -211,7 +211,7 @@ public class insertToHop extends javax.swing.JDialog {
 
         btnXoa.setBackground(new java.awt.Color(255, 101, 101));
         btnXoa.setFont(new java.awt.Font("Segoe UI", 1, 14)); // NOI18N
-        btnXoa.setText("Xóa");
+        btnXoa.setText("Thoát");
         btnXoa.addActionListener(this::btnXoaActionPerformed);
 
         javax.swing.GroupLayout jPanel4Layout = new javax.swing.GroupLayout(jPanel4);

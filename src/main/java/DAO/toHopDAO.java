@@ -63,7 +63,7 @@ public class toHopDAO {
         Transaction transaction = null;
         try (Session session = HibernateUtil.getSessionFactory().openSession()) {
             transaction = session.beginTransaction();
-            toHopETT objCanXoa = session.get(toHopETT.class, obj.getMatohop()); // ← đổi getMaToHop() đúng theo tên getter @Id
+            toHopETT objCanXoa = session.get(toHopETT.class, obj.getIdtohop()); 
             if (objCanXoa != null) {
                 session.remove(objCanXoa);
                 transaction.commit();

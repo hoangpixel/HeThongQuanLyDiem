@@ -7,6 +7,7 @@ package FUNC_GUI;
 import BUS.taiKhoanBUS;
 import Entity.taiKhoanETT;
 import javax.swing.JOptionPane;
+import  UTIL.MD5Util;
 
 /**
  *
@@ -64,7 +65,7 @@ public class updateTaiKhoan extends javax.swing.JDialog {
 
         btnXoa.setBackground(new java.awt.Color(255, 101, 101));
         btnXoa.setFont(new java.awt.Font("Segoe UI", 1, 14)); // NOI18N
-        btnXoa.setText("Xóa");
+        btnXoa.setText("Thoát");
         btnXoa.addActionListener(this::btnXoaActionPerformed);
 
         javax.swing.GroupLayout jPanel3Layout = new javax.swing.GroupLayout(jPanel3);
@@ -120,6 +121,7 @@ public class updateTaiKhoan extends javax.swing.JDialog {
         jLabel4.setFont(new java.awt.Font("Segoe UI", 0, 14)); // NOI18N
         jLabel4.setText("Họ Tên :");
 
+        txtTenDangNhap.setEditable(false);
         txtTenDangNhap.setBackground(new java.awt.Color(239, 239, 239));
         txtTenDangNhap.addActionListener(this::txtTenDangNhapActionPerformed);
 
@@ -129,6 +131,7 @@ public class updateTaiKhoan extends javax.swing.JDialog {
         jLabel5.setText("Mật Khẩu Mới :");
 
         txtMatKhauMoi.setBackground(new java.awt.Color(239, 239, 239));
+        txtMatKhauMoi.addActionListener(this::txtMatKhauMoiActionPerformed);
 
         javax.swing.GroupLayout jPanel2Layout = new javax.swing.GroupLayout(jPanel2);
         jPanel2.setLayout(jPanel2Layout);
@@ -206,31 +209,33 @@ public class updateTaiKhoan extends javax.swing.JDialog {
         if (!kiemtra()) return;
 
         taiKhoanETT obj = new taiKhoanETT();
-        obj.setTenDangNhap(taiKhoanCu.getTenDangNhap()); // giữ nguyên tên đăng nhập
+        obj.setTenDangNhap(taiKhoanCu.getTenDangNhap());
+        obj.setHoTen(txtHoTen.getText().trim());
+        obj.setTrangThai(taiKhoanCu.getTrangThai());
 
-        // ✅ Kiểm tra mật khẩu mới: nếu để trống thì giữ mật khẩu cũ
         String matKhauMoi = new String(txtMatKhauMoi.getPassword()).trim();
         if (matKhauMoi.isEmpty()) {
-            // Để trống → truyền mật khẩu cũ (đã hash) vào
-            // BUS sẽ thấy nó BẰNG với DB → không hash lại
-            obj.setMatKhau(taiKhoanCu.getMatKhau());
+            obj.setMatKhau(""); // BUS sẽ giữ mật khẩu cũ
         } else {
-            // Có nhập → truyền plaintext vào
-            // BUS sẽ thấy nó KHÁC với DB (vì DB đang lưu hash) → hash rồi lưu
-            obj.setMatKhau(matKhauMoi);
+            //  Kiểm tra trùng mật khẩu cũ ngay tại GUI
+            String matKhauMoiHash = MD5Util.md5(matKhauMoi);
+            if (matKhauMoiHash.equals(taiKhoanCu.getMatKhau())) {
+                JOptionPane.showMessageDialog(this, 
+                    "Mật khẩu mới không được trùng mật khẩu cũ!", 
+                    "Lỗi", JOptionPane.ERROR_MESSAGE);
+                txtMatKhauMoi.requestFocus();
+                return;
+            }
+            obj.setMatKhau(matKhauMoiHash); // Hash sẵn ở GUI trước khi truyền xuống BUS
         }
 
-        obj.setHoTen(txtHoTen.getText().trim());
-        obj.setTrangThai(taiKhoanCu.getTrangThai()); // giữ nguyên trạng thái
-
-        boolean kq = bus.capNhatTaiKhoan(obj);
-        if (kq) {
+        if (bus.capNhatTaiKhoan(obj)) {
             ketquaETT = obj;
             JOptionPane.showMessageDialog(this, "Sửa tài khoản thành công!");
             xacNhan = true;
             dispose();
         } else {
-            JOptionPane.showMessageDialog(this, "Sửa thất bại!");
+            JOptionPane.showMessageDialog(this, "Sửa tài khoản thất bại!");
         }
     }//GEN-LAST:event_btnSuaActionPerformed
 
@@ -240,6 +245,10 @@ public class updateTaiKhoan extends javax.swing.JDialog {
         dispose();
     }//GEN-LAST:event_btnXoaActionPerformed
 
+    private void txtMatKhauMoiActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_txtMatKhauMoiActionPerformed
+        // TODO add your handling code here:
+    }//GEN-LAST:event_txtMatKhauMoiActionPerformed
+
     // Nạp dữ liệu tài khoản cũ vào form
     private void loadData() {
         txtTenDangNhap.setText(taiKhoanCu.getTenDangNhap());
@@ -248,10 +257,18 @@ public class updateTaiKhoan extends javax.swing.JDialog {
         txtHoTen.setText(taiKhoanCu.getHoTen());
     }
 
-     private boolean kiemtra() {
+    private boolean kiemtra() {
         if (txtHoTen.getText().trim().isEmpty()) {
-            JOptionPane.showMessageDialog(this, "Không được để trống họ tên");
+            JOptionPane.showMessageDialog(this, "Họ tên không được để trống!");
             txtHoTen.requestFocus();
+            return false;
+        }
+        String matKhauMoi = new String(txtMatKhauMoi.getPassword()).trim();
+        if (!matKhauMoi.isEmpty() && matKhauMoi.length() < 6) {
+            JOptionPane.showMessageDialog(this, 
+                "Mật khẩu mới phải có ít nhất 6 ký tự!", 
+                "Lỗi", JOptionPane.ERROR_MESSAGE);
+            txtMatKhauMoi.requestFocus();
             return false;
         }
         return true;

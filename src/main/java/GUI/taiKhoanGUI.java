@@ -12,6 +12,7 @@ import FUNC_GUI.insertTaiKhoan;
 import FUNC_GUI.updateTaiKhoan;
 import EXCEL.ExcelHelper;
 import FUNC_GUI.excelTaiKhoan;
+import BUS.phanQuyenBUS;
 
 import java.util.ArrayList;
 import java.util.List;
@@ -62,6 +63,49 @@ public class taiKhoanGUI extends BaseTableForNguyenVongGUIonly {
                 }
             }
         });
+        phanQuyenGiaoDien();
+    }
+    
+    private void phanQuyenGiaoDien() 
+    {
+        String bangHienTai = "xt_taikhoan";
+
+        if (!phanQuyenBUS.checkQuyenXem(bangHienTai)) {
+            return;
+        }
+
+        btnThem.setEnabled(phanQuyenBUS.checkQuyenThem(bangHienTai));
+        btnSua.setEnabled(false);
+        btnXoa.setEnabled(false);
+        btnChiTiet.setEnabled(false);
+
+        btnExcel.setEnabled(phanQuyenBUS.checkQuyenThem(bangHienTai));
+        btnTinhToanKetQua.setEnabled(phanQuyenBUS.checkQuyenSua(bangHienTai)); 
+        // vì nút này dùng để KHÓA / MỞ KHÓA
+
+        table.getSelectionModel().addListSelectionListener(e -> {
+            if (!e.getValueIsAdjusting()) {
+
+                SwingUtilities.invokeLater(new Runnable() {
+                    public void run() {
+
+                        boolean isSelected = table.getSelectedRow() != -1;
+
+                        if (isSelected) {
+                            btnSua.setEnabled(phanQuyenBUS.checkQuyenSua(bangHienTai));
+                            btnXoa.setEnabled(phanQuyenBUS.checkQuyenXoa(bangHienTai));
+                            btnChiTiet.setEnabled(phanQuyenBUS.checkQuyenXem(bangHienTai));
+                        } 
+                        else {
+                            btnSua.setEnabled(false);
+                            btnXoa.setEnabled(false);
+                            btnChiTiet.setEnabled(false);
+                        }
+                    }
+                });
+
+            }
+        });
     }
 
     // ===== HEADER TABLE =====
@@ -85,10 +129,13 @@ public class taiKhoanGUI extends BaseTableForNguyenVongGUIonly {
 
     // ===== LOAD DATA =====
     public void loadDataToTable() {
-        List<taiKhoanETT> ds = bus.layTatCa();
+        if (bus.ds == null) {
+            bus.layDanhSach();
+        }
+        
         List<Vector> dataList = new ArrayList<>();
 
-        for (taiKhoanETT tk : ds) {
+        for (taiKhoanETT tk : bus.ds) {
 
             Vector row = new Vector();
 
@@ -138,26 +185,16 @@ public class taiKhoanGUI extends BaseTableForNguyenVongGUIonly {
         if (dialog.getXacNhan()) {
             taiKhoanETT tk = dialog.getTaiKhoanETT();
 
-            // 1. Thêm thẳng vào RAM (bus.ds) - không gọi lại DB
-            bus.ds.add(tk);
-
-            // 2. Convert → Vector và thêm vào fullDataList
             Vector row = new Vector();
             row.add(tk.getIdTaiKhoan());
             row.add(tk.getTenDangNhap());
             row.add("******");
             row.add(tk.getHoTen());
             row.add(tk.getTrangThai() == 1 ? "Hoạt động" : "Bị khóa");
-
             fullDataList.add(row);
 
-            // 3. Tính lại tổng trang
             totalPages = (int) Math.ceil((double) fullDataList.size() / rowsPerPage);
-
-            // 4. Nhảy tới trang cuối (chứa record vừa thêm)
             currentPage = totalPages;
-
-            // 5. Render lại
             renderCurrentPage();
         }
     }
@@ -171,11 +208,9 @@ public class taiKhoanGUI extends BaseTableForNguyenVongGUIonly {
             return;
         }
 
-        // 1. Tính index thực sự trong fullDataList (chống lỗi phân trang)
         int modelIndex = table.convertRowIndexToModel(row);
         int absoluteIndex = (currentPage - 1) * rowsPerPage + modelIndex;
 
-        // 2. Lấy object gốc từ RAM của bus (không gọi DB)
         taiKhoanETT tkCu = bus.ds.get(absoluteIndex);
 
         JFrame topFrame = (JFrame) SwingUtilities.windowForComponent(this);
@@ -185,20 +220,14 @@ public class taiKhoanGUI extends BaseTableForNguyenVongGUIonly {
         if (dialog.getXacNhan()) {
             taiKhoanETT tkMoi = dialog.getTaiKhoanETT();
 
-            // 3. Cập nhật lại RAM (bus.ds) tại đúng vị trí
-            bus.ds.set(absoluteIndex, tkMoi);
-
-            // 4. Convert → Vector và đè vào fullDataList
             Vector rowData = new Vector();
             rowData.add(tkMoi.getIdTaiKhoan());
             rowData.add(tkMoi.getTenDangNhap());
             rowData.add("******");
             rowData.add(tkMoi.getHoTen());
             rowData.add(tkMoi.getTrangThai() == 1 ? "Hoạt động" : "Bị khóa");
-
             fullDataList.set(absoluteIndex, rowData);
 
-            // 5. Render lại đúng trang hiện tại (không mất trang)
             renderCurrentPage();
         }
     }
@@ -206,16 +235,12 @@ public class taiKhoanGUI extends BaseTableForNguyenVongGUIonly {
     // ===== XÓA =====
     private void hienThiDialogXoa() {
         int row = table.getSelectedRow();
-
         if (row == -1) {
             JOptionPane.showMessageDialog(this, "Vui lòng chọn tài khoản cần xóa!");
             return;
         }
-        
-        // Lấy id từ table
-        int id = Integer.parseInt(tableModel.getValueAt(row, 0).toString());
 
-        // Không cho xóa id = 1
+        int id = Integer.parseInt(tableModel.getValueAt(row, 0).toString());
         if (id == 1) {
             JOptionPane.showMessageDialog(this, "Không thể xóa tài khoản Admin!!!");
             return;
@@ -226,35 +251,21 @@ public class taiKhoanGUI extends BaseTableForNguyenVongGUIonly {
         dialog.setVisible(true);
 
         if (dialog.getXacNhanXoa()) {
-            // 1. Tính index thực sự
             int modelIndex = table.convertRowIndexToModel(row);
             int absoluteIndex = (currentPage - 1) * rowsPerPage + modelIndex;
-
+            
             String username = tableModel.getValueAt(row, 1).toString();
 
-            try {
-                if (bus.xoaTaiKhoan(username)) {
+            if (bus.xoaTaiKhoan(username)) {
+                fullDataList.remove(absoluteIndex);
 
-                    // 2. Xóa đồng thời khỏi RAM bus.ds và fullDataList
-                    bus.ds.remove(absoluteIndex);
-                    fullDataList.remove(absoluteIndex);
-
-                    // 3. Tính lại tổng trang
-                    totalPages = (int) Math.ceil((double) fullDataList.size() / rowsPerPage);
-
-                    // 4. Nếu trang hiện tại bị rỗng thì lùi về trang trước
-                    if (currentPage > totalPages && totalPages > 0) {
-                        currentPage = totalPages;
-                    }
-
-                    // 5. Render lại
-                    renderCurrentPage();
-
-                } else {
-                    JOptionPane.showMessageDialog(this, "Xóa tài khoản thất bại!");
+                totalPages = (int) Math.ceil((double) fullDataList.size() / rowsPerPage);
+                if (currentPage > totalPages && totalPages > 0) {
+                    currentPage = totalPages;
                 }
-            } catch (IllegalArgumentException ex) {
-                JOptionPane.showMessageDialog(this, ex.getMessage());
+                renderCurrentPage();
+            } else {
+                JOptionPane.showMessageDialog(this, "Xóa tài khoản thất bại!");
             }
         }
     }
@@ -358,9 +369,24 @@ public class taiKhoanGUI extends BaseTableForNguyenVongGUIonly {
     // ===== REFRESH =====
     public void thucHienRefresh() {
         cbxTimKiem.setSelectedIndex(0);
-        txtTimKiem.setText(null);
-        loadDataToTable();
-        JOptionPane.showMessageDialog(this, "Đã đồng bộ dữ liệu tài khoản"); // thêm dòng này
+        txtTimKiem.setText("");
+        
+        bus.layDanhSach();
+
+        fullDataList.clear();
+        List<Vector> dataList = new ArrayList<>();
+
+        for (taiKhoanETT tk : taiKhoanBUS.ds) {
+            Vector row = new Vector();
+            row.add(tk.getIdTaiKhoan());
+            row.add(tk.getTenDangNhap());
+            row.add("*****");
+            row.add(tk.getHoTen());
+            row.add(tk.getTrangThai() == 1 ? "Hoạt động" : "Bị khóa");
+            dataList.add(row);
+        }
+
+        setTableData(dataList);
     }
 
     // ===== CHI TIẾT =====

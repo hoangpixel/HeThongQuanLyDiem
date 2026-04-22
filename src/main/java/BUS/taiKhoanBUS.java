@@ -11,7 +11,7 @@ import java.util.List;
 
 /**
  *
- * @author mhoang
+ * @author mhoang 
  */
 public class taiKhoanBUS {
     taiKhoanDAO data = new taiKhoanDAO();
@@ -59,51 +59,34 @@ public class taiKhoanBUS {
     }
 
     // ========== THÊM TÀI KHOẢN ==========
-    public boolean themTaiKhoan(String tenDangNhap, String matKhau, String hoTen) {
-        if (tenDangNhap == null || tenDangNhap.trim().isEmpty())
-            throw new IllegalArgumentException("Tên đăng nhập không được để trống!");
-        if (matKhau == null || matKhau.length() < 6)
-            throw new IllegalArgumentException("Mật khẩu phải có ít nhất 6 ký tự!");
-        if (hoTen == null || hoTen.trim().isEmpty())
-            throw new IllegalArgumentException("Họ tên không được để trống!");
-        if (data.layTheoUsername(tenDangNhap.trim()) != null)
-            throw new IllegalArgumentException("Tên đăng nhập đã tồn tại!");
-
-        taiKhoanETT tk = new taiKhoanETT();
-        tk.setTenDangNhap(tenDangNhap.trim());
-        tk.setMatKhau(MD5Util.md5(matKhau));
-        tk.setHoTen(hoTen.trim());
-        tk.setTrangThai(1);
-
+    public boolean themTaiKhoan(taiKhoanETT tk) {
         boolean isSuccess = data.themTaiKhoan(tk);
         if (isSuccess) {
             if (ds != null) {
-                ds.add(tk); // Cập nhật RAM luôn, không cần load lại DB
+                ds.add(tk);
             }
         }
         return isSuccess;
     }
 
     // ========== CẬP NHẬT TÀI KHOẢN ==========
-    public boolean capNhatTaiKhoan(taiKhoanETT tk) {
-        if (tk == null)
-            throw new IllegalArgumentException("Tài khoản không hợp lệ!");
-        if (tk.getHoTen() == null || tk.getHoTen().trim().isEmpty())
-            throw new IllegalArgumentException("Họ tên không được để trống!");
+    public boolean capNhatTaiKhoan(taiKhoanETT tkMoi) {
+        // Lấy mật khẩu cũ từ DB để xử lý logic giữ/đổi mật khẩu
+        taiKhoanETT tkCu = data.layTheoUsername(tkMoi.getTenDangNhap());
+        if (tkCu == null) return false;
 
-        taiKhoanETT tkCu = data.layTheoUsername(tk.getTenDangNhap());
-        if (tkCu == null)
-            throw new IllegalArgumentException("Tài khoản không tồn tại!");
+        tkMoi.setIdTaiKhoan(tkCu.getIdTaiKhoan());
 
-        if (!tk.getMatKhau().equals(tkCu.getMatKhau())) {
-            tk.setMatKhau(MD5Util.md5(tk.getMatKhau()));
+        // Mật khẩu rỗng → giữ cũ, có nội dung → đã được hash sẵn từ GUI
+        if (tkMoi.getMatKhau() == null || tkMoi.getMatKhau().trim().isEmpty()) {
+            tkMoi.setMatKhau(tkCu.getMatKhau());
         }
 
-        if (data.capNhatTaiKhoan(tk)) {
+        if (data.capNhatTaiKhoan(tkMoi)) {
             if (ds != null) {
                 for (int i = 0; i < ds.size(); i++) {
-                    if (ds.get(i).getTenDangNhap().equals(tk.getTenDangNhap())) {
-                        ds.set(i, tk); // Đè object mới vào vị trí cũ
+                    if (ds.get(i).getTenDangNhap().equals(tkMoi.getTenDangNhap())) {
+                        ds.set(i, tkMoi);
                         break;
                     }
                 }
@@ -112,14 +95,9 @@ public class taiKhoanBUS {
         }
         return false;
     }
-    
+
     // ========== XÓA TÀI KHOẢN ==========
     public boolean xoaTaiKhoan(String username) {
-        if (username == null || username.trim().isEmpty())
-            throw new IllegalArgumentException("Tên đăng nhập không hợp lệ!");
-        if (data.layTheoUsername(username.trim()) == null)
-            throw new IllegalArgumentException("Tài khoản không tồn tại!");
-
         if (data.xoaTaiKhoan(username.trim())) {
             if (ds != null) {
                 for (int i = 0; i < ds.size(); i++) {
@@ -170,10 +148,10 @@ public class taiKhoanBUS {
                     taiKhoanETT tk = new taiKhoanETT();
 
                     // Mapping cột Excel → Entity
-                    tk.setTenDangNhap(row.get(0));
-                    tk.setMatKhau(MD5Util.md5(row.get(1))); // mã hóa mật khẩu
-                    tk.setHoTen(row.get(2));
-                    tk.setTrangThai(Integer.parseInt(row.get(3)));
+                    tk.setTenDangNhap(row.get(1));
+                    tk.setMatKhau(MD5Util.md5(row.get(2))); // mã hóa mật khẩu
+                    tk.setHoTen(row.get(3));
+                    tk.setTrangThai(Integer.parseInt(row.get(4)));
 
                     // 3. Thêm vào database
                     if (data.themTaiKhoan(tk)) {

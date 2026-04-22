@@ -128,11 +128,11 @@ public class toHopBUS {
                     toHopETT th = new toHopETT();
 
                     // Mapping cột Excel → Entity
-                    th.setMatohop(row.get(0));
-                    th.setMon1(row.get(1));
-                    th.setMon2(row.get(2));
-                    th.setMon3(row.get(3));
-                    th.setTentohop(row.get(4));
+                    th.setMatohop(row.get(1));
+                    th.setMon1(row.get(2));
+                    th.setMon2(row.get(3));
+                    th.setMon3(row.get(4));
+                    th.setTentohop(row.get(5));
 
                     // 3. Thêm vào database
                     if (data.them(th)) {

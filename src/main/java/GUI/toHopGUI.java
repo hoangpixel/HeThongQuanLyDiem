@@ -12,6 +12,7 @@ import FUNC_GUI.deleteToHop;
 import FUNC_GUI.detailToHop;
 import EXCEL.ExcelHelper;
 import FUNC_GUI.excelToHop;
+import BUS.phanQuyenBUS;
 
 import java.util.ArrayList;
 import java.util.List;
@@ -55,8 +56,46 @@ public class toHopGUI extends BaseTableGUI {
         cbxTimKiem.addItem("Tên Tổ Hợp");
 
         loadDataToTable();
+        phanQuyenGiaoDien();
     }
+    
+    private void phanQuyenGiaoDien() 
+    {
+        String bangHienTai = "xt_tohop_monthi";
 
+        if (!phanQuyenBUS.checkQuyenXem(bangHienTai)) {
+            return;
+        }
+
+        btnThem.setEnabled(phanQuyenBUS.checkQuyenThem(bangHienTai)); 
+        btnSua.setEnabled(false); 
+        btnXoa.setEnabled(false);
+        btnChiTiet.setEnabled(false);
+        btnExcel.setEnabled(phanQuyenBUS.checkQuyenThem(bangHienTai));
+
+        table.getSelectionModel().addListSelectionListener(e -> {
+            if (!e.getValueIsAdjusting()) {
+
+                SwingUtilities.invokeLater(new Runnable() {
+                    public void run() {
+                        boolean isSelected = table.getSelectedRow() != -1;
+
+                        if (isSelected) {
+                            btnSua.setEnabled(phanQuyenBUS.checkQuyenSua(bangHienTai));
+                            btnXoa.setEnabled(phanQuyenBUS.checkQuyenXoa(bangHienTai));
+                            btnChiTiet.setEnabled(phanQuyenBUS.checkQuyenXem(bangHienTai)); 
+                        } 
+                        else {
+                            btnSua.setEnabled(false);
+                            btnXoa.setEnabled(false);
+                            btnChiTiet.setEnabled(false);
+                        }
+                    }
+                });
+
+            }
+        });
+    }
     // ================= HEADER TABLE =================
 
     public void headerTable() {
