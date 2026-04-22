@@ -9,8 +9,11 @@ import java.awt.Color;
 import java.awt.Component;
 import java.awt.Dimension;
 import java.awt.Font;
+import java.util.ArrayList;
+import java.util.List;
 import java.util.Vector;
 import javax.swing.JLabel;
+import javax.swing.JOptionPane;
 import javax.swing.JTable;
 import javax.swing.table.DefaultTableCellRenderer;
 import javax.swing.table.DefaultTableModel;
@@ -24,6 +27,7 @@ public class selectThiSinh extends javax.swing.JDialog {
     public boolean xacNhan = false;
     thiSinhXetTuyenBUS bus = new thiSinhXetTuyenBUS();
     DefaultTableModel model = new DefaultTableModel();
+    thiSinhXetTuyenBUS busThiSinh = new thiSinhXetTuyenBUS();
     
     int currentPage = 1;
     int rowsPerPage = 20;
@@ -40,8 +44,22 @@ public class selectThiSinh extends javax.swing.JDialog {
         setLocationRelativeTo(parent);
         header();
         docSQL();
+        loadComboBox();
     }
 
+    public void loadComboBox() 
+    {
+        cbxTimKiem.removeAllItems();
+
+        cbxTimKiem.addItem("ID");
+        cbxTimKiem.addItem("CCCD");
+        cbxTimKiem.addItem("SBD");
+        cbxTimKiem.addItem("Họ");
+        cbxTimKiem.addItem("Tên");
+        cbxTimKiem.addItem("Điện thoại");
+        cbxTimKiem.addItem("Email");
+    }
+    
     public void docSQL()
     {
         if(bus.ds == null)
@@ -175,6 +193,10 @@ public class selectThiSinh extends javax.swing.JDialog {
         jPanel2 = new javax.swing.JPanel();
         jLabel1 = new javax.swing.JLabel();
         jPanel1 = new javax.swing.JPanel();
+        cbxTimKiem = new javax.swing.JComboBox<>();
+        txtTimKiem = new javax.swing.JTextField();
+        btnTimKiem = new javax.swing.JButton();
+        btnRefresh = new javax.swing.JButton();
         jPanel3 = new javax.swing.JPanel();
         jScrollPane1 = new javax.swing.JScrollPane();
         tbThiSinh = new javax.swing.JTable();
@@ -212,15 +234,39 @@ public class selectThiSinh extends javax.swing.JDialog {
         jPanel1.setBackground(new java.awt.Color(255, 255, 255));
         jPanel1.setBorder(javax.swing.BorderFactory.createTitledBorder(null, "Tìm kiếm thí sinh", javax.swing.border.TitledBorder.DEFAULT_JUSTIFICATION, javax.swing.border.TitledBorder.DEFAULT_POSITION, new java.awt.Font("Segoe UI", 1, 14))); // NOI18N
 
+        cbxTimKiem.setModel(new javax.swing.DefaultComboBoxModel<>(new String[] { "Item 1", "Item 2", "Item 3", "Item 4" }));
+
+        btnTimKiem.setText("Tìm kiếm");
+        btnTimKiem.addActionListener(this::btnTimKiemActionPerformed);
+
+        btnRefresh.setText("Refresh");
+        btnRefresh.addActionListener(this::btnRefreshActionPerformed);
+
         javax.swing.GroupLayout jPanel1Layout = new javax.swing.GroupLayout(jPanel1);
         jPanel1.setLayout(jPanel1Layout);
         jPanel1Layout.setHorizontalGroup(
             jPanel1Layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
-            .addGap(0, 0, Short.MAX_VALUE)
+            .addGroup(jPanel1Layout.createSequentialGroup()
+                .addGap(39, 39, 39)
+                .addComponent(cbxTimKiem, javax.swing.GroupLayout.PREFERRED_SIZE, 135, javax.swing.GroupLayout.PREFERRED_SIZE)
+                .addGap(34, 34, 34)
+                .addComponent(txtTimKiem, javax.swing.GroupLayout.PREFERRED_SIZE, 172, javax.swing.GroupLayout.PREFERRED_SIZE)
+                .addGap(29, 29, 29)
+                .addComponent(btnTimKiem, javax.swing.GroupLayout.PREFERRED_SIZE, 98, javax.swing.GroupLayout.PREFERRED_SIZE)
+                .addGap(18, 18, 18)
+                .addComponent(btnRefresh, javax.swing.GroupLayout.PREFERRED_SIZE, 98, javax.swing.GroupLayout.PREFERRED_SIZE)
+                .addContainerGap(javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE))
         );
         jPanel1Layout.setVerticalGroup(
             jPanel1Layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
-            .addGap(0, 70, Short.MAX_VALUE)
+            .addGroup(jPanel1Layout.createSequentialGroup()
+                .addGap(23, 23, 23)
+                .addGroup(jPanel1Layout.createParallelGroup(javax.swing.GroupLayout.Alignment.BASELINE)
+                    .addComponent(cbxTimKiem, javax.swing.GroupLayout.PREFERRED_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.PREFERRED_SIZE)
+                    .addComponent(txtTimKiem, javax.swing.GroupLayout.PREFERRED_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.PREFERRED_SIZE)
+                    .addComponent(btnTimKiem)
+                    .addComponent(btnRefresh))
+                .addContainerGap(25, Short.MAX_VALUE))
         );
 
         tbThiSinh.setModel(new javax.swing.table.DefaultTableModel(
@@ -294,7 +340,7 @@ public class selectThiSinh extends javax.swing.JDialog {
             .addGroup(jPanel3Layout.createSequentialGroup()
                 .addContainerGap()
                 .addComponent(jScrollPane1, javax.swing.GroupLayout.PREFERRED_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.PREFERRED_SIZE)
-                .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED, 26, Short.MAX_VALUE)
+                .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED, 25, Short.MAX_VALUE)
                 .addGroup(jPanel3Layout.createParallelGroup(javax.swing.GroupLayout.Alignment.BASELINE)
                     .addComponent(jButton1, javax.swing.GroupLayout.PREFERRED_SIZE, 46, javax.swing.GroupLayout.PREFERRED_SIZE)
                     .addComponent(btnFirst)
@@ -390,6 +436,46 @@ thiSinh = bus.ds.get(realIndex);
     loadPage(currentPage);
     }//GEN-LAST:event_btnLastActionPerformed
 
+    private void btnTimKiemActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_btnTimKiemActionPerformed
+        // TODO add your handling code here:
+String tim = txtTimKiem.getText().trim();
+    int index = cbxTimKiem.getSelectedIndex();
+
+    if (tim.isEmpty()) {
+        JOptionPane.showMessageDialog(this, "Vui lòng nhập nội dung cần tìm");
+        txtTimKiem.requestFocus();
+        
+        // Tùy chọn: Nếu để trống ô tìm kiếm và bấm nút, load lại toàn bộ danh sách
+        // bus.ds = null;
+        // docSQL();
+        return;
+    }
+
+    // Lấy kết quả tìm kiếm
+    ArrayList<thiSinhXetTuyenETT> dskq = busThiSinh.timKiemCoBan(tim, index);
+
+    if (dskq == null || dskq.isEmpty()) {
+        JOptionPane.showMessageDialog(this, "Không tìm thấy dữ liệu phù hợp");
+        return;
+    }
+
+    bus.ds = dskq;
+
+    int totalRows = bus.ds.size();
+    totalPages = (int) Math.ceil((double) totalRows / rowsPerPage);
+    if (totalPages == 0) totalPages = 1;
+
+    currentPage = 1;
+    loadPage(currentPage);
+    }//GEN-LAST:event_btnTimKiemActionPerformed
+
+    private void btnRefreshActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_btnRefreshActionPerformed
+        // TODO add your handling code here:
+        txtTimKiem.setText("");
+        bus.ds = null;
+        docSQL();
+    }//GEN-LAST:event_btnRefreshActionPerformed
+
     public thiSinhXetTuyenETT getThiSinh()
     {
         return thiSinh;
@@ -407,6 +493,9 @@ thiSinh = bus.ds.get(realIndex);
     private javax.swing.JButton btnLast;
     private javax.swing.JButton btnNext;
     private javax.swing.JButton btnPrev;
+    private javax.swing.JButton btnRefresh;
+    private javax.swing.JButton btnTimKiem;
+    private javax.swing.JComboBox<String> cbxTimKiem;
     private javax.swing.JButton jButton1;
     private javax.swing.JLabel jLabel1;
     private javax.swing.JPanel jPanel1;
@@ -415,5 +504,6 @@ thiSinh = bus.ds.get(realIndex);
     private javax.swing.JScrollPane jScrollPane1;
     private javax.swing.JLabel lbPageInFo;
     private javax.swing.JTable tbThiSinh;
+    private javax.swing.JTextField txtTimKiem;
     // End of variables declaration//GEN-END:variables
 }
