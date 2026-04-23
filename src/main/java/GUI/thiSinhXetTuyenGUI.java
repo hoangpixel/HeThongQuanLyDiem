@@ -251,7 +251,7 @@ public class thiSinhXetTuyenGUI extends BaseTableGUI {
         if (row != -1) {
 
             JFrame topFrame = (JFrame) SwingUtilities.windowForComponent(this);
-            deleteNguyenVong dialog = new deleteNguyenVong(topFrame, true);
+            deleteThiSinh dialog = new deleteThiSinh(topFrame, true);
             dialog.setVisible(true);
 
             if (dialog.getXacNhanXoa()) {
