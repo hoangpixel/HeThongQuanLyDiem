@@ -355,7 +355,7 @@ public class insertNguyenVong extends javax.swing.JDialog {
     }//GEN-LAST:event_btnThoatActionPerformed
 
     private void btnThemActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_btnThemActionPerformed
-// TODO add your handling code here:
+        // TODO add your handling code here:
         if(!kiemTraHopLe()) 
         {
             return;
@@ -373,24 +373,29 @@ public class insertNguyenVong extends javax.swing.JDialog {
         String phuongThuc = cboPT.getSelectedItem().toString();
         
         double diemXetTuyen = 0.0;
-
-        // =====================================================================
-        // 🔥 BẮT ĐẦU TÍNH ĐIỂM ĐỂ LƯU VÀO DB 🔥
-        // =====================================================================
         
-        if (phuongThuc.equals("Xét tuyển thẳng")) {
+        if (phuongThuc.equals("Xét tuyển thẳng")) 
+        {
             BUS.giaiThuongBUS gtBus = new BUS.giaiThuongBUS();
             BUS.quyTacGiaiThuongBUS qtBus = new BUS.quyTacGiaiThuongBUS();
             qtBus.loadQuyTac(); 
             
             String[] ttGiai = gtBus.layCapVaLoaiGiai(cccd);
-            Entity.quyTacGiaiThuongETT quyTac = qtBus.layQuyTac(ttGiai[0], ttGiai[1]);
+            Entity.quyTacGiaiThuongETT quyTac = null;
+            
+            if (ttGiai != null && ttGiai.length >= 2 && ttGiai[0] != null) {
+                quyTac = qtBus.layQuyTac(ttGiai[0], ttGiai[1]);
+            }
             
             if (quyTac != null && quyTac.getXetTuyenThang() == 1) {
-                diemXetTuyen = 30.0; // Đậu Tuyển Thẳng -> Chốt 30.0 điểm
-            } else {
-                diemXetTuyen = 0.0;  // Gian lận -> Về 0
-                diemTHXT = 0.0; 
+                diemXetTuyen = 30.0;
+            } else 
+            {
+                JOptionPane.showMessageDialog(this, 
+                    "Từ chối hồ sơ!\nThí sinh này KHÔNG có giải thưởng hợp lệ để được Xét tuyển thẳng.\nVui lòng chọn phương thức khác.", 
+                    "Cảnh báo gian lận", 
+                    JOptionPane.ERROR_MESSAGE);
+                return;
             }
             
         } else {
@@ -416,24 +421,17 @@ public class insertNguyenVong extends javax.swing.JDialog {
                 if (diemUuTienThucTe < 0) diemUuTienThucTe = 0.0;
             }
 
-            // Tính Tổng Điểm Xét Tuyển
             diemXetTuyen = diemTHXT + diemUuTienThucTe + diemCong + doLechDiem;
             diemXetTuyen = Math.min(30.0, diemXetTuyen); 
         }
-
-        // Làm tròn 2 chữ số
         diemXetTuyen = Math.round(diemXetTuyen * 100.0) / 100.0;
         
-        // =====================================================================
-        // ĐÓNG GÓI VÀ NÉM XUỐNG DATABASE
-        // =====================================================================
         nguyenVongXetTuyenETT ct = new nguyenVongXetTuyenETT();
         ct.setNnCccd(cccd);
         ct.setNvMaNganh(maNganh);
         ct.setNvTt(thuTuNV);
         ct.setDiemThxt(diemTHXT);
         
-        // Vẫn lưu diemUTQDGoc (Quyền lợi gốc) xuống DB để minh bạch hồ sơ với thanh tra
         // Nếu trường bắt phải lưu điểm đã bóp, thì Boss đổi dòng này thành: ct.setDiemUtqd(diemUuTienThucTe);
         ct.setDiemUtqd(diemUTQDGoc); 
         

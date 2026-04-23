@@ -21,9 +21,6 @@ SET @@SESSION.SQL_LOG_BIN= 0;
 -- GTID state at the beginning of the backup 
 --
 
-SET @@GLOBAL.GTID_PURGED=/*!80000 '+'*/ '424fbbe1-2261-11f1-a5e1-047c16aa0506:1-5131,
-5841c68a-2425-11f1-b079-005056c00001:1-4720';
-
 --
 -- Table structure for table `xt_bangquydoi`
 --
