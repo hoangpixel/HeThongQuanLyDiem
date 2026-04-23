@@ -5,6 +5,7 @@
 package GUI;
 
 import BUS.giaiThuongBUS;
+import BUS.phanQuyenBUS;
 import Entity.giaiThuongETT;
 import FUNC_GUI.insertGiaiThuong;
 import FUNC_GUI.updateGiaiThuong;
@@ -34,6 +35,7 @@ public class giaiThuongGUI extends BaseTableGUI {
 
         loadDataToTable();
         loadComboBox();
+        phanQuyenGiaoDien();
     }
 
     public void headerTable() {
@@ -55,7 +57,42 @@ public class giaiThuongGUI extends BaseTableGUI {
         cbxTimKiem.addItem("Mã Môn");
         cbxTimKiem.addItem("Loại Giải");
     }
+    
+    private void phanQuyenGiaoDien() {
+        String bangHienTai = "xt_giathuong";
+        
+        if (!phanQuyenBUS.checkQuyenXem(bangHienTai)) {
+            return;
+        }
+        
+        btnThem.setEnabled(phanQuyenBUS.checkQuyenThem(bangHienTai)); 
+        btnSua.setEnabled(false); 
+        btnXoa.setEnabled(false);
+        // btnChiTiet.setEnabled(false);
+        // btnExcel.setEnabled(phanQuyenBUS.checkQuyenThem(bangHienTai));
 
+        table.getSelectionModel().addListSelectionListener(e -> {
+            if (!e.getValueIsAdjusting()) {
+                
+                SwingUtilities.invokeLater(new Runnable() {
+                    public void run() {
+                        boolean isSelected = table.getSelectedRow() != -1;
+                        
+                        if (isSelected) {
+                            btnSua.setEnabled(phanQuyenBUS.checkQuyenSua(bangHienTai));
+                            btnXoa.setEnabled(phanQuyenBUS.checkQuyenXoa(bangHienTai));
+                            btnChiTiet.setEnabled(phanQuyenBUS.checkQuyenXem(bangHienTai)); 
+                        } else {
+                            btnSua.setEnabled(false);
+                            btnXoa.setEnabled(false);
+                            btnChiTiet.setEnabled(false);
+                        }
+                    }
+                });
+            }
+        });
+    }
+    
     public void thucHienTimKiem() {
         String tim = txtTimKiem.getText().trim();
         int index = cbxTimKiem.getSelectedIndex();

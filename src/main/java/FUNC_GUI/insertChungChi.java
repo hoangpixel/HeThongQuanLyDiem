@@ -24,6 +24,7 @@ public class insertChungChi extends javax.swing.JDialog {
     private static final java.util.logging.Logger logger = java.util.logging.Logger.getLogger(insertChungChi.class.getName());
     private Map<String, String[]> certificateData = new HashMap<>();
     private boolean xacNhan = false;
+    private chungChiETT chungchi;
     
     public insertChungChi(java.awt.Frame parent, boolean modal) {
         super(parent, modal);
@@ -412,6 +413,7 @@ public class insertChungChi extends javax.swing.JDialog {
 
         chungChiBUS bus = new chungChiBUS();
         if (bus.themCC(ett)) {
+            this.chungchi = ett;
             this.xacNhan = true; 
             JOptionPane.showMessageDialog(this, "Thêm thành công!");
             this.dispose();
@@ -609,19 +611,7 @@ public class insertChungChi extends javax.swing.JDialog {
 
     // Hàm trả về đối tượng Chứng chỉ vừa tạo (Để GUI bốc bỏ vào bảng)
     public chungChiETT getChungChi() {
-        chungChiETT ett = new chungChiETT();
-        ett.setCccd(txtCCCD.getText().trim());
-        ett.setLoaiChungChi(cboLoaiChungChi.getSelectedItem().toString());
-        
-        String diemGoc = pnlToeic4.isVisible() 
-            ? (txtNghe.getText()+"/"+txtDoc.getText()+"/"+txtNoi.getText()+"/"+txtViet.getText())
-            : txtDiemChungChi.getText().trim();
-        ett.setDiemChungChi(diemGoc);
-        
-        ett.setDiemQuyDoi(Double.parseDouble(txtDiemQuyDoi.getText()));
-        ett.setDiemCong(Double.parseDouble(txtDiemCong.getText()));
-        
-        return ett;
+        return this.chungchi;
     }
 
     // Variables declaration - do not modify//GEN-BEGIN:variables

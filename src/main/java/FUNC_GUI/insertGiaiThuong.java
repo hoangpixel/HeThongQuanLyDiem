@@ -14,7 +14,7 @@ import javax.swing.JFrame;
 public class insertGiaiThuong extends javax.swing.JDialog {
     private boolean xacNhan = false;
     private static final java.util.logging.Logger logger = java.util.logging.Logger.getLogger(insertGiaiThuong.class.getName());
-
+    private giaiThuongETT giaithuong;
     /**
      * Creates new form insertGiaiThuong
      */
@@ -41,8 +41,6 @@ public class insertGiaiThuong extends javax.swing.JDialog {
         txtCCCD = new javax.swing.JTextField();
         btnChonCCCDThiSinh = new javax.swing.JButton();
         jLabel2 = new javax.swing.JLabel();
-        jLabel3 = new javax.swing.JLabel();
-        cboDoiTuong = new javax.swing.JComboBox<>();
         jLabel4 = new javax.swing.JLabel();
         jLabel5 = new javax.swing.JLabel();
         jLabel6 = new javax.swing.JLabel();
@@ -98,12 +96,6 @@ public class insertGiaiThuong extends javax.swing.JDialog {
         jLabel2.setFont(new java.awt.Font("Segoe UI", 0, 14)); // NOI18N
         jLabel2.setText("Cấp Giải");
 
-        jLabel3.setFont(new java.awt.Font("Segoe UI", 0, 14)); // NOI18N
-        jLabel3.setText("Đối tượng");
-
-        cboDoiTuong.setModel(new javax.swing.DefaultComboBoxModel<>(new String[] { "Học sinh giỏi" }));
-        cboDoiTuong.addActionListener(this::cboDoiTuongActionPerformed);
-
         jLabel4.setFont(new java.awt.Font("Segoe UI", 0, 14)); // NOI18N
         jLabel4.setText("Mã môn");
 
@@ -148,11 +140,9 @@ public class insertGiaiThuong extends javax.swing.JDialog {
                     .addComponent(jLabel5, javax.swing.GroupLayout.Alignment.LEADING, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE)
                     .addComponent(jLabel4, javax.swing.GroupLayout.Alignment.LEADING, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE)
                     .addComponent(jLabel1, javax.swing.GroupLayout.Alignment.LEADING, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE)
-                    .addComponent(jLabel2, javax.swing.GroupLayout.Alignment.LEADING, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE)
-                    .addComponent(jLabel3, javax.swing.GroupLayout.Alignment.LEADING, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE))
+                    .addComponent(jLabel2, javax.swing.GroupLayout.Alignment.LEADING, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE))
                 .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED)
                 .addGroup(jPanel1Layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING, false)
-                    .addComponent(cboDoiTuong, 0, javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE)
                     .addComponent(txtCCCD, javax.swing.GroupLayout.DEFAULT_SIZE, 188, Short.MAX_VALUE)
                     .addComponent(txtMaMon, javax.swing.GroupLayout.DEFAULT_SIZE, 188, Short.MAX_VALUE)
                     .addComponent(cboLoaiGiai, 0, javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE)
@@ -177,10 +167,6 @@ public class insertGiaiThuong extends javax.swing.JDialog {
                 .addGroup(jPanel1Layout.createParallelGroup(javax.swing.GroupLayout.Alignment.BASELINE)
                     .addComponent(jLabel2)
                     .addComponent(cboCapGiai, javax.swing.GroupLayout.PREFERRED_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.PREFERRED_SIZE))
-                .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.UNRELATED)
-                .addGroup(jPanel1Layout.createParallelGroup(javax.swing.GroupLayout.Alignment.BASELINE)
-                    .addComponent(jLabel3)
-                    .addComponent(cboDoiTuong, javax.swing.GroupLayout.PREFERRED_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.PREFERRED_SIZE))
                 .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.UNRELATED)
                 .addGroup(jPanel1Layout.createParallelGroup(javax.swing.GroupLayout.Alignment.BASELINE)
                     .addComponent(jLabel4)
@@ -274,10 +260,6 @@ public class insertGiaiThuong extends javax.swing.JDialog {
         // TODO add your handling code here:
     }//GEN-LAST:event_txtCCCDActionPerformed
 
-    private void cboDoiTuongActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_cboDoiTuongActionPerformed
-        // TODO add your handling code here:
-    }//GEN-LAST:event_cboDoiTuongActionPerformed
-
     private void txtMaMonActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_txtMaMonActionPerformed
         // TODO add your handling code here:
     }//GEN-LAST:event_txtMaMonActionPerformed
@@ -301,10 +283,24 @@ public class insertGiaiThuong extends javax.swing.JDialog {
     }//GEN-LAST:event_btnThoat1ActionPerformed
 
     private void btnThem1ActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_btnThem1ActionPerformed
-        giaiThuongETT gt = getGiaiThuong();
+        giaiThuongETT gt = new giaiThuongETT();
+        gt.setCccd(txtCCCD.getText().trim());
+        gt.setCapGiai(cboCapGiai.getSelectedItem().toString());
+        gt.setDoiTuong("Học sinh giỏi");
+        gt.setMaMon(txtMaMon.getText().trim().toUpperCase());
+        gt.setLoaiGiai(cboLoaiGiai.getSelectedItem().toString());
+        gt.setDiemCongCoMon(Double.parseDouble(txtDiemCongCoMon.getText()));
+        gt.setDiemCongKhongMon(Double.parseDouble(txtDiemCongKhongMon.getText()));
+
+        // 2. Đẩy xuống BUS -> DAO -> Hibernate
         if (new giaiThuongBUS().themGT(gt)) {
-            xacNhan = true;
+            // LƯU LẠI CHÍNH CÁI OBJECT ĐÃ CÓ ID TỪ DATABASE
+            this.giaithuong = gt; 
+            this.xacNhan = true;
+            javax.swing.JOptionPane.showMessageDialog(this, "Thêm giải thưởng thành công!");
             dispose();
+        } else {
+            javax.swing.JOptionPane.showMessageDialog(this, "Thêm thất bại!");
         }
     }//GEN-LAST:event_btnThem1ActionPerformed
 
@@ -335,12 +331,45 @@ public class insertGiaiThuong extends javax.swing.JDialog {
         }
     }//GEN-LAST:event_btnChonMaMonActionPerformed
 
-    private void tinhToanDiem() {
+//    private void tinhToanDiem() {
+//        String cap = cboCapGiai.getSelectedItem().toString();
+//        String loai = cboLoaiGiai.getSelectedItem().toString();
+//        String maMon = txtMaMon.getText().trim();
+//        double co = 0.0;
+//        double khong = 0.0;
+//        java.util.List<String> maMonList = java.util.Arrays.asList("TO", "VA", "N1", "LI", "HO", "SI", "SU", "DI");
+//        if (cap.equals("Quốc gia")) {
+//            switch (loai) {
+//                case "Giải Nhất" -> { co = 3.0; khong = 1.0; }
+//                case "Giải Nhì" -> { co = 2.0; khong = 0.75; }
+//                case "Giải Ba" -> { co = 1.5; khong = 0.5; }
+//                default -> { co = 1.0; khong = 0.0; } // Khuyến khích
+//            }
+//        } else { // Cấp Tỉnh/Thành phố
+//            switch (loai) {
+//                case "Giải Nhất" -> { co = 1.0; khong = 0.25; }
+//                case "Giải Nhì" -> { co = 0.75; khong = 0.0; }
+//                case "Giải Ba" -> { co = 0.5; khong = 0.0; }
+//                default -> { co = 0.0; khong = 0.0; }
+//            }
+//        }
+//        if (maMonList.contains(maMon)) {
+//            txtDiemCongCoMon.setText(String.valueOf(co));
+//            txtDiemCongKhongMon.setText("0.0");
+//        } else {
+//            txtDiemCongCoMon.setText("0.0");
+//            txtDiemCongKhongMon.setText(String.valueOf(khong));
+//        }
+//    }
+    
+       private void tinhToanDiem() {
         String cap = cboCapGiai.getSelectedItem().toString();
         String loai = cboLoaiGiai.getSelectedItem().toString();
         String maMon = txtMaMon.getText().trim();
-        double co = 0, khong = 0;
-        java.util.List<String> maMonList = java.util.Arrays.asList("TO", "VA", "N1", "LI", "HO", "SI", "SU", "DI");
+        
+        double co = 0.0, khong = 0.0;
+        
+        // Tính toán cả 2 mức điểm tiềm năng
         if (cap.equals("Quốc gia")) {
             switch (loai) {
                 case "Giải Nhất" -> { co = 3.0; khong = 1.0; }
@@ -348,19 +377,23 @@ public class insertGiaiThuong extends javax.swing.JDialog {
                 case "Giải Ba" -> { co = 1.5; khong = 0.5; }
                 default -> { co = 1.0; khong = 0.0; } // Khuyến khích
             }
-        } else { // Cấp Tỉnh/Thành phố
+        } else if (cap.equals("Tỉnh")) { 
             switch (loai) {
                 case "Giải Nhất" -> { co = 1.0; khong = 0.25; }
                 case "Giải Nhì" -> { co = 0.75; khong = 0.0; }
                 case "Giải Ba" -> { co = 0.5; khong = 0.0; }
-                default -> { co = 0.0; khong = 0.0; }
+                default -> { co = 0.0; khong = 0.0; } // Các giải còn lại
             }
         }
-        if (maMonList.contains(maMon)) {
-            txtDiemCongCoMon.setText(String.valueOf(co));
+
+        // Cập nhật lên UI
+        if (maMon.isEmpty()) {
+            // Chưa chọn môn thì chưa biết đường nào mà lần, cho về 0 hết
+            txtDiemCongCoMon.setText("0.0");
             txtDiemCongKhongMon.setText("0.0");
         } else {
-            txtDiemCongCoMon.setText("0.0");
+            // Đã có môn thì hiển thị cho user thấy CẢ HAI mức điểm tiềm năng
+            txtDiemCongCoMon.setText(String.valueOf(co));
             txtDiemCongKhongMon.setText(String.valueOf(khong));
         }
     }
@@ -371,15 +404,7 @@ public class insertGiaiThuong extends javax.swing.JDialog {
     }
 
     public giaiThuongETT getGiaiThuong() {
-        giaiThuongETT gt = new giaiThuongETT();
-        gt.setCccd(txtCCCD.getText().trim());
-        gt.setCapGiai(cboCapGiai.getSelectedItem().toString());
-        gt.setDoiTuong(cboDoiTuong.getSelectedItem().toString());
-        gt.setMaMon(txtMaMon.getText().trim().toUpperCase());
-        gt.setLoaiGiai(cboLoaiGiai.getSelectedItem().toString());
-        gt.setDiemCongCoMon(Double.parseDouble(txtDiemCongCoMon.getText()));
-        gt.setDiemCongKhongMon(Double.parseDouble(txtDiemCongKhongMon.getText()));
-        return gt;
+        return this.giaithuong;
     }
 
     // Variables declaration - do not modify//GEN-BEGIN:variables
@@ -388,11 +413,9 @@ public class insertGiaiThuong extends javax.swing.JDialog {
     private javax.swing.JButton btnThem1;
     private javax.swing.JButton btnThoat1;
     private javax.swing.JComboBox<String> cboCapGiai;
-    private javax.swing.JComboBox<String> cboDoiTuong;
     private javax.swing.JComboBox<String> cboLoaiGiai;
     private javax.swing.JLabel jLabel1;
     private javax.swing.JLabel jLabel2;
-    private javax.swing.JLabel jLabel3;
     private javax.swing.JLabel jLabel4;
     private javax.swing.JLabel jLabel5;
     private javax.swing.JLabel jLabel6;
