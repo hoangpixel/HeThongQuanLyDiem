@@ -448,6 +448,12 @@ public class insertNguyenVong extends javax.swing.JDialog {
             return;
         }
         
+        if(phuongThuc.equals("Xét THPT") && diemTHXT > 30)
+        {
+            JOptionPane.showMessageDialog(this, "Điểm THTP chỉ tối đa 30");
+            return;
+        }
+        
         if(bus.themNguyenVong(ct)) {
             xacNhan = true;
             JOptionPane.showMessageDialog(this, "Thêm nguyện vọng thành công");

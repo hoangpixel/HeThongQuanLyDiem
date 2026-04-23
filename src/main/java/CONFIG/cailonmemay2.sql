@@ -237,7 +237,7 @@ CREATE TABLE `xt_nganh` (
 
 LOCK TABLES `xt_nganh` WRITE;
 /*!40000 ALTER TABLE `xt_nganh` DISABLE KEYS */;
-INSERT INTO `xt_nganh` VALUES (10,'7140114','Quản lý giáo dục','C04',40,NULL,NULL,'1','1','1','1',NULL,NULL,NULL,NULL,NULL,NULL,NULL,NULL,NULL,NULL,NULL),(11,'7140201','Giáo dục Mầm non','M01',200,NULL,NULL,'0','0','1','0',NULL,NULL,NULL,NULL,NULL,NULL,NULL,NULL,NULL,NULL,NULL),(12,'7140202','Giáo dục Tiểu học','D01',200,NULL,NULL,'1','0','1','0',NULL,NULL,NULL,NULL,NULL,NULL,NULL,NULL,NULL,NULL,NULL),(13,'7140205','Giáo dục chính trị','C00',10,NULL,NULL,'1','0','1','0',NULL,NULL,NULL,NULL,NULL,NULL,NULL,NULL,NULL,NULL,NULL),(14,'7140209','Sư phạm Toán học','A00',40,NULL,NULL,'1','0','1','0',NULL,NULL,NULL,NULL,NULL,NULL,NULL,NULL,NULL,NULL,NULL),(15,'7140211','Sư phạm Vật lý','A00',10,NULL,NULL,'1','0','1','0',NULL,NULL,NULL,NULL,NULL,NULL,NULL,NULL,NULL,NULL,NULL),(16,'7140212','Sư phạm Hoá học','A00',10,NULL,NULL,'1','0','1','0',NULL,NULL,NULL,NULL,NULL,NULL,NULL,NULL,NULL,NULL,NULL),(17,'7140213','Sư phạm Sinh học','B00',10,NULL,NULL,'1','0','1','0',NULL,NULL,NULL,NULL,NULL,NULL,NULL,NULL,NULL,NULL,NULL),(18,'7140217','Sư phạm Ngữ văn','C00',50,NULL,NULL,'1','0','1','0',NULL,NULL,NULL,NULL,NULL,NULL,NULL,NULL,NULL,NULL,NULL),(19,'7140218','Sư phạm Lịch sử','C00',10,NULL,NULL,'1','0','1','0',NULL,NULL,NULL,NULL,NULL,NULL,NULL,NULL,NULL,NULL,NULL),(20,'7140219','Sư phạm Địa lý','C00',10,NULL,NULL,'1','0','1','0',NULL,NULL,NULL,NULL,NULL,NULL,NULL,NULL,NULL,NULL,NULL),(21,'7140221','Sư phạm Âm nhạc','N01',75,NULL,NULL,'1','0','1','0',NULL,NULL,NULL,NULL,NULL,NULL,NULL,NULL,NULL,NULL,NULL),(22,'7140222','Sư phạm Mỹ thuật','H00',75,NULL,NULL,'1','0','1','0',NULL,NULL,NULL,NULL,NULL,NULL,NULL,NULL,NULL,NULL,NULL),(23,'7140231','Sư phạm Tiếng Anh','D01',120,NULL,NULL,'1','0','1','0',NULL,NULL,NULL,NULL,NULL,NULL,NULL,NULL,NULL,NULL,NULL),(24,'7140247','Sư phạm Khoa học tự nhiên (đào tạo giáo viên THCS)','A00',60,NULL,NULL,'1','0','1','0',NULL,NULL,NULL,NULL,NULL,NULL,NULL,NULL,NULL,NULL,NULL),(25,'7140249','Sư phạm Lịch sử - Địa lí (đào tạo giáo viên THCS)','C00',40,NULL,NULL,'1','0','1','0',NULL,NULL,NULL,NULL,NULL,NULL,NULL,NULL,NULL,NULL,NULL),(26,'7220201','Ngôn ngữ Anh','D01',260,NULL,NULL,'1','1','1','1',NULL,NULL,NULL,NULL,NULL,NULL,NULL,NULL,NULL,NULL,NULL),(27,'7220201-CLC','Ngôn ngữ Anh (Chương trình đào tạo chất lượng cao)','D01',100,NULL,NULL,'1','1','1','1',NULL,NULL,NULL,NULL,NULL,NULL,NULL,NULL,NULL,NULL,NULL),(28,'7229010','Lịch sử','C00',30,NULL,NULL,'1','1','1','1',NULL,NULL,NULL,NULL,NULL,NULL,NULL,NULL,NULL,NULL,NULL),(29,'7310401','Tâm lý học','D01',100,NULL,NULL,'1','1','1','1',NULL,NULL,NULL,NULL,NULL,NULL,NULL,NULL,NULL,NULL,NULL),(30,'7310501','Địa lý học','C00',30,NULL,NULL,'1','1','1','1',NULL,NULL,NULL,NULL,NULL,NULL,NULL,NULL,NULL,NULL,NULL),(31,'7310601','Quốc tế học','D01',80,NULL,NULL,'1','1','1','1',NULL,NULL,NULL,NULL,NULL,NULL,NULL,NULL,NULL,NULL,NULL),(32,'7310630','Việt Nam học','C00',140,NULL,NULL,'1','1','1','1',NULL,NULL,NULL,NULL,NULL,NULL,NULL,NULL,NULL,NULL,NULL),(33,'7320201','Thông tin - Thư viện','C04',30,NULL,NULL,'1','1','1','1',NULL,NULL,NULL,NULL,NULL,NULL,NULL,NULL,NULL,NULL,NULL),(34,'7340101','Quản trị kinh doanh','A01',360,NULL,NULL,'1','1','1','1',NULL,NULL,NULL,NULL,NULL,NULL,NULL,NULL,NULL,NULL,NULL),(35,'7340101-CLC','Quản trị kinh doanh (Chương trình đào tạo chất lượng cao)','D01',100,NULL,NULL,'1','1','1','1',NULL,NULL,NULL,NULL,NULL,NULL,NULL,NULL,NULL,NULL,NULL),(36,'7340120','Kinh doanh quốc tế','A01',200,NULL,NULL,'1','1','1','1',NULL,NULL,NULL,NULL,NULL,NULL,NULL,NULL,NULL,NULL,NULL),(37,'7340201','Tài chính - Ngân hàng','C01',500,NULL,NULL,'1','1','1','1',NULL,NULL,NULL,NULL,NULL,NULL,NULL,NULL,NULL,NULL,NULL),(38,'7340301','Kế toán','C01',380,NULL,NULL,'1','1','1','1',NULL,NULL,NULL,NULL,NULL,NULL,NULL,NULL,NULL,NULL,NULL),(39,'7340301-CLC','Kế toán (Chương trình đào tạo chất lượng cao)','C01',50,NULL,NULL,'1','1','1','1',NULL,NULL,NULL,NULL,NULL,NULL,NULL,NULL,NULL,NULL,NULL),(40,'7340302','Kiểm toán','C01',60,NULL,NULL,'1','1','1','1',NULL,NULL,NULL,NULL,NULL,NULL,NULL,NULL,NULL,NULL,NULL),(41,'7340406','Quản trị văn phòng','C04',70,NULL,NULL,'1','1','1','1',NULL,NULL,NULL,NULL,NULL,NULL,NULL,NULL,NULL,NULL,NULL),(42,'7380101','Luật','C03',210,NULL,NULL,'1','1','1','1',NULL,NULL,NULL,NULL,NULL,NULL,NULL,NULL,NULL,NULL,NULL),(43,'7440301','Khoa học môi trường','A00',30,NULL,NULL,'1','1','1','1',NULL,NULL,NULL,NULL,NULL,NULL,NULL,NULL,NULL,NULL,NULL),(44,'7460108','Khoa học dữ liệu','A00',80,NULL,NULL,'1','1','1','1',NULL,NULL,NULL,NULL,NULL,NULL,NULL,NULL,NULL,NULL,NULL),(45,'7460112','Toán ứng dụng','A00',90,NULL,NULL,'1','1','1','1',NULL,NULL,NULL,NULL,NULL,NULL,NULL,NULL,NULL,NULL,NULL),(46,'7480103','Kỹ thuật phần mềm','A00',110,NULL,NULL,'1','1','1','1',NULL,NULL,NULL,NULL,NULL,NULL,NULL,NULL,NULL,NULL,NULL),(47,'7480107','Trí tuệ nhân tạo','A00',80,NULL,NULL,'1','1','1','1',NULL,NULL,NULL,NULL,NULL,NULL,NULL,NULL,NULL,NULL,NULL),(48,'7480201','Công nghệ thông tin','A00',400,NULL,NULL,'1','1','1','1',NULL,NULL,NULL,NULL,NULL,NULL,NULL,NULL,NULL,NULL,NULL),(49,'7480201-CLC','Công nghệ thông tin (Chương trình đào tạo chất lượng cao)','A00',350,NULL,NULL,'1','1','1','1',NULL,NULL,NULL,NULL,NULL,NULL,NULL,NULL,NULL,NULL,NULL),(50,'7510301','Công nghệ kỹ thuật điện, điện tử','A00',45,NULL,NULL,'1','1','1','1',NULL,NULL,NULL,NULL,NULL,NULL,NULL,NULL,NULL,NULL,NULL),(51,'7510302','Công nghệ kỹ thuật điện tử – viễn thông','A00',45,NULL,NULL,'1','1','1','1',NULL,NULL,NULL,NULL,NULL,NULL,NULL,NULL,NULL,NULL,NULL),(52,'7510406','Công nghệ kỹ thuật môi trường','A00',30,NULL,NULL,'1','1','1','1',NULL,NULL,NULL,NULL,NULL,NULL,NULL,NULL,NULL,NULL,NULL),(53,'7520201','Kỹ thuật điện','A00',30,NULL,NULL,'1','1','1','1',NULL,NULL,NULL,NULL,NULL,NULL,NULL,NULL,NULL,NULL,NULL),(54,'7520207','Kỹ thuật điện tử - viễn thông (Thiết kế vi mạch)','A00',90,NULL,NULL,'1','1','1','1',NULL,NULL,NULL,NULL,NULL,NULL,NULL,NULL,NULL,NULL,NULL),(55,'7810101','Du lịch','C00',120,NULL,NULL,'1','1','1','1',NULL,NULL,NULL,NULL,NULL,NULL,NULL,NULL,NULL,NULL,NULL),(56,'7810202','Quản trị nhà hàng và dịch vụ ăn uống','A01',60,NULL,NULL,'1','1','1','1',NULL,NULL,NULL,NULL,NULL,NULL,NULL,NULL,NULL,NULL,NULL);
+INSERT INTO `xt_nganh` VALUES (10,'7140114','Quản lý giáo dục','C04',40,NULL,NULL,'1','1','1','1',10,10,10,10,NULL,NULL,NULL,NULL,15,15,15),(11,'7140201','Giáo dục Mầm non','M01',200,NULL,NULL,'0','0','1','0',NULL,NULL,NULL,NULL,NULL,NULL,NULL,NULL,NULL,NULL,NULL),(12,'7140202','Giáo dục Tiểu học','D01',200,NULL,NULL,'1','0','1','0',NULL,NULL,NULL,NULL,NULL,NULL,NULL,NULL,NULL,NULL,NULL),(13,'7140205','Giáo dục chính trị','C00',10,NULL,NULL,'1','0','1','0',NULL,NULL,NULL,NULL,NULL,NULL,NULL,NULL,NULL,NULL,NULL),(14,'7140209','Sư phạm Toán học','A00',40,NULL,NULL,'1','0','1','0',NULL,NULL,NULL,NULL,NULL,NULL,NULL,NULL,NULL,NULL,NULL),(15,'7140211','Sư phạm Vật lý','A00',10,NULL,NULL,'1','0','1','0',NULL,NULL,NULL,NULL,NULL,NULL,NULL,NULL,NULL,NULL,NULL),(16,'7140212','Sư phạm Hoá học','A00',10,NULL,NULL,'1','0','1','0',NULL,NULL,NULL,NULL,NULL,NULL,NULL,NULL,NULL,NULL,NULL),(17,'7140213','Sư phạm Sinh học','B00',10,NULL,NULL,'1','0','1','0',NULL,NULL,NULL,NULL,NULL,NULL,NULL,NULL,NULL,NULL,NULL),(18,'7140217','Sư phạm Ngữ văn','C00',50,NULL,NULL,'1','0','1','0',NULL,NULL,NULL,NULL,NULL,NULL,NULL,NULL,NULL,NULL,NULL),(19,'7140218','Sư phạm Lịch sử','C00',10,NULL,NULL,'1','0','1','0',NULL,NULL,NULL,NULL,NULL,NULL,NULL,NULL,NULL,NULL,NULL),(20,'7140219','Sư phạm Địa lý','C00',10,NULL,NULL,'1','0','1','0',NULL,NULL,NULL,NULL,NULL,NULL,NULL,NULL,NULL,NULL,NULL),(21,'7140221','Sư phạm Âm nhạc','N01',75,NULL,NULL,'1','0','1','0',NULL,NULL,NULL,NULL,NULL,NULL,NULL,NULL,NULL,NULL,NULL),(22,'7140222','Sư phạm Mỹ thuật','H00',75,NULL,NULL,'1','0','1','0',NULL,NULL,NULL,NULL,NULL,NULL,NULL,NULL,NULL,NULL,NULL),(23,'7140231','Sư phạm Tiếng Anh','D01',120,NULL,NULL,'1','0','1','0',NULL,NULL,NULL,NULL,NULL,NULL,NULL,NULL,NULL,NULL,NULL),(24,'7140247','Sư phạm Khoa học tự nhiên (đào tạo giáo viên THCS)','A00',60,NULL,NULL,'1','0','1','0',NULL,NULL,NULL,NULL,NULL,NULL,NULL,NULL,NULL,NULL,NULL),(25,'7140249','Sư phạm Lịch sử - Địa lí (đào tạo giáo viên THCS)','C00',40,NULL,NULL,'1','0','1','0',NULL,NULL,NULL,NULL,NULL,NULL,NULL,NULL,NULL,NULL,NULL),(26,'7220201','Ngôn ngữ Anh','D01',260,NULL,NULL,'1','1','1','1',NULL,NULL,NULL,NULL,NULL,NULL,NULL,NULL,NULL,NULL,NULL),(27,'7220201-CLC','Ngôn ngữ Anh (Chương trình đào tạo chất lượng cao)','D01',100,NULL,NULL,'1','1','1','1',NULL,NULL,NULL,NULL,NULL,NULL,NULL,NULL,NULL,NULL,NULL),(28,'7229010','Lịch sử','C00',30,NULL,NULL,'1','1','1','1',NULL,NULL,NULL,NULL,NULL,NULL,NULL,NULL,NULL,NULL,NULL),(29,'7310401','Tâm lý học','D01',100,NULL,NULL,'1','1','1','1',NULL,NULL,NULL,NULL,NULL,NULL,NULL,NULL,NULL,NULL,NULL),(30,'7310501','Địa lý học','C00',30,NULL,NULL,'1','1','1','1',NULL,NULL,NULL,NULL,NULL,NULL,NULL,NULL,NULL,NULL,NULL),(31,'7310601','Quốc tế học','D01',80,NULL,NULL,'1','1','1','1',NULL,NULL,NULL,NULL,NULL,NULL,NULL,NULL,NULL,NULL,NULL),(32,'7310630','Việt Nam học','C00',140,NULL,NULL,'1','1','1','1',NULL,NULL,NULL,NULL,NULL,NULL,NULL,NULL,NULL,NULL,NULL),(33,'7320201','Thông tin - Thư viện','C04',30,NULL,NULL,'1','1','1','1',NULL,NULL,NULL,NULL,NULL,NULL,NULL,NULL,NULL,NULL,NULL),(34,'7340101','Quản trị kinh doanh','A01',360,NULL,NULL,'1','1','1','1',NULL,NULL,NULL,NULL,NULL,NULL,NULL,NULL,NULL,NULL,NULL),(35,'7340101-CLC','Quản trị kinh doanh (Chương trình đào tạo chất lượng cao)','D01',100,NULL,NULL,'1','1','1','1',NULL,NULL,NULL,NULL,NULL,NULL,NULL,NULL,NULL,NULL,NULL),(36,'7340120','Kinh doanh quốc tế','A01',200,NULL,NULL,'1','1','1','1',NULL,NULL,NULL,NULL,NULL,NULL,NULL,NULL,NULL,NULL,NULL),(37,'7340201','Tài chính - Ngân hàng','C01',500,NULL,NULL,'1','1','1','1',NULL,NULL,NULL,NULL,NULL,NULL,NULL,NULL,NULL,NULL,NULL),(38,'7340301','Kế toán','C01',380,NULL,NULL,'1','1','1','1',NULL,NULL,NULL,NULL,NULL,NULL,NULL,NULL,NULL,NULL,NULL),(39,'7340301-CLC','Kế toán (Chương trình đào tạo chất lượng cao)','C01',50,NULL,NULL,'1','1','1','1',NULL,NULL,NULL,NULL,NULL,NULL,NULL,NULL,NULL,NULL,NULL),(40,'7340302','Kiểm toán','C01',60,NULL,NULL,'1','1','1','1',NULL,NULL,NULL,NULL,NULL,NULL,NULL,NULL,NULL,NULL,NULL),(41,'7340406','Quản trị văn phòng','C04',70,NULL,NULL,'1','1','1','1',NULL,NULL,NULL,NULL,NULL,NULL,NULL,NULL,NULL,NULL,NULL),(42,'7380101','Luật','C03',210,NULL,NULL,'1','1','1','1',NULL,NULL,NULL,NULL,NULL,NULL,NULL,NULL,NULL,NULL,NULL),(43,'7440301','Khoa học môi trường','A00',30,NULL,NULL,'1','1','1','1',NULL,NULL,NULL,NULL,NULL,NULL,NULL,NULL,NULL,NULL,NULL),(44,'7460108','Khoa học dữ liệu','A00',80,NULL,NULL,'1','1','1','1',NULL,NULL,NULL,NULL,NULL,NULL,NULL,NULL,NULL,NULL,NULL),(45,'7460112','Toán ứng dụng','A00',90,NULL,NULL,'1','1','1','1',NULL,NULL,NULL,NULL,NULL,NULL,NULL,NULL,NULL,NULL,NULL),(46,'7480103','Kỹ thuật phần mềm','A00',110,NULL,NULL,'1','1','1','1',NULL,NULL,NULL,NULL,NULL,NULL,NULL,NULL,NULL,NULL,NULL),(47,'7480107','Trí tuệ nhân tạo','A00',80,NULL,NULL,'1','1','1','1',NULL,NULL,NULL,NULL,NULL,NULL,NULL,NULL,NULL,NULL,NULL),(48,'7480201','Công nghệ thông tin','A00',400,NULL,NULL,'1','1','1','1',NULL,NULL,NULL,NULL,NULL,NULL,NULL,NULL,NULL,NULL,NULL),(49,'7480201-CLC','Công nghệ thông tin (Chương trình đào tạo chất lượng cao)','A00',350,NULL,NULL,'1','1','1','1',NULL,NULL,NULL,NULL,NULL,NULL,NULL,NULL,NULL,NULL,NULL),(50,'7510301','Công nghệ kỹ thuật điện, điện tử','A00',45,NULL,NULL,'1','1','1','1',NULL,NULL,NULL,NULL,NULL,NULL,NULL,NULL,NULL,NULL,NULL),(51,'7510302','Công nghệ kỹ thuật điện tử – viễn thông','A00',45,NULL,NULL,'1','1','1','1',NULL,NULL,NULL,NULL,NULL,NULL,NULL,NULL,NULL,NULL,NULL),(52,'7510406','Công nghệ kỹ thuật môi trường','A00',30,NULL,NULL,'1','1','1','1',NULL,NULL,NULL,NULL,NULL,NULL,NULL,NULL,NULL,NULL,NULL),(53,'7520201','Kỹ thuật điện','A00',30,NULL,NULL,'1','1','1','1',NULL,NULL,NULL,NULL,NULL,NULL,NULL,NULL,NULL,NULL,NULL),(54,'7520207','Kỹ thuật điện tử - viễn thông (Thiết kế vi mạch)','A00',90,NULL,NULL,'1','1','1','1',NULL,NULL,NULL,NULL,NULL,NULL,NULL,NULL,NULL,NULL,NULL),(55,'7810101','Du lịch','C00',120,NULL,NULL,'1','1','1','1',NULL,NULL,NULL,NULL,NULL,NULL,NULL,NULL,NULL,NULL,NULL),(56,'7810202','Quản trị nhà hàng và dịch vụ ăn uống','A01',60,NULL,NULL,'1','1','1','1',NULL,NULL,NULL,NULL,NULL,NULL,NULL,NULL,NULL,NULL,NULL);
 /*!40000 ALTER TABLE `xt_nganh` ENABLE KEYS */;
 UNLOCK TABLES;
 
@@ -308,7 +308,7 @@ CREATE TABLE `xt_nguyenvongxettuyen` (
   `tt_thm` varchar(45) CHARACTER SET utf8mb4 COLLATE utf8mb4_unicode_ci DEFAULT NULL,
   PRIMARY KEY (`idnv`),
   UNIQUE KEY `nv_keys_UNIQUE` (`nv_keys`)
-) ENGINE=InnoDB AUTO_INCREMENT=3 DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_unicode_ci;
+) ENGINE=InnoDB AUTO_INCREMENT=51 DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_unicode_ci;
 /*!40101 SET character_set_client = @saved_cs_client */;
 
 --
@@ -317,7 +317,7 @@ CREATE TABLE `xt_nguyenvongxettuyen` (
 
 LOCK TABLES `xt_nguyenvongxettuyen` WRITE;
 /*!40000 ALTER TABLE `xt_nguyenvongxettuyen` DISABLE KEYS */;
-INSERT INTO `xt_nguyenvongxettuyen` VALUES (1,'TS_0001','7340201',1,9.48,0,0,10.16,'Chờ xét','TS_0001_1','Xét THPT','A00'),(2,'TS_0001','7480201',2,11.36,0,0,11.35,'Chờ xét','TS_0001_2','Xét THPT','A01');
+INSERT INTO `xt_nguyenvongxettuyen` VALUES (1,'TS_0001','7340201',1,9.48,0,0,10.16,'Chờ xét','TS_0001_1','Xét THPT','A00'),(2,'TS_0001','7480201',2,11.36,0,0,11.35,'Chờ xét','TS_0001_2','Xét THPT','A01'),(3,'TS_0001','7480201',3,21.18,0,0,21.18,'Chờ xét','TS_0001_3','ĐGNL HCM','A01'),(4,'TS_0001','7480201-CLC',4,21.18,0,0,21.18,'Chờ xét','TS_0001_4','ĐGNL HCM','A01'),(5,'TS_0001','7140211',5,12.93,0,0,12.93,'Chờ xét','TS_0001_5','Xét THPT','A00'),(6,'TS_0002','7140218',1,23.42,0,0,23.42,'Chờ xét','TS_0002_1','Xét THPT','C00'),(7,'TS_0002','7140249',2,24.15,0,0,24.15,'Chờ xét','TS_0002_2','Xét THPT','C00'),(8,'TS_0002','7229010',3,22.05,0,0,22.05,'Chờ xét','TS_0002_3','ĐGNL HCM','C01'),(9,'TS_0002','7140201',4,23.75,0,0,23.75,'Chờ xét','TS_0002_4','Xét THPT','M01'),(10,'TS_0002','7140201',5,20.6,0,0,20.6,'Chờ xét','TS_0002_5','Xét THPT','M02'),(11,'TS_0003','7140202',1,26.08,1,0,24.98,'Chờ xét','TS_0003_1','Xét THPT','D01'),(12,'TS_0003','7140231',2,25.1,1,0,25.75,'Chờ xét','TS_0003_2','Xét THPT','D01'),(13,'TS_0003','7220201',3,21.53,1,0,22.53,'Chờ xét','TS_0003_3','Xét THPT','D09'),(14,'TS_0003','7310401',4,16.6,1,0,17.6,'Chờ xét','TS_0003_4','Xét THPT','D10'),(15,'TS_0003','7340101-CLC',5,16.35,1,0,17.35,'Chờ xét','TS_0003_5','Xét THPT','D11'),(16,'TS_0004','7140202',1,16.55,0.75,0,17.3,'Chờ xét','TS_0004_1','Đánh giá V-SAT','A01'),(17,'TS_0004','7480201',2,16.44,0.75,0,17.18,'Chờ xét','TS_0004_2','Đánh giá V-SAT','A01'),(18,'TS_0004','7220201',3,16.18,0.75,0,16.92,'Chờ xét','TS_0004_3','Đánh giá V-SAT','A01'),(19,'TS_0004','7140221',4,16.55,0.75,0,17.3,'Chờ xét','TS_0004_4','Đánh giá V-SAT','A01'),(20,'TS_0004','7220201-CLC',5,16.55,0.75,0,17.3,'Chờ xét','TS_0004_5','Đánh giá V-SAT','A01'),(21,'TS_0005','7140218',1,15.85,1,0,16.85,'Chờ xét','TS_0005_1','Xét THPT','D09'),(22,'TS_0005','7140218',2,20.58,1,0,21.58,'Chờ xét','TS_0005_2','Xét THPT','D14'),(23,'TS_0005','7140218',3,10.85,1,0,11.85,'Chờ xét','TS_0005_3','Xét THPT','X19'),(24,'TS_0005','7140219',4,14.85,1,0,15.85,'Chờ xét','TS_0005_4','Xét THPT','C19'),(25,'TS_0005','7140247',5,19.85,1,0,20.85,'Chờ xét','TS_0005_5','Xét THPT','D14'),(26,'TS_0005','7140218',6,18.35,1,0,19.35,'Chờ xét','TS_0005_6','ĐGNL HCM','C01'),(27,'TS_0006','7480201',1,21.26,0,1.5,23.44,'Chờ xét','TS_0006_1','Xét THPT','A00'),(28,'TS_0006','7480201',2,21.96,0,0,21.95,'Chờ xét','TS_0006_2','Xét THPT','A01'),(29,'TS_0006','7480201',3,13.18,0,0,13.18,'Chờ xét','TS_0006_3','ĐGNL HCM','A01'),(30,'TS_0006','7140202',4,23.25,0,0,23.25,'Chờ xét','TS_0006_4','Xét THPT','A01'),(31,'TS_0006','7140209',5,21.26,0,1.5,22.76,'Chờ xét','TS_0006_5','Xét THPT','A00'),(32,'TS_0007','7140212',1,19.75,2.5,0,22.25,'Chờ xét','TS_0007_1','Xét THPT','D14'),(33,'TS_0007','7140218',2,18.75,2.5,0,21.25,'Chờ xét','TS_0007_2','Xét THPT','D09'),(34,'TS_0007','7140217',3,19.75,2.5,0,22.25,'Chờ xét','TS_0007_3','Xét THPT','D14'),(35,'TS_0007','7140231',4,15,2.5,0,17.5,'Chờ xét','TS_0007_4','Xét THPT','X70'),(36,'TS_0007','7140212',5,15,2.5,0,17.5,'Chờ xét','TS_0007_5','Xét THPT','X71'),(37,'TS_0008','7480201',1,17.75,0.5,0,18.25,'Chờ xét','TS_0008_1','Xét THPT','D14'),(38,'TS_0008','7480201',2,21,0.5,2,24.15,'Chờ xét','TS_0008_2','Xét THPT','A00'),(39,'TS_0008','7480201',3,21.21,0.5,0,21.7,'Chờ xét','TS_0008_3','Xét THPT','A01'),(40,'TS_0008','7140212',4,24.83,0.5,2,27.04,'Chờ xét','TS_0008_4','Xét THPT','A00'),(41,'TS_0008','7310401',5,15.75,0.5,2,18.25,'Chờ xét','TS_0008_5','Xét THPT','A05'),(42,'TS_0009','7140114',1,15.67,1.25,0,16.92,'Chờ xét','TS_0009_1','ĐGNL HCM','D01'),(43,'TS_0009','7140217',2,20.15,1.25,0,21.4,'Chờ xét','TS_0009_2','Đánh giá V-SAT','B03'),(44,'TS_0009','7140219',3,15.32,1.25,0,16.57,'Chờ xét','TS_0009_3','Đánh giá V-SAT','D01'),(45,'TS_0009','7140218',4,15.67,1.25,0,16.92,'Chờ xét','TS_0009_4','ĐGNL HCM','D01'),(46,'TS_0009','7140247',5,12.02,1.25,0,13.27,'Chờ xét','TS_0009_5','Đánh giá V-SAT','C03'),(47,'TS_0010','7140114',1,11.85,1.25,0,13.1,'Chờ xét','TS_0010_1','Xét THPT','A07'),(48,'TS_0010','7140211',2,15.5,1.25,0,16.75,'Chờ xét','TS_0010_2','Xét THPT','X71'),(49,'TS_0010','7510302',3,13.76,1.25,0,16.64,'Chờ xét','TS_0010_3','Xét THPT','C01'),(50,'TS_0010','7140212',4,19.35,1.25,0,20.6,'Chờ xét','TS_0010_4','Xét THPT','C03');
 /*!40000 ALTER TABLE `xt_nguyenvongxettuyen` ENABLE KEYS */;
 UNLOCK TABLES;
 
@@ -475,7 +475,7 @@ CREATE TABLE `xt_tohop_monthi` (
   `tentohop` varchar(100) CHARACTER SET utf8mb3 COLLATE utf8mb3_general_ci NOT NULL,
   PRIMARY KEY (`idtohop`),
   UNIQUE KEY `matohop_UNIQUE` (`matohop`)
-) ENGINE=InnoDB DEFAULT CHARSET=utf8mb3 COLLATE=utf8mb3_unicode_ci;
+) ENGINE=InnoDB AUTO_INCREMENT=104 DEFAULT CHARSET=utf8mb3 COLLATE=utf8mb3_unicode_ci;
 /*!40101 SET character_set_client = @saved_cs_client */;
 
 --
@@ -484,120 +484,7 @@ CREATE TABLE `xt_tohop_monthi` (
 
 LOCK TABLES `xt_tohop_monthi` WRITE;
 /*!40000 ALTER TABLE `xt_tohop_monthi` DISABLE KEYS */;
-INSERT INTO xt_tohop_monthi (matohop, mon1, mon2, mon3, tentohop) VALUES
-('A00','TO','LI','HO','Toán, Vật lý, Hóa học'),
-('A01','TO','LI','N1','Toán, Vật lý, Tiếng Anh'),
-('A02','TO','LI','SI','Toán, Vật lý, Sinh học'),
-('A03','TO','LI','SU','Toán, Vật lý, Lịch sử'),
-('A04','TO','LI','DI','Toán, Vật lý, Địa lí'),
-('A05','TO','HO','SU','Toán, Hóa học, Lịch sử'),
-('A06','TO','HO','DI','Toán, Hóa học, Địa lí'),
-('A07','TO','SU','DI','Toán, Lịch sử, Địa lí'),
-
-('B00','TO','HO','SI','Toán, Hóa học, Sinh học'),
-('B01','TO','SI','SU','Toán, Sinh học, Lịch sử'),
-('B02','TO','SI','DI','Toán, Sinh học, Địa lí'),
-('B03','TO','VA','SI','Toán, Ngữ văn, Sinh học'),
-('B08','TO','SI','N1','Toán, Sinh học, Tiếng Anh'),
-
-('C00','VA','SU','DI','Ngữ văn, Lịch sử, Địa lí'),
-('C01','TO','VA','LI','Toán, Ngữ văn, Vật lý'),
-('C02','TO','VA','HO','Toán, Ngữ văn, Hóa học'),
-('C03','TO','VA','SU','Toán, Ngữ văn, Lịch sử'),
-('C04','TO','VA','DI','Toán, Ngữ văn, Địa lí'),
-('C05','VA','LI','HO','Ngữ văn, Vật lý, Hóa học'),
-('C06','VA','LI','SI','Ngữ văn, Vật lý, Sinh học'),
-('C07','VA','LI','SU','Ngữ văn, Vật lý, Lịch sử'),
-('C08','VA','HO','SI','Ngữ văn, Hóa học, Sinh học'),
-('C09','VA','LI','DI','Ngữ văn, Vật lý, Địa lí'),
-('C10','VA','HO','SU','Ngữ văn, Hóa học, Lịch sử'),
-('C11','VA','HO','DI','Ngữ văn, Hóa học, Địa lí'),
-('C12','VA','SI','SU','Ngữ văn, Sinh học, Lịch sử'),
-('C13','VA','SI','DI','Ngữ văn, Sinh học, Địa lí'),
-('C19','VA','SU','GD','Văn - Sử - GDCD'),
-
-('D01','TO','VA','N1','Toán, Ngữ văn, Tiếng Anh'),
-('D07','TO','HO','N1','Toán, Hóa học, Tiếng Anh'),
-('D09','TO','SU','N1','Toán, Lịch sử, Tiếng Anh'),
-('D10','TO','DI','N1','Toán, Địa lí, Tiếng Anh'),
-('D11','VA','LI','N1','Ngữ văn, Vật lý, Tiếng Anh'),
-('D12','VA','HO','N1','Ngữ văn, Hóa học, Tiếng Anh'),
-('D13','VA','SI','N1','Ngữ văn, Sinh học, Tiếng Anh'),
-('D14','VA','SU','N1','Ngữ văn, Lịch sử, Tiếng Anh'),
-('D15','VA','DI','N1','Ngữ văn, Địa lí, Tiếng Anh'),
-
-('H00','VA','NK3','NK4','Ngữ văn, Hình họa, Trang trí'),
-
-('M01','VA','NK1','NK2','Ngữ văn, Kể chuyện - Đọc diễn cảm, Hát - Nhạc'),
-('M02','TO','NK1','NK2','Toán, Kể chuyện - Đọc diễn cảm, Hát - Nhạc'),
-
-('N01','VA','NK5','NK6','Ngữ văn, Hát - Nhạc cụ, Xướng âm - Thẩm âm, Tiết tấu'),
-
-('X01','TO','VA','KTPL','Toán, Ngữ văn, Kinh tế và Pháp luật'),
-('X02','TO','VA','TI','Toán, Ngữ văn, Tin học'),
-('X03','TO','VA','CNCN','Toán, Ngữ văn, Công nghệ công nghiệp'),
-('X04','TO','VA','CNNN','Toán, Ngữ văn, Công nghệ nông nghiệp'),
-('X05','TO','LI','KTPL','Toán, Vật lý, Kinh tế và Pháp luật'),
-('X06','TO','LI','TI','Toán, Vật lý, Tin học'),
-('X07','TO','LI','CNCN','Toán, Vật lý, Công nghệ công nghiệp'),
-('X08','TO','LI','CNNN','Toán, Vật lý, Công nghệ nông nghiệp'),
-('X09','TO','HO','KTPL','Toán, Hóa học, Kinh tế và Pháp luật'),
-('X10','TO','HO','TI','Toán, Hóa học, Tin học'),
-('X11','TO','HO','CNCN','Toán, Hóa học, Công nghệ công nghiệp'),
-('X12','TO','HO','CNNN','Toán, Hóa học, Công nghệ nông nghiệp'),
-('X13','TO','SI','KTPL','Toán, Sinh học, Kinh tế và Pháp luật'),
-('X14','TO','SI','TI','Toán, Sinh học, Tin học'),
-('X15','TO','SI','CNCN','Toán, Sinh học, Công nghệ công nghiệp'),
-('X16','TO','SI','CNNN','Toán, Sinh học, Công nghệ nông nghiệp'),
-('X17','TO','SU','KTPL','Toán, Lịch sử, Kinh tế và Pháp luật'),
-('X18','TO','SU','TI','Toán, Lịch sử, Tin học'),
-('X19','TO','SU','CNCN','Toán, Lịch sử, Công nghệ công nghiệp'),
-('X20','TO','SU','CNNN','Toán, Lịch sử, Công nghệ nông nghiệp'),
-('X21','TO','DI','KTPL','Toán, Địa lí, Kinh tế và Pháp luật'),
-('X22','TO','DI','TI','Toán, Địa lí, Tin học'),
-('X23','TO','DI','CNCN','Toán, Địa lí, Công nghệ công nghiệp'),
-('X24','TO','DI','CNNN','Toán, Địa lí, Công nghệ nông nghiệp'),
-('X25','TO','N1','KTPL','Toán, Tiếng Anh, Kinh tế và Pháp luật'),
-('X26','TO','N1','TI','Toán, Tiếng Anh, Tin học'),
-('X27','TO','N1','CNCN','Toán, Tiếng Anh, Công nghệ công nghiệp'),
-('X28','TO','N1','CNNN','Toán, Tiếng Anh, Công nghệ nông nghiệp'),
-
-('X53','TO','KTPL','TI','Toán, Kinh tế và Pháp luật, Tin học'),
-('X54','TO','KTPL','CNCN','Toán, Kinh tế và Pháp luật, Công nghệ công nghiệp'),
-('X55','TO','KTPL','CNNN','Toán, Kinh tế và Pháp luật, Công nghệ nông nghiệp'),
-('X56','TO','TI','CNCN','Toán, Tin học, Công nghệ công nghiệp'),
-('X57','TO','TI','CNNN','Toán, Tin học, Công nghệ nông nghiệp'),
-
-('X58','VA','LI','KTPL','Ngữ văn, Vật lý, Kinh tế và Pháp luật'),
-('X59','VA','LI','TI','Ngữ văn, Vật lý, Tin học'),
-('X60','VA','LI','CNCN','Ngữ văn, Vật lý, Công nghệ công nghiệp'),
-('X61','VA','LI','CNNN','Ngữ văn, Vật lý, Công nghệ nông nghiệp'),
-('X62','VA','HO','KTPL','Ngữ văn, Hóa học, Kinh tế và Pháp luật'),
-('X63','VA','HO','TI','Ngữ văn, Hóa học, Tin học'),
-('X64','VA','HO','CNCN','Ngữ văn, Hóa học, Công nghệ công nghiệp'),
-('X65','VA','HO','CNNN','Ngữ văn, Hóa học, Công nghệ nông nghiệp'),
-('X66','VA','SI','KTPL','Ngữ văn, Sinh học, Kinh tế và Pháp luật'),
-('X67','VA','SI','TI','Ngữ văn, Sinh học, Tin học'),
-('X68','VA','SI','CNCN','Ngữ văn, Sinh học, Công nghệ công nghiệp'),
-('X69','VA','SI','CNNN','Ngữ văn, Sinh học, Công nghệ nông nghiệp'),
-('X70','VA','SU','KTPL','Ngữ văn, Lịch sử, Kinh tế và Pháp luật'),
-('X71','VA','SU','TI','Ngữ văn, Lịch sử, Tin học'),
-('X72','VA','SU','CNCN','Ngữ văn, Lịch sử, Công nghệ công nghiệp'),
-('X73','VA','SU','CNNN','Ngữ văn, Lịch sử, Công nghệ nông nghiệp'),
-('X74','VA','DI','KTPL','Ngữ văn, Địa lí, Kinh tế và Pháp luật'),
-('X75','VA','DI','TI','Ngữ văn, Địa lí, Tin học'),
-('X76','VA','DI','CNCN','Ngữ văn, Địa lí, Công nghệ công nghiệp'),
-('X77','VA','DI','CNNN','Ngữ văn, Địa lí, Công nghệ nông nghiệp'),
-('X78','VA','N1','KTPL','Ngữ văn, Tiếng Anh, Kinh tế và Pháp luật'),
-('X79','VA','N1','TI','Ngữ văn, Tiếng Anh, Tin học'),
-('X80','VA','N1','CNCN','Ngữ văn, Tiếng Anh, Công nghệ công nghiệp'),
-('X81','VA','N1','CNNN','Ngữ văn, Tiếng Anh, Công nghệ nông nghiệp'),
-
-('Y07','VA','KTPL','TI','Ngữ văn, Kinh tế và Pháp luật, Tin học'),
-('Y08','VA','KTPL','CNCN','Ngữ văn, Kinh tế và Pháp luật, Công nghệ công nghiệp'),
-('Y09','VA','KTPL','CNNN','Ngữ văn, Kinh tế và Pháp luật, Công nghệ nông nghiệp'),
-('Y10','VA','TI','CNCN','Ngữ văn, Tin học, Công nghệ công nghiệp'),
-('Y11','VA','TI','CNNN','Ngữ văn, Tin học, Công nghệ nông nghiệp');
+INSERT INTO `xt_tohop_monthi` VALUES (1,'A00','TO','LI','HO','Toán, Vật lý, Hóa học'),(2,'A01','TO','LI','N1','Toán, Vật lý, Tiếng Anh'),(3,'A02','TO','LI','SI','Toán, Vật lý, Sinh học'),(4,'A03','TO','LI','SU','Toán, Vật lý, Lịch sử'),(5,'A04','TO','LI','DI','Toán, Vật lý, Địa lí'),(6,'A05','TO','HO','SU','Toán, Hóa học, Lịch sử'),(7,'A06','TO','HO','DI','Toán, Hóa học, Địa lí'),(8,'A07','TO','SU','DI','Toán, Lịch sử, Địa lí'),(9,'B00','TO','HO','SI','Toán, Hóa học, Sinh học'),(10,'B01','TO','SI','SU','Toán, Sinh học, Lịch sử'),(11,'B02','TO','SI','DI','Toán, Sinh học, Địa lí'),(12,'B03','TO','VA','SI','Toán, Ngữ văn, Sinh học'),(13,'B08','TO','SI','N1','Toán, Sinh học, Tiếng Anh'),(14,'C00','VA','SU','DI','Ngữ văn, Lịch sử, Địa lí'),(15,'C01','TO','VA','LI','Toán, Ngữ văn, Vật lý'),(16,'C02','TO','VA','HO','Toán, Ngữ văn, Hóa học'),(17,'C03','TO','VA','SU','Toán, Ngữ văn, Lịch sử'),(18,'C04','TO','VA','DI','Toán, Ngữ văn, Địa lí'),(19,'C05','VA','LI','HO','Ngữ văn, Vật lý, Hóa học'),(20,'C06','VA','LI','SI','Ngữ văn, Vật lý, Sinh học'),(21,'C07','VA','LI','SU','Ngữ văn, Vật lý, Lịch sử'),(22,'C08','VA','HO','SI','Ngữ văn, Hóa học, Sinh học'),(23,'C09','VA','LI','DI','Ngữ văn, Vật lý, Địa lí'),(24,'C10','VA','HO','SU','Ngữ văn, Hóa học, Lịch sử'),(25,'C11','VA','HO','DI','Ngữ văn, Hóa học, Địa lí'),(26,'C12','VA','SI','SU','Ngữ văn, Sinh học, Lịch sử'),(27,'C13','VA','SI','DI','Ngữ văn, Sinh học, Địa lí'),(28,'C19','VA','SU','GD','Văn - Sử - GDCD'),(29,'D01','TO','VA','N1','Toán, Ngữ văn, Tiếng Anh'),(30,'D07','TO','HO','N1','Toán, Hóa học, Tiếng Anh'),(31,'D09','TO','SU','N1','Toán, Lịch sử, Tiếng Anh'),(32,'D10','TO','DI','N1','Toán, Địa lí, Tiếng Anh'),(33,'D11','VA','LI','N1','Ngữ văn, Vật lý, Tiếng Anh'),(34,'D12','VA','HO','N1','Ngữ văn, Hóa học, Tiếng Anh'),(35,'D13','VA','SI','N1','Ngữ văn, Sinh học, Tiếng Anh'),(36,'D14','VA','SU','N1','Ngữ văn, Lịch sử, Tiếng Anh'),(37,'D15','VA','DI','N1','Ngữ văn, Địa lí, Tiếng Anh'),(38,'H00','VA','NK3','NK4','Ngữ văn, Hình họa, Trang trí'),(39,'M01','VA','NK1','NK2','Ngữ văn, Kể chuyện - Đọc diễn cảm, Hát - Nhạc'),(40,'M02','TO','NK1','NK2','Toán, Kể chuyện - Đọc diễn cảm, Hát - Nhạc'),(41,'N01','VA','NK5','NK6','Ngữ văn, Hát - Nhạc cụ, Xướng âm - Thẩm âm, Tiết tấu'),(42,'X01','TO','VA','KTPL','Toán, Ngữ văn, Kinh tế và Pháp luật'),(43,'X02','TO','VA','TI','Toán, Ngữ văn, Tin học'),(44,'X03','TO','VA','CNCN','Toán, Ngữ văn, Công nghệ công nghiệp'),(45,'X04','TO','VA','CNNN','Toán, Ngữ văn, Công nghệ nông nghiệp'),(46,'X05','TO','LI','KTPL','Toán, Vật lý, Kinh tế và Pháp luật'),(47,'X06','TO','LI','TI','Toán, Vật lý, Tin học'),(48,'X07','TO','LI','CNCN','Toán, Vật lý, Công nghệ công nghiệp'),(49,'X08','TO','LI','CNNN','Toán, Vật lý, Công nghệ nông nghiệp'),(50,'X09','TO','HO','KTPL','Toán, Hóa học, Kinh tế và Pháp luật'),(51,'X10','TO','HO','TI','Toán, Hóa học, Tin học'),(52,'X11','TO','HO','CNCN','Toán, Hóa học, Công nghệ công nghiệp'),(53,'X12','TO','HO','CNNN','Toán, Hóa học, Công nghệ nông nghiệp'),(54,'X13','TO','SI','KTPL','Toán, Sinh học, Kinh tế và Pháp luật'),(55,'X14','TO','SI','TI','Toán, Sinh học, Tin học'),(56,'X15','TO','SI','CNCN','Toán, Sinh học, Công nghệ công nghiệp'),(57,'X16','TO','SI','CNNN','Toán, Sinh học, Công nghệ nông nghiệp'),(58,'X17','TO','SU','KTPL','Toán, Lịch sử, Kinh tế và Pháp luật'),(59,'X18','TO','SU','TI','Toán, Lịch sử, Tin học'),(60,'X19','TO','SU','CNCN','Toán, Lịch sử, Công nghệ công nghiệp'),(61,'X20','TO','SU','CNNN','Toán, Lịch sử, Công nghệ nông nghiệp'),(62,'X21','TO','DI','KTPL','Toán, Địa lí, Kinh tế và Pháp luật'),(63,'X22','TO','DI','TI','Toán, Địa lí, Tin học'),(64,'X23','TO','DI','CNCN','Toán, Địa lí, Công nghệ công nghiệp'),(65,'X24','TO','DI','CNNN','Toán, Địa lí, Công nghệ nông nghiệp'),(66,'X25','TO','N1','KTPL','Toán, Tiếng Anh, Kinh tế và Pháp luật'),(67,'X26','TO','N1','TI','Toán, Tiếng Anh, Tin học'),(68,'X27','TO','N1','CNCN','Toán, Tiếng Anh, Công nghệ công nghiệp'),(69,'X28','TO','N1','CNNN','Toán, Tiếng Anh, Công nghệ nông nghiệp'),(70,'X53','TO','KTPL','TI','Toán, Kinh tế và Pháp luật, Tin học'),(71,'X54','TO','KTPL','CNCN','Toán, Kinh tế và Pháp luật, Công nghệ công nghiệp'),(72,'X55','TO','KTPL','CNNN','Toán, Kinh tế và Pháp luật, Công nghệ nông nghiệp'),(73,'X56','TO','TI','CNCN','Toán, Tin học, Công nghệ công nghiệp'),(74,'X57','TO','TI','CNNN','Toán, Tin học, Công nghệ nông nghiệp'),(75,'X58','VA','LI','KTPL','Ngữ văn, Vật lý, Kinh tế và Pháp luật'),(76,'X59','VA','LI','TI','Ngữ văn, Vật lý, Tin học'),(77,'X60','VA','LI','CNCN','Ngữ văn, Vật lý, Công nghệ công nghiệp'),(78,'X61','VA','LI','CNNN','Ngữ văn, Vật lý, Công nghệ nông nghiệp'),(79,'X62','VA','HO','KTPL','Ngữ văn, Hóa học, Kinh tế và Pháp luật'),(80,'X63','VA','HO','TI','Ngữ văn, Hóa học, Tin học'),(81,'X64','VA','HO','CNCN','Ngữ văn, Hóa học, Công nghệ công nghiệp'),(82,'X65','VA','HO','CNNN','Ngữ văn, Hóa học, Công nghệ nông nghiệp'),(83,'X66','VA','SI','KTPL','Ngữ văn, Sinh học, Kinh tế và Pháp luật'),(84,'X67','VA','SI','TI','Ngữ văn, Sinh học, Tin học'),(85,'X68','VA','SI','CNCN','Ngữ văn, Sinh học, Công nghệ công nghiệp'),(86,'X69','VA','SI','CNNN','Ngữ văn, Sinh học, Công nghệ nông nghiệp'),(87,'X70','VA','SU','KTPL','Ngữ văn, Lịch sử, Kinh tế và Pháp luật'),(88,'X71','VA','SU','TI','Ngữ văn, Lịch sử, Tin học'),(89,'X72','VA','SU','CNCN','Ngữ văn, Lịch sử, Công nghệ công nghiệp'),(90,'X73','VA','SU','CNNN','Ngữ văn, Lịch sử, Công nghệ nông nghiệp'),(91,'X74','VA','DI','KTPL','Ngữ văn, Địa lí, Kinh tế và Pháp luật'),(92,'X75','VA','DI','TI','Ngữ văn, Địa lí, Tin học'),(93,'X76','VA','DI','CNCN','Ngữ văn, Địa lí, Công nghệ công nghiệp'),(94,'X77','VA','DI','CNNN','Ngữ văn, Địa lí, Công nghệ nông nghiệp'),(95,'X78','VA','N1','KTPL','Ngữ văn, Tiếng Anh, Kinh tế và Pháp luật'),(96,'X79','VA','N1','TI','Ngữ văn, Tiếng Anh, Tin học'),(97,'X80','VA','N1','CNCN','Ngữ văn, Tiếng Anh, Công nghệ công nghiệp'),(98,'X81','VA','N1','CNNN','Ngữ văn, Tiếng Anh, Công nghệ nông nghiệp'),(99,'Y07','VA','KTPL','TI','Ngữ văn, Kinh tế và Pháp luật, Tin học'),(100,'Y08','VA','KTPL','CNCN','Ngữ văn, Kinh tế và Pháp luật, Công nghệ công nghiệp'),(101,'Y09','VA','KTPL','CNNN','Ngữ văn, Kinh tế và Pháp luật, Công nghệ nông nghiệp'),(102,'Y10','VA','TI','CNCN','Ngữ văn, Tin học, Công nghệ công nghiệp'),(103,'Y11','VA','TI','CNNN','Ngữ văn, Tin học, Công nghệ nông nghiệp');
 /*!40000 ALTER TABLE `xt_tohop_monthi` ENABLE KEYS */;
 UNLOCK TABLES;
 SET @@SESSION.SQL_LOG_BIN = @MYSQLDUMP_TEMP_LOG_BIN;
@@ -611,4 +498,4 @@ SET @@SESSION.SQL_LOG_BIN = @MYSQLDUMP_TEMP_LOG_BIN;
 /*!40101 SET COLLATION_CONNECTION=@OLD_COLLATION_CONNECTION */;
 /*!40111 SET SQL_NOTES=@OLD_SQL_NOTES */;
 
--- Dump completed on 2026-04-22 20:44:42
+-- Dump completed on 2026-04-23 12:21:57

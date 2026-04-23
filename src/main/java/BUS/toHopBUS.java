@@ -155,7 +155,7 @@ public class toHopBUS {
         }
     }
     
-    public ArrayList<toHopETT> timKiemCoBan(String tim, int index)
+public ArrayList<toHopETT> timKiemCoBan(String tim, int index)
     {
         if (ds == null)
         {
@@ -163,42 +163,44 @@ public class toHopBUS {
         }
         ArrayList<toHopETT> ketQua = new ArrayList<>();
 
+        String tuKhoa = tim.toLowerCase().trim();
+
         for (toHopETT th : ds)
         {
             switch (index)
             {
                 case 0: // ID Tổ Hợp
-                    if (String.valueOf(th.getIdtohop()).contains(tim))
+                    if (String.valueOf(th.getIdtohop()).contains(tuKhoa))
                     {
                         ketQua.add(th);
                     }
                     break;
                 case 1: // Mã Tổ Hợp
-                    if (th.getMatohop() != null && th.getMatohop().toLowerCase().contains(tim))
+                    if (th.getMatohop() != null && th.getMatohop().toLowerCase().contains(tuKhoa))
                     {
                         ketQua.add(th);
                     }
                     break;
                 case 2: // Môn 1
-                    if (th.getMon1() != null && th.getMon1().toLowerCase().contains(tim))
+                    if (th.getMon1() != null && th.getMon1().toLowerCase().contains(tuKhoa))
                     {
                         ketQua.add(th);
                     }
                     break;
                 case 3: // Môn 2
-                    if (th.getMon2() != null && th.getMon2().toLowerCase().contains(tim))
+                    if (th.getMon2() != null && th.getMon2().toLowerCase().contains(tuKhoa))
                     {
                         ketQua.add(th);
                     }
                     break;
                 case 4: // Môn 3
-                    if (th.getMon3() != null && th.getMon3().toLowerCase().contains(tim))
+                    if (th.getMon3() != null && th.getMon3().toLowerCase().contains(tuKhoa))
                     {
                         ketQua.add(th);
                     }
                     break;
                 case 5: // Tên Tổ Hợp
-                    if (th.getTentohop() != null && th.getTentohop().toLowerCase().contains(tim))
+                    if (th.getTentohop() != null && th.getTentohop().toLowerCase().contains(tuKhoa))
                     {
                         ketQua.add(th);
                     }

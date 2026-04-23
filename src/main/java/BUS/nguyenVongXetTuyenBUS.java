@@ -205,35 +205,6 @@ public class nguyenVongXetTuyenBUS {
                 String maNganhHienTai = keyRo.split("_")[0];
                 String toHopGoc = mapToHopGoc.getOrDefault(maNganhHienTai, "");
 
-                // SẮP XẾP CAO CẤP V2: Đưa Tổ Hợp Gốc vào làm "Thái Thượng Hoàng"
-//                roHienTai.sort((nv1, nv2) -> {
-//                    // Ưu tiên 1: Điểm Xét Tuyển (Cao xuống Thấp)
-//                    int diemCompare = Double.compare(nv2.getDiemXetTuyen(), nv1.getDiemXetTuyen());
-//                    if (diemCompare != 0) return diemCompare;
-//                    
-//                    // ============================================================
-//                    // 🔥 MỚI: Ưu tiên 1.5 - ĐỘ ƯU TIÊN GIẢI THƯỞNG 🔥
-//                    // Nếu 2 đứa cùng 30 điểm Tuyển Thẳng, lôi cái Ưu Tiên Giải ra đọ!
-//                    // ============================================================
-//                    int uuTien1 = mapUuTienGiai.getOrDefault(nv1.getNnCccd(), 0);
-//                    int uuTien2 = mapUuTienGiai.getOrDefault(nv2.getNnCccd(), 0);
-//                    int uuTienCompare = Integer.compare(uuTien2, uuTien1); // nv2 so với nv1 để xếp Giảm Dần
-//                    if (uuTienCompare != 0) return uuTienCompare;
-//                    
-//                    // Ưu tiên 2: TỔ HỢP GỐC
-//                    boolean isNv1Goc = nv1.getTtThm() != null && nv1.getTtThm().equals(toHopGoc);
-//                    boolean isNv2Goc = nv2.getTtThm() != null && nv2.getTtThm().equals(toHopGoc);
-//                    if (isNv1Goc && !isNv2Goc) return -1; 
-//                    if (!isNv1Goc && isNv2Goc) return 1;  
-//
-//                    // Ưu tiên 3: Điểm Môn 1 (Toán) 
-//                    int diemToanCompare = Double.compare(nv2.getDiemMon1(), nv1.getDiemMon1());
-//                    if (diemToanCompare != 0) return diemToanCompare;
-//
-//                    // Ưu tiên 4: Thứ tự nguyện vọng 
-//                    return Integer.compare(nv1.getNvTt(), nv2.getNvTt());
-//                });
-// SẮP XẾP CAO CẤP V2: Đưa Tổ Hợp Gốc vào làm "Thái Thượng Hoàng"
                 roHienTai.sort((nv1, nv2) -> {
                     // Ưu tiên 1: Điểm Xét Tuyển (Cao xuống Thấp)
                     int diemCompare = Double.compare(nv2.getDiemXetTuyen(), nv1.getDiemXetTuyen());
@@ -362,61 +333,6 @@ public class nguyenVongXetTuyenBUS {
         System.out.println("CẮT CHỈ TIÊU HOÀN TẤT!");
     }
     
-    
-//    public void napDiemAoChoDanhSach() {
-//        if (ds == null || ds.isEmpty()) return;
-//
-//        for (Entity.nguyenVongXetTuyenETT nv : ds) {
-//            String cccd = nv.getNnCccd();
-//            String maToHop = nv.getTtThm();
-//            String phuongThuc = nv.getTtPhuongThuc();
-//
-//            // 1. Lấy điểm ĐGNL HCM
-//            if (phuongThuc.equals("ĐGNL HCM")) {
-//                nv.setDiemMon1(data.layDiemDGNL(cccd));
-//            } 
-//            // 2. Lấy điểm 3 môn cho V-SAT hoặc THPT
-//            else if (maToHop != null && !maToHop.equals("Không")) {
-//                
-//                String[] toHop = data.layMonTuToHop(maToHop);
-//
-//                if (toHop != null) {
-//                    String m1 = toHop[0];
-//                    String m2 = toHop[1];
-//                    String m3 = toHop[2];
-//
-//                    nv.setTenMon1(m1);
-//                    nv.setTenMon2(m2);
-//                    nv.setTenMon3(m3);
-//
-//                    // Gỡ bẫy môn Tiếng Anh (Lấy N1_THI để map với cột Database)
-//                    String col1 = m1.equals("N1") ? "N1_THI" : m1;
-//                    String col2 = m2.equals("N1") ? "N1_THI" : m2;
-//                    String col3 = m3.equals("N1") ? "N1_THI" : m3;
-//
-//                    // Gọi DAO lấy 1 mảng 3 con điểm
-//                    double[] diemThi = data.layDiemThiBaMon(cccd, col1, col2, col3);
-//                    double diem1 = diemThi[0];
-//                    double diem2 = diemThi[1];
-//                    double diem3 = diemThi[2];
-//                    
-//                    nv.setDiemMon1(diem1);
-//                    nv.setDiemMon2(diem2);
-//                    nv.setDiemMon3(diem3);
-//                    
-//                    // (MỞ RỘNG: Dò thêm IELTS để Tiêu chí phụ chính xác 100%)
-//                    if ("N1".equals(m1) || "N1".equals(m2) || "N1".equals(m3)) {
-//                        double ieltsQD = data.layDiemIELTS(cccd);
-//                        if (ieltsQD > 0) { // Có chứng chỉ mới tráo
-//                            if ("N1".equals(m1)) nv.setDiemMon1(Math.max(diem1, ieltsQD));
-//                            if ("N1".equals(m2)) nv.setDiemMon2(Math.max(diem2, ieltsQD));
-//                            if ("N1".equals(m3)) nv.setDiemMon3(Math.max(diem3, ieltsQD));
-//                        }
-//                    }
-//                }
-//            }
-//        }
-//    }
     
     
     public void capNhatDiemChuanTuDong() {

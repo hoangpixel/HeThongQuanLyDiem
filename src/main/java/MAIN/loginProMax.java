@@ -211,27 +211,77 @@ private void styleInput(JTextField txt) {
         });
     }
 
-    // ================= LOGIN =================
-    
-private void login() {
-        // Thêm .trim() để triệt tiêu khoảng trắng thừa ở Tài khoản
+// ================= LOGIN NÂNG CẤP (CÓ CHECK TRẠNG THÁI) =================
+    private void login() {
         String user = txtTaiKhoan.getText().trim(); 
         String pass = new String(txtMatKhau.getPassword()); 
 
-        // IN RA CONSOLE ĐỂ DEBUG: Nhìn kỹ xem giữa 2 dấu ngoặc vuông có khoảng trắng không nha!
         System.out.println("🕵️ User đang nhập: [" + user + "]");
         System.out.println("🕵️ Pass đang nhập: [" + pass + "]");
 
-        taiKhoanBUS tkBus = new taiKhoanBUS();
-        if (tkBus.login(user, pass)) {
-            phanQuyenBUS pqBus = new phanQuyenBUS();
-            pqBus.loadQuyenLenRAM(taiKhoanBUS.taiKhoanHienTai.getIdTaiKhoan());
-            JOptionPane.showMessageDialog(this, "Đăng nhập thành công!");
-            this.dispose();
-            openMain();
-        } else {
-            JOptionPane.showMessageDialog(this, "Sai tài khoản hoặc mật khẩu!");
-        }
+        btnDangNhap.setEnabled(false);
+        btnDangNhap.setText("Đang xử lý...");
+
+        // 🚀 Đổi từ SwingWorker<Boolean, Void> sang SwingWorker<Integer, Void>
+        SwingWorker<Integer, Void> worker = new SwingWorker<Integer, Void>() {
+            @Override
+            protected Integer doInBackground() throws Exception {
+                taiKhoanBUS tkBus = new taiKhoanBUS();
+                
+                // 1. Kiểm tra tài khoản và mật khẩu trước
+                if (tkBus.login(user, pass)) {
+                    
+                    // 2. Đã đúng pass rồi, giờ móc cái Trạng Thái ra kiểm tra
+                    // (Dùng Integer object nên nhớ check null phòng hờ rác DB)
+                    Integer trangThai = taiKhoanBUS.taiKhoanHienTai.getTrangThai();
+                    
+                    if (trangThai != null && trangThai == 0) {
+                        return 2; // TRẢ VỀ 2: TÀI KHOẢN BỊ KHÓA
+                    }
+                    
+                    // 3. Nếu mọi thứ OK thì nạp quyền
+                    phanQuyenBUS pqBus = new phanQuyenBUS();
+                    pqBus.loadQuyenLenRAM(taiKhoanBUS.taiKhoanHienTai.getIdTaiKhoan());
+                    return 1; // TRẢ VỀ 1: THÀNH CÔNG
+                }
+                
+                return 0; // TRẢ VỀ 0: SAI TÀI KHOẢN HOẶC MẬT KHẨU
+            }
+
+            @Override
+            protected void done() {
+                try {
+                    int result = get(); // Nhận mã số từ doInBackground gửi lên
+                    
+                    if (result == 1) {
+                        JOptionPane.showMessageDialog(loginProMax.this, "Đăng nhập thành công!");
+                        dispose();
+                        openMain();
+                    } 
+                    else if (result == 2) {
+                        // 🚨 BẮT ĐƯỢC THẰNG BỊ KHÓA
+                        JOptionPane.showMessageDialog(loginProMax.this, 
+                            "Tài khoản của bạn đã bị khóa!\nVui lòng liên hệ Admin Khoa CNTT để biết thêm chi tiết.", 
+                            "Cảnh báo bảo mật", 
+                            JOptionPane.WARNING_MESSAGE);
+                    } 
+                    else {
+                        JOptionPane.showMessageDialog(loginProMax.this, 
+                            "Sai tài khoản hoặc mật khẩu!", 
+                            "Lỗi đăng nhập", 
+                            JOptionPane.ERROR_MESSAGE);
+                    }
+                } catch (Exception ex) {
+                    ex.printStackTrace();
+                    JOptionPane.showMessageDialog(loginProMax.this, "Lỗi kết nối cơ sở dữ liệu!");
+                } finally {
+                    btnDangNhap.setEnabled(true);
+                    btnDangNhap.setText("Đăng nhập");
+                }
+            }
+        };
+
+        worker.execute();
     }
         
     private void openMain() {

@@ -141,50 +141,38 @@ private void thucHienThem() {
             }
         }
     }
-    private void thucHienXoa() 
+private void thucHienXoa() 
     {
         int row = table.getSelectedRow();
         if (row != -1) {
-            // 1. Hỏi lại cho chắc ăn (Hạn chế xóa nhầm)
             JFrame topFrame = (JFrame) SwingUtilities.windowForComponent(this);
             deletePhanQuyen dialog = new deletePhanQuyen(topFrame, true);
             dialog.setVisible(true);
             
             if(dialog.getXacNhanXoa()) {
-                // 2. Tính Index thực sự y như hàm Sửa
                 int modelIndex = table.convertRowIndexToModel(row);
                 int absoluteIndex = (currentPage - 1) * rowsPerPage + modelIndex;
                 
-                // 🔥 SỬA TẠI ĐÂY: KHÔNG DÙNG busPhanQuyen.ds.get() NỮA 🔥
-                // Lấy thông tin trực tiếp từ dòng dữ liệu trên RAM giao diện (An toàn 100%)
                 Vector rowData = (Vector) fullDataList.get(absoluteIndex);
-                int idTk = (int) rowData.get(0);
-                String tenBang = (String) rowData.get(1);
+                int idTkCanTim = (int) rowData.get(0);
+                String tenBangCanTim = (String) rowData.get(1);
                 
-                // Tạo một đối tượng tạm chỉ chứa ID và Tên Bảng để gửi cho BUS
-                phanQuyenETT nvCanXoa = new phanQuyenETT();
-                nvCanXoa.setIdTaiKhoan(idTk);
-                nvCanXoa.setTenBang(tenBang);
+                phanQuyenETT nvCanXoa = null;
+                for (phanQuyenETT item : busPhanQuyen.ds) {
+                    if (item.getIdTaiKhoan() == idTkCanTim && item.getTenBang().equals(tenBangCanTim)) {
+                        nvCanXoa = item;
+                        break;
+                    }
+                }
                 
-                // 3. Gọi BUS thực thi lệnh XÓA
-                if (busPhanQuyen.xoaPhanQuyen(nvCanXoa)) {
-                    
-                    // 🔥 Xóa luôn phần tử đó trong fullDataList để đồng bộ
+                if (nvCanXoa != null && busPhanQuyen.xoaPhanQuyen(nvCanXoa)) {
                     fullDataList.remove(absoluteIndex);
-                    
-                    // 🔥 Tính lại tổng số trang
                     totalPages = (int) Math.ceil((double) fullDataList.size() / rowsPerPage);
-                    
-                    // 🔥 Nếu trang hiện tại bị rỗng, lùi lại 1 trang
                     if (currentPage > totalPages && totalPages > 0) {
                         currentPage = totalPages;
                     }
-                    
-                    // 🔥 Vẽ lại bảng cực mượt
                     renderCurrentPage();
-                    btnXoa.setEnabled(false); // Xóa xong thì khóa nút lại cho an toàn
-                    // Tùy chỉnh thông báo nếu thích
-                    // JOptionPane.showMessageDialog(this, "Xóa phân quyền thành công"); 
+                    btnXoa.setEnabled(false); 
                 } else {
                     JOptionPane.showMessageDialog(this, "Xóa phân quyền thất bại");
                 }
@@ -206,15 +194,12 @@ private void thucHienThem() {
 
         int result = fileChooser.showOpenDialog(this);
         if (result == javax.swing.JFileChooser.APPROVE_OPTION) {
-            // Lấy đường dẫn file
             String filePath = fileChooser.getSelectedFile().getAbsolutePath();
             
-            // Gọi BUS xử lý và nhận thông báo kết quả
             String thongBao = busPhanQuyen.nhapDuLieuTuExcel(filePath);
             
             JOptionPane.showMessageDialog(this, thongBao, "Kết quả Nhập Excel", javax.swing.JOptionPane.INFORMATION_MESSAGE);
             
-            // Xong xuôi thì làm mới lại cái bảng trên màn hình
             busPhanQuyen.ds = null;
             loadDataToTable();
         }
@@ -291,25 +276,30 @@ private void thucHienChiTiet() {
             int modelIndex = table.convertRowIndexToModel(row);
             int absoluteIndex = (currentPage - 1) * rowsPerPage + modelIndex;
             
-            // 👉 1. KIỂM TRA NULL TRƯỚC KHI LẤY DỮ LIỆU
             if (busPhanQuyen.ds == null) {
                 JOptionPane.showMessageDialog(this, "Lỗi: Danh sách quyền chưa được nạp từ Database!", "Lỗi dữ liệu", JOptionPane.ERROR_MESSAGE);
-                // GỌI HÀM NẠP DỮ LIỆU Ở ĐÂY (Ví dụ: busPhanQuyen.docDanhSach();)
-                return; // Dừng hàm lại, không chạy cái get() ở dưới nữa
+                return; 
             }
             
-            // 👉 2. CHECK LUÔN LỠ CÁI VỊ TRÍ CLICK NÓ VƯỢT QUÁ SỐ LƯỢNG MẢNG
-            if (absoluteIndex < 0 || absoluteIndex >= busPhanQuyen.ds.size()) {
-                JOptionPane.showMessageDialog(this, "Lỗi: Không tìm thấy dữ liệu ở dòng này!", "Lỗi", JOptionPane.ERROR_MESSAGE);
-                return;
-            }
+            Vector rowData = (Vector) fullDataList.get(absoluteIndex);
+            int idTkCanTim = (int) rowData.get(0);
+            String tenBangCanTim = (String) rowData.get(1);
 
-            // Nếu vượt qua 2 ải trên thì lấy ra an toàn tuyệt đối
-            phanQuyenETT pq = busPhanQuyen.ds.get(absoluteIndex);
-            JFrame topFrame = (JFrame) SwingUtilities.windowForComponent(this);
+            phanQuyenETT pq = null;
+            for (phanQuyenETT item : busPhanQuyen.ds) {
+                if (item.getIdTaiKhoan() == idTkCanTim && item.getTenBang().equals(tenBangCanTim)) {
+                    pq = item;
+                    break;
+                }
+            }
             
-            detailPhanQuyen dialog = new detailPhanQuyen(topFrame, true, pq);
-            dialog.setVisible(true);
+            if (pq != null) {
+                JFrame topFrame = (JFrame) SwingUtilities.windowForComponent(this);
+                detailPhanQuyen dialog = new detailPhanQuyen(topFrame, true, pq);
+                dialog.setVisible(true);
+            } else {
+                 JOptionPane.showMessageDialog(this, "Lỗi: Không tìm thấy dữ liệu ở dòng này!", "Lỗi", JOptionPane.ERROR_MESSAGE);
+            }
         }
     }
     
