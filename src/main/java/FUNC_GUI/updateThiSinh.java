@@ -43,44 +43,60 @@ public class updateThiSinh extends javax.swing.JDialog {
         loadTinh();
         cboNoiSinh.addActionListener(e -> {
             if (cboNoiSinh.getSelectedItem() == null) return;
-
             try {
                 Item item = (Item) cboNoiSinh.getSelectedItem();
                 int code = item.code;
-
                 String json = readAPI("https://provinces.open-api.vn/api/p/" + code + "?depth=2");
                 JSONObject obj = new JSONObject(json);
                 JSONArray districts = obj.getJSONArray("districts");
 
                 cboNoiSinh4.removeAllItems();
 
+                // Lấy tên Huyện cũ từ DB
+                String huyenCu = "";
+                String[] parts = thiSinh.getNoiSinh().split(" - ");
+                if (parts.length >= 2) huyenCu = parts[1].trim();
+
+                Item huyenToSelect = null;
                 for (int i = 0; i < districts.length(); i++) {
                     JSONObject d = districts.getJSONObject(i);
-                    cboNoiSinh4.addItem(new Item(d.getString("name"), d.getInt("code")));
+                    Item newHuyen = new Item(d.getString("name"), d.getInt("code"));
+                    cboNoiSinh4.addItem(newHuyen);
+                    if (newHuyen.name.equals(huyenCu)) {
+                        huyenToSelect = newHuyen;
+                    }
                 }
+                // Tự động chọn Huyện
+                if (huyenToSelect != null) cboNoiSinh4.setSelectedItem(huyenToSelect);
 
             } catch (Exception ex) {
                 ex.printStackTrace();
             }
         });
-                cboNoiSinh4.addActionListener(e -> {
+        cboNoiSinh4.addActionListener(e -> {
             if (cboNoiSinh4.getSelectedItem() == null) return;
-
             try {
                 Item item = (Item) cboNoiSinh4.getSelectedItem();
                 int code = item.code;
-
                 String json = readAPI("https://provinces.open-api.vn/api/d/" + code + "?depth=2");
                 JSONObject obj = new JSONObject(json);
                 JSONArray wards = obj.getJSONArray("wards");
 
                 cboNoiSinh5.removeAllItems();
 
+                // Lấy tên Xã cũ từ DB
+                String xaCu = "";
+                String[] parts = thiSinh.getNoiSinh().split(" - ");
+                if (parts.length >= 3) xaCu = parts[2].trim();
+
                 for (int i = 0; i < wards.length(); i++) {
                     JSONObject w = wards.getJSONObject(i);
-                    cboNoiSinh5.addItem(new Item(w.getString("name"), 0));
+                    Item newXa = new Item(w.getString("name"), 0);
+                    cboNoiSinh5.addItem(newXa);
+                    if (newXa.name.equals(xaCu)) {
+                        cboNoiSinh5.setSelectedItem(newXa);
+                    }
                 }
-
             } catch (Exception ex) {
                 ex.printStackTrace();
             }
@@ -113,18 +129,19 @@ public class updateThiSinh extends javax.swing.JDialog {
         dateNgaySinh.setDate(data.getNgaySinh());
 
         cboNoiSinh1.setSelectedItem(data.getGioiTinh());
-        String[] parts = data.getNoiSinh().split(" - ");
-        if(parts.length == 3){
-           for (int i = 0; i < cboNoiSinh.getItemCount(); i++) {
-                Item item = cboNoiSinh.getItemAt(i);
-                if (item.name.equals(parts[0])) {
-                    cboNoiSinh.setSelectedIndex(i);
-                    break;
-                }
+        String dtTuDB = data.getDoiTuong(); // Ví dụ: "1"
+        for (int i = 0; i < cboNoiSinh2.getItemCount(); i++) {
+            if (cboNoiSinh2.getItemAt(i).toString().startsWith(dtTuDB + " - ")) {
+                cboNoiSinh2.setSelectedIndex(i);
+                break;
             }
         }
-        cboNoiSinh2.setSelectedItem(data.getDoiTuong());
-        cboNoiSinh3.setSelectedItem(data.getKhuVuc());
+        String kvGoc = data.getKhuVuc();
+        if (kvGoc != null) {
+            // Tự động chuyển đổi nếu dữ liệu cũ trong DB là "KV2-NT"
+            if (kvGoc.equalsIgnoreCase("KV2-NT")) kvGoc = "KV2NT";
+            cboKhuVuc.setSelectedItem(kvGoc.trim().toUpperCase());
+        }
     }
 
     /**
@@ -163,7 +180,7 @@ public class updateThiSinh extends javax.swing.JDialog {
         jLabel2 = new javax.swing.JLabel();
         txtSoBaoDanh = new javax.swing.JTextField();
         cboNoiSinh2 = new javax.swing.JComboBox<>();
-        cboNoiSinh3 = new javax.swing.JComboBox<>();
+        cboKhuVuc = new javax.swing.JComboBox<>();
         jLabel7 = new javax.swing.JLabel();
         txtPassword = new javax.swing.JTextField();
         cboNoiSinh4 = new javax.swing.JComboBox<>();
@@ -329,7 +346,7 @@ public class updateThiSinh extends javax.swing.JDialog {
                             .addGap(6, 6, 6)
                             .addComponent(jLabel14, javax.swing.GroupLayout.PREFERRED_SIZE, 111, javax.swing.GroupLayout.PREFERRED_SIZE)
                             .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.UNRELATED)
-                            .addComponent(cboNoiSinh3, javax.swing.GroupLayout.PREFERRED_SIZE, 235, javax.swing.GroupLayout.PREFERRED_SIZE))
+                            .addComponent(cboKhuVuc, javax.swing.GroupLayout.PREFERRED_SIZE, 235, javax.swing.GroupLayout.PREFERRED_SIZE))
                         .addGroup(javax.swing.GroupLayout.Alignment.LEADING, jPanel5Layout.createSequentialGroup()
                             .addComponent(jLabel13, javax.swing.GroupLayout.PREFERRED_SIZE, 123, javax.swing.GroupLayout.PREFERRED_SIZE)
                             .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED)
@@ -393,7 +410,7 @@ public class updateThiSinh extends javax.swing.JDialog {
                     .addComponent(cboNoiSinh2, javax.swing.GroupLayout.PREFERRED_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.PREFERRED_SIZE))
                 .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.UNRELATED)
                 .addGroup(jPanel5Layout.createParallelGroup(javax.swing.GroupLayout.Alignment.BASELINE)
-                    .addComponent(cboNoiSinh3, javax.swing.GroupLayout.PREFERRED_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.PREFERRED_SIZE)
+                    .addComponent(cboKhuVuc, javax.swing.GroupLayout.PREFERRED_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.PREFERRED_SIZE)
                     .addComponent(jLabel14, javax.swing.GroupLayout.PREFERRED_SIZE, 22, javax.swing.GroupLayout.PREFERRED_SIZE))
                 .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.UNRELATED)
                 .addGroup(jPanel5Layout.createParallelGroup(javax.swing.GroupLayout.Alignment.BASELINE)
@@ -445,46 +462,54 @@ public class updateThiSinh extends javax.swing.JDialog {
         cboNoiSinh1.addItem("Nữ");
         cboNoiSinh1.addItem("Khác");
 
-        // ===== ĐỐI TƯỢNG =====
+        // ===== ĐỒI TƯỢNG (Đồng bộ với logic tính điểm Nguyện vọng) =====
         cboNoiSinh2.removeAllItems();
-        cboNoiSinh2.addItem("00 - Không ưu tiên");
-        cboNoiSinh2.addItem("01 - Dân tộc thiểu số");
-        cboNoiSinh2.addItem("02 - Con thương binh");
-        cboNoiSinh2.addItem("03 - Con liệt sĩ");
-        cboNoiSinh2.addItem("04 - Vùng khó khăn");
+        cboNoiSinh2.addItem("Không - Không ưu tiên");
+        cboNoiSinh2.addItem("ĐT1 - Người dân tộc thiểu số");
+        cboNoiSinh2.addItem("ĐT2 - Công nhân trực tiếp");
+        cboNoiSinh2.addItem("ĐT3 - Thương binh, bệnh binh");
+        cboNoiSinh2.addItem("ĐT4 - Con liệt sĩ, con thương binh");
+        cboNoiSinh2.addItem("ĐT5 - Thanh niên xung phong");
+        cboNoiSinh2.addItem("ĐT6 - Con người có công");
+        cboNoiSinh2.addItem("ĐT7 - Người khuyết tật");
 
         // ===== KHU VỰC =====
-        cboNoiSinh3.removeAllItems();
-        cboNoiSinh3.addItem("KV1");
-        cboNoiSinh3.addItem("KV2");
-        cboNoiSinh3.addItem("KV2-NT");
-        cboNoiSinh3.addItem("KV3");
+        cboKhuVuc.removeAllItems();
+        cboKhuVuc.addItem("KV1");
+        cboKhuVuc.addItem("KV2");
+        cboKhuVuc.addItem("KV2NT");
+        cboKhuVuc.addItem("KV3");
     }
     private void loadTinh() {
-    new Thread(() -> {
-        try {
-            String json = readAPI("https://provinces.open-api.vn/api/p/");
-            org.json.JSONArray arr = new org.json.JSONArray(json);
+        new Thread(() -> {
+            try {
+                String json = readAPI("https://provinces.open-api.vn/api/p/");
+                org.json.JSONArray arr = new org.json.JSONArray(json);
 
-            javax.swing.SwingUtilities.invokeLater(() -> {
-                cboNoiSinh.removeAllItems();
-            });
-
-            for (int i = 0; i < arr.length(); i++) {
-                org.json.JSONObject obj = arr.getJSONObject(i);
-                String name = obj.getString("name");
-                int code = obj.getInt("code");
+                String[] parts = thiSinh.getNoiSinh().split(" - ");
+                final String tinhCu = parts.length > 0 ? parts[0].trim() : "";
 
                 javax.swing.SwingUtilities.invokeLater(() -> {
-                   cboNoiSinh.addItem(new Item(name, code));
+                    cboNoiSinh.removeAllItems();
+                    Item selectedItem = null;
+                    for (int i = 0; i < arr.length(); i++) {
+                        org.json.JSONObject obj = arr.getJSONObject(i);
+                        Item newItem = new Item(obj.getString("name"), obj.getInt("code"));
+                        cboNoiSinh.addItem(newItem);
+                        if (newItem.name.equals(tinhCu)) {
+                            selectedItem = newItem;
+                        }
+                    }
+                    // Sau khi add hết mới chọn Tỉnh, việc này sẽ kích hoạt ActionListener của Tỉnh
+                    if (selectedItem != null) {
+                        cboNoiSinh.setSelectedItem(selectedItem);
+                    }
                 });
+            } catch (Exception e) {
+                e.printStackTrace();
             }
-
-        } catch (Exception e) {
-            e.printStackTrace();
-        }
-    }).start();
-}
+        }).start();
+    }
     private void btnThoatActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_btnThoatActionPerformed
         // TODO add your handling code here:
         xacNhan = false;
@@ -522,8 +547,10 @@ public class updateThiSinh extends javax.swing.JDialog {
         String huyen = huyenItem.name;
         String xa = cboNoiSinh5.getSelectedItem().toString();
         ts.setNoiSinh(tinh + " - " + huyen + " - " + xa);
-        ts.setDoiTuong(getComboValue(cboNoiSinh2));
-        ts.setKhuVuc(getComboValue(cboNoiSinh3));
+        String doiTuongFull = getComboValue(cboNoiSinh2);
+        String maDoiTuong = doiTuongFull.split(" - ")[0].trim(); // Lấy "ĐT1" hoặc "ĐT2"
+        ts.setDoiTuong(maDoiTuong);
+        ts.setKhuVuc(getComboValue(cboKhuVuc).trim().toUpperCase());
 
         // 3. Gọi BUS để lưu xuống Database
         BUS.thiSinhXetTuyenBUS bus = new BUS.thiSinhXetTuyenBUS();
@@ -585,11 +612,11 @@ public class updateThiSinh extends javax.swing.JDialog {
     // Variables declaration - do not modify//GEN-BEGIN:variables
     private javax.swing.JButton btnSua;
     private javax.swing.JButton btnThoat;
+    private javax.swing.JComboBox<String> cboKhuVuc;
     private javax.swing.JComboBox<Item> cboNgaySinh;
     private javax.swing.JComboBox<Item> cboNoiSinh;
     private javax.swing.JComboBox<String> cboNoiSinh1;
     private javax.swing.JComboBox<String> cboNoiSinh2;
-    private javax.swing.JComboBox<String> cboNoiSinh3;
     private javax.swing.JComboBox<Item> cboNoiSinh4;
     private javax.swing.JComboBox<Item> cboNoiSinh5;
     private javax.swing.JLabel jLabel1;

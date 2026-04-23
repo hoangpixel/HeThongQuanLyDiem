@@ -505,25 +505,22 @@ public class insertNguyenVong extends javax.swing.JDialog {
             }
             
             // 2. TÍNH ĐIỂM ĐỐI TƯỢNG (Chuẩn Bộ GD)
+            // 2. TÍNH ĐIỂM ĐỐI TƯỢNG (Chuẩn hóa theo mã số lưu từ form Thí sinh)
             double diemDoiTuong = 0.0;
             if (doiTuong != null && !doiTuong.isEmpty()) {
-                // Ép viết hoa và xóa khoảng trắng
                 switch (doiTuong.trim().toUpperCase()) {
                     // Nhóm 1: Ưu tiên 2.0 điểm
                     case "1": case "2": case "3": case "4":
                     case "ĐT1": case "ĐT2": case "ĐT3": case "ĐT4":
-                    case "DT1": case "DT2": case "DT3": case "DT4":
                         diemDoiTuong = 2.0;
                         break;
-                    
+
                     // Nhóm 2: Ưu tiên 1.0 điểm
                     case "5": case "6": case "7":
                     case "ĐT5": case "ĐT6": case "ĐT7":
-                    case "DT5": case "DT6": case "DT7":
                         diemDoiTuong = 1.0;
                         break;
-                        
-                    // Không có đối tượng
+
                     default:
                         diemDoiTuong = 0.0;
                         break;

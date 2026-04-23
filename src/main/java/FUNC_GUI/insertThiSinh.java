@@ -132,7 +132,7 @@ public class insertThiSinh extends javax.swing.JDialog {
         jLabel2 = new javax.swing.JLabel();
         txtSoBaoDanh = new javax.swing.JTextField();
         cboNoiSinh2 = new javax.swing.JComboBox<>();
-        cboNoiSinh3 = new javax.swing.JComboBox<>();
+        cboKhuVuc = new javax.swing.JComboBox<>();
         jLabel7 = new javax.swing.JLabel();
         txtPassword = new javax.swing.JTextField();
         cboNoiSinh4 = new javax.swing.JComboBox<>();
@@ -277,7 +277,7 @@ public class insertThiSinh extends javax.swing.JDialog {
                         .addGroup(javax.swing.GroupLayout.Alignment.LEADING, jPanel1Layout.createSequentialGroup()
                             .addComponent(jLabel14, javax.swing.GroupLayout.PREFERRED_SIZE, 111, javax.swing.GroupLayout.PREFERRED_SIZE)
                             .addGap(18, 18, 18)
-                            .addComponent(cboNoiSinh3, javax.swing.GroupLayout.PREFERRED_SIZE, 235, javax.swing.GroupLayout.PREFERRED_SIZE))
+                            .addComponent(cboKhuVuc, javax.swing.GroupLayout.PREFERRED_SIZE, 235, javax.swing.GroupLayout.PREFERRED_SIZE))
                         .addGroup(javax.swing.GroupLayout.Alignment.LEADING, jPanel1Layout.createSequentialGroup()
                             .addComponent(jLabel13, javax.swing.GroupLayout.PREFERRED_SIZE, 123, javax.swing.GroupLayout.PREFERRED_SIZE)
                             .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED)
@@ -341,7 +341,7 @@ public class insertThiSinh extends javax.swing.JDialog {
                     .addComponent(cboNoiSinh2, javax.swing.GroupLayout.PREFERRED_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.PREFERRED_SIZE))
                 .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.UNRELATED)
                 .addGroup(jPanel1Layout.createParallelGroup(javax.swing.GroupLayout.Alignment.BASELINE)
-                    .addComponent(cboNoiSinh3, javax.swing.GroupLayout.PREFERRED_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.PREFERRED_SIZE)
+                    .addComponent(cboKhuVuc, javax.swing.GroupLayout.PREFERRED_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.PREFERRED_SIZE)
                     .addComponent(jLabel14, javax.swing.GroupLayout.PREFERRED_SIZE, 22, javax.swing.GroupLayout.PREFERRED_SIZE))
                 .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.UNRELATED)
                 .addGroup(jPanel1Layout.createParallelGroup(javax.swing.GroupLayout.Alignment.BASELINE)
@@ -406,20 +406,23 @@ public class insertThiSinh extends javax.swing.JDialog {
         cboNoiSinh1.addItem("Nữ");
         cboNoiSinh1.addItem("Khác");
 
-        // ===== ĐỐI TƯỢNG =====
+        // ===== ĐỒI TƯỢNG (Đồng bộ với logic tính điểm Nguyện vọng) =====
         cboNoiSinh2.removeAllItems();
-        cboNoiSinh2.addItem("00 - Không ưu tiên");
-        cboNoiSinh2.addItem("01 - Dân tộc thiểu số");
-        cboNoiSinh2.addItem("02 - Con thương binh");
-        cboNoiSinh2.addItem("03 - Con liệt sĩ");
-        cboNoiSinh2.addItem("04 - Vùng khó khăn");
+        cboNoiSinh2.addItem("Không - Không ưu tiên");
+        cboNoiSinh2.addItem("ĐT1 - Người dân tộc thiểu số");
+        cboNoiSinh2.addItem("ĐT2 - Công nhân trực tiếp");
+        cboNoiSinh2.addItem("ĐT3 - Thương binh, bệnh binh");
+        cboNoiSinh2.addItem("ĐT4 - Con liệt sĩ, con thương binh");
+        cboNoiSinh2.addItem("ĐT5 - Thanh niên xung phong");
+        cboNoiSinh2.addItem("ĐT6 - Con người có công");
+        cboNoiSinh2.addItem("ĐT7 - Người khuyết tật");
 
         // ===== KHU VỰC =====
-        cboNoiSinh3.removeAllItems();
-        cboNoiSinh3.addItem("KV1");
-        cboNoiSinh3.addItem("KV2");
-        cboNoiSinh3.addItem("KV2-NT");
-        cboNoiSinh3.addItem("KV3");
+        cboKhuVuc.removeAllItems();
+        cboKhuVuc.addItem("KV1");
+        cboKhuVuc.addItem("KV2");
+        cboKhuVuc.addItem("KV2NT");
+        cboKhuVuc.addItem("KV3");
     }
     private void loadTinh() {
         new Thread(() -> {
@@ -500,8 +503,10 @@ public class insertThiSinh extends javax.swing.JDialog {
         String huyen = huyenItem.name;
         String xa = xaItem.name;
         ts.setNoiSinh(tinh + " - " + huyen + " - " + xa);
-        ts.setDoiTuong(getComboValue(cboNoiSinh2));
-        ts.setKhuVuc(getComboValue(cboNoiSinh3));
+        String doiTuongFull = getComboValue(cboNoiSinh2);
+        String maDoiTuong = doiTuongFull.split(" - ")[0].trim(); // Lấy "ĐT1" hoặc "ĐT2"
+        ts.setDoiTuong(maDoiTuong);
+        ts.setKhuVuc(getComboValue(cboKhuVuc).trim().toUpperCase());
 
         // 3. Gọi BUS để lưu xuống Database
         BUS.thiSinhXetTuyenBUS bus = new BUS.thiSinhXetTuyenBUS();
@@ -549,11 +554,11 @@ public class insertThiSinh extends javax.swing.JDialog {
     // Variables declaration - do not modify//GEN-BEGIN:variables
     private javax.swing.JButton btnThem;
     private javax.swing.JButton btnThoat;
+    private javax.swing.JComboBox<String> cboKhuVuc;
     private javax.swing.JComboBox<Item> cboNgaySinh;
     private javax.swing.JComboBox<Item> cboNoiSinh;
     private javax.swing.JComboBox<String> cboNoiSinh1;
     private javax.swing.JComboBox<String> cboNoiSinh2;
-    private javax.swing.JComboBox<String> cboNoiSinh3;
     private javax.swing.JComboBox<Item> cboNoiSinh4;
     private javax.swing.JComboBox<Item> cboNoiSinh5;
     private javax.swing.JLabel jLabel1;
