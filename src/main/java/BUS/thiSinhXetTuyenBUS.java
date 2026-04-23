@@ -55,7 +55,7 @@ public class thiSinhXetTuyenBUS {
     public String suaThiSinh(thiSinhXetTuyenETT ts) {
 
         // validate
-        String loi = validateThiSinh(ts);
+        String loi = validateSuaThiSinh(ts);
         if (loi != null) {
             return loi;
         }
@@ -302,5 +302,25 @@ public class thiSinhXetTuyenBUS {
             e.printStackTrace();
             return "Lỗi khi đọc file Excel: " + e.getMessage();
         }
+    }
+    // Thêm hàm này vào file thiSinhXetTuyenBUS.java
+    public String validateSuaThiSinh(thiSinhXetTuyenETT ts) {
+        // 1. Bỏ qua kiểm tra 12 số, chỉ cần check không để trống (nếu cần)
+        if (ts.getCccd() == null || ts.getCccd().trim().isEmpty()) {
+            return "CCCD không được để trống!";
+        }
+
+        // 2. Kiểm tra các trường khác như bình thường (Copy từ hàm validate cũ qua)
+        if (ts.getHo() == null || ts.getHo().trim().isEmpty()) return "Họ không được để trống!";
+        if (ts.getTen() == null || ts.getTen().trim().isEmpty()) return "Tên không được để trống!";
+        if (ts.getNgaySinh() == null) return "Vui lòng chọn ngày sinh!";
+
+        // Kiểm tra SĐT, Email, Password... (giữ nguyên logic cũ của ní)
+        if (ts.getDienThoai() != null && !ts.getDienThoai().isEmpty()) {
+            if (!ts.getDienThoai().matches("0\\d{9}")) return "SĐT phải 10 số và bắt đầu bằng 0!";
+        }
+        if (ts.getPassword() == null || ts.getPassword().length() < 6) return "Mật khẩu phải >= 6 ký tự!";
+
+        return null; // Mọi thứ ổn
     }
 }
