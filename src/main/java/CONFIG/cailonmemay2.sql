@@ -56715,6 +56715,8 @@ CREATE TABLE `xt_thisinhxettuyen25` (
 --
 
 INSERT INTO `xt_thisinhxettuyen25` (`idthisinh`, `cccd`, `sobaodanh`, `ho`, `ten`, `ngay_sinh`, `dien_thoai`, `password`, `gioi_tinh`, `email`, `noi_sinh`, `updated_at`, `doi_tuong`, `khu_vuc`, `dienThoai`, `doiTuong`, `gioiTinh`, `khuVuc`, `ngaySinh`, `noiSinh`, `updatedAt`) VALUES
+(1, 'TS_0001', 'SBD00001', 'TS_', '0001', '2006-10-21', '0003178747', '123456', 'Nữ', 'TS_0001@gmail.com', 'Hà Nội', NULL, NULL, 'KV2-NT', '0003178747', 'ĐT7', 'Nữ', 'KV3', '2006-10-21 00:00:00.000000', 'Hà Nội', NULL),
+(2, 'TS_0002', 'SBD00002', 'TS_', '0002', '2006-10-23', '0003178745', '123456', 'Nữ', 'TS_0002@gmail.com', 'Hà Nội', NULL, NULL, 'KV2-NT', '0003178745', 'ĐT7', 'Nữ', 'KV3', '2006-10-23 00:00:00.000000', 'Hà Nội', NULL),
 (3, 'TS_0003', 'SBD00003', 'TS_', '0003', '2006-10-02', '0003178741', '123456', 'Nữ', 'TS_0003@gmail.com', 'Hà Nội', NULL, NULL, 'KV2-NT', '0003178741', 'ĐT7', 'Nữ', 'KV3', '2006-10-02 00:00:00.000000', 'Hà Nội', NULL),
 (4, 'TS_0004', 'SBD00004', 'TS_', '0004', '2007-08-02', '0530276863', '123456', 'Nữ', 'TS_0004@gmail.com', 'Trà Vinh', NULL, NULL, 'KV2', '0530276863', 'ĐT8', 'Nữ', 'KV1', '2007-08-02 00:00:00.000000', 'Trà Vinh', NULL),
 (5, 'TS_0005', 'SBD00005', 'TS_', '0005', '2007-01-27', '0641848122', '123456', 'Nữ', 'TS_0005@gmail.com', 'Sóc Trăng', NULL, NULL, 'KV3', '0641848122', 'ĐT5', 'Nữ', 'KV3', '2007-01-27 00:00:00.000000', 'Sóc Trăng', NULL),
