@@ -41,7 +41,6 @@ public class insertNguyenVong extends javax.swing.JDialog {
     public String cccd;
     public String toHopMon;
     public String maNganh;
-    public String phuongThuc;
     public double doLechDiem = 0.0;
     private Double diemUuTienGoc = null;
     
@@ -55,7 +54,7 @@ public class insertNguyenVong extends javax.swing.JDialog {
         setLocationRelativeTo(parent);
         btnChonToHop.setEnabled(false);
         txtDiemCong.setText("0.0");
-        txtDiemTHXT.setText("0.0");
+        txtDiemTHXT_THPT.setText("0.0");
         txtDiemUuTien.setText("0.0");
         txtDoLech.setText("0.0");
     }
@@ -80,10 +79,8 @@ public class insertNguyenVong extends javax.swing.JDialog {
         jLabel4 = new javax.swing.JLabel();
         txtToHopMon = new javax.swing.JTextField();
         btnChonToHop = new javax.swing.JButton();
-        jLabel5 = new javax.swing.JLabel();
-        cboPT = new javax.swing.JComboBox<>();
         jLabel6 = new javax.swing.JLabel();
-        txtDiemTHXT = new javax.swing.JTextField();
+        txtDiemTHXT_THPT = new javax.swing.JTextField();
         jLabel7 = new javax.swing.JLabel();
         txtDiemUuTien = new javax.swing.JTextField();
         jLabel8 = new javax.swing.JLabel();
@@ -91,6 +88,12 @@ public class insertNguyenVong extends javax.swing.JDialog {
         txtThuTuNV = new javax.swing.JSpinner();
         jLabel10 = new javax.swing.JLabel();
         txtDoLech = new javax.swing.JTextField();
+        jLabel11 = new javax.swing.JLabel();
+        jLabel12 = new javax.swing.JLabel();
+        jLabel13 = new javax.swing.JLabel();
+        txtDiemTHXT_DGNL = new javax.swing.JTextField();
+        txtDiemTHXT_VSAT = new javax.swing.JTextField();
+        txtXetTuyenThang = new javax.swing.JTextField();
         jPanel2 = new javax.swing.JPanel();
         btnThoat = new javax.swing.JButton();
         btnThem = new javax.swing.JButton();
@@ -137,16 +140,11 @@ public class insertNguyenVong extends javax.swing.JDialog {
         btnChonToHop.setCursor(new java.awt.Cursor(java.awt.Cursor.HAND_CURSOR));
         btnChonToHop.addActionListener(this::btnChonToHopActionPerformed);
 
-        jLabel5.setFont(new java.awt.Font("Segoe UI", 0, 14)); // NOI18N
-        jLabel5.setText("Phương thức : ");
-
-        cboPT.setModel(new javax.swing.DefaultComboBoxModel<>(new String[] { "Xét THPT", "ĐGNL HCM", "Đánh giá V-SAT", "Xét tuyển thẳng" }));
-        cboPT.addActionListener(this::cboPTActionPerformed);
-
         jLabel6.setFont(new java.awt.Font("Segoe UI", 0, 14)); // NOI18N
-        jLabel6.setText("Điểm THXT : ");
+        jLabel6.setText("Điểm THPT : ");
 
-        txtDiemTHXT.setEditable(false);
+        txtDiemTHXT_THPT.setEditable(false);
+        txtDiemTHXT_THPT.setText("0.0");
 
         jLabel7.setFont(new java.awt.Font("Segoe UI", 0, 14)); // NOI18N
         jLabel7.setText("Điểm ưu tiên : ");
@@ -162,6 +160,24 @@ public class insertNguyenVong extends javax.swing.JDialog {
         jLabel10.setText("Độ lệch : ");
 
         txtDoLech.setEditable(false);
+
+        jLabel11.setFont(new java.awt.Font("Segoe UI", 0, 14)); // NOI18N
+        jLabel11.setText("Điểm VSAT : ");
+
+        jLabel12.setFont(new java.awt.Font("Segoe UI", 0, 14)); // NOI18N
+        jLabel12.setText("Điểm ĐGNL : ");
+
+        jLabel13.setFont(new java.awt.Font("Segoe UI", 0, 14)); // NOI18N
+        jLabel13.setText("Xét tuyển thẳng");
+
+        txtDiemTHXT_DGNL.setEditable(false);
+        txtDiemTHXT_DGNL.setText("0.0");
+
+        txtDiemTHXT_VSAT.setEditable(false);
+        txtDiemTHXT_VSAT.setText("0.0");
+
+        txtXetTuyenThang.setEditable(false);
+        txtXetTuyenThang.setText("0.0");
 
         javax.swing.GroupLayout jPanel1Layout = new javax.swing.GroupLayout(jPanel1);
         jPanel1.setLayout(jPanel1Layout);
@@ -187,21 +203,27 @@ public class insertNguyenVong extends javax.swing.JDialog {
                         .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED)
                         .addComponent(txtThuTuNV, javax.swing.GroupLayout.PREFERRED_SIZE, 80, javax.swing.GroupLayout.PREFERRED_SIZE))
                     .addGroup(jPanel1Layout.createSequentialGroup()
-                        .addGroup(jPanel1Layout.createParallelGroup(javax.swing.GroupLayout.Alignment.TRAILING, false)
-                            .addGroup(javax.swing.GroupLayout.Alignment.LEADING, jPanel1Layout.createSequentialGroup()
-                                .addComponent(jLabel5, javax.swing.GroupLayout.PREFERRED_SIZE, 123, javax.swing.GroupLayout.PREFERRED_SIZE)
-                                .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED)
-                                .addComponent(cboPT, 0, javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE))
-                            .addGroup(javax.swing.GroupLayout.Alignment.LEADING, jPanel1Layout.createSequentialGroup()
-                                .addComponent(jLabel4, javax.swing.GroupLayout.PREFERRED_SIZE, 123, javax.swing.GroupLayout.PREFERRED_SIZE)
-                                .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED)
-                                .addComponent(txtToHopMon, javax.swing.GroupLayout.PREFERRED_SIZE, 188, javax.swing.GroupLayout.PREFERRED_SIZE)))
+                        .addComponent(jLabel4, javax.swing.GroupLayout.PREFERRED_SIZE, 123, javax.swing.GroupLayout.PREFERRED_SIZE)
+                        .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED)
+                        .addComponent(txtToHopMon, javax.swing.GroupLayout.PREFERRED_SIZE, 188, javax.swing.GroupLayout.PREFERRED_SIZE)
                         .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED)
                         .addComponent(btnChonToHop, javax.swing.GroupLayout.PREFERRED_SIZE, 40, javax.swing.GroupLayout.PREFERRED_SIZE))
                     .addGroup(jPanel1Layout.createSequentialGroup()
+                        .addComponent(jLabel12, javax.swing.GroupLayout.PREFERRED_SIZE, 123, javax.swing.GroupLayout.PREFERRED_SIZE)
+                        .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED)
+                        .addComponent(txtDiemTHXT_DGNL, javax.swing.GroupLayout.PREFERRED_SIZE, 188, javax.swing.GroupLayout.PREFERRED_SIZE))
+                    .addGroup(jPanel1Layout.createSequentialGroup()
+                        .addComponent(jLabel13, javax.swing.GroupLayout.PREFERRED_SIZE, 123, javax.swing.GroupLayout.PREFERRED_SIZE)
+                        .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED)
+                        .addComponent(txtXetTuyenThang, javax.swing.GroupLayout.PREFERRED_SIZE, 188, javax.swing.GroupLayout.PREFERRED_SIZE))
+                    .addGroup(jPanel1Layout.createSequentialGroup()
+                        .addComponent(jLabel11, javax.swing.GroupLayout.PREFERRED_SIZE, 123, javax.swing.GroupLayout.PREFERRED_SIZE)
+                        .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED)
+                        .addComponent(txtDiemTHXT_VSAT, javax.swing.GroupLayout.PREFERRED_SIZE, 188, javax.swing.GroupLayout.PREFERRED_SIZE))
+                    .addGroup(jPanel1Layout.createSequentialGroup()
                         .addComponent(jLabel6, javax.swing.GroupLayout.PREFERRED_SIZE, 123, javax.swing.GroupLayout.PREFERRED_SIZE)
                         .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED)
-                        .addComponent(txtDiemTHXT, javax.swing.GroupLayout.PREFERRED_SIZE, 188, javax.swing.GroupLayout.PREFERRED_SIZE))
+                        .addComponent(txtDiemTHXT_THPT, javax.swing.GroupLayout.PREFERRED_SIZE, 188, javax.swing.GroupLayout.PREFERRED_SIZE))
                     .addGroup(jPanel1Layout.createSequentialGroup()
                         .addComponent(jLabel7, javax.swing.GroupLayout.PREFERRED_SIZE, 123, javax.swing.GroupLayout.PREFERRED_SIZE)
                         .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED)
@@ -240,12 +262,20 @@ public class insertNguyenVong extends javax.swing.JDialog {
                     .addComponent(btnChonToHop))
                 .addGap(18, 18, 18)
                 .addGroup(jPanel1Layout.createParallelGroup(javax.swing.GroupLayout.Alignment.BASELINE)
-                    .addComponent(jLabel5)
-                    .addComponent(cboPT, javax.swing.GroupLayout.PREFERRED_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.PREFERRED_SIZE))
+                    .addComponent(jLabel6)
+                    .addComponent(txtDiemTHXT_THPT, javax.swing.GroupLayout.PREFERRED_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.PREFERRED_SIZE))
                 .addGap(18, 18, 18)
                 .addGroup(jPanel1Layout.createParallelGroup(javax.swing.GroupLayout.Alignment.BASELINE)
-                    .addComponent(jLabel6)
-                    .addComponent(txtDiemTHXT, javax.swing.GroupLayout.PREFERRED_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.PREFERRED_SIZE))
+                    .addComponent(jLabel11)
+                    .addComponent(txtDiemTHXT_VSAT, javax.swing.GroupLayout.PREFERRED_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.PREFERRED_SIZE))
+                .addGap(18, 18, 18)
+                .addGroup(jPanel1Layout.createParallelGroup(javax.swing.GroupLayout.Alignment.BASELINE)
+                    .addComponent(jLabel12)
+                    .addComponent(txtDiemTHXT_DGNL, javax.swing.GroupLayout.PREFERRED_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.PREFERRED_SIZE))
+                .addGap(18, 18, 18)
+                .addGroup(jPanel1Layout.createParallelGroup(javax.swing.GroupLayout.Alignment.BASELINE)
+                    .addComponent(jLabel13)
+                    .addComponent(txtXetTuyenThang, javax.swing.GroupLayout.PREFERRED_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.PREFERRED_SIZE))
                 .addGap(18, 18, 18)
                 .addGroup(jPanel1Layout.createParallelGroup(javax.swing.GroupLayout.Alignment.BASELINE)
                     .addComponent(jLabel7)
@@ -258,7 +288,7 @@ public class insertNguyenVong extends javax.swing.JDialog {
                 .addGroup(jPanel1Layout.createParallelGroup(javax.swing.GroupLayout.Alignment.BASELINE)
                     .addComponent(jLabel10)
                     .addComponent(txtDoLech, javax.swing.GroupLayout.PREFERRED_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.PREFERRED_SIZE))
-                .addContainerGap(22, Short.MAX_VALUE))
+                .addContainerGap(16, Short.MAX_VALUE))
         );
 
         jLabel1.getAccessibleContext().setAccessibleName("asd");
@@ -342,7 +372,7 @@ public class insertNguyenVong extends javax.swing.JDialog {
                 .addComponent(jPanel1, javax.swing.GroupLayout.PREFERRED_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.PREFERRED_SIZE)
                 .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED)
                 .addComponent(jPanel2, javax.swing.GroupLayout.PREFERRED_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.PREFERRED_SIZE)
-                .addContainerGap())
+                .addContainerGap(javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE))
         );
 
         pack();
@@ -356,109 +386,127 @@ public class insertNguyenVong extends javax.swing.JDialog {
 
     private void btnThemActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_btnThemActionPerformed
         // TODO add your handling code here:
-        if(!kiemTraHopLe()) 
-        {
+// 1. Kiểm tra tính hợp lệ cơ bản
+        if (!kiemTraHopLe()) {
             return;
         }
-        
+
         int thuTuNV = (int) txtThuTuNV.getValue();
-        double diemTHXT = Double.valueOf(txtDiemTHXT.getText().trim());
         double diemCong = Double.valueOf(txtDiemCong.getText().trim()); 
-        
-        // Lấy Điểm Ưu Tiên GỐC từ biến lưu trong RAM (Ví dụ: 2.5)
         double diemUTQDGoc = (this.diemUuTienGoc != null) ? this.diemUuTienGoc : 0.0;
-        
         String ketQuaNV = "Chờ xét";
-        String key = cccd + "_" + thuTuNV;
-        String phuongThuc = cboPT.getSelectedItem().toString();
         
-        double diemXetTuyen = 0.0;
+        // 2. Lấy danh sách điểm từ 4 TextBox giao diện mới
+        double diemTHPT = 0.0;
+        double diemVSAT = 0.0;
+        double diemDGNL = 0.0;
+        double diemTuyenThang = 0.0;
         
-        if (phuongThuc.equals("Xét tuyển thẳng")) 
-        {
-            BUS.giaiThuongBUS gtBus = new BUS.giaiThuongBUS();
-            BUS.quyTacGiaiThuongBUS qtBus = new BUS.quyTacGiaiThuongBUS();
-            qtBus.loadQuyTac(); 
-            
-            String[] ttGiai = gtBus.layCapVaLoaiGiai(cccd);
-            Entity.quyTacGiaiThuongETT quyTac = null;
-            
-            if (ttGiai != null && ttGiai.length >= 2 && ttGiai[0] != null) {
-                quyTac = qtBus.layQuyTac(ttGiai[0], ttGiai[1]);
-            }
-            
-            if (quyTac != null && quyTac.getXetTuyenThang() == 1) {
-                diemXetTuyen = 30.0;
-            } else 
-            {
-                JOptionPane.showMessageDialog(this, 
-                    "Từ chối hồ sơ!\nThí sinh này KHÔNG có giải thưởng hợp lệ để được Xét tuyển thẳng.\nVui lòng chọn phương thức khác.", 
-                    "Cảnh báo gian lận", 
-                    JOptionPane.ERROR_MESSAGE);
-                return;
-            }
-            
-        } else {
-            // NHÁNH BÌNH THƯỜNG (Xét THPT, V-SAT, ĐGNL)
-            nganhToHopBUS busNganhToHop = new nganhToHopBUS();
-            double doLechDiem = 0.0;
-            if (phuongThuc.equals("Xét THPT") || phuongThuc.equals("Đánh giá V-SAT")) {
-                doLechDiem = busNganhToHop.layDoLechDiem(maNganh, toHopMon);
-            }
-            
-            // 🚨 LUẬT 1: CHỐT CHẶN ĐIỂM CỘNG MAX 3.0 (Phòng hờ người dùng nhập bậy)
-            if (diemCong > 3.0) {
-                diemCong = 3.0;
-            }
-            
-            // 🚨 LUẬT 2: ĐIỂM ƯU TIÊN (KHU VỰC/ĐỐI TƯỢNG) HOẠT ĐỘNG ĐỘC LẬP
-            double diemUuTienThucTe = diemUTQDGoc; 
-            double diemXetMoc = diemTHXT + diemCong;        
-            
-            // 🚨 LUẬT 3: TÍNH TOÁN BÓP ĐIỂM CỦA BỘ GD TỪ 22.5 TRỞ LÊN
-            if (diemXetMoc >= 22.5) {
-                diemUuTienThucTe = ((30.0 - diemTHXT - diemCong) / 7.5) * diemUTQDGoc;
-                if (diemUuTienThucTe < 0) diemUuTienThucTe = 0.0;
+        try {
+            diemTHPT = Double.valueOf(txtDiemTHXT_THPT.getText().trim());
+            diemVSAT = Double.valueOf(txtDiemTHXT_VSAT.getText().trim());
+            diemDGNL = Double.valueOf(txtDiemTHXT_DGNL.getText().trim());
+            diemTuyenThang = Double.valueOf(txtXetTuyenThang.getText().trim());
+        } catch (NumberFormatException e) {
+            JOptionPane.showMessageDialog(this, "Điểm phải là số thực!", "Lỗi định dạng", JOptionPane.ERROR_MESSAGE);
+            return;
+        }
+
+        boolean coLuuThanhCongItNhat1NV = false;
+        boolean loiLuuDB = false;
+
+        // =====================================================================
+        // 🔥 VÒNG LẶP CHÉM: QUÉT 4 PHƯƠNG THỨC VÀ LƯU XUỐNG DB
+        // =====================================================================
+        
+        // Tạo mảng để loop cho gọn
+        String[] cacPhuongThuc = {"Xét THPT", "Đánh giá V-SAT", "ĐGNL HCM", "Xét tuyển thẳng"};
+        double[] cacDiemTHXT = {diemTHPT, diemVSAT, diemDGNL, diemTuyenThang};
+
+        for (int i = 0; i < cacPhuongThuc.length; i++) {
+            String ptHienTai = cacPhuongThuc[i];
+            double thxtHienTai = cacDiemTHXT[i];
+
+            // 🚀 BỎ QUA NẾU ĐIỂM = 0 (Thí sinh không thi phương thức này)
+            if (thxtHienTai <= 0.0) {
+                continue; 
             }
 
-            diemXetTuyen = diemTHXT + diemUuTienThucTe + diemCong + doLechDiem;
-            diemXetTuyen = Math.min(30.0, diemXetTuyen); 
-        }
-        diemXetTuyen = Math.round(diemXetTuyen * 100.0) / 100.0;
-        
-        nguyenVongXetTuyenETT ct = new nguyenVongXetTuyenETT();
-        ct.setNnCccd(cccd);
-        ct.setNvMaNganh(maNganh);
-        ct.setNvTt(thuTuNV);
-        ct.setDiemThxt(diemTHXT);
-        
-        // Nếu trường bắt phải lưu điểm đã bóp, thì Boss đổi dòng này thành: ct.setDiemUtqd(diemUuTienThucTe);
-        ct.setDiemUtqd(diemUTQDGoc); 
-        
-        ct.setDiemCong(diemCong);
-        ct.setDiemXetTuyen(diemXetTuyen); 
-        ct.setNvKetQua(ketQuaNV);
-        ct.setNvKeys(key);
-        ct.setTtPhuongThuc(phuongThuc);
-        ct.setTtThm(toHopMon);
-        
-        if(!kiemTraTrungNguyenVong(cccd, thuTuNV, maNganh, phuongThuc, toHopMon)) {
-            return;
-        }
-        
-        if(phuongThuc.equals("Xét THPT") && diemTHXT > 30)
-        {
-            JOptionPane.showMessageDialog(this, "Điểm THTP chỉ tối đa 30");
-            return;
-        }
-        
-        if(bus.themNguyenVong(ct)) {
+            // TÍNH TOÁN ĐIỂM ƯU TIÊN VÀ TỔNG ĐIỂM CHO TỪNG PHƯƠNG THỨC
+            double diemXetTuyenThucTe = 0.0;
+            double diemUuTienThucTe = diemUTQDGoc;
+            
+            if (ptHienTai.equals("Xét tuyển thẳng")) {
+                // Tuyển thẳng thì auto 30đ, không cần cộng ưu tiên
+                diemXetTuyenThucTe = 30.0;
+                diemUuTienThucTe = 0.0; // Gán 0 để lưu DB cho rõ ràng
+                
+            } else {
+                // NHÁNH BÌNH THƯỜNG (Xét THPT, V-SAT, ĐGNL)
+                nganhToHopBUS busNganhToHop = new nganhToHopBUS();
+                double doLechDiem = 0.0;
+                
+                // ĐGNL không có độ lệch
+                if (ptHienTai.equals("Xét THPT") || ptHienTai.equals("Đánh giá V-SAT")) {
+                    doLechDiem = busNganhToHop.layDoLechDiem(maNganh, toHopMon);
+                }
+                
+                if (diemCong > 3.0) diemCong = 3.0;
+                
+                double diemXetMoc = thxtHienTai + diemCong;        
+                
+                if (diemXetMoc >= 22.5) {
+                    diemUuTienThucTe = ((30.0 - thxtHienTai - diemCong) / 7.5) * diemUTQDGoc;
+                    if (diemUuTienThucTe < 0) diemUuTienThucTe = 0.0;
+                }
+
+                diemXetTuyenThucTe = thxtHienTai + diemUuTienThucTe + diemCong + doLechDiem;
+                diemXetTuyenThucTe = Math.min(30.0, diemXetTuyenThucTe); 
+            }
+            
+            // Làm tròn
+            diemXetTuyenThucTe = Math.round(diemXetTuyenThucTe * 100.0) / 100.0;
+
+            // KIỂM TRA TRÙNG (Chỉ chặn cái đang xét, không chặn nguyên hàm)
+            if(!kiemTraTrungNguyenVong(cccd, thuTuNV, maNganh, ptHienTai, toHopMon)) {
+                continue; // Lỡ trùng thì bỏ qua nhánh này, xét tiếp phương thức sau
+            }
+
+            // ĐÓNG GÓI VÀ LƯU XUỐNG DB
+            nguyenVongXetTuyenETT ct = new nguyenVongXetTuyenETT();
+            ct.setNnCccd(cccd);
+            ct.setNvMaNganh(maNganh);
+            ct.setNvTt(thuTuNV);
+            ct.setDiemThxt(thxtHienTai);
+            ct.setDiemUtqd(diemUTQDGoc); 
+            ct.setDiemCong(diemCong);
+            ct.setDiemXetTuyen(diemXetTuyenThucTe); 
+            ct.setNvKetQua(ketQuaNV);
+            // 💡 SỬA KEY: Ghép thêm tên Phương thức để khóa chính không bị trùng
+            ct.setNvKeys(cccd + "_" + thuTuNV + "_" + ptHienTai); 
+            ct.setTtPhuongThuc(ptHienTai);
+            ct.setTtThm(ptHienTai.equals("Xét tuyển thẳng") ? "Không" : toHopMon);
+            
+            if(bus.themNguyenVong(ct)) {
+                coLuuThanhCongItNhat1NV = true;
+                // Nếu cần trả về 1 thằng đại diện cho form cũ thì gán (Thường form này sẽ đóng luôn)
+                nguyenVong = ct; 
+            } else {
+                loiLuuDB = true;
+            }
+        } // Hết vòng lặp for
+
+        // 3. TỔNG KẾT SAU KHI QUÉT 4 PHƯƠNG THỨC
+        if (coLuuThanhCongItNhat1NV && !loiLuuDB) {
             xacNhan = true;
-            JOptionPane.showMessageDialog(this, "Thêm nguyện vọng thành công");
-            nguyenVong = ct;
+            JOptionPane.showMessageDialog(this, "Đã thêm tự động các nguyện vọng hợp lệ thành công!");
             dispose();
+        } else if (coLuuThanhCongItNhat1NV && loiLuuDB) {
+             xacNhan = true;
+             JOptionPane.showMessageDialog(this, "Hoàn tất! Nhưng có một số phương thức bị lỗi khi lưu Database.", "Cảnh báo", JOptionPane.WARNING_MESSAGE);
+             dispose();
         } else {
-            JOptionPane.showMessageDialog(this, "Thêm nguyện vọng thất bại");
+             JOptionPane.showMessageDialog(this, "Không có phương thức nào đủ điều kiện hoặc bị lỗi lưu trữ!", "Lỗi", JOptionPane.ERROR_MESSAGE);
         }
     }//GEN-LAST:event_btnThemActionPerformed
 
@@ -549,93 +597,26 @@ public class insertNguyenVong extends javax.swing.JDialog {
             toHopMon = toHopMonDaChon.getMatohop();
             txtToHopMon.setText(toHopMonDaChon.getMatohop());
             
-            phuongThuc = cboPT.getSelectedItem().toString();
-            nganhToHopBUS busNganhToHop = new nganhToHopBUS();
-            
-            // 🔥 SỬA LỖI 1: Gộp chung Xét THPT và V-SAT để móc độ lệch từ DB lên
-            if(phuongThuc.equals("Xét THPT") || phuongThuc.equals("Đánh giá V-SAT")) {
-                doLechDiem = busNganhToHop.layDoLechDiem(maNganh, toHopMon);
-                txtDoLech.setText(String.valueOf(doLechDiem));
-            } 
-            // 🔥 SỬA LỖI 2: Nếu là ĐGNL, ép thẳng Độ lệch trên màn hình về 0.0 cho khỏi hoang mang
-            else if (phuongThuc.equals("ĐGNL HCM")) {
-                doLechDiem = 0.0;
-                txtDoLech.setText("0.0");
-            }
-            
-            // Chuyển hàm này xuống DƯỚI CÙNG để nó tính điểm sau khi đã in Độ Lệch xong xuôi
+            // Xóa sạch mấy cái check phuongThuc cũ đi, 
+            // giao hết nhiệm vụ tính toán cho hàm này lo!
             capNhatDiemTuDong(); 
         }
     }//GEN-LAST:event_btnChonToHopActionPerformed
-
-    private void cboPTActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_cboPTActionPerformed
-// Lỡ combo box chưa có dữ liệu thì thoát luôn để khỏi lỗi
-        if (cboPT.getSelectedItem() == null) return;
-        
-        String phuongThuc = cboPT.getSelectedItem().toString();
-        
-        if (phuongThuc.equals("Xét tuyển thẳng")) {
-            // Tuyển thẳng thì auto 30đ, khóa nút chọn tổ hợp
-            txtDiemTHXT.setText("30.0");
-            
-            // 💡 GHI CHÚ: Nếu trên form ông có thêm ô "Tổng Điểm Xét Tuyển" (txtDiemXetTuyen) 
-            // thì nhớ thêm 1 dòng setText("30.0") cho nó luôn ở đây nha!
-            
-            btnChonToHop.setEnabled(false);
-            txtToHopMon.setText("Không");
-            toHopMon = "Không";
-            txtDoLech.setText("0.0");
-            
-            // 🔥 BÍ QUYẾT: KHÔNG GỌI capNhatDiemTuDong() ở nhánh này!
-            // Để nó giữ nguyên con số 30.0 không bị ghi đè.
-        } 
-        else if (phuongThuc.equals("Xét THPT") || phuongThuc.equals("Đánh giá V-SAT") || phuongThuc.equals("ĐGNL HCM")) {
-            btnChonToHop.setEnabled(true);
-            
-            // Xóa chữ "Không" nếu trước đó người ta lỡ chọn Tuyển Thẳng
-            if (txtToHopMon.getText().equals("Không")) {
-                txtToHopMon.setText("");
-                toHopMon = "";
-                txtDoLech.setText("0.0");
-                
-                // 🔥 NHƯ BOSS MUỐN: Reset ô điểm về 0.0 khi đổi phương thức để tính lại từ đầu
-                txtDiemTHXT.setText("0.0"); 
-            }
-            
-            // Các phương thức này thì CẦN gọi hàm tính điểm tự động
-            capNhatDiemTuDong();
-        } 
-        else {
-            // Đuôi else này để phòng hờ sau này trường ông đẻ thêm phương thức lạ
-            btnChonToHop.setEnabled(false);
-            txtToHopMon.setText("Không");
-            toHopMon = "Không";
-            txtDoLech.setText("0.0");
-            
-            // Reset về 0.0 luôn
-            txtDiemTHXT.setText("0.0"); 
-        }
-    }//GEN-LAST:event_cboPTActionPerformed
 
     private void btnChonMaNganhActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_btnChonMaNganhActionPerformed
         // TODO add your handling code here:
         JFrame topFrame = (JFrame) SwingUtilities.getWindowAncestor(this);
         selectNganh dialog = new selectNganh(topFrame, true);
         dialog.setVisible(true);
+        
         if(dialog.getXacNhan())
         {
             nganhETT nganh = dialog.getNganh();
             maNganh = nganh.getManganh();
             txtMaNganh.setText(maNganh);
-            capNhatDiemTuDong();
             
-            phuongThuc = cboPT.getSelectedItem().toString();
-            nganhToHopBUS busNganhToHop = new nganhToHopBUS();
-            if(phuongThuc.equals("Xét THPT"))
-            {
-                doLechDiem = busNganhToHop.layDoLechDiem(maNganh, toHopMon);
-                txtDoLech.setText(String.valueOf(doLechDiem));
-            }
+            // Tương tự, gọi 1 dòng này là đủ sức "cân" hết 4 phương thức!
+            capNhatDiemTuDong();
         }
     }//GEN-LAST:event_btnChonMaNganhActionPerformed
 
@@ -645,154 +626,173 @@ public class insertNguyenVong extends javax.swing.JDialog {
 
 public void capNhatDiemTuDong() {
         if (cccd == null || cccd.trim().isEmpty()) return;
-        if (cboPT.getSelectedItem() == null) return;
+        
+        // 💡 Bỏ cái lệnh check cboPT đi vì mình không xài nó nữa
+        // if (cboPT.getSelectedItem() == null) return; 
 
         String maNganh = txtMaNganh.getText().trim();
-        String phuongThuc = cboPT.getSelectedItem().toString();
+        
+        // Khởi tạo các biến để hứng kết quả
+        double diemTHXT_THPT = 0.0;
+        double diemTHXT_VSAT = 0.0;
+        double diemTHXT_DGNL = 0.0;
+        double diemTuyenThang = 0.0;
+        
+        double diemCongIELTS = 0.0;
+        double diemCongGiaiThuong = 0.0;
+        
+        double doLechDiem = 0.0;
         
         try {
-            double diemCongIELTS = 0.0;
-            double diemCongGiaiThuong = 0.0;
-            double diemGoc = 0.0;
+            // =========================================================
+            // 🔥 1. XÉT TUYỂN THẲNG (Check Giải Thưởng)
+            // =========================================================
+            BUS.giaiThuongBUS gtBus = new BUS.giaiThuongBUS();
+            BUS.quyTacGiaiThuongBUS qtBus = new BUS.quyTacGiaiThuongBUS();
+            qtBus.loadQuyTac(); 
+            
+            String[] ttGiai = gtBus.layCapVaLoaiGiai(cccd);
+            Entity.quyTacGiaiThuongETT quyTac = null;
+            
+            if (ttGiai != null && ttGiai.length >= 2 && ttGiai[0] != null) {
+                quyTac = qtBus.layQuyTac(ttGiai[0], ttGiai[1]);
+            }
+            
+            if (quyTac != null && quyTac.getXetTuyenThang() == 1) {
+                diemTuyenThang = 30.0; 
+                txtXetTuyenThang.setText("30.0");
+                txtXetTuyenThang.setForeground(new java.awt.Color(46, 204, 113)); // Xanh lá cho rực rỡ
+            } else {
+                diemTuyenThang = 0.0;  
+                txtXetTuyenThang.setText("0.0");
+                txtXetTuyenThang.setForeground(new java.awt.Color(231, 76, 60)); // Đỏ mờ
+            }
 
             // =========================================================
-            // 🔥 NHÁNH 1: XÉT TUYỂN THẲNG
+            // 🔥 2. CÁC PHƯƠNG THỨC XÉT BẰNG ĐIỂM THI
             // =========================================================
-            if (phuongThuc.equals("Xét tuyển thẳng")) {
-                BUS.giaiThuongBUS gtBus = new BUS.giaiThuongBUS();
-                BUS.quyTacGiaiThuongBUS qtBus = new BUS.quyTacGiaiThuongBUS();
-                qtBus.loadQuyTac(); 
+            diemThiBUS dtBus = new diemThiBUS();
+            diemThiETT diemThi = dtBus.layDiemTheoCCCD(cccd);
+
+            if (diemThi != null && toHopMonDaChon != null) { 
                 
-                String[] ttGiai = gtBus.layCapVaLoaiGiai(cccd);
-                Entity.quyTacGiaiThuongETT quyTac = qtBus.layQuyTac(ttGiai[0], ttGiai[1]);
+                String mon1 = toHopMonDaChon.getMon1(); 
+                String mon2 = toHopMonDaChon.getMon2();
+                String mon3 = toHopMonDaChon.getMon3();
+
+                bangQuyDoiDAO qdDao = new DAO.bangQuyDoiDAO();
+                ArrayList<Entity.bangQuyDoiETT> dsQuyDoi = qdDao.layDanhSach();
                 
-                if (quyTac != null && quyTac.getXetTuyenThang() == 1) {
-                    diemGoc = 30.0; 
-                } else {
-                    diemGoc = 0.0;  
+                // --- LẤY ĐIỂM GỐC ---
+                double diem1_goc = layDiemTheoMaMon(diemThi, mon1);
+                double diem2_goc = layDiemTheoMaMon(diemThi, mon2);
+                double diem3_goc = layDiemTheoMaMon(diemThi, mon3);
+                
+                // Dò IELTS (Để lấy điểm quy đổi bù vô nếu môn N1 bị 0)
+                chungChiBUS ccBus = new chungChiBUS();
+                double[] ielts = ccBus.layDiemIELTS(cccd);
+                double diemQuyDoiIelts = ielts[0];
+                diemCongIELTS = ielts[1];
+
+                // 🚀 BÙ ĐIỂM TIẾNG ANH (NẾU CÓ CHỨNG CHỈ CAO HƠN ĐIỂM THI) TRƯỚC KHI TÍNH CHO CẢ THPT & VSAT
+                if ("N1".equals(mon1)) diem1_goc = Math.max(diem1_goc, diemQuyDoiIelts);
+                if ("N1".equals(mon2)) diem2_goc = Math.max(diem2_goc, diemQuyDoiIelts);
+                if ("N1".equals(mon3)) diem3_goc = Math.max(diem3_goc, diemQuyDoiIelts);
+
+                // --- DÒ HỆ SỐ MÔN ---
+                double w1 = 1.0, w2 = 1.0, w3 = 1.0; 
+                if (!maNganh.isEmpty()) {
+                    nganhToHopBUS nthBus = new nganhToHopBUS();
+                    doLechDiem = nthBus.layDoLechDiem(maNganh, toHopMonDaChon.getMatohop());
+                    double[] heSo = nthBus.layHeSoMon(maNganh, toHopMonDaChon.getMatohop()); 
+                    w1 = heSo[0]; w2 = heSo[1]; w3 = heSo[2];
                 }
-            } 
-            // =========================================================
-            // 🔥 NHÁNH 2: CÁC PHƯƠNG THỨC CẦN ĐIỂM THI
-            // =========================================================
-            else {
-                diemThiBUS dtBus = new diemThiBUS();
-                diemThiETT diemThi = dtBus.layDiemTheoCCCD(cccd);
+                double W = w1 + w2 + w3;
 
-                if (diemThi != null) { 
+                // --- DÒ ĐIỂM CỘNG (GIẢI THƯỞNG) ---
+                Object[] gtData = gtBus.layGiaiThuong(cccd);
+                if (gtData != null) {
+                    String maMonGiai = (String) gtData[0];
+                    double diemCoMon = gtData[1] == null ? 0.0 : ((Number) gtData[1]).doubleValue();
+                    double diemKhongMon = gtData[2] == null ? 0.0 : ((Number) gtData[2]).doubleValue();
                     
-                    if ((phuongThuc.equals("Xét THPT") || phuongThuc.equals("Đánh giá V-SAT")) && toHopMonDaChon != null) {
-                        String mon1 = toHopMonDaChon.getMon1(); 
-                        String mon2 = toHopMonDaChon.getMon2();
-                        String mon3 = toHopMonDaChon.getMon3();
-
-                        bangQuyDoiDAO qdDao = new DAO.bangQuyDoiDAO();
-                        ArrayList<Entity.bangQuyDoiETT> dsQuyDoi = qdDao.layDanhSach();
-                        
-                        double diem1 = layDiemTheoMaMon(diemThi, mon1);
-                        double diem2 = layDiemTheoMaMon(diemThi, mon2);
-                        double diem3 = layDiemTheoMaMon(diemThi, mon3);
-                        
-                        // QUY ĐỔI V-SAT SANG THANG 10
-                        if (phuongThuc.equals("Đánh giá V-SAT")) {
-                            diem1 = CAL.AdmissionsConverter.quyDoiDiemChung(phuongThuc, toHopMonDaChon.getMatohop(), mon1, diem1, dsQuyDoi);
-                            diem2 = CAL.AdmissionsConverter.quyDoiDiemChung(phuongThuc, toHopMonDaChon.getMatohop(), mon2, diem2, dsQuyDoi);
-                            diem3 = CAL.AdmissionsConverter.quyDoiDiemChung(phuongThuc, toHopMonDaChon.getMatohop(), mon3, diem3, dsQuyDoi);
-                        }
-                        
-                        double w1 = 1.0, w2 = 1.0, w3 = 1.0; 
-
-                        if (!maNganh.isEmpty()) {
-                            nganhToHopBUS nthBus = new nganhToHopBUS();
-                            double[] heSo = nthBus.layHeSoMon(maNganh, toHopMonDaChon.getMatohop()); 
-                            w1 = heSo[0]; w2 = heSo[1]; w3 = heSo[2];
-                        }
-
-                        // Dò IELTS
-                        chungChiBUS ccBus = new chungChiBUS();
-                        double[] ielts = ccBus.layDiemIELTS(cccd);
-                        double diemQuyDoi = ielts[0];
-                        diemCongIELTS = ielts[1];
-                        
-                        boolean coTiengAnh = "N1".equals(mon1) || "N1".equals(mon2) || "N1".equals(mon3);
-
-                        if (coTiengAnh) {
-                            if ("N1".equals(mon1)) diem1 = Math.max(diem1, diemQuyDoi);
-                            if ("N1".equals(mon2)) diem2 = Math.max(diem2, diemQuyDoi);
-                            if ("N1".equals(mon3)) diem3 = Math.max(diem3, diemQuyDoi);
-                            diemCongIELTS = 0.0; // Reset
-                        } 
-
-                        // Dò Giải Thưởng cộng điểm
-                        giaiThuongBUS gtBus = new giaiThuongBUS();
-                        Object[] gtData = gtBus.layGiaiThuong(cccd);
-                        if (gtData != null) {
-                            String maMonGiai = (String) gtData[0];
-                            double diemCoMon = gtData[1] == null ? 0.0 : ((Number) gtData[1]).doubleValue();
-                            double diemKhongMon = gtData[2] == null ? 0.0 : ((Number) gtData[2]).doubleValue();
-                            
-                            if (maMonGiai.equals(mon1) || maMonGiai.equals(mon2) || maMonGiai.equals(mon3)) {
-                                diemCongGiaiThuong = diemCoMon; 
-                            } else {
-                                diemCongGiaiThuong = diemKhongMon; 
-                            }
-                        }
-
-                        // TÍNH ĐIỂM GỐC
-                        double W = w1 + w2 + w3;
-                        if (W > 0) {
-                            diemGoc = ((diem1 * w1 + diem2 * w2 + diem3 * w3) / W) * 3.0;
-                        }
-                        diemGoc = Math.round(diemGoc * 100.0) / 100.0;
-                    } 
-                    else if (phuongThuc.equals("ĐGNL HCM")) {
-                        if (toHopMonDaChon != null) {
-                            bangQuyDoiDAO qdDao = new DAO.bangQuyDoiDAO();
-                            ArrayList<Entity.bangQuyDoiETT> dsQuyDoi = qdDao.layDanhSach();
-                            double diemDgnlGoc = diemThi.getNl1() != null ? diemThi.getNl1() : 0.0;
-                            diemGoc = CAL.AdmissionsConverter.quyDoiDiemChung(phuongThuc, toHopMonDaChon.getMatohop(), "", diemDgnlGoc, dsQuyDoi);
-                        } else {
-                            diemGoc = 0.0;
-                        }
+                    if (maMonGiai.equals(mon1) || maMonGiai.equals(mon2) || maMonGiai.equals(mon3)) {
+                        diemCongGiaiThuong = diemCoMon; 
+                    } else {
+                        diemCongGiaiThuong = diemKhongMon; 
                     }
                 }
+
+                // ----------------------------------------------------
+                // 🎯 2.1. TÍNH ĐIỂM XÉT THPT (Hệ 30)
+                // ----------------------------------------------------
+                // Khúc này không cần so kèo lại nữa vì tui đã bù ở trên rồi
+                double d1_thpt = diem1_goc; double d2_thpt = diem2_goc; double d3_thpt = diem3_goc;
+
+                if (d1_thpt > 10.0 || d2_thpt > 10.0 || d3_thpt > 10.0) 
+                {
+                    diemTHXT_THPT = 0.0;
+                } else {
+                    // Trót lọt qua cửa kiểm duyệt thì mới cho tính công thức
+                    if (W > 0) 
+                    {
+                        diemTHXT_THPT = ((d1_thpt * w1 + d2_thpt * w2 + d3_thpt * w3) / W) * 3.0;
+                        diemTHXT_THPT = Math.round(diemTHXT_THPT * 100.0) / 100.0;
+                    }
+                }
+
+                // ----------------------------------------------------
+                // 🎯 2.2. TÍNH ĐIỂM ĐÁNH GIÁ V-SAT (Hệ 150 -> Hệ 10 -> Hệ 30)
+                // ----------------------------------------------------
+                // VSAT cũng sẽ được hưởng ké cái điểm Anh Văn quy đổi từ IELTS luôn
+                double d1_vsat = CAL.AdmissionsConverter.quyDoiDiemChung("Đánh giá V-SAT", toHopMonDaChon.getMatohop(), mon1, diem1_goc, dsQuyDoi);
+                double d2_vsat = CAL.AdmissionsConverter.quyDoiDiemChung("Đánh giá V-SAT", toHopMonDaChon.getMatohop(), mon2, diem2_goc, dsQuyDoi);
+                double d3_vsat = CAL.AdmissionsConverter.quyDoiDiemChung("Đánh giá V-SAT", toHopMonDaChon.getMatohop(), mon3, diem3_goc, dsQuyDoi);
+                
+                if (W > 0) {
+                    diemTHXT_VSAT = ((d1_vsat * w1 + d2_vsat * w2 + d3_vsat * w3) / W) * 3.0;
+                    diemTHXT_VSAT = Math.round(diemTHXT_VSAT * 100.0) / 100.0;
+                }
+
+                // ----------------------------------------------------
+                // 🎯 2.3. TÍNH ĐIỂM ĐGNL HCM (Hệ 1200 -> Hệ 30)
+                // ----------------------------------------------------
+                double diemDgnlGoc = diemThi.getNl1() != null ? diemThi.getNl1() : 0.0;
+                if (diemDgnlGoc > 0) {
+                    diemTHXT_DGNL = CAL.AdmissionsConverter.quyDoiDiemChung("ĐGNL HCM", toHopMonDaChon.getMatohop(), "", diemDgnlGoc, dsQuyDoi);
+                    diemTHXT_DGNL = Math.round(diemTHXT_DGNL * 100.0) / 100.0;
+                }
             }
 
             // =========================================================
-            // 🔥 PHẦN MỚI: CHỐT CHẶN CHUẨN XÁC THEO Ý THẦY
+            // 🔥 TỔNG HỢP VÀ HIỂN THỊ ĐIỂM CỘNG / ƯU TIÊN CHUNG
             // =========================================================
+            // (Độ lệch và Bóp điểm Ưu tiên sẽ được tính lúc bấm nút Thêm, vì nó phụ thuộc vào từng phương thức)
+            
+            // Xử lý Reset điểm cộng IELTS nếu có Tiếng Anh trong tổ hợp
+            boolean coTiengAnh = toHopMonDaChon != null && ("N1".equals(toHopMonDaChon.getMon1()) || "N1".equals(toHopMonDaChon.getMon2()) || "N1".equals(toHopMonDaChon.getMon3()));
+            if (coTiengAnh) diemCongIELTS = 0.0; 
+            
             double tongDiemCong = diemCongIELTS + diemCongGiaiThuong;
+            if (tongDiemCong > 3.0) tongDiemCong = 3.0;
             
-            // 🚨 LUẬT 1: ĐIỂM CỘNG TỐI ĐA 3.0
-            if (tongDiemCong > 3.0) {
-                tongDiemCong = 3.0;
-            }
-            
-            // 🚨 LUẬT 2: ĐIỂM ƯU TIÊN GIỮ NGUYÊN BẢN CHẤT
             double diemUTQDGoc = (this.diemUuTienGoc != null) ? this.diemUuTienGoc : 0.0; 
-            double diemUuTienThucTe = diemUTQDGoc;
-            
-            // 🚨 LUẬT 3: BÓP ĐIỂM TỪ 22.5 TRỞ LÊN
-            double diemXetMoc = diemGoc + tongDiemCong; 
-            
-            if (diemXetMoc >= 22.5) {
-                diemUuTienThucTe = ((30.0 - diemGoc - tongDiemCong) / 7.5) * diemUTQDGoc;
-                if (diemUuTienThucTe < 0) diemUuTienThucTe = 0.0;
-            }
-            
-            diemUuTienThucTe = Math.round(diemUuTienThucTe * 100.0) / 100.0;
 
             // --- GÓC DỌN DẸP LẠI PHẦN HIỂN THỊ CUỐI HÀM ---
-            txtDiemTHXT.setText(String.valueOf(diemGoc));
+            // In 4 loại điểm gốc ra màn hình
+            txtDiemTHXT_THPT.setText(String.valueOf(diemTHXT_THPT));
+            txtDiemTHXT_VSAT.setText(String.valueOf(diemTHXT_VSAT));
+            txtDiemTHXT_DGNL.setText(String.valueOf(diemTHXT_DGNL));
+            
+            txtDoLech.setText(String.valueOf(doLechDiem));
+            
+            // Điểm cộng & Ưu tiên
             txtDiemCong.setText(String.valueOf(tongDiemCong));
-            txtDiemUuTien.setText(String.valueOf(diemUuTienThucTe)); 
-
-            txtDiemTHXT.setEditable(false);
-            txtDiemCong.setEditable(false);
-            txtDiemUuTien.setEditable(false); 
-
+            txtDiemUuTien.setText(String.valueOf(diemUTQDGoc)); // Chỗ này hiện điểm Gốc, lúc Thêm sẽ bóp sau
+            
         } catch (Exception e) {
             e.printStackTrace();
+            JOptionPane.showMessageDialog(this, "Có lỗi xảy ra trong quá trình quét điểm!", "Lỗi hệ thống", JOptionPane.ERROR_MESSAGE);
         }
     }
     
@@ -869,10 +869,10 @@ public void capNhatDiemTuDong() {
             txtToHopMon.requestFocus();
             return false; 
         }
-       if(bus.kiemTraRong(txtDiemTHXT.getText()))
+       if(bus.kiemTraRong(txtDiemTHXT_THPT.getText()))
         {
             JOptionPane.showMessageDialog(this, "Không được để trống Điểm tổ hợp xét tuyển");
-            txtDiemTHXT.requestFocus();
+            txtDiemTHXT_THPT.requestFocus();
             return false; 
         } 
        if(bus.kiemTraRong(txtDiemUuTien.getText()))
@@ -887,10 +887,10 @@ public void capNhatDiemTuDong() {
             txtDiemCong.requestFocus();
             return false; 
         }  
-       if(!bus.kiemTraSoThuc(txtDiemTHXT.getText().trim()))
+       if(!bus.kiemTraSoThuc(txtDiemTHXT_THPT.getText().trim()))
        {
             JOptionPane.showMessageDialog(this, "Điểm tổ hợp xét tuyển phải là số thực");
-            txtDiemTHXT.requestFocus();
+            txtDiemTHXT_THPT.requestFocus();
             return false; 
        }
        if(!bus.kiemTraSoThuc(txtDiemUuTien.getText().trim()))
@@ -908,27 +908,30 @@ public void capNhatDiemTuDong() {
        return true;
     }
     
-    public boolean kiemTraTrungNguyenVong(String cccd, int thuTu, String maNganh, String phuongThuc, String toHop) {
+public boolean kiemTraTrungNguyenVong(String cccd, int thuTu, String maNganh, String phuongThuc, String toHop) {
         if (bus.ds == null) return true;
 
         for(nguyenVongXetTuyenETT ct : bus.ds) {
             // Chỉ kiểm tra đối với cùng 1 thí sinh (cùng CCCD)
             if (ct.getNnCccd().equals(cccd)) {
                 
-                // 1. Cấm trùng Thứ Tự NV (Ví dụ: Thí sinh này đã có NV 1 rồi thì cấm nhập thêm NV 1 nữa)
-                if(ct.getNvTt() == thuTu) {
-                    javax.swing.JOptionPane.showMessageDialog(this, "Thí sinh này đã có Nguyện vọng " + thuTu + " rồi!");
+                // 🚨 LUẬT 1: Cấm trùng Thứ Tự NV nhưng cho ngành KHÁC.
+                // Nếu DB đã có NV 1 cho ngành A, mà giờ ráng nhét NV 1 cho ngành B -> CHẶN
+                if(ct.getNvTt() == thuTu && !ct.getNvMaNganh().equals(maNganh)) {
+                    javax.swing.JOptionPane.showMessageDialog(this, 
+                        "Thí sinh đã đăng ký Nguyện vọng " + thuTu + " cho ngành khác (" + ct.getNvMaNganh() + ") rồi!\n" +
+                        "Vui lòng chọn số thứ tự Nguyện vọng tiếp theo (Ví dụ: " + (thuTu + 1) + ").",
+                        "Lỗi thứ tự nguyện vọng",
+                        javax.swing.JOptionPane.ERROR_MESSAGE);
                     return false;
                 }
                 
-                // 2. Cấm trùng Y Hệt (Cùng Ngành + Cùng Phương thức + Cùng Tổ hợp)
-                if(ct.getNvMaNganh().equals(maNganh) && 
-                   ct.getTtPhuongThuc().equals(phuongThuc) && 
-                   ct.getTtThm().equals(toHop)) {
-                    
-                    javax.swing.JOptionPane.showMessageDialog(this, 
-                        "Thí sinh đã đăng ký ngành này với cùng Phương thức và Tổ hợp môn rồi!\n" +
-                        "Vui lòng chọn Tổ hợp môn hoặc Phương thức khác.");
+                // 🚨 LUẬT 2: Cấm trùng Y Hệt (Cùng Ngành + Cùng Phương thức)
+                // Ví dụ DB đã có CNTT xét THPT rồi, giờ bấm Thêm nữa nó sẽ quét trúng và chặn.
+                if(ct.getNvMaNganh().equals(maNganh) && ct.getTtPhuongThuc().equals(phuongThuc)) {
+                    // Chỗ này không cần hiện JOptionPane vì trong vòng lặp quét 4 cái, hiện popup 4 lần sẽ gây khó chịu.
+                    // Chỉ cần return false, vòng lặp ở nút Thêm sẽ tự động 'continue' bỏ qua dòng này.
+                    System.out.println("⚠️ Bỏ qua: Đã tồn tại " + maNganh + " - " + phuongThuc);
                     return false;
                 }
             }
@@ -956,13 +959,14 @@ public void capNhatDiemTuDong() {
     private javax.swing.JButton btnChonToHop;
     private javax.swing.JButton btnThem;
     private javax.swing.JButton btnThoat;
-    private javax.swing.JComboBox<String> cboPT;
     private javax.swing.JLabel jLabel1;
     private javax.swing.JLabel jLabel10;
+    private javax.swing.JLabel jLabel11;
+    private javax.swing.JLabel jLabel12;
+    private javax.swing.JLabel jLabel13;
     private javax.swing.JLabel jLabel2;
     private javax.swing.JLabel jLabel3;
     private javax.swing.JLabel jLabel4;
-    private javax.swing.JLabel jLabel5;
     private javax.swing.JLabel jLabel6;
     private javax.swing.JLabel jLabel7;
     private javax.swing.JLabel jLabel8;
@@ -972,11 +976,14 @@ public void capNhatDiemTuDong() {
     private javax.swing.JPanel jPanel3;
     private javax.swing.JTextField txtCCCD;
     private javax.swing.JTextField txtDiemCong;
-    private javax.swing.JTextField txtDiemTHXT;
+    private javax.swing.JTextField txtDiemTHXT_DGNL;
+    private javax.swing.JTextField txtDiemTHXT_THPT;
+    private javax.swing.JTextField txtDiemTHXT_VSAT;
     private javax.swing.JTextField txtDiemUuTien;
     private javax.swing.JTextField txtDoLech;
     private javax.swing.JTextField txtMaNganh;
     private javax.swing.JSpinner txtThuTuNV;
     private javax.swing.JTextField txtToHopMon;
+    private javax.swing.JTextField txtXetTuyenThang;
     // End of variables declaration//GEN-END:variables
 }
