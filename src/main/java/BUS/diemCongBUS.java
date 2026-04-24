@@ -26,6 +26,14 @@ public class diemCongBUS {
         return ds;
     }
 
+    public diemCongETT findById(int id) {
+        if (ds == null) layDanhSach();
+        for (diemCongETT dc : ds) {
+            if (dc.getIdDiemCong() == id) return dc;
+        }
+        return null;
+    }
+
     // ================= THÊM =================
     public boolean themDiemCong(diemCongETT dc) {
         boolean result = dao.themDiemCong(dc);

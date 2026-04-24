@@ -183,7 +183,8 @@ public class chungChiGUI extends BaseTableGUI {
             int modelIndex = table.convertRowIndexToModel(row);
             int absoluteIndex = (currentPage - 1) * rowsPerPage + modelIndex; 
         
-            chungChiETT ccCu = busCC.ds.get(absoluteIndex);
+            int id = Integer.parseInt(table.getValueAt(row, 0).toString());
+            chungChiETT ccCu = busCC.findById(id);
             
             JFrame topFrame = (JFrame) SwingUtilities.getWindowAncestor(this);
 
@@ -222,12 +223,14 @@ public class chungChiGUI extends BaseTableGUI {
 
         if (dialog.getXacNhanXoa()) {
 
-            int modelIndex = table.convertRowIndexToModel(row);
-            int absoluteIndex = (currentPage - 1) * rowsPerPage + modelIndex;
+            int id = Integer.parseInt(table.getValueAt(row, 0).toString());
+            Entity.chungChiETT itemXoa = busCC.findById(id);
 
-            Entity.chungChiETT itemXoa = busCC.ds.get(absoluteIndex);
-
-            if (busCC.xoaCC(itemXoa.getIdCc())) {
+            if (itemXoa != null && busCC.xoaCC(itemXoa.getIdCc())) {
+                // Xóa khỏi fullDataList để đồng bộ UI
+                int modelIndex = table.convertRowIndexToModel(row);
+                int absoluteIndex = (currentPage - 1) * rowsPerPage + modelIndex;
+                fullDataList.remove(absoluteIndex);
 
                 fullDataList.remove(absoluteIndex);
 

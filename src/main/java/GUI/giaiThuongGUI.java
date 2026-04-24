@@ -175,10 +175,11 @@ public class giaiThuongGUI extends BaseTableGUI {
         if (row != -1) {
             // 1. Tính toán vị trí chính xác của đối tượng trong danh sách tổng
             int modelIndex = table.convertRowIndexToModel(row);
-            int absoluteIndex = (currentPage - 1) * rowsPerPage + modelIndex; // 🔥 Bí quyết chống lỗi phân trang
+            int absoluteIndex = (currentPage - 1) * rowsPerPage + modelIndex;
             
-            // 2. Lấy đối tượng cũ ra và ném vào Form Sửa
-            Entity.giaiThuongETT giaiThuongCu = busGT.ds.get(absoluteIndex);
+            // 2. Tìm đúng đối tượng bằng ID từ bảng (Chống lỗi khi Tìm kiếm)
+            int id = Integer.parseInt(table.getValueAt(row, 0).toString());
+            Entity.giaiThuongETT giaiThuongCu = busGT.findById(id);
             JFrame topFrame = (JFrame) SwingUtilities.windowForComponent(this);
             
             // Giả sử form của bạn tên là updateGiaiThuong
@@ -220,14 +221,16 @@ public class giaiThuongGUI extends BaseTableGUI {
                 
                 if(dialog.getXacNhanXoa())
                 {
-                // 2. Tính Index thực sự y như hàm Sửa
-                int modelIndex = table.convertRowIndexToModel(row);
-                int absoluteIndex = (currentPage - 1) * rowsPerPage + modelIndex;
-                
-                Entity.giaiThuongETT gtCanXoa = busGT.ds.get(absoluteIndex);
+                // 2. Lấy ID từ bảng và tìm đối tượng cần xóa
+                int id = Integer.parseInt(table.getValueAt(row, 0).toString());
+                Entity.giaiThuongETT gtCanXoa = busGT.findById(id);
                 
                 // 3. Gọi BUS thực thi lệnh XÓA
-                if (busGT.xoaGT(gtCanXoa.getIdGt())) {
+                if (gtCanXoa != null && busGT.xoaGT(gtCanXoa.getIdGt())) {
+                    // Xóa khỏi fullDataList để đồng bộ UI
+                    int modelIndex = table.convertRowIndexToModel(row);
+                    int absoluteIndex = (currentPage - 1) * rowsPerPage + modelIndex;
+                    fullDataList.remove(absoluteIndex);
                     
                     // 🔥 Xóa luôn phần tử đó trong fullDataList để đồng bộ
                     fullDataList.remove(absoluteIndex);

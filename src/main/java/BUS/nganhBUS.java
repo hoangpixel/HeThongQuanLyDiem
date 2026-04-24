@@ -22,6 +22,14 @@ public class nganhBUS {
         return ds;
     }
 
+    public nganhETT findById(int id) {
+        if (ds == null) layDanhSach();
+        for (nganhETT item : ds) {
+            if (item.getIdnganh() == id) return item;
+        }
+        return null;
+    }
+
     public boolean kiemTraRong(String text)
     {
         if(text == null || text.trim().isEmpty())

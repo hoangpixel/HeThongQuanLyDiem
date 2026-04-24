@@ -22,6 +22,14 @@ public class toHopBUS {
         }
         return ds;
     }
+
+    public toHopETT findById(int id) {
+        if (ds == null) layDanhSach();
+        for (toHopETT th : ds) {
+            if (th.getIdtohop() == id) return th;
+        }
+        return null;
+    }
     
     public boolean kiemTraRong(String text)
     {

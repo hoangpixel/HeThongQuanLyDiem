@@ -29,6 +29,14 @@ public class thiSinhXetTuyenBUS {
         return ds;
     }
 
+    public thiSinhXetTuyenETT findById(int id) {
+        if (ds == null) layDanhSach();
+        for (thiSinhXetTuyenETT ts : ds) {
+            if (ts.getIdThiSinh() == id) return ts;
+        }
+        return null;
+    }
+
     // ================== THÊM ==================
     public String themThiSinh(thiSinhXetTuyenETT ts) {
 

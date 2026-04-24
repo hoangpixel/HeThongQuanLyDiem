@@ -210,10 +210,11 @@ public class thiSinhXetTuyenGUI extends BaseTableGUI {
         if (row != -1) {
             // 1. Tính toán vị trí chính xác của đối tượng trong danh sách tổng
             int modelIndex = table.convertRowIndexToModel(row);
-            int absoluteIndex = (currentPage - 1) * rowsPerPage + modelIndex; // 🔥 Bí quyết chống lỗi phân trang
+            int absoluteIndex = (currentPage - 1) * rowsPerPage + modelIndex; // 🔥 Vị trí trong danh sách hiển thị (fullDataList)
             
-            // 2. Lấy đối tượng cũ ra và ném vào Form Sửa
-            Entity.thiSinhXetTuyenETT thiSinhCu = busThiSinh.ds.get(absoluteIndex);
+            // 2. Tìm đúng đối tượng bằng ID từ bảng (Chống lỗi khi Tìm kiếm)
+            int id = Integer.parseInt(table.getValueAt(row, 0).toString());
+            Entity.thiSinhXetTuyenETT thiSinhCu = busThiSinh.findById(id);
             JFrame topFrame = (JFrame) SwingUtilities.windowForComponent(this);
             
             // Giả sử form của bạn tên là updateNguyenVong
@@ -256,16 +257,21 @@ public class thiSinhXetTuyenGUI extends BaseTableGUI {
 
             if (dialog.getXacNhanXoa()) {
 
-                // 🔥 Tính index
-                int modelIndex = table.convertRowIndexToModel(row);
+                // 🔥 Lấy ID từ bảng và tìm đối tượng cần xóa
+                int id = Integer.parseInt(table.getValueAt(row, 0).toString());
+                thiSinhXetTuyenETT tsCanXoa = busThiSinh.findById(id);
 
-                thiSinhXetTuyenBUS bus = new thiSinhXetTuyenBUS();
-                bus.layDanhSach();
-
-                thiSinhXetTuyenETT tsCanXoa = bus.ds.get(modelIndex);
-
-                if (bus.xoaThiSinh(tsCanXoa)) {
-                    ((DefaultTableModel) table.getModel()).removeRow(modelIndex);
+                if (tsCanXoa != null && busThiSinh.xoaThiSinh(tsCanXoa)) {
+                    // Xóa khỏi fullDataList để đồng bộ UI
+                    int modelIndex = table.convertRowIndexToModel(row);
+                    int absoluteIndex = (currentPage - 1) * rowsPerPage + modelIndex;
+                    fullDataList.remove(absoluteIndex);
+                    
+                    // Tính toán lại phân trang
+                    totalPages = (int) Math.ceil((double) fullDataList.size() / rowsPerPage);
+                    if (currentPage > totalPages && totalPages > 0) currentPage = totalPages;
+                    
+                    renderCurrentPage();
                 }
 
                 } else {

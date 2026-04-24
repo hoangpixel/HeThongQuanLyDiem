@@ -182,18 +182,8 @@ public class toHopGUI extends BaseTableGUI {
             int modelIndex = table.convertRowIndexToModel(row);
             int absoluteIndex = (currentPage - 1) * rowsPerPage + modelIndex;
 
-            // Lấy ID của dòng đang chọn
-            Vector selectedRowData = fullDataList.get(absoluteIndex);
-            int idCanTim = (int) selectedRowData.get(0);
-
-            // Tìm đối tượng chuẩn xác trong danh sách gốc
-            toHopETT data = null;
-            for (toHopETT item : busToHop.ds) {
-                if (item.getIdtohop() == idCanTim) {
-                    data = item;
-                    break;
-                }
-            }
+            int id = Integer.parseInt(table.getValueAt(row, 0).toString());
+            toHopETT data = busToHop.findById(id);
 
             if (data != null) {
                 JFrame topFrame = (JFrame) SwingUtilities.windowForComponent(this);
@@ -235,23 +225,12 @@ public class toHopGUI extends BaseTableGUI {
 
             if (dialog.getXacNhanXoa()) {
 
-                int modelIndex = table.convertRowIndexToModel(row);
-                int absoluteIndex = (currentPage - 1) * rowsPerPage + modelIndex;
-
-                // Lấy ID của dòng đang chọn
-                Vector selectedRowData = fullDataList.get(absoluteIndex);
-                int idCanTim = (int) selectedRowData.get(0);
-
-                // Tìm đối tượng chuẩn xác để xóa
-                toHopETT toHopCanXoa = null;
-                for (toHopETT item : busToHop.ds) {
-                    if (item.getIdtohop() == idCanTim) {
-                        toHopCanXoa = item;
-                        break;
-                    }
-                }
+                int id = Integer.parseInt(table.getValueAt(row, 0).toString());
+                toHopETT toHopCanXoa = busToHop.findById(id);
 
                 if (toHopCanXoa != null && busToHop.xoaToHop(toHopCanXoa)) {
+                    int modelIndex = table.convertRowIndexToModel(row);
+                    int absoluteIndex = (currentPage - 1) * rowsPerPage + modelIndex;
 
                     fullDataList.remove(absoluteIndex);
 

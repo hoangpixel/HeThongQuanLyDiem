@@ -25,6 +25,14 @@ public class taiKhoanBUS {
         }
         return ds;
     }
+
+    public taiKhoanETT findById(int id) {
+        if (ds == null) layDanhSach();
+        for (taiKhoanETT tk : ds) {
+            if (tk.getIdTaiKhoan() == id) return tk;
+        }
+        return null;
+    }
     
     // Biến static lưu tài khoản đang đăng nhập để xài toàn cục
     public static taiKhoanETT taiKhoanHienTai = null;

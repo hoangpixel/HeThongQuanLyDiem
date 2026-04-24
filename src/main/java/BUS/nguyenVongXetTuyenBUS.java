@@ -26,6 +26,14 @@ public class nguyenVongXetTuyenBUS {
         }
         return ds;
     }
+
+    public nguyenVongXetTuyenETT findById(int id) {
+        if (ds == null) layDanhSach();
+        for (nguyenVongXetTuyenETT nv : ds) {
+            if (nv.getIdNv() == id) return nv;
+        }
+        return null;
+    }
     
     public boolean kiemTraRong(String text)
     {

@@ -22,6 +22,14 @@ public class chungChiBUS {
         return ds;
     }
 
+    public chungChiETT findById(int id) {
+        if (ds == null) layDanhSach();
+        for (chungChiETT cc : ds) {
+            if (cc.getIdCc() == id) return cc;
+        }
+        return null;
+    }
+
     public boolean themCC(chungChiETT cc) {
         boolean isSuccess = data.themCC(cc);
         if (isSuccess) {

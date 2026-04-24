@@ -208,21 +208,8 @@ public class taiKhoanGUI extends BaseTableForNguyenVongGUIonly {
             return;
         }
 
-        int modelIndex = table.convertRowIndexToModel(row);
-        int absoluteIndex = (currentPage - 1) * rowsPerPage + modelIndex;
-
-        // Lấy ID dòng đang chọn
-        Vector selectedRowData = fullDataList.get(absoluteIndex);
-        int idCanTim = (int) selectedRowData.get(0);
-
-        // Tìm đúng object trong BUS
-        taiKhoanETT tkCu = null;
-        for (taiKhoanETT item : bus.ds) {
-            if (item.getIdTaiKhoan() == idCanTim) {
-                tkCu = item;
-                break;
-            }
-        }
+        int id = Integer.parseInt(table.getValueAt(row, 0).toString());
+        taiKhoanETT tkCu = bus.findById(id);
 
         if (tkCu != null) {
             JFrame topFrame = (JFrame) SwingUtilities.windowForComponent(this);
@@ -239,6 +226,8 @@ public class taiKhoanGUI extends BaseTableForNguyenVongGUIonly {
                 rowData.add(tkMoi.getHoTen());
                 rowData.add(tkMoi.getTrangThai() == 1 ? "Hoạt động" : "Bị khóa");
 
+                int modelIndex = table.convertRowIndexToModel(row);
+                int absoluteIndex = (currentPage - 1) * rowsPerPage + modelIndex;
                 fullDataList.set(absoluteIndex, rowData);
                 renderCurrentPage();
             }
@@ -279,9 +268,7 @@ public class taiKhoanGUI extends BaseTableForNguyenVongGUIonly {
         dialog.setVisible(true);
 
         if (dialog.getXacNhanXoa()) {
-
             if (tkCanXoa != null && bus.xoaTaiKhoan(tkCanXoa.getTenDangNhap())) {
-
                 fullDataList.remove(absoluteIndex);
 
                 totalPages = (int) Math.ceil((double) fullDataList.size() / rowsPerPage);

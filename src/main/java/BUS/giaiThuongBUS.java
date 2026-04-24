@@ -21,6 +21,14 @@ public class giaiThuongBUS {
         }
         return ds;
     }
+
+    public giaiThuongETT findById(int id) {
+        if (ds == null) layDanhSach();
+        for (giaiThuongETT gt : ds) {
+            if (gt.getIdGt() == id) return gt;
+        }
+        return null;
+    }
     
     // Gọi xuống DAO để dò Giải thưởng
     public Object[] layGiaiThuong(String cccd) {

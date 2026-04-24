@@ -190,8 +190,9 @@ public class NganhGUI extends BaseTableGUI {
             int modelIndex = table.convertRowIndexToModel(row);
             int absoluteIndex = (currentPage - 1) * rowsPerPage + modelIndex; 
         
-            // 2. Lấy đối tượng cũ ra và ném vào Form Sửa
-            Entity.nganhETT nganhCu = busNganh.ds.get(absoluteIndex);
+            // 2. Tìm đúng đối tượng bằng ID từ bảng (Chống lỗi khi Tìm kiếm)
+            int id = Integer.parseInt(table.getValueAt(row, 0).toString());
+            Entity.nganhETT nganhCu = busNganh.findById(id);
             JFrame topFrame = (JFrame) SwingUtilities.windowForComponent(this);
         
             // 3. Mở Form Sửa và truyền đối tượng cũ vào
@@ -238,14 +239,16 @@ public class NganhGUI extends BaseTableGUI {
                 
                 if(dialog.getXacNhanXoa())
                 {
-                // 2. Tính Index thực sự y như hàm Sửa
-                int modelIndex = table.convertRowIndexToModel(row);
-                int absoluteIndex = (currentPage - 1) * rowsPerPage + modelIndex;
-                
-                Entity.nganhETT nganhCanXoa = busNganh.ds.get(absoluteIndex);
+                // 2. Lấy ID từ bảng và tìm đối tượng cần xóa
+                int id = Integer.parseInt(table.getValueAt(row, 0).toString());
+                Entity.nganhETT nganhCanXoa = busNganh.findById(id);
                 
                 // 3. Gọi BUS thực thi lệnh XÓA
-                if (busNganh.xoaNganh(nganhCanXoa)) {
+                if (nganhCanXoa != null && busNganh.xoaNganh(nganhCanXoa)) {
+                    // Xóa khỏi fullDataList để đồng bộ UI
+                    int modelIndex = table.convertRowIndexToModel(row);
+                    int absoluteIndex = (currentPage - 1) * rowsPerPage + modelIndex;
+                    fullDataList.remove(absoluteIndex);
                     
                     // 🔥 Xóa luôn phần tử đó trong fullDataList để đồng bộ
                     fullDataList.remove(absoluteIndex);

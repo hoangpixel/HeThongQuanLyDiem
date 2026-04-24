@@ -332,16 +332,15 @@ private void hienThiDialogSua() {
                 
                 if(dialog.getXacNhanXoa())
                 {
-                // 2. Tính Index thực sự y như hàm Sửa
-                int modelIndex = table.convertRowIndexToModel(row);
-                int absoluteIndex = (currentPage - 1) * rowsPerPage + modelIndex;
-                
-                nguyenVongXetTuyenETT nvCanXoa = busNguyenVong.ds.get(absoluteIndex);
+                int id = Integer.parseInt(table.getValueAt(row, 0).toString());
+                nguyenVongXetTuyenETT nvCanXoa = busNguyenVong.findById(id);
                 
                 // 3. Gọi BUS thực thi lệnh XÓA
                 if (busNguyenVong.xoaNguyenVong(nvCanXoa)) {
                     
                     // 🔥 Xóa luôn phần tử đó trong fullDataList để đồng bộ
+                    int modelIndex = table.convertRowIndexToModel(row);
+                    int absoluteIndex = (currentPage - 1) * rowsPerPage + modelIndex;
                     fullDataList.remove(absoluteIndex);
                     
                     // 🔥 Tính lại tổng số trang (Lỡ xóa rớt mất 1 trang thì sao)
