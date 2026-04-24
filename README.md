@@ -1,1 +1,1 @@
-nhìn con cặc
+ABC
