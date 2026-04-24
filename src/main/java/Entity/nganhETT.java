@@ -251,5 +251,5 @@ public class nganhETT {
         this.diemchuan_xtt = diemchuan_xtt;
     }
 
-    
+
 }

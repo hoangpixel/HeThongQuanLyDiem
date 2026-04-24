@@ -98,7 +98,7 @@ public class NganhGUI extends BaseTableGUI {
         header.add("Điểm Sàn THPT");
         header.add("Điểm Sàn V-SAT");
         header.add("Điểm Sàn ĐGNL");
-        header.add("Điểm Chuẩn");
+        //header.add("Điểm Chuẩn");
         tableModel.setColumnIdentifiers(header);
     }
     
@@ -113,7 +113,7 @@ public class NganhGUI extends BaseTableGUI {
         cbxTimKiem.addItem("Sàn THPT");
         cbxTimKiem.addItem("Sàn V-SAT");
         cbxTimKiem.addItem("Sàn ĐGNL");
-        cbxTimKiem.addItem("Điểm Chuẩn");
+        //cbxTimKiem.addItem("Điểm Chuẩn");
     }
 
     // Lệnh lôi dữ liệu từ kho (Database) qua BUS rồi đẩy lên bảng Swing
@@ -134,7 +134,7 @@ public class NganhGUI extends BaseTableGUI {
             row.add(item.getN_diemsanthpt() != null ? item.getN_diemsanthpt() : "");
             row.add(item.getN_diemsanvsat() != null ? item.getN_diemsanvsat() : "");
             row.add(item.getN_diemsandgnl() != null ? item.getN_diemsandgnl() : "");
-            row.add(item.getN_diemtrungtuyen() != null ? item.getN_diemtrungtuyen() : "");
+            //row.add(item.getN_diemtrungtuyen() != null ? item.getN_diemtrungtuyen() : "");
             dataList.add(row);
         }
 
@@ -183,92 +183,89 @@ public class NganhGUI extends BaseTableGUI {
         }
     }
 
-    private void hienThiDialogSua() {
-        int row = table.getSelectedRow();
-        if (row != -1) {
-            // 1. Tính toán vị trí chính xác của đối tượng trong danh sách tổng
-            int modelIndex = table.convertRowIndexToModel(row);
-            int absoluteIndex = (currentPage - 1) * rowsPerPage + modelIndex; 
-        
-            // 2. Tìm đúng đối tượng bằng ID từ bảng (Chống lỗi khi Tìm kiếm)
-            int id = Integer.parseInt(table.getValueAt(row, 0).toString());
-            Entity.nganhETT nganhCu = busNganh.findById(id);
+private void hienThiDialogSua() {
+    int row = table.getSelectedRow();
+    if (row != -1) {
+        int modelIndex = table.convertRowIndexToModel(row);
+        int absoluteIndex = (currentPage - 1) * rowsPerPage + modelIndex;
+
+        // 1. Lấy ID từ Vector để đảm bảo tìm đúng đối tượng trong danh sách gốc
+        Vector selectedRowData = (Vector) fullDataList.get(absoluteIndex);
+        int idCanTim = (int) selectedRowData.get(0); 
+
+        // 2. Tìm đối tượng trong BUS (Dùng loop cho an toàn nếu BUS chưa có findById)
+        Entity.nganhETT nganhCu = null;
+        for (Entity.nganhETT item : busNganh.ds) {
+            if (item.getIdnganh() == idCanTim) {
+                nganhCu = item;
+                break;
+            }
+        }
+
+        if (nganhCu != null) {
             JFrame topFrame = (JFrame) SwingUtilities.windowForComponent(this);
-        
-            // 3. Mở Form Sửa và truyền đối tượng cũ vào
             updateNganh dialog = new updateNganh(topFrame, true, nganhCu);
-            dialog.setVisible(true); 
-        
-            // 4. Sau khi người dùng nhấn LƯU thành công
-            if (dialog.xacNhan) { 
+            dialog.setVisible(true);
+
+            if (dialog.xacNhan) {
                 Entity.nganhETT nvMoi = dialog.getNganh();
-            
-                // 🔥 Ép kiểu đối tượng mới thành Vector để cập nhật lại bảng
                 Vector rowData = new java.util.Vector();
-                rowData.add(absoluteIndex + 1); // Cột Số thứ tự
+                rowData.add(nvMoi.getIdnganh()); 
                 rowData.add(nvMoi.getManganh());
                 rowData.add(nvMoi.getTennganh());
                 rowData.add(nvMoi.getN_tohopgoc());
                 rowData.add(nvMoi.getN_chitieu());
-            
-                // Xử lý hiển thị điểm (nếu null thì hiện chuỗi rỗng)
+                
                 rowData.add(nvMoi.getN_diemsanthpt() != null ? nvMoi.getN_diemsanthpt() : "");
                 rowData.add(nvMoi.getN_diemsanvsat() != null ? nvMoi.getN_diemsanvsat() : "");
                 rowData.add(nvMoi.getN_diemsandgnl() != null ? nvMoi.getN_diemsandgnl() : "");
                 rowData.add(nvMoi.getN_diemtrungtuyen() != null ? nvMoi.getN_diemtrungtuyen() : "");
 
-                // 🔥 Đè Vector mới vào đúng vị trí cũ trong danh sách RAM
                 fullDataList.set(absoluteIndex, rowData);
-
-                // 🔥 Render lại đúng trang hiện tại
                 renderCurrentPage(); 
             }
         } else {
-            javax.swing.JOptionPane.showMessageDialog(this, "Vui lòng chọn một ngành trên bảng để sửa!");
+            JOptionPane.showMessageDialog(this, "Không tìm thấy dữ liệu gốc!");
         }
+    } else {
+        JOptionPane.showMessageDialog(this, "Vui lòng chọn một ngành để sửa!");
     }
+}
+private void hienThiDialogXoa() {
+    int row = table.getSelectedRow();
+    if (row != -1) {
+        JFrame topFrame = (JFrame) SwingUtilities.windowForComponent(this);
+        deleteNganh dialog = new deleteNganh(topFrame, true);
+        dialog.setVisible(true);
+        
+        if (dialog.getXacNhanXoa()) {
+            int modelIndex = table.convertRowIndexToModel(row);
+            int absoluteIndex = (currentPage - 1) * rowsPerPage + modelIndex;
+            Vector selectedRowData = (Vector) fullDataList.get(absoluteIndex);
+            int idCanTim = (int) selectedRowData.get(0); 
 
-    private void hienThiDialogXoa()
-    {
-        int row = table.getSelectedRow();
-        if (row != -1) {
-            // 1. Hỏi lại cho chắc ăn (Hạn chế xóa nhầm)
-                JFrame topFrame = (JFrame) SwingUtilities.windowForComponent(this);
-                deleteNganh dialog = new deleteNganh(topFrame, true);
-                dialog.setVisible(true);
-                
-                if(dialog.getXacNhanXoa())
-                {
-                // 2. Lấy ID từ bảng và tìm đối tượng cần xóa
-                int id = Integer.parseInt(table.getValueAt(row, 0).toString());
-                Entity.nganhETT nganhCanXoa = busNganh.findById(id);
-                
-                // 3. Gọi BUS thực thi lệnh XÓA
-                if (nganhCanXoa != null && busNganh.xoaNganh(nganhCanXoa)) {
-                    // Xóa khỏi fullDataList để đồng bộ UI
-                    int modelIndex = table.convertRowIndexToModel(row);
-                    int absoluteIndex = (currentPage - 1) * rowsPerPage + modelIndex;
-                    fullDataList.remove(absoluteIndex);
-                    
-                    // 🔥 Xóa luôn phần tử đó trong fullDataList để đồng bộ
-                    fullDataList.remove(absoluteIndex);
-                    
-                    // 🔥 Tính lại tổng số trang (Lỡ xóa rớt mất 1 trang thì sao)
-                    totalPages = (int) Math.ceil((double) fullDataList.size() / rowsPerPage);
-                    
-                    // 🔥 Nếu trang hiện tại bị rỗng (do vừa xóa thằng cuối cùng của trang), lùi lại 1 trang
-                    if (currentPage > totalPages && totalPages > 0) {
-                        currentPage = totalPages;
-                    }
-                    
-                    // 🔥 Vẽ lại bảng cực mượt
-                    renderCurrentPage();
-                } else {
-                    JOptionPane.showMessageDialog(this, "Xóa ngành thất bại");
+            Entity.nganhETT nganhCanXoa = null;
+            for (Entity.nganhETT item : busNganh.ds) {
+                if (item.getIdnganh() == idCanTim) {
+                    nganhCanXoa = item;
+                    break;
                 }
+            }
+            
+            if (nganhCanXoa != null && busNganh.xoaNganh(nganhCanXoa)) {
+                fullDataList.remove(absoluteIndex);
+                totalPages = (int) Math.ceil((double) fullDataList.size() / rowsPerPage);
+                
+                if (currentPage > totalPages && totalPages > 0) {
+                    currentPage = totalPages;
+                }
+                renderCurrentPage();
+            } else {
+                JOptionPane.showMessageDialog(this, "Xóa ngành thất bại!");
             }
         }
     }
+}
 
     private void thucHienRefresh()
     {
@@ -380,18 +377,37 @@ public class NganhGUI extends BaseTableGUI {
         }
     }
 
-    private void hienThiChiTietNganh()
-    {
-        int row = table.getSelectedRow();
-        if (row != -1) {
-            int modelIndex = table.convertRowIndexToModel(row);
-            int absoluteIndex = (currentPage - 1) * rowsPerPage + modelIndex;
-            
-            nganhETT nganhCu = busNganh.ds.get(absoluteIndex);
-            JFrame topFrame = (JFrame) SwingUtilities.windowForComponent(this);
-            
-            detailNganh dialog = new detailNganh(topFrame, true, nganhCu);
-            dialog.setVisible(true);
+    private void hienThiChiTietNganh() {
+    int row = table.getSelectedRow();
+    if (row != -1) {
+        int modelIndex = table.convertRowIndexToModel(row);
+        int absoluteIndex = (currentPage - 1) * rowsPerPage + modelIndex;
+        
+        // 1. Lấy ID từ Vector của dòng đang chọn trên UI
+        Vector selectedRowData = (Vector) fullDataList.get(absoluteIndex);
+        
+        // 🔥 Vẫn là nguyên tắc cũ: Đảm bảo cột 0 của bạn đang chứa idnganh
+        int idCanTim = (int) selectedRowData.get(0); 
+        
+        // 2. Quét danh sách gốc để tìm "chính chủ"
+        Entity.nganhETT nganhChiTiet = null;
+        for (Entity.nganhETT item : busNganh.ds) {
+            if (item.getIdnganh() == idCanTim) { 
+                nganhChiTiet = item;
+                break;
+            }
         }
+        
+        // 3. Có data thì mở Form, không thì báo lỗi (bắt case ngoại lệ)
+        if (nganhChiTiet != null) {
+            JFrame topFrame = (JFrame) SwingUtilities.windowForComponent(this);
+            detailNganh dialog = new detailNganh(topFrame, true, nganhChiTiet);
+            dialog.setVisible(true);
+        } else {
+            javax.swing.JOptionPane.showMessageDialog(this, "Lỗi: Không tìm thấy dữ liệu chi tiết trong Database/RAM!");
+        }
+    } else {
+        javax.swing.JOptionPane.showMessageDialog(this, "Vui lòng chọn một ngành để xem chi tiết!");
     }
+}
 }

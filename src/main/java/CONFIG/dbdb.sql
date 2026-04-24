@@ -20,6 +20,7 @@ SET @@SESSION.SQL_LOG_BIN= 0;
 --
 -- GTID state at the beginning of the backup 
 --
+S
 
 --
 -- Table structure for table `xt_bangquydoi`
@@ -30,15 +31,15 @@ DROP TABLE IF EXISTS `xt_bangquydoi`;
 /*!50503 SET character_set_client = utf8mb4 */;
 CREATE TABLE `xt_bangquydoi` (
   `idqd` int NOT NULL AUTO_INCREMENT,
-  `d_phuongthuc` varchar(45) COLLATE utf8mb4_unicode_ci DEFAULT NULL,
-  `d_tohop` varchar(45) COLLATE utf8mb4_unicode_ci DEFAULT NULL,
-  `d_mon` varchar(45) COLLATE utf8mb4_unicode_ci DEFAULT NULL,
+  `d_phuongthuc` varchar(45) CHARACTER SET utf8mb4 COLLATE utf8mb4_unicode_ci DEFAULT NULL,
+  `d_tohop` varchar(45) CHARACTER SET utf8mb4 COLLATE utf8mb4_unicode_ci DEFAULT NULL,
+  `d_mon` varchar(45) CHARACTER SET utf8mb4 COLLATE utf8mb4_unicode_ci DEFAULT NULL,
   `d_diema` double DEFAULT NULL,
   `d_diemb` double DEFAULT NULL,
   `d_diemc` double DEFAULT NULL,
   `d_diemd` double DEFAULT NULL,
-  `d_maquydoi` varchar(45) COLLATE utf8mb4_unicode_ci DEFAULT NULL,
-  `d_phanvi` varchar(45) COLLATE utf8mb4_unicode_ci DEFAULT NULL,
+  `d_maquydoi` varchar(45) CHARACTER SET utf8mb4 COLLATE utf8mb4_unicode_ci DEFAULT NULL,
+  `d_phanvi` varchar(45) CHARACTER SET utf8mb4 COLLATE utf8mb4_unicode_ci DEFAULT NULL,
   PRIMARY KEY (`idqd`),
   UNIQUE KEY `d_maquydoi_UNIQUE` (`d_maquydoi`)
 ) ENGINE=InnoDB AUTO_INCREMENT=494 DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_unicode_ci;
@@ -92,14 +93,14 @@ DROP TABLE IF EXISTS `xt_diemcongxetuyen`;
 CREATE TABLE `xt_diemcongxetuyen` (
   `iddiemcong` int unsigned NOT NULL AUTO_INCREMENT,
   `ts_cccd` varchar(45) CHARACTER SET utf8mb3 COLLATE utf8mb3_general_ci NOT NULL,
-  `manganh` varchar(20) COLLATE utf8mb4_unicode_ci DEFAULT '0.00',
-  `matohop` varchar(10) COLLATE utf8mb4_unicode_ci DEFAULT '0.00',
-  `phuongthuc` varchar(45) COLLATE utf8mb4_unicode_ci DEFAULT NULL,
+  `manganh` varchar(20) CHARACTER SET utf8mb4 COLLATE utf8mb4_unicode_ci DEFAULT '0.00',
+  `matohop` varchar(10) CHARACTER SET utf8mb4 COLLATE utf8mb4_unicode_ci DEFAULT '0.00',
+  `phuongthuc` varchar(45) CHARACTER SET utf8mb4 COLLATE utf8mb4_unicode_ci DEFAULT NULL,
   `diemCC` double DEFAULT NULL,
   `diemUtxt` double DEFAULT NULL,
   `diemTong` double DEFAULT NULL,
-  `ghichu` text COLLATE utf8mb4_unicode_ci,
-  `dc_keys` varchar(45) COLLATE utf8mb4_unicode_ci NOT NULL,
+  `ghichu` text CHARACTER SET utf8mb4 COLLATE utf8mb4_unicode_ci,
+  `dc_keys` varchar(45) CHARACTER SET utf8mb4 COLLATE utf8mb4_unicode_ci NOT NULL,
   PRIMARY KEY (`iddiemcong`),
   UNIQUE KEY `dc_keys_UNIQUE` (`dc_keys`)
 ) ENGINE=InnoDB AUTO_INCREMENT=9 DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_unicode_ci;
@@ -124,9 +125,9 @@ DROP TABLE IF EXISTS `xt_diemthixettuyen`;
 /*!50503 SET character_set_client = utf8mb4 */;
 CREATE TABLE `xt_diemthixettuyen` (
   `iddiemthi` int NOT NULL AUTO_INCREMENT,
-  `cccd` varchar(20) COLLATE utf8mb4_unicode_ci NOT NULL,
+  `cccd` varchar(20) CHARACTER SET utf8mb4 COLLATE utf8mb4_unicode_ci NOT NULL,
   `sobaodanh` varchar(45) CHARACTER SET utf8mb3 COLLATE utf8mb3_general_ci DEFAULT NULL,
-  `d_phuongthuc` varchar(10) COLLATE utf8mb4_unicode_ci DEFAULT NULL,
+  `d_phuongthuc` varchar(10) CHARACTER SET utf8mb4 COLLATE utf8mb4_unicode_ci DEFAULT NULL,
   `TO` double DEFAULT NULL,
   `LI` double DEFAULT NULL,
   `HO` double DEFAULT NULL,
@@ -208,14 +209,14 @@ CREATE TABLE `xt_nganh` (
   `idnganh` int NOT NULL AUTO_INCREMENT,
   `manganh` varchar(45) CHARACTER SET utf8mb3 COLLATE utf8mb3_general_ci NOT NULL,
   `tennganh` varchar(100) CHARACTER SET utf8mb3 COLLATE utf8mb3_general_ci NOT NULL,
-  `n_tohopgoc` varchar(3) COLLATE utf8mb3_unicode_ci DEFAULT NULL,
+  `n_tohopgoc` varchar(3) CHARACTER SET utf8mb3 COLLATE utf8mb3_unicode_ci DEFAULT NULL,
   `n_chitieu` int NOT NULL DEFAULT '0',
   `n_diemsan` double DEFAULT NULL,
   `n_diemtrungtuyen` double DEFAULT NULL,
-  `n_tuyenthang` varchar(1) COLLATE utf8mb3_unicode_ci DEFAULT NULL,
-  `n_dgnl` varchar(1) COLLATE utf8mb3_unicode_ci DEFAULT NULL,
-  `n_thpt` varchar(1) COLLATE utf8mb3_unicode_ci DEFAULT NULL,
-  `n_vsat` varchar(1) COLLATE utf8mb3_unicode_ci DEFAULT NULL,
+  `n_tuyenthang` varchar(1) CHARACTER SET utf8mb3 COLLATE utf8mb3_unicode_ci DEFAULT NULL,
+  `n_dgnl` varchar(1) CHARACTER SET utf8mb3 COLLATE utf8mb3_unicode_ci DEFAULT NULL,
+  `n_thpt` varchar(1) CHARACTER SET utf8mb3 COLLATE utf8mb3_unicode_ci DEFAULT NULL,
+  `n_vsat` varchar(1) CHARACTER SET utf8mb3 COLLATE utf8mb3_unicode_ci DEFAULT NULL,
   `sl_xtt` int DEFAULT NULL,
   `sl_dgnl` int DEFAULT NULL,
   `sl_vsat` int DEFAULT NULL,
@@ -237,54 +238,7 @@ CREATE TABLE `xt_nganh` (
 
 LOCK TABLES `xt_nganh` WRITE;
 /*!40000 ALTER TABLE `xt_nganh` DISABLE KEYS */;
-INSERT INTO `xt_nganh` VALUES 
-(1,'7140114','Quản lý giáo dục','C04',40,NULL,NULL,'1','0','1','1',10,0,10,20,NULL,NULL,NULL,NULL,830,15,290),
-(2,'7140201','Giáo dục Mầm non','M01',200,NULL,NULL,'0','0','1','0',0,0,0,200,NULL,NULL,NULL,NULL,NULL,23,NULL),
-(3,'7140202','Giáo dục Tiểu học','D01',200,NULL,NULL,'1','0','1','0',30,0,0,170,NULL,NULL,NULL,NULL,NULL,23.5,NULL),
-(4,'7140205','Giáo dục chính trị','C00',10,NULL,NULL,'1','0','1','0',0,0,0,10,NULL,NULL,NULL,NULL,NULL,26.5,NULL),
-(5,'7140209','Sư phạm Toán học','A00',40,NULL,NULL,'1','0','1','0',10,0,0,30,NULL,NULL,NULL,NULL,NULL,27.5,NULL),
-(6,'7140211','Sư phạm Vật lý','A00',10,NULL,NULL,'1','0','1','0',0,0,0,10,NULL,NULL,NULL,NULL,NULL,26,NULL),
-(7,'7140212','Sư phạm Hoá học','A00',10,NULL,NULL,'1','0','1','0',0,0,0,10,NULL,NULL,NULL,NULL,NULL,26.5,NULL),
-(8,'7140213','Sư phạm Sinh học','B00',10,NULL,NULL,'1','0','1','0',0,0,0,10,NULL,NULL,NULL,NULL,NULL,25,NULL),
-(9,'7140217','Sư phạm Ngữ văn','C00',50,NULL,NULL,'1','0','1','0',10,0,0,40,NULL,NULL,NULL,NULL,NULL,28,NULL),
-(10,'7140218','Sư phạm Lịch sử','C00',10,NULL,NULL,'1','0','1','0',0,0,0,10,NULL,NULL,NULL,NULL,NULL,27,NULL),
-(11,'7140219','Sư phạm Địa lý','C00',10,NULL,NULL,'1','0','1','0',0,0,0,10,NULL,NULL,NULL,NULL,NULL,26,NULL),
-(12,'7140221','Sư phạm Âm nhạc','N01',75,NULL,NULL,'1','0','1','0',10,0,0,65,NULL,NULL,NULL,NULL,NULL,23,NULL),
-(13,'7140222','Sư phạm Mỹ thuật','H00',75,NULL,NULL,'1','0','1','0',10,0,0,65,NULL,NULL,NULL,NULL,NULL,21,NULL),
-(14,'7140231','Sư phạm Tiếng Anh','D01',130,NULL,NULL,'1','0','1','0',30,0,0,100,NULL,NULL,NULL,NULL,NULL,27,NULL),
-(15,'7140247','Sư phạm Khoa học tự nhiên (đào tạo giáo viên THCS)','A00',60,NULL,NULL,'1','0','1','0',10,0,0,50,NULL,NULL,NULL,NULL,NULL,25.5,NULL),
-(16,'7140249','Sư phạm Lịch sử - Địa lí (đào tạo giáo viên THCS)','C00',40,NULL,NULL,'1','0','1','0',10,0,0,30,NULL,NULL,NULL,NULL,NULL,27,NULL),
-(17,'7220201','Ngôn ngữ Anh','D01',260,NULL,NULL,'1','1','1','1',0,0,0,0,NULL,NULL,NULL,NULL,880,25,320),
-(18,'7220201-CLC','Ngôn ngữ Anh (Chương trình đào tạo chất lượng cao)','D01',100,NULL,NULL,'1','1','1','1',0,0,0,0,NULL,NULL,NULL,NULL,895,25,320),
-(19,'7229010','Lịch sử','C00',30,NULL,NULL,'1','1','1','1',0,0,0,0,NULL,NULL,NULL,NULL,NULL,24,NULL),
-(20,'7310401','Tâm lý học','D01',100,NULL,NULL,'1','1','1','1',0,0,0,0,NULL,NULL,NULL,NULL,888,24.5,295),
-(21,'7310501','Địa lý học','C00',30,NULL,NULL,'1','1','1','1',0,0,0,0,NULL,NULL,NULL,NULL,NULL,26,NULL),
-(22,'7310601','Quốc tế học','D01',80,NULL,NULL,'1','1','1','1',0,0,0,0,NULL,NULL,NULL,NULL,835,23.6,267.5),
-(23,'7310630','Việt Nam học','C00',140,NULL,NULL,'1','1','1','1',0,0,0,0,NULL,NULL,NULL,NULL,732,25,290),
-(24,'7320201','Thông tin - Thư viện','C04',30,NULL,NULL,'1','1','1','1',0,0,0,0,NULL,NULL,NULL,NULL,750,26,250),
-(25,'7340101','Quản trị kinh doanh','A01',360,NULL,NULL,'1','1','1','1',0,0,0,0,NULL,NULL,NULL,NULL,820,25.5,295.5),
-(26,'7340101-CLC','Quản trị kinh doanh (Chương trình đào tạo chất lượng cao)','D01',100,NULL,NULL,'1','1','1','1',0,0,0,0,NULL,NULL,NULL,NULL,810,24,300),
-(27,'7340120','Kinh doanh quốc tế','A01',200,NULL,NULL,'1','1','1','1',0,0,0,0,NULL,NULL,NULL,NULL,810,26.2,310.5),
-(28,'7340201','Tài chính - Ngân hàng','C01',500,NULL,NULL,'1','1','1','1',0,0,0,0,NULL,NULL,NULL,NULL,825,25.5,325.5),
-(29,'7340301','Kế toán','C01',380,NULL,NULL,'1','1','1','1',0,0,0,0,NULL,NULL,NULL,NULL,780,24.5,290),
-(30,'7340301-CLC','Kế toán (Chương trình đào tạo chất lượng cao)','C01',50,NULL,NULL,'1','1','1','1',0,0,0,0,NULL,NULL,NULL,NULL,750,23.5,280),
-(31,'7340302','Kiểm toán','C01',60,NULL,NULL,'1','1','1','1',0,0,0,0,NULL,NULL,NULL,NULL,770,24.05,287.5),
-(32,'7340406','Quản trị văn phòng','C04',70,NULL,NULL,'1','1','1','1',0,0,0,0,NULL,NULL,NULL,NULL,799,25.05,297.5),
-(33,'7380101','Luật','C03',210,NULL,NULL,'1','1','1','1',0,0,0,0,NULL,NULL,NULL,NULL,834,24.76,305),
-(34,'7440301','Khoa học môi trường','A00',30,NULL,NULL,'1','1','1','1',0,0,0,0,NULL,NULL,NULL,NULL,811,21,245),
-(35,'7460108','Khoa học dữ liệu','A00',80,NULL,NULL,'1','1','1','1',0,0,0,0,NULL,NULL,NULL,NULL,887,23.99,290),
-(36,'7460112','Toán ứng dụng','A00',90,NULL,NULL,'1','1','1','1',0,0,0,0,NULL,NULL,NULL,NULL,902,24.94,297.5),
-(37,'7480103','Kỹ thuật phần mềm','A00',110,NULL,NULL,'1','1','1','1',0,0,0,0,NULL,NULL,NULL,NULL,926,24.34,320),
-(38,'7480107','Trí tuệ nhân tạo','A00',80,NULL,NULL,'1','1','1','1',0,0,0,0,NULL,NULL,NULL,NULL,861,22.27,290),
-(39,'7480201','Công nghệ thông tin','A00',400,NULL,NULL,'1','1','1','1',0,0,0,0,NULL,NULL,NULL,NULL,889,23.82,290),
-(40,'7480201-CLC','Công nghệ thông tin (Chương trình đào tạo chất lượng cao)','A00',350,NULL,NULL,'1','1','1','1',0,0,0,0,NULL,NULL,NULL,NULL,834,22.45,290),
-(41,'7510301','Công nghệ kỹ thuật điện, điện tử','A00',45,NULL,NULL,'1','1','1','1',0,0,0,0,NULL,NULL,NULL,NULL,882,24,275),
-(42,'7510302','Công nghệ kỹ thuật điện tử – viễn thông','A00',45,NULL,NULL,'1','1','1','1',0,0,0,0,NULL,NULL,NULL,NULL,834,23.75,275),
-(43,'7510406','Công nghệ kỹ thuật môi trường','A00',30,NULL,NULL,'1','1','1','1',0,0,0,0,NULL,NULL,NULL,NULL,787,21.37,245),
-(44,'7520201','Kỹ thuật điện','A00',30,NULL,NULL,'1','1','1','1',0,0,0,0,NULL,NULL,NULL,NULL,830,23.33,275),
-(45,'7520207','Kỹ thuật điện tử - viễn thông (Thiết kế vi mạch)','A00',90,NULL,NULL,'1','1','1','1',0,0,0,0,NULL,NULL,NULL,NULL,866,24.08,275),
-(46,'7810101','Du lịch','C00',120,NULL,NULL,'1','1','1','1',0,0,0,0,NULL,NULL,NULL,NULL,806,25.81,297.5),
-(47,'7810202','Quản trị nhà hàng và dịch vụ ăn uống','A01',60,NULL,NULL,'1','1','1','1',0,0,0,0,NULL,NULL,NULL,NULL,821,23.51,282.5);
+INSERT INTO `xt_nganh` VALUES (1,'7140114','Quản lý giáo dục','C04',40,NULL,NULL,'1','0','1','1',10,0,10,20,NULL,NULL,NULL,NULL,830,15,290),(2,'7140201','Giáo dục Mầm non','M01',200,NULL,NULL,'0','0','1','0',0,0,0,200,NULL,NULL,NULL,NULL,NULL,23,NULL),(3,'7140202','Giáo dục Tiểu học','D01',200,NULL,NULL,'1','0','1','0',30,0,0,170,NULL,NULL,NULL,NULL,NULL,23.5,NULL),(4,'7140205','Giáo dục chính trị','C00',10,NULL,NULL,'1','0','1','0',0,0,0,10,NULL,NULL,NULL,NULL,NULL,26.5,NULL),(5,'7140209','Sư phạm Toán học','A00',40,NULL,NULL,'1','0','1','0',10,0,0,30,NULL,NULL,NULL,NULL,NULL,27.5,NULL),(6,'7140211','Sư phạm Vật lý','A00',10,NULL,NULL,'1','0','1','0',0,0,0,10,NULL,NULL,NULL,NULL,NULL,26,NULL),(7,'7140212','Sư phạm Hoá học','A00',10,NULL,NULL,'1','0','1','0',0,0,0,10,NULL,NULL,NULL,NULL,NULL,26.5,NULL),(8,'7140213','Sư phạm Sinh học','B00',10,NULL,NULL,'1','0','1','0',0,0,0,10,NULL,NULL,NULL,NULL,NULL,25,NULL),(9,'7140217','Sư phạm Ngữ văn','C00',50,NULL,NULL,'1','0','1','0',10,0,0,40,NULL,NULL,NULL,NULL,NULL,28,NULL),(10,'7140218','Sư phạm Lịch sử','C00',10,NULL,NULL,'1','0','1','0',0,0,0,10,NULL,NULL,NULL,NULL,NULL,27,NULL),(11,'7140219','Sư phạm Địa lý','C00',10,NULL,NULL,'1','0','1','0',0,0,0,10,NULL,NULL,NULL,NULL,NULL,26,NULL),(12,'7140221','Sư phạm Âm nhạc','N01',75,NULL,NULL,'1','0','1','0',10,0,0,65,NULL,NULL,NULL,NULL,NULL,23,NULL),(13,'7140222','Sư phạm Mỹ thuật','H00',75,NULL,NULL,'1','0','1','0',10,0,0,65,NULL,NULL,NULL,NULL,NULL,21,NULL),(14,'7140231','Sư phạm Tiếng Anh','D01',130,NULL,NULL,'1','0','1','0',30,0,0,100,NULL,NULL,NULL,NULL,NULL,27,NULL),(15,'7140247','Sư phạm Khoa học tự nhiên (đào tạo giáo viên THCS)','A00',60,NULL,NULL,'1','0','1','0',10,0,0,50,NULL,NULL,NULL,NULL,NULL,25.5,NULL),(16,'7140249','Sư phạm Lịch sử - Địa lí (đào tạo giáo viên THCS)','C00',40,NULL,NULL,'1','0','1','0',10,0,0,30,NULL,NULL,NULL,NULL,NULL,27,NULL),(17,'7220201','Ngôn ngữ Anh','D01',230,NULL,NULL,'1','1','1','1',30,50,50,100,NULL,NULL,NULL,NULL,880,25,320),(18,'7220201-CLC','Ngôn ngữ Anh (Chương trình đào tạo chất lượng cao)','D01',130,NULL,NULL,'1','1','1','1',20,20,20,70,NULL,NULL,NULL,NULL,895,25,320),(19,'7229010','Lịch sử','C00',50,NULL,NULL,'1','1','1','1',10,10,10,20,NULL,NULL,NULL,NULL,NULL,24,NULL),(20,'7310401','Tâm lý học','D01',110,NULL,NULL,'1','1','1','1',20,20,20,50,NULL,NULL,NULL,NULL,888,24.5,295),(21,'7310501','Địa lý học','C00',50,NULL,NULL,'1','1','1','1',10,10,10,20,NULL,NULL,NULL,NULL,NULL,26,NULL),(22,'7310601','Quốc tế học','D01',110,NULL,NULL,'1','1','1','1',10,20,10,70,NULL,NULL,NULL,NULL,835,23.6,267.5),(23,'7310630','Việt Nam học','C00',150,NULL,NULL,'1','1','1','1',30,30,30,60,NULL,NULL,NULL,NULL,732,25,290),(24,'7320201','Thông tin - Thư viện','C04',45,NULL,NULL,'1','1','1','1',5,10,10,20,NULL,NULL,NULL,NULL,750,26,250),(25,'7340101','Quản trị kinh doanh','A01',320,NULL,NULL,'1','1','1','1',30,70,70,150,NULL,NULL,NULL,NULL,820,25.5,295.5),(26,'7340101-CLC','Quản trị kinh doanh (Chương trình đào tạo chất lượng cao)','D01',100,NULL,NULL,'1','1','1','1',10,20,20,50,NULL,NULL,NULL,NULL,810,24,300),(27,'7340120','Kinh doanh quốc tế','A01',210,NULL,NULL,'1','1','1','1',30,50,50,80,NULL,NULL,NULL,NULL,810,26.2,310.5),(28,'7340201','Tài chính - Ngân hàng','C01',500,NULL,NULL,'1','1','1','1',50,120,130,200,NULL,NULL,NULL,NULL,825,25.5,325.5),(29,'7340301','Kế toán','C01',380,NULL,NULL,'1','1','1','1',50,80,100,150,NULL,NULL,NULL,NULL,780,24.5,290),(30,'7340301-CLC','Kế toán (Chương trình đào tạo chất lượng cao)','C01',50,NULL,NULL,'1','1','1','1',10,10,10,20,NULL,NULL,NULL,NULL,750,23.5,280),(31,'7340302','Kiểm toán','C01',70,NULL,NULL,'1','1','1','1',10,20,20,20,NULL,NULL,NULL,NULL,770,24.05,287.5),(32,'7340406','Quản trị văn phòng','C04',60,NULL,NULL,'1','1','1','1',5,15,10,30,NULL,NULL,NULL,NULL,799,25.05,297.5),(33,'7380101','Luật','C03',210,NULL,NULL,'1','1','1','1',30,50,30,100,NULL,NULL,NULL,NULL,834,24.76,305),(34,'7440301','Khoa học môi trường','A00',40,NULL,NULL,'1','1','1','1',5,10,5,20,NULL,NULL,NULL,NULL,811,21,245),(35,'7460108','Khoa học dữ liệu','A00',90,NULL,NULL,'1','1','1','1',10,20,20,40,NULL,NULL,NULL,NULL,887,23.99,290),(36,'7460112','Toán ứng dụng','A00',100,NULL,NULL,'1','1','1','1',5,25,20,50,NULL,NULL,NULL,NULL,902,24.94,297.5),(37,'7480103','Kỹ thuật phần mềm','A00',90,NULL,NULL,'1','1','1','1',10,20,10,50,NULL,NULL,NULL,NULL,926,24.34,320),(38,'7480107','Trí tuệ nhân tạo','A00',110,NULL,NULL,'1','1','1','1',10,20,20,60,NULL,NULL,NULL,NULL,861,22.27,290),(39,'7480201','Công nghệ thông tin','A00',400,NULL,NULL,'1','1','1','1',30,80,70,220,NULL,NULL,NULL,NULL,889,23.82,290),(40,'7480201-CLC','Công nghệ thông tin (Chương trình đào tạo chất lượng cao)','A00',350,NULL,NULL,'1','1','1','1',30,100,70,150,NULL,NULL,NULL,NULL,834,22.45,290),(41,'7510301','Công nghệ kỹ thuật điện, điện tử','A00',35,NULL,NULL,'1','1','1','1',5,10,10,10,NULL,NULL,NULL,NULL,882,24,275),(42,'7510302','Công nghệ kỹ thuật điện tử – viễn thông','A00',45,NULL,NULL,'1','1','1','1',5,10,10,20,NULL,NULL,NULL,NULL,834,23.75,275),(43,'7510406','Công nghệ kỹ thuật môi trường','A00',40,NULL,NULL,'1','1','1','1',5,10,5,20,NULL,NULL,NULL,NULL,787,21.37,245),(44,'7520201','Kỹ thuật điện','A00',40,NULL,NULL,'1','1','1','1',5,10,5,20,NULL,NULL,NULL,NULL,830,23.33,275),(46,'7810101','Du lịch','C00',100,NULL,NULL,'1','1','1','1',10,30,20,40,NULL,NULL,NULL,NULL,806,25.81,297.5),(47,'7810202','Quản trị nhà hàng và dịch vụ ăn uống','A01',60,NULL,NULL,'1','1','1','1',10,20,10,20,NULL,NULL,NULL,NULL,821,23.51,282.5);
 /*!40000 ALTER TABLE `xt_nganh` ENABLE KEYS */;
 UNLOCK TABLES;
 
@@ -297,13 +251,13 @@ DROP TABLE IF EXISTS `xt_nganh_tohop`;
 /*!50503 SET character_set_client = utf8mb4 */;
 CREATE TABLE `xt_nganh_tohop` (
   `id` int NOT NULL AUTO_INCREMENT,
-  `manganh` varchar(45) COLLATE utf8mb3_unicode_ci NOT NULL,
-  `matohop` varchar(45) COLLATE utf8mb3_unicode_ci NOT NULL,
+  `manganh` varchar(45) CHARACTER SET utf8mb3 COLLATE utf8mb3_unicode_ci NOT NULL,
+  `matohop` varchar(45) CHARACTER SET utf8mb3 COLLATE utf8mb3_unicode_ci NOT NULL,
   `th_mon1` varchar(10) CHARACTER SET utf8mb3 COLLATE utf8mb3_general_ci DEFAULT NULL,
   `hsmon1` int DEFAULT NULL,
-  `th_mon2` varchar(10) COLLATE utf8mb3_unicode_ci DEFAULT NULL,
+  `th_mon2` varchar(10) CHARACTER SET utf8mb3 COLLATE utf8mb3_unicode_ci DEFAULT NULL,
   `hsmon2` int DEFAULT NULL,
-  `th_mon3` varchar(10) COLLATE utf8mb3_unicode_ci DEFAULT NULL,
+  `th_mon3` varchar(10) CHARACTER SET utf8mb3 COLLATE utf8mb3_unicode_ci DEFAULT NULL,
   `hsmon3` int DEFAULT NULL,
   `tb_keys` varchar(45) CHARACTER SET utf8mb3 COLLATE utf8mb3_general_ci DEFAULT NULL COMMENT 'manganh_matohop',
   `N1` int DEFAULT NULL,
@@ -351,8 +305,8 @@ CREATE TABLE `xt_nguyenvongxettuyen` (
   `diem_xettuyen` double DEFAULT NULL,
   `nv_ketqua` varchar(45) CHARACTER SET utf8mb3 COLLATE utf8mb3_general_ci DEFAULT NULL,
   `nv_keys` varchar(45) CHARACTER SET utf8mb3 COLLATE utf8mb3_general_ci DEFAULT NULL,
-  `tt_phuongthuc` varchar(45) COLLATE utf8mb4_unicode_ci DEFAULT NULL,
-  `tt_thm` varchar(45) COLLATE utf8mb4_unicode_ci DEFAULT NULL,
+  `tt_phuongthuc` varchar(45) CHARACTER SET utf8mb4 COLLATE utf8mb4_unicode_ci DEFAULT NULL,
+  `tt_thm` varchar(45) CHARACTER SET utf8mb4 COLLATE utf8mb4_unicode_ci DEFAULT NULL,
   PRIMARY KEY (`idnv`),
   UNIQUE KEY `nv_keys_UNIQUE` (`nv_keys`)
 ) ENGINE=InnoDB AUTO_INCREMENT=164 DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_unicode_ci;
@@ -377,7 +331,7 @@ DROP TABLE IF EXISTS `xt_phanquyen`;
 /*!50503 SET character_set_client = utf8mb4 */;
 CREATE TABLE `xt_phanquyen` (
   `id_tai_khoan` int NOT NULL,
-  `ten_bang` varchar(50) COLLATE utf8mb4_unicode_ci NOT NULL,
+  `ten_bang` varchar(50) CHARACTER SET utf8mb4 COLLATE utf8mb4_unicode_ci NOT NULL,
   `quyen_xem` int DEFAULT NULL,
   `quyen_them` int DEFAULT NULL,
   `quyen_sua` int DEFAULT NULL,
@@ -406,8 +360,8 @@ DROP TABLE IF EXISTS `xt_quytac_giaithuong`;
 /*!50503 SET character_set_client = utf8mb4 */;
 CREATE TABLE `xt_quytac_giaithuong` (
   `id_quytac` int NOT NULL AUTO_INCREMENT,
-  `cap_giai` varchar(50) COLLATE utf8mb4_unicode_ci NOT NULL,
-  `loai_giai` varchar(50) COLLATE utf8mb4_unicode_ci NOT NULL,
+  `cap_giai` varchar(50) CHARACTER SET utf8mb4 COLLATE utf8mb4_unicode_ci NOT NULL,
+  `loai_giai` varchar(50) CHARACTER SET utf8mb4 COLLATE utf8mb4_unicode_ci NOT NULL,
   `xet_tuyen_thang` int DEFAULT NULL,
   `do_uu_tien` int DEFAULT '0',
   PRIMARY KEY (`id_quytac`)
@@ -433,9 +387,9 @@ DROP TABLE IF EXISTS `xt_taikhoan`;
 /*!50503 SET character_set_client = utf8mb4 */;
 CREATE TABLE `xt_taikhoan` (
   `id_tai_khoan` int NOT NULL AUTO_INCREMENT,
-  `ten_dang_nhap` varchar(50) COLLATE utf8mb4_unicode_ci NOT NULL,
-  `mat_khau` varchar(255) COLLATE utf8mb4_unicode_ci NOT NULL,
-  `ho_ten` varchar(100) COLLATE utf8mb4_unicode_ci NOT NULL,
+  `ten_dang_nhap` varchar(50) CHARACTER SET utf8mb4 COLLATE utf8mb4_unicode_ci NOT NULL,
+  `mat_khau` varchar(255) CHARACTER SET utf8mb4 COLLATE utf8mb4_unicode_ci NOT NULL,
+  `ho_ten` varchar(100) CHARACTER SET utf8mb4 COLLATE utf8mb4_unicode_ci NOT NULL,
   `trang_thai` int DEFAULT NULL,
   PRIMARY KEY (`id_tai_khoan`),
   UNIQUE KEY `ten_dang_nhap` (`ten_dang_nhap`)
@@ -461,7 +415,7 @@ DROP TABLE IF EXISTS `xt_thisinhxettuyen25`;
 /*!50503 SET character_set_client = utf8mb4 */;
 CREATE TABLE `xt_thisinhxettuyen25` (
   `idthisinh` int NOT NULL AUTO_INCREMENT,
-  `cccd` varchar(20) COLLATE utf8mb4_unicode_ci DEFAULT NULL,
+  `cccd` varchar(20) CHARACTER SET utf8mb4 COLLATE utf8mb4_unicode_ci DEFAULT NULL,
   `sobaodanh` varchar(45) CHARACTER SET utf8mb3 COLLATE utf8mb3_general_ci DEFAULT NULL,
   `ho` varchar(100) CHARACTER SET utf8mb3 COLLATE utf8mb3_unicode_ci DEFAULT NULL,
   `ten` varchar(100) CHARACTER SET utf8mb3 COLLATE utf8mb3_unicode_ci DEFAULT NULL,
@@ -474,12 +428,12 @@ CREATE TABLE `xt_thisinhxettuyen25` (
   `updated_at` datetime(6) DEFAULT NULL,
   `doi_tuong` varchar(45) CHARACTER SET utf8mb3 COLLATE utf8mb3_general_ci DEFAULT NULL,
   `khu_vuc` varchar(45) CHARACTER SET utf8mb3 COLLATE utf8mb3_general_ci DEFAULT NULL,
-  `dienThoai` varchar(255) COLLATE utf8mb4_unicode_ci DEFAULT NULL,
-  `doiTuong` varchar(255) COLLATE utf8mb4_unicode_ci DEFAULT NULL,
-  `gioiTinh` varchar(255) COLLATE utf8mb4_unicode_ci DEFAULT NULL,
-  `khuVuc` varchar(255) COLLATE utf8mb4_unicode_ci DEFAULT NULL,
+  `dienThoai` varchar(255) CHARACTER SET utf8mb4 COLLATE utf8mb4_unicode_ci DEFAULT NULL,
+  `doiTuong` varchar(255) CHARACTER SET utf8mb4 COLLATE utf8mb4_unicode_ci DEFAULT NULL,
+  `gioiTinh` varchar(255) CHARACTER SET utf8mb4 COLLATE utf8mb4_unicode_ci DEFAULT NULL,
+  `khuVuc` varchar(255) CHARACTER SET utf8mb4 COLLATE utf8mb4_unicode_ci DEFAULT NULL,
   `ngaySinh` datetime(6) DEFAULT NULL,
-  `noiSinh` varchar(255) COLLATE utf8mb4_unicode_ci DEFAULT NULL,
+  `noiSinh` varchar(255) CHARACTER SET utf8mb4 COLLATE utf8mb4_unicode_ci DEFAULT NULL,
   `updatedAt` datetime(6) DEFAULT NULL,
   PRIMARY KEY (`idthisinh`),
   UNIQUE KEY `cccd_UNIQUE` (`cccd`)
@@ -515,7 +469,7 @@ DROP TABLE IF EXISTS `xt_tohop_monthi`;
 /*!50503 SET character_set_client = utf8mb4 */;
 CREATE TABLE `xt_tohop_monthi` (
   `idtohop` int NOT NULL AUTO_INCREMENT,
-  `matohop` varchar(45) COLLATE utf8mb3_unicode_ci NOT NULL,
+  `matohop` varchar(45) CHARACTER SET utf8mb3 COLLATE utf8mb3_unicode_ci NOT NULL,
   `mon1` varchar(10) CHARACTER SET utf8mb3 COLLATE utf8mb3_general_ci NOT NULL,
   `mon2` varchar(10) CHARACTER SET utf8mb3 COLLATE utf8mb3_general_ci NOT NULL,
   `mon3` varchar(10) CHARACTER SET utf8mb3 COLLATE utf8mb3_general_ci NOT NULL,
@@ -545,4 +499,4 @@ SET @@SESSION.SQL_LOG_BIN = @MYSQLDUMP_TEMP_LOG_BIN;
 /*!40101 SET COLLATION_CONNECTION=@OLD_COLLATION_CONNECTION */;
 /*!40111 SET SQL_NOTES=@OLD_SQL_NOTES */;
 
--- Dump completed on 2026-04-23 19:15:03
+-- Dump completed on 2026-04-24 14:00:39
