@@ -211,24 +211,37 @@ public class taiKhoanGUI extends BaseTableForNguyenVongGUIonly {
         int modelIndex = table.convertRowIndexToModel(row);
         int absoluteIndex = (currentPage - 1) * rowsPerPage + modelIndex;
 
-        taiKhoanETT tkCu = bus.ds.get(absoluteIndex);
+        // Lấy ID dòng đang chọn
+        Vector selectedRowData = fullDataList.get(absoluteIndex);
+        int idCanTim = (int) selectedRowData.get(0);
 
-        JFrame topFrame = (JFrame) SwingUtilities.windowForComponent(this);
-        updateTaiKhoan dialog = new updateTaiKhoan(topFrame, true, tkCu);
-        dialog.setVisible(true);
+        // Tìm đúng object trong BUS
+        taiKhoanETT tkCu = null;
+        for (taiKhoanETT item : bus.ds) {
+            if (item.getIdTaiKhoan() == idCanTim) {
+                tkCu = item;
+                break;
+            }
+        }
 
-        if (dialog.getXacNhan()) {
-            taiKhoanETT tkMoi = dialog.getTaiKhoanETT();
+        if (tkCu != null) {
+            JFrame topFrame = (JFrame) SwingUtilities.windowForComponent(this);
+            updateTaiKhoan dialog = new updateTaiKhoan(topFrame, true, tkCu);
+            dialog.setVisible(true);
 
-            Vector rowData = new Vector();
-            rowData.add(tkMoi.getIdTaiKhoan());
-            rowData.add(tkMoi.getTenDangNhap());
-            rowData.add("******");
-            rowData.add(tkMoi.getHoTen());
-            rowData.add(tkMoi.getTrangThai() == 1 ? "Hoạt động" : "Bị khóa");
-            fullDataList.set(absoluteIndex, rowData);
+            if (dialog.getXacNhan()) {
+                taiKhoanETT tkMoi = dialog.getTaiKhoanETT();
 
-            renderCurrentPage();
+                Vector rowData = new Vector();
+                rowData.add(tkMoi.getIdTaiKhoan());
+                rowData.add(tkMoi.getTenDangNhap());
+                rowData.add("******");
+                rowData.add(tkMoi.getHoTen());
+                rowData.add(tkMoi.getTrangThai() == 1 ? "Hoạt động" : "Bị khóa");
+
+                fullDataList.set(absoluteIndex, rowData);
+                renderCurrentPage();
+            }
         }
     }
 
@@ -240,10 +253,25 @@ public class taiKhoanGUI extends BaseTableForNguyenVongGUIonly {
             return;
         }
 
-        int id = Integer.parseInt(tableModel.getValueAt(row, 0).toString());
-        if (id == 1) {
+        int modelIndex = table.convertRowIndexToModel(row);
+        int absoluteIndex = (currentPage - 1) * rowsPerPage + modelIndex;
+
+        // Lấy ID
+        Vector selectedRowData = fullDataList.get(absoluteIndex);
+        int idCanTim = (int) selectedRowData.get(0);
+
+        if (idCanTim == 1) {
             JOptionPane.showMessageDialog(this, "Không thể xóa tài khoản Admin!!!");
             return;
+        }
+
+        // Tìm object cần xóa
+        taiKhoanETT tkCanXoa = null;
+        for (taiKhoanETT item : bus.ds) {
+            if (item.getIdTaiKhoan() == idCanTim) {
+                tkCanXoa = item;
+                break;
+            }
         }
 
         JFrame topFrame = (JFrame) SwingUtilities.windowForComponent(this);
@@ -251,20 +279,19 @@ public class taiKhoanGUI extends BaseTableForNguyenVongGUIonly {
         dialog.setVisible(true);
 
         if (dialog.getXacNhanXoa()) {
-            int modelIndex = table.convertRowIndexToModel(row);
-            int absoluteIndex = (currentPage - 1) * rowsPerPage + modelIndex;
-            
-            String username = tableModel.getValueAt(row, 1).toString();
 
-            if (bus.xoaTaiKhoan(username)) {
+            if (tkCanXoa != null && bus.xoaTaiKhoan(tkCanXoa.getTenDangNhap())) {
+
                 fullDataList.remove(absoluteIndex);
 
                 totalPages = (int) Math.ceil((double) fullDataList.size() / rowsPerPage);
                 if (currentPage > totalPages && totalPages > 0) {
                     currentPage = totalPages;
                 }
+
                 renderCurrentPage();
-            } else {
+            } 
+            else {
                 JOptionPane.showMessageDialog(this, "Xóa tài khoản thất bại!");
             }
         }
@@ -397,16 +424,29 @@ public class taiKhoanGUI extends BaseTableForNguyenVongGUIonly {
             return;
         }
 
-        String tenDangNhap = tableModel.getValueAt(row, 1).toString();
-        taiKhoanETT tk = bus.layTheoUsername(tenDangNhap);
+        int modelIndex = table.convertRowIndexToModel(row);
+        int absoluteIndex = (currentPage - 1) * rowsPerPage + modelIndex;
 
-        if (tk == null) {
-            JOptionPane.showMessageDialog(this, "Không tìm thấy tài khoản!", "Lỗi", JOptionPane.ERROR_MESSAGE);
-            return;
+        // Lấy ID
+        Vector selectedRowData = fullDataList.get(absoluteIndex);
+        int idCanTim = (int) selectedRowData.get(0);
+
+        // Tìm object
+        taiKhoanETT data = null;
+        for (taiKhoanETT item : bus.ds) {
+            if (item.getIdTaiKhoan() == idCanTim) {
+                data = item;
+                break;
+            }
         }
 
-        JFrame topFrame = (JFrame) SwingUtilities.getWindowAncestor(this);
-        detailTaiKhoan dialog = new detailTaiKhoan(topFrame, true, tk);
-        dialog.setVisible(true);
+        if (data != null) {
+            JFrame topFrame = (JFrame) SwingUtilities.windowForComponent(this);
+            detailTaiKhoan dialog = new detailTaiKhoan(topFrame, true, data);
+            dialog.setVisible(true);
+        } 
+        else {
+            JOptionPane.showMessageDialog(this, "Không tìm thấy tài khoản!");
+        }
     }
 }

@@ -179,34 +179,42 @@ public class toHopGUI extends BaseTableGUI {
         int row = table.getSelectedRow();
 
         if (row != -1) {
-
             int modelIndex = table.convertRowIndexToModel(row);
             int absoluteIndex = (currentPage - 1) * rowsPerPage + modelIndex;
 
-            toHopETT toHopCu = busToHop.ds.get(absoluteIndex);
+            // Lấy ID của dòng đang chọn
+            Vector selectedRowData = fullDataList.get(absoluteIndex);
+            int idCanTim = (int) selectedRowData.get(0);
 
-            JFrame topFrame = (JFrame) SwingUtilities.windowForComponent(this);
+            // Tìm đối tượng chuẩn xác trong danh sách gốc
+            toHopETT data = null;
+            for (toHopETT item : busToHop.ds) {
+                if (item.getIdtohop() == idCanTim) {
+                    data = item;
+                    break;
+                }
+            }
 
-            updateToHop dialog = new updateToHop(topFrame, true, toHopCu);
+            if (data != null) {
+                JFrame topFrame = (JFrame) SwingUtilities.windowForComponent(this);
+                updateToHop dialog = new updateToHop(topFrame, true, data);
+                dialog.setVisible(true);
 
-            dialog.setVisible(true);
+                if (dialog.getXacNhan()) {
 
-            if (dialog.getXacNhan()) {
+                    toHopETT thMoi = dialog.getToHopETT();
 
-                toHopETT thMoi = dialog.getToHopETT();
+                    Vector rowData = new Vector();
+                    rowData.add(thMoi.getIdtohop());
+                    rowData.add(thMoi.getMatohop());
+                    rowData.add(thMoi.getMon1());
+                    rowData.add(thMoi.getMon2());
+                    rowData.add(thMoi.getMon3());
+                    rowData.add(thMoi.getTentohop());
 
-                Vector rowData = new Vector();
-
-                rowData.add(absoluteIndex + 1);
-                rowData.add(thMoi.getMatohop());
-                rowData.add(thMoi.getMon1());
-                rowData.add(thMoi.getMon2());
-                rowData.add(thMoi.getMon3());
-                rowData.add(thMoi.getTentohop());
-
-                fullDataList.set(absoluteIndex, rowData);
-
-                renderCurrentPage();
+                    fullDataList.set(absoluteIndex, rowData);
+                    renderCurrentPage();
+                }
             }
 
         } else {
@@ -217,15 +225,12 @@ public class toHopGUI extends BaseTableGUI {
     // ================= XÓA =================
 
     private void hienThiDialogXoa() {
-
         int row = table.getSelectedRow();
 
         if (row != -1) {
 
             JFrame topFrame = (JFrame) SwingUtilities.windowForComponent(this);
-
             deleteToHop dialog = new deleteToHop(topFrame, true);
-
             dialog.setVisible(true);
 
             if (dialog.getXacNhanXoa()) {
@@ -233,9 +238,20 @@ public class toHopGUI extends BaseTableGUI {
                 int modelIndex = table.convertRowIndexToModel(row);
                 int absoluteIndex = (currentPage - 1) * rowsPerPage + modelIndex;
 
-                toHopETT toHopXoa = busToHop.ds.get(absoluteIndex);
+                // Lấy ID của dòng đang chọn
+                Vector selectedRowData = fullDataList.get(absoluteIndex);
+                int idCanTim = (int) selectedRowData.get(0);
 
-                if (busToHop.xoaToHop(toHopXoa)) {
+                // Tìm đối tượng chuẩn xác để xóa
+                toHopETT toHopCanXoa = null;
+                for (toHopETT item : busToHop.ds) {
+                    if (item.getIdtohop() == idCanTim) {
+                        toHopCanXoa = item;
+                        break;
+                    }
+                }
+
+                if (toHopCanXoa != null && busToHop.xoaToHop(toHopCanXoa)) {
 
                     fullDataList.remove(absoluteIndex);
 
@@ -270,16 +286,26 @@ public class toHopGUI extends BaseTableGUI {
         int modelIndex = table.convertRowIndexToModel(row);
         int absoluteIndex = (currentPage - 1) * rowsPerPage + modelIndex;
 
-        toHopETT th = busToHop.ds.get(absoluteIndex);
+        // Lấy ID của dòng đang chọn
+        Vector selectedRowData = fullDataList.get(absoluteIndex);
+        int idCanTim = (int) selectedRowData.get(0);
 
-        if (th == null) {
-            JOptionPane.showMessageDialog(this, "Không tìm thấy tổ hợp!", "Lỗi", JOptionPane.ERROR_MESSAGE);
-            return;
+        // Tìm đối tượng chuẩn xác
+        toHopETT data = null;
+        for (toHopETT item : busToHop.ds) {
+            if (item.getIdtohop() == idCanTim) {
+                data = item;
+                break;
+            }
         }
 
-        JFrame topFrame = (JFrame) SwingUtilities.getWindowAncestor(this);
-        detailToHop dialog = new detailToHop(topFrame, true, th);
-        dialog.setVisible(true);
+        if (data != null) {
+            JFrame topFrame = (JFrame) SwingUtilities.windowForComponent(this);
+            detailToHop dialog = new detailToHop(topFrame, true, data);
+            dialog.setVisible(true);
+        } else {
+            JOptionPane.showMessageDialog(this, "Không tìm thấy tổ hợp!");
+        }
     }
 
     // ================= REFRESH =================
