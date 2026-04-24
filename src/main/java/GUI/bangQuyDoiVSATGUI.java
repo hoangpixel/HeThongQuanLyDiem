@@ -1,7 +1,9 @@
 package GUI;
 
 import BUS.bangQuyDoiBUS;
+import BUS.phanQuyenBUS;
 import Entity.bangQuyDoiETT;
+import EXCEL.ExcelHelper;
 import FUNC_GUI.deleteBangQuyDoi;
 import FUNC_GUI.detailBangQuyDoi;
 import FUNC_GUI.insertBangQuyDoi;
@@ -38,6 +40,7 @@ public class bangQuyDoiVSATGUI extends BaseTableGUI {
         btnSua.addActionListener(e -> hienThiDialogSua());
         btnXoa.addActionListener(e -> hienThiDialogXoa());
         btnChiTiet.addActionListener(e -> thucHienChiTiet());
+        btnExcel.addActionListener(e -> ExcelHelper.xuatJTableRaExcel(table, this, "BangQuyDoiVSAT"));
         btnReFresh.addActionListener(e -> thucHienRefresh());
         btnTimKiem.addActionListener(e -> thucHienTimKiem());
         // Giả sử cột Phương thức nằm ở vị trí số 3, Tổ hợp số 4 (Nhớ đếm index từ 0
@@ -50,6 +53,39 @@ public class bangQuyDoiVSATGUI extends BaseTableGUI {
         // table.getColumnModel().getColumn(4).setMaxWidth(0);
         // table.getColumnModel().getColumn(4).setWidth(0);
         loadDataToTable();
+
+        phanQuyenGiaoDien();
+    }
+
+    private void phanQuyenGiaoDien() {
+        String bangHienTai = "xt_bangquydoi";
+
+        if (!phanQuyenBUS.checkQuyenXem(bangHienTai)) {
+            return;
+        }
+
+        btnThem.setEnabled(phanQuyenBUS.checkQuyenThem(bangHienTai));
+        btnSua.setEnabled(false);
+        btnXoa.setEnabled(false);
+        btnChiTiet.setEnabled(false);
+        btnExcel.setEnabled(phanQuyenBUS.checkQuyenThem(bangHienTai));
+
+        table.getSelectionModel().addListSelectionListener(e -> {
+            if (!e.getValueIsAdjusting()) {
+                SwingUtilities.invokeLater(() -> {
+                    boolean isSelected = table.getSelectedRow() != -1;
+                    if (isSelected) {
+                        btnSua.setEnabled(phanQuyenBUS.checkQuyenSua(bangHienTai));
+                        btnXoa.setEnabled(phanQuyenBUS.checkQuyenXoa(bangHienTai));
+                        btnChiTiet.setEnabled(phanQuyenBUS.checkQuyenXem(bangHienTai));
+                    } else {
+                        btnSua.setEnabled(false);
+                        btnXoa.setEnabled(false);
+                        btnChiTiet.setEnabled(false);
+                    }
+                });
+            }
+        });
     }
 
     private void thucHienChiTiet() {

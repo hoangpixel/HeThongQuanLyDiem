@@ -125,7 +125,12 @@ public class updateThiSinh extends javax.swing.JDialog {
         txtEmail.setText(data.getEmail());
         txtSoBaoDanh.setText(data.getSoBaoDanh());
         txtPassword.setText(data.getPassword());
-
+        txtCCCD.setEditable(false);
+        txtSoBaoDanh.setEditable(false);
+        txtCCCD.setEnabled(false);
+        txtSoBaoDanh.setEnabled(false);
+        txtCCCD.setBackground(new java.awt.Color(240, 240, 240));
+        txtSoBaoDanh.setBackground(new java.awt.Color(240, 240, 240));
         dateNgaySinh.setDate(data.getNgaySinh());
 
         cboNoiSinh1.setSelectedItem(data.getGioiTinh());
@@ -519,10 +524,10 @@ public class updateThiSinh extends javax.swing.JDialog {
     private void btnSuaActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_btnSuaActionPerformed
         // TODO add your handling code here:
         // 1. Kiểm tra bắt buộc nhập CCCD
-        if(txtCCCD.getText().trim().isEmpty()) {
-            JOptionPane.showMessageDialog(this, "Không được để trống CCCD!", "Thông báo", JOptionPane.ERROR_MESSAGE);
-            return;
-        }
+//        if(txtCCCD.getText().trim().isEmpty()) {
+//            JOptionPane.showMessageDialog(this, "Không được để trống CCCD!", "Thông báo", JOptionPane.ERROR_MESSAGE);
+//            return;
+//        }
         if (dateNgaySinh.getDate() == null) {
             JOptionPane.showMessageDialog(this, "Vui lòng chọn ngày sinh!");
             return;

@@ -5,6 +5,7 @@
 package GUI;
 
 import BUS.chungChiBUS;
+import BUS.phanQuyenBUS;
 import Entity.chungChiETT;
 import FUNC_GUI.insertChungChi;
 import FUNC_GUI.updateChungChi; 
@@ -41,6 +42,7 @@ public class chungChiGUI extends BaseTableGUI {
         // 3. Tự động bưng dữ liệu lên
         loadDataToTable();
         loadComboBox();
+        phanQuyenGiaoDien();
     }
 
     // Thiết lập danh sách các cột hiển thị cho Chứng chỉ
@@ -83,7 +85,42 @@ public class chungChiGUI extends BaseTableGUI {
         }
         setTableData(dataList);
     }
+    
+    private void phanQuyenGiaoDien() {
+        String bangHienTai = "xt_chungchi";
+        
+        if (!phanQuyenBUS.checkQuyenXem(bangHienTai)) {
+            return;
+        }
+        
+        btnThem.setEnabled(phanQuyenBUS.checkQuyenThem(bangHienTai)); 
+        btnSua.setEnabled(false); 
+        btnXoa.setEnabled(false);
+        // btnChiTiet.setEnabled(false);
+        // btnExcel.setEnabled(phanQuyenBUS.checkQuyenThem(bangHienTai));
 
+        table.getSelectionModel().addListSelectionListener(e -> {
+            if (!e.getValueIsAdjusting()) {
+                
+                SwingUtilities.invokeLater(new Runnable() {
+                    public void run() {
+                        boolean isSelected = table.getSelectedRow() != -1;
+                        
+                        if (isSelected) {
+                            btnSua.setEnabled(phanQuyenBUS.checkQuyenSua(bangHienTai));
+                            btnXoa.setEnabled(phanQuyenBUS.checkQuyenXoa(bangHienTai));
+                            btnChiTiet.setEnabled(phanQuyenBUS.checkQuyenXem(bangHienTai)); 
+                        } else {
+                            btnSua.setEnabled(false);
+                            btnXoa.setEnabled(false);
+                            btnChiTiet.setEnabled(false);
+                        }
+                    }
+                });
+            }
+        });
+    }
+    
     public void thucHienTimKiem() {
         String tim = txtTimKiem.getText().trim();
         int index = cbxTimKiem.getSelectedIndex();

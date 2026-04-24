@@ -202,8 +202,8 @@ public class nganhBUS {
                 java.util.ArrayList<String> row = data.get(i);
                 
                 try {
-                    // --- ĐỌC ID ĐỂ XÁC ĐỊNH LÀ THÊM HAY SỬA ---
-                    int idNganh = (int) parseDoubleSafe(row.get(0)); // Cột A: ID Ngành
+                    // --- ĐỌC ID ĐỂ XÁC ĐỊNH LÀ THÊM HAY SỬA (DÙNG HÀM GET SAFE) ---
+                    int idNganh = (int) parseDoubleSafe(getCellSafe(row, 0)); // Cột A: ID Ngành
                     boolean isUpdate = (idNganh > 0);
                     Entity.nganhETT ng = null;
                     
@@ -229,15 +229,15 @@ public class nganhBUS {
                         ng.setN_vsat("0");       ng.setSl_vsat(0);
                     }
 
-                    // --- CHỈ GHI ĐÈ NHỮNG CỘT CÓ TRONG EXCEL ---
-                    ng.setManganh(row.get(1));
-                    ng.setTennganh(row.get(2));
-                    ng.setN_tohopgoc(row.get(3));
-                    ng.setN_chitieu((int) parseDoubleSafe(row.get(4)));
-                    ng.setN_diemsanthpt(parseDoubleForNganh(row.get(5)));
-                    ng.setN_diemsanvsat(parseDoubleForNganh(row.get(6)));
-                    ng.setN_diemsandgnl(parseDoubleForNganh(row.get(7)));
-                    ng.setN_diemtrungtuyen(parseDoubleForNganh(row.get(8)));
+                    // --- CHỈ GHI ĐÈ NHỮNG CỘT CÓ TRONG EXCEL (DÙNG HÀM GET SAFE) ---
+                    ng.setManganh(getCellSafe(row, 1));
+                    ng.setTennganh(getCellSafe(row, 2));
+                    ng.setN_tohopgoc(getCellSafe(row, 3));
+                    ng.setN_chitieu((int) parseDoubleSafe(getCellSafe(row, 4)));
+                    ng.setN_diemsanthpt(parseDoubleForNganh(getCellSafe(row, 5)));
+                    ng.setN_diemsanvsat(parseDoubleForNganh(getCellSafe(row, 6)));
+                    ng.setN_diemsandgnl(parseDoubleForNganh(getCellSafe(row, 7)));
+                    ng.setN_diemtrungtuyen(parseDoubleForNganh(getCellSafe(row, 8)));
 
                     // --- QUYẾT ĐỊNH THÊM HAY SỬA XUỐNG DB ---
                     boolean success;
@@ -249,6 +249,7 @@ public class nganhBUS {
                         if (success) soDongThemMoi++; else soDongThatBai++;
                     }
                 } catch (Exception ex) {
+                    ex.printStackTrace(); // <--- Rất quan trọng: In lỗi ra console để dò
                     soDongThatBai++; 
                 }
             }
@@ -272,5 +273,12 @@ public class nganhBUS {
         if (value == null || value.trim().isEmpty()) return null;
         try { return Double.valueOf(value.trim()); } 
         catch (Exception e) { return null; }
+    }
+    
+    private String getCellSafe(java.util.ArrayList<String> row, int index) {
+        if (row != null && index < row.size()) {
+            return row.get(index);
+        }
+        return "";
     }
 }
