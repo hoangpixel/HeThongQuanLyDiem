@@ -243,7 +243,7 @@ public class thiSinhXetTuyenGUI extends BaseTableGUI {
                 renderCurrentPage(); 
             }
         } else {
-            javax.swing.JOptionPane.showMessageDialog(this, "Vui lòng chọn một nguyện vọng trên bảng để sửa!");
+            javax.swing.JOptionPane.showMessageDialog(this, "Vui lòng chọn một thí sinh trên bảng để sửa!");
         }
     }
     private void hienThiDialogXoaTS() {
