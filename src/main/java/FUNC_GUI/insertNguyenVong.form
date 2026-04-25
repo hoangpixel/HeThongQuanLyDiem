@@ -333,6 +333,9 @@
           </Properties>
         </Component>
         <Component class="javax.swing.JSpinner" name="txtThuTuNV">
+          <Properties>
+            <Property name="enabled" type="boolean" value="false"/>
+          </Properties>
         </Component>
         <Component class="javax.swing.JLabel" name="jLabel10">
           <Properties>

@@ -421,7 +421,7 @@ public class nguyenVongXetTuyenBUS {
                         nvHoaHau = pt;
                     }
                     // Đánh dấu "Rớt nội bộ" cho tất cả các thằng trước khi thi đấu vòng ngoài
-                    pt.setNvKetQua("Không xét"); 
+                    pt.setNvKetQua("Bỏ qua"); 
                 }
                 
                 // Thằng Hoa hậu được phục hồi trạng thái để lát nữa đi thi đấu
@@ -766,5 +766,15 @@ public class nguyenVongXetTuyenBUS {
             }
         }
         return dskq;
+    }
+    
+    public int phatSinhThuTuNguyenVongMoi(String cccd) 
+    {
+        if (cccd == null || cccd.isEmpty()) {
+            return 1;
+        }
+        nguyenVongXetTuyenDAO dao = new nguyenVongXetTuyenDAO();
+        int maxHienTai = dao.layThuTuNguyenVongLonNhat(cccd);
+        return maxHienTai + 1;
     }
 }

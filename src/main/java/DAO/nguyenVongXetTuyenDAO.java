@@ -175,4 +175,32 @@ public ArrayList<nguyenVongXetTuyenETT> layDanhSach() {
             return false;
         }
     }
+    
+    public int layThuTuNguyenVongLonNhat(String cccd) {
+        int maxThuTu = 0;
+        
+        Session session = HibernateUtil.getSessionFactory().openSession();
+        
+        try {
+            String hql = "SELECT MAX(nv.nvTt) FROM nguyenVongXetTuyenETT nv WHERE nv.nnCccd = :cccd";
+            
+            org.hibernate.query.Query<Integer> query = session.createQuery(hql, Integer.class);
+            query.setParameter("cccd", cccd);
+            
+            Integer result = query.uniqueResult();
+            
+            if (result != null) {
+                maxThuTu = result;
+            }
+            
+        } catch (Exception e) {
+            e.printStackTrace();
+        } finally {
+            if (session != null && session.isOpen()) {
+                session.close();
+            }
+        }
+        
+        return maxThuTu;
+    }
 }

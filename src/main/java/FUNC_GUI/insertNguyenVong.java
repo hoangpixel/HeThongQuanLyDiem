@@ -156,6 +156,8 @@ public class insertNguyenVong extends javax.swing.JDialog {
 
         txtDiemCong.setEditable(false);
 
+        txtThuTuNV.setEnabled(false);
+
         jLabel10.setFont(new java.awt.Font("Segoe UI", 0, 14)); // NOI18N
         jLabel10.setText("Độ lệch : ");
 
@@ -583,6 +585,10 @@ public class insertNguyenVong extends javax.swing.JDialog {
             // ------------------------------------------
 
             btnChonToHop.setEnabled(true);
+            nguyenVongXetTuyenBUS nvBus = new nguyenVongXetTuyenBUS();
+            int thuTuMoi = nvBus.phatSinhThuTuNguyenVongMoi(cccd);
+            
+            txtThuTuNV.setValue(thuTuMoi);
         }
     }//GEN-LAST:event_btnChonCCCThiSinhActionPerformed
 
