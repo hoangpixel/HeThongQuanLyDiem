@@ -170,7 +170,7 @@ public class insertNguyenVong extends javax.swing.JDialog {
         jLabel12.setText("Điểm ĐGNL : ");
 
         jLabel13.setFont(new java.awt.Font("Segoe UI", 0, 14)); // NOI18N
-        jLabel13.setText("Xét tuyển thẳng");
+        jLabel13.setText("Xét tuyển thẳng : ");
 
         txtDiemTHXT_DGNL.setEditable(false);
         txtDiemTHXT_DGNL.setText("0.0");
