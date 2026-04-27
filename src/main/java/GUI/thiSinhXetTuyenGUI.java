@@ -142,7 +142,7 @@ public class thiSinhXetTuyenGUI extends BaseTableGUI {
     // ==============================================================
     private void phanQuyenGiaoDien() 
     {
-        String bangHienTai = "xt_thisinhxettuyen";
+        String bangHienTai = "xt_thisinhxettuyen25";
         
         if (!phanQuyenBUS.checkQuyenXem(bangHienTai)) {
             return;

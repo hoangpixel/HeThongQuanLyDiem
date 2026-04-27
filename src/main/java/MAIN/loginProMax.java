@@ -212,77 +212,161 @@ private void styleInput(JTextField txt) {
     }
 
 // ================= LOGIN NÂNG CẤP (CÓ CHECK TRẠNG THÁI) =================
-    private void login() {
-        String user = txtTaiKhoan.getText().trim(); 
-        String pass = new String(txtMatKhau.getPassword()); 
+    // ================= LOGIN NÂNG CẤP (CÓ HIỆU ỨNG LOADING 2-3s) =================
+private void login() {
+    String user = txtTaiKhoan.getText().trim(); 
+    String pass = new String(txtMatKhau.getPassword()); 
 
-        System.out.println("🕵️ User đang nhập: [" + user + "]");
-        System.out.println("🕵️ Pass đang nhập: [" + pass + "]");
+    System.out.println("🕵️ User đang nhập: [" + user + "]");
+    System.out.println("🕵️ Pass đang nhập: [" + pass + "]");
 
-        btnDangNhap.setEnabled(false);
-        btnDangNhap.setText("Đang xử lý...");
+    // BƯỚC 1: Khóa nút, đổi text và set hiệu ứng xoay xoay (nếu có file GIF)
+    btnDangNhap.setEnabled(false);
+    btnDangNhap.setText("");
+    
+    /* 💡 MẸO: Tải một cái file loading.gif (nền trong suốt) bỏ vào thư mục /IMG/ 
+       rồi mở comment dòng dưới này ra để thấy nó xoay vòng vòng trên nút nha! */
+     btnDangNhap.setIcon(new ImageIcon(getClass().getResource("/IMG/loading.gif")));
 
-        // 🚀 Đổi từ SwingWorker<Boolean, Void> sang SwingWorker<Integer, Void>
-        SwingWorker<Integer, Void> worker = new SwingWorker<Integer, Void>() {
-            @Override
-            protected Integer doInBackground() throws Exception {
-                taiKhoanBUS tkBus = new taiKhoanBUS();
+    // 🚀 Vẫn xài SwingWorker như cũ để không làm đơ giao diện
+    SwingWorker<Integer, Void> worker = new SwingWorker<Integer, Void>() {
+        @Override
+        protected Integer doInBackground() throws Exception {
+            
+            // ⏳ BƯỚC 2: Cố tình "ngủ" 2.5s (2500 milliseconds) để khoe cái hiệu ứng loading
+            Thread.sleep(1500); 
+            
+            taiKhoanBUS tkBus = new taiKhoanBUS();
+            
+            // 1. Kiểm tra tài khoản và mật khẩu trước
+            if (tkBus.login(user, pass)) {
                 
-                // 1. Kiểm tra tài khoản và mật khẩu trước
-                if (tkBus.login(user, pass)) {
-                    
-                    // 2. Đã đúng pass rồi, giờ móc cái Trạng Thái ra kiểm tra
-                    // (Dùng Integer object nên nhớ check null phòng hờ rác DB)
-                    Integer trangThai = taiKhoanBUS.taiKhoanHienTai.getTrangThai();
-                    
-                    if (trangThai != null && trangThai == 0) {
-                        return 2; // TRẢ VỀ 2: TÀI KHOẢN BỊ KHÓA
-                    }
-                    
-                    // 3. Nếu mọi thứ OK thì nạp quyền
-                    phanQuyenBUS pqBus = new phanQuyenBUS();
-                    pqBus.loadQuyenLenRAM(taiKhoanBUS.taiKhoanHienTai.getIdTaiKhoan());
-                    return 1; // TRẢ VỀ 1: THÀNH CÔNG
+                // 2. Đã đúng pass rồi, giờ móc cái Trạng Thái ra kiểm tra
+                Integer trangThai = taiKhoanBUS.taiKhoanHienTai.getTrangThai();
+                
+                if (trangThai != null && trangThai == 0) {
+                    return 2; // TRẢ VỀ 2: TÀI KHOẢN BỊ KHÓA
                 }
                 
-                return 0; // TRẢ VỀ 0: SAI TÀI KHOẢN HOẶC MẬT KHẨU
+                // 3. Nếu mọi thứ OK thì nạp quyền
+                phanQuyenBUS pqBus = new phanQuyenBUS();
+                pqBus.loadQuyenLenRAM(taiKhoanBUS.taiKhoanHienTai.getIdTaiKhoan());
+                return 1; // TRẢ VỀ 1: THÀNH CÔNG
             }
+            
+            return 0; // TRẢ VỀ 0: SAI TÀI KHOẢN HOẶC MẬT KHẨU
+        }
 
-            @Override
-            protected void done() {
-                try {
-                    int result = get(); // Nhận mã số từ doInBackground gửi lên
-                    
-                    if (result == 1) {
-                        JOptionPane.showMessageDialog(loginProMax.this, "Đăng nhập thành công!");
-                        dispose();
-                        openMain();
-                    } 
-                    else if (result == 2) {
-                        // 🚨 BẮT ĐƯỢC THẰNG BỊ KHÓA
-                        JOptionPane.showMessageDialog(loginProMax.this, 
-                            "Tài khoản của bạn đã bị khóa!\nVui lòng liên hệ Admin Khoa CNTT để biết thêm chi tiết.", 
-                            "Cảnh báo bảo mật", 
-                            JOptionPane.WARNING_MESSAGE);
-                    } 
-                    else {
-                        JOptionPane.showMessageDialog(loginProMax.this, 
-                            "Sai tài khoản hoặc mật khẩu!", 
-                            "Lỗi đăng nhập", 
-                            JOptionPane.ERROR_MESSAGE);
-                    }
-                } catch (Exception ex) {
-                    ex.printStackTrace();
-                    JOptionPane.showMessageDialog(loginProMax.this, "Lỗi kết nối cơ sở dữ liệu!");
-                } finally {
-                    btnDangNhap.setEnabled(true);
-                    btnDangNhap.setText("Đăng nhập");
+        @Override
+        protected void done() {
+            try {
+                int result = get(); // Nhận mã số từ doInBackground gửi lên
+                
+                if (result == 1) {
+                    // Tắt hộp thoại thành công luôn cho nó "mượt", tự chuyển trang
+                     JOptionPane.showMessageDialog(loginProMax.this, "Đăng nhập thành công!"); 
+                    dispose();
+                    openMain();
+                } 
+                else if (result == 2) {
+                    // 🚨 BẮT ĐƯỢC THẰNG BỊ KHÓA
+                    JOptionPane.showMessageDialog(loginProMax.this, 
+                        "Tài khoản của bạn đã bị khóa!\nVui lòng liên hệ Admin Khoa CNTT để biết thêm chi tiết.", 
+                        "Cảnh báo bảo mật", 
+                        JOptionPane.WARNING_MESSAGE);
+                } 
+                else {
+                    JOptionPane.showMessageDialog(loginProMax.this, 
+                        "Sai tài khoản hoặc mật khẩu!", 
+                        "Lỗi đăng nhập", 
+                        JOptionPane.ERROR_MESSAGE);
                 }
+            } catch (Exception ex) {
+                ex.printStackTrace();
+                JOptionPane.showMessageDialog(loginProMax.this, "Lỗi kết nối cơ sở dữ liệu!");
+            } finally {
+                // BƯỚC 3: Dù thành công hay thất bại thì cũng phải trả lại nút Đăng nhập như cũ
+                btnDangNhap.setEnabled(true);
+                btnDangNhap.setText("Đăng nhập");
+                // Nhớ gỡ cái icon xoay vòng vòng ra
+                 btnDangNhap.setIcon(null); 
             }
-        };
+        }
+    };
 
-        worker.execute();
-    }
+    worker.execute();
+}
+//    private void login() {
+//        String user = txtTaiKhoan.getText().trim(); 
+//        String pass = new String(txtMatKhau.getPassword()); 
+//
+//        System.out.println("🕵️ User đang nhập: [" + user + "]");
+//        System.out.println("🕵️ Pass đang nhập: [" + pass + "]");
+//
+//        btnDangNhap.setEnabled(false);
+//        btnDangNhap.setText("Đang xử lý...");
+//
+//        // 🚀 Đổi từ SwingWorker<Boolean, Void> sang SwingWorker<Integer, Void>
+//        SwingWorker<Integer, Void> worker = new SwingWorker<Integer, Void>() {
+//            @Override
+//            protected Integer doInBackground() throws Exception {
+//                taiKhoanBUS tkBus = new taiKhoanBUS();
+//                
+//                // 1. Kiểm tra tài khoản và mật khẩu trước
+//                if (tkBus.login(user, pass)) {
+//                    
+//                    // 2. Đã đúng pass rồi, giờ móc cái Trạng Thái ra kiểm tra
+//                    // (Dùng Integer object nên nhớ check null phòng hờ rác DB)
+//                    Integer trangThai = taiKhoanBUS.taiKhoanHienTai.getTrangThai();
+//                    
+//                    if (trangThai != null && trangThai == 0) {
+//                        return 2; // TRẢ VỀ 2: TÀI KHOẢN BỊ KHÓA
+//                    }
+//                    
+//                    // 3. Nếu mọi thứ OK thì nạp quyền
+//                    phanQuyenBUS pqBus = new phanQuyenBUS();
+//                    pqBus.loadQuyenLenRAM(taiKhoanBUS.taiKhoanHienTai.getIdTaiKhoan());
+//                    return 1; // TRẢ VỀ 1: THÀNH CÔNG
+//                }
+//                
+//                return 0; // TRẢ VỀ 0: SAI TÀI KHOẢN HOẶC MẬT KHẨU
+//            }
+//
+//            @Override
+//            protected void done() {
+//                try {
+//                    int result = get(); // Nhận mã số từ doInBackground gửi lên
+//                    
+//                    if (result == 1) {
+//                        JOptionPane.showMessageDialog(loginProMax.this, "Đăng nhập thành công!");
+//                        dispose();
+//                        openMain();
+//                    } 
+//                    else if (result == 2) {
+//                        // 🚨 BẮT ĐƯỢC THẰNG BỊ KHÓA
+//                        JOptionPane.showMessageDialog(loginProMax.this, 
+//                            "Tài khoản của bạn đã bị khóa!\nVui lòng liên hệ Admin Khoa CNTT để biết thêm chi tiết.", 
+//                            "Cảnh báo bảo mật", 
+//                            JOptionPane.WARNING_MESSAGE);
+//                    } 
+//                    else {
+//                        JOptionPane.showMessageDialog(loginProMax.this, 
+//                            "Sai tài khoản hoặc mật khẩu!", 
+//                            "Lỗi đăng nhập", 
+//                            JOptionPane.ERROR_MESSAGE);
+//                    }
+//                } catch (Exception ex) {
+//                    ex.printStackTrace();
+//                    JOptionPane.showMessageDialog(loginProMax.this, "Lỗi kết nối cơ sở dữ liệu!");
+//                } finally {
+//                    btnDangNhap.setEnabled(true);
+//                    btnDangNhap.setText("Đăng nhập");
+//                }
+//            }
+//        };
+//
+//        worker.execute();
+//    }
         
     private void openMain() {
         SwingUtilities.invokeLater(() -> new contentGUI().setVisible(true));

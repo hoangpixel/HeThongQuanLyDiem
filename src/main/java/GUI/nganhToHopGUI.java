@@ -6,6 +6,7 @@ package GUI;
 
 import Entity.nganhToHopETT;
 import BUS.nganhToHopBUS;
+import BUS.phanQuyenBUS;
 import EXCEL.ExcelHelper;
 import FUNC_GUI.deleteNganhToHop;
 import FUNC_GUI.detailNganhToHop;
@@ -46,6 +47,45 @@ public class nganhToHopGUI extends BaseTableGUI{
         btnReFresh.addActionListener(e -> thucHienRefresh());
         btnExcel.addActionListener(e -> thucHienExcel());
         btnTimKiem.addActionListener(e -> thucHienTimKiem());
+        phanQuyenGiaoDien();
+    }
+    
+    
+        private void phanQuyenGiaoDien() 
+    {
+        String bangHienTai = "xt_nganh_tohop";
+        
+        if (!phanQuyenBUS.checkQuyenXem(bangHienTai)) {
+            return;
+        }
+        
+        btnThem.setEnabled(phanQuyenBUS.checkQuyenThem(bangHienTai)); 
+        btnSua.setEnabled(false); 
+        btnXoa.setEnabled(false);
+        btnChiTiet.setEnabled(false);
+        btnExcel.setEnabled(phanQuyenBUS.checkQuyenThem(bangHienTai));
+
+        table.getSelectionModel().addListSelectionListener(e -> {
+            if (!e.getValueIsAdjusting()) {
+                
+                SwingUtilities.invokeLater(new Runnable() {
+                    public void run() {
+                        boolean isSelected = table.getSelectedRow() != -1;
+                        
+                        if (isSelected) {
+                            btnSua.setEnabled(phanQuyenBUS.checkQuyenSua(bangHienTai));
+                            btnXoa.setEnabled(phanQuyenBUS.checkQuyenXoa(bangHienTai));
+                            btnChiTiet.setEnabled(phanQuyenBUS.checkQuyenXem(bangHienTai)); 
+                        } else {
+                            btnSua.setEnabled(false);
+                            btnXoa.setEnabled(false);
+                            btnChiTiet.setEnabled(false);
+                        }
+                    }
+                });
+                
+            }
+        });
     }
     
     public void loadComboBox() 
