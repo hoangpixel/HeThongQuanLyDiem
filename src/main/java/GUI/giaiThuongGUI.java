@@ -15,6 +15,7 @@ import java.util.ArrayList;
 import java.util.List;
 import java.util.Vector;
 import javax.swing.*;
+import EXCEL.ExcelHelper;
 /**
  *
  * @author Dat
@@ -30,8 +31,10 @@ public class giaiThuongGUI extends BaseTableGUI {
         btnThem.addActionListener(e -> hienThiDialogThem());
         btnSua.addActionListener(e -> hienThiDialogSua());
         btnXoa.addActionListener(e -> hienThiDialogXoa());
+        btnExcel.addActionListener(e -> hienThiExcel());
         btnReFresh.addActionListener(e -> thucHienRefresh());
         btnTimKiem.addActionListener(e -> thucHienTimKiem());
+        btnChiTiet.addActionListener(e -> hienThiChiTietGT());
 
         loadDataToTable();
         loadComboBox();
@@ -96,6 +99,14 @@ public class giaiThuongGUI extends BaseTableGUI {
     public void thucHienTimKiem() {
         String tim = txtTimKiem.getText().trim();
         int index = cbxTimKiem.getSelectedIndex();
+        
+        if(tim.isEmpty())
+        {
+            JOptionPane.showMessageDialog(this, "Vui lòng nhập nội dung cần tìm");
+            txtTimKiem.requestFocus();
+            return;
+        }
+        
         ArrayList<giaiThuongETT> dskq = busGT.timKiemCoBan(tim, index);
         List<Vector> dsHienThi = new ArrayList<>();
 
@@ -276,5 +287,71 @@ public class giaiThuongGUI extends BaseTableGUI {
         }
 
         setTableData(dataList);
+    }
+    
+    private void hienThiChiTietGT() {
+        int row = table.getSelectedRow();
+        if (row != -1) {
+            int modelIndex = table.convertRowIndexToModel(row);
+            int absoluteIndex = (currentPage - 1) * rowsPerPage + modelIndex;
+            Vector selectedRowData = fullDataList.get(absoluteIndex);
+
+            int idCcCanTim = Integer.parseInt(selectedRowData.get(0).toString()); 
+            giaiThuongETT giaiThuongCu = null;
+
+            for (giaiThuongETT gt : busGT.ds) {
+                if (gt.getIdGt() == idCcCanTim) {
+                    giaiThuongCu = gt;
+                    break;
+                }
+            }
+
+            // Gọi dialog hiển thị
+            if (giaiThuongCu != null) {
+                JFrame topFrame = (JFrame) javax.swing.SwingUtilities.windowForComponent(this);
+                FUNC_GUI.detailGiaiThuong dialog = new FUNC_GUI.detailGiaiThuong(topFrame, true, giaiThuongCu);
+                dialog.setVisible(true);
+            }
+        } else {
+            javax.swing.JOptionPane.showMessageDialog(this, "Vui lòng chọn một dòng để xem chi tiết!");
+        }
+    }
+    
+    public void hienThiExcel()
+    {
+        javax.swing.JFrame topFrame = (javax.swing.JFrame) javax.swing.SwingUtilities.windowForComponent(this);
+        // Nhớ tạo JDialog excelGiaiThuong nhé
+        FUNC_GUI.excelGiaiThuong dialog = new FUNC_GUI.excelGiaiThuong(topFrame, true);
+        dialog.setVisible(true);
+        
+        if(dialog.getXacNhanImport())
+        {
+            javax.swing.JFileChooser fileChooser = new javax.swing.JFileChooser();
+            fileChooser.setDialogTitle("Chọn file Excel để nhập dữ liệu Giải thưởng");
+            javax.swing.filechooser.FileNameExtensionFilter filter = new javax.swing.filechooser.FileNameExtensionFilter("Excel Files (*.xls, *.xlsx)", "xls", "xlsx");
+            fileChooser.setFileFilter(filter);
+
+            int result = fileChooser.showOpenDialog(this);
+            if (result == javax.swing.JFileChooser.APPROVE_OPTION) {
+                // Lấy đường dẫn file
+                String filePath = fileChooser.getSelectedFile().getAbsolutePath();
+                
+                // Gọi BUS xử lý và nhận thông báo kết quả (Cậu nhớ viết hàm này trong giaiThuongBUS)
+                String thongBao = busGT.nhapDuLieuTuExcel(filePath); // Giả sử biến BUS của cậu là busGT
+                
+                javax.swing.JOptionPane.showMessageDialog(this, thongBao, "Kết quả Nhập Excel", javax.swing.JOptionPane.INFORMATION_MESSAGE);
+                
+                // Xong xuôi thì làm mới lại bảng
+                thucHienRefresh();
+            }
+        } 
+        else if(dialog.getXacNhanExport())
+        {
+            // Lấy danh sách giải thưởng mới nhất
+            java.util.ArrayList<Entity.giaiThuongETT> fullDanhSach = busGT.layDanhSach();
+            
+            // Nhớ bổ sung hàm xuatDanhSachGiaiThuongRaExcel bên trong class ExcelHelper
+            ExcelHelper.xuatDanhSachGiaiThuongRaExcel(fullDanhSach, this, "DanhSachGiaiThuong");
+        }
     }
 }

@@ -908,6 +908,172 @@ public class ExcelHelper {
         }
     }
     
+    public static void xuatDanhSachChungChiRaExcel(java.util.ArrayList<Entity.chungChiETT> ds, java.awt.Component parent, String tenBang) {
+        try {
+            if (ds == null || ds.isEmpty()) {
+                javax.swing.JOptionPane.showMessageDialog(parent, "Không có dữ liệu để xuất!", "Cảnh báo", javax.swing.JOptionPane.WARNING_MESSAGE);
+                return;
+            }
+
+            javax.swing.JFileChooser fileChooser = new javax.swing.JFileChooser();
+            fileChooser.setDialogTitle("Chọn vị trí lưu Danh sách Chứng chỉ");
+            fileChooser.setFileFilter(new javax.swing.filechooser.FileNameExtensionFilter("Excel Files (*.xlsx)", "xlsx"));
+            fileChooser.setSelectedFile(new java.io.File(tenBang + ".xlsx"));
+
+            if (fileChooser.showSaveDialog(parent) == javax.swing.JFileChooser.APPROVE_OPTION) {
+                String filePath = fileChooser.getSelectedFile().getAbsolutePath();
+                if (!filePath.toLowerCase().endsWith(".xlsx")) filePath += ".xlsx";
+
+                org.apache.poi.ss.usermodel.Workbook workbook = new org.apache.poi.xssf.usermodel.XSSFWorkbook();
+                org.apache.poi.ss.usermodel.Sheet sheet = workbook.createSheet(tenBang);
+
+                // --- 1. GỌI HÀM LẤY STYLE CHUNG ---
+                org.apache.poi.ss.usermodel.CellStyle headerStyle = taoStyleTieuDe(workbook);
+                org.apache.poi.ss.usermodel.CellStyle dataStyle = taoStyleDuLieu(workbook);
+
+                // --- 2. IN HEADER ---
+                String[] headers = {
+                    "ID CC", "CCCD Thí Sinh", "Loại Chứng Chỉ", "Điểm Chứng Chỉ", "Điểm Quy Đổi", "Điểm Cộng"
+                };
+                org.apache.poi.ss.usermodel.Row headerRow = sheet.createRow(0);
+                headerRow.setHeightInPoints(25);
+                
+                for (int i = 0; i < headers.length; i++) {
+                    org.apache.poi.ss.usermodel.Cell cell = headerRow.createCell(i);
+                    cell.setCellValue(headers[i]);
+                    cell.setCellStyle(headerStyle); 
+                }
+
+                // --- 3. IN DATA ---
+                int rowNum = 1;
+                for (Entity.chungChiETT cc : ds) {
+                    org.apache.poi.ss.usermodel.Row row = sheet.createRow(rowNum++);
+                    
+                    Object[] rowData = {
+                        cc.getIdCc(),
+                        cc.getCccd() != null ? cc.getCccd() : "",
+                        cc.getLoaiChungChi() != null ? cc.getLoaiChungChi() : "",
+                        cc.getDiemChungChi() != null ? cc.getDiemChungChi() : "",
+                        cc.getDiemQuyDoi() != null ? cc.getDiemQuyDoi() : "",
+                        cc.getDiemCong() != null ? cc.getDiemCong() : ""
+                    };
+
+                    for (int i = 0; i < rowData.length; i++) {
+                        org.apache.poi.ss.usermodel.Cell cell = row.createCell(i);
+                        cell.setCellStyle(dataStyle); 
+                        
+                        if (rowData[i] instanceof Number) {
+                            cell.setCellValue(((Number) rowData[i]).doubleValue());
+                        } else {
+                            cell.setCellValue(rowData[i].toString());
+                        }
+                    }
+                }
+
+                // --- 4. TÚT TÁT LẠI CỘT CHO ĐẸP ---
+                for (int i = 0; i < headers.length; i++) {
+                    sheet.autoSizeColumn(i);
+                    sheet.setColumnWidth(i, sheet.getColumnWidth(i) + 1000); 
+                }
+                sheet.createFreezePane(0, 1); 
+
+                // Xuất file
+                try (java.io.FileOutputStream out = new java.io.FileOutputStream(filePath)) {
+                    workbook.write(out);
+                }
+                workbook.close();
+                javax.swing.JOptionPane.showMessageDialog(parent, "Xuất file thành công!\n" + filePath, "Thành công", javax.swing.JOptionPane.INFORMATION_MESSAGE);
+            }
+        } catch (Exception e) {
+            e.printStackTrace();
+            javax.swing.JOptionPane.showMessageDialog(parent, "Lỗi khi xuất: " + e.getMessage(), "Lỗi", javax.swing.JOptionPane.ERROR_MESSAGE);
+        }
+    }
+    
+    public static void xuatDanhSachGiaiThuongRaExcel(java.util.ArrayList<Entity.giaiThuongETT> ds, java.awt.Component parent, String tenBang) {
+        try {
+            if (ds == null || ds.isEmpty()) {
+                javax.swing.JOptionPane.showMessageDialog(parent, "Không có dữ liệu để xuất!", "Cảnh báo", javax.swing.JOptionPane.WARNING_MESSAGE);
+                return;
+            }
+
+            javax.swing.JFileChooser fileChooser = new javax.swing.JFileChooser();
+            fileChooser.setDialogTitle("Chọn vị trí lưu Danh sách Giải thưởng");
+            fileChooser.setFileFilter(new javax.swing.filechooser.FileNameExtensionFilter("Excel Files (*.xlsx)", "xlsx"));
+            fileChooser.setSelectedFile(new java.io.File(tenBang + ".xlsx"));
+
+            if (fileChooser.showSaveDialog(parent) == javax.swing.JFileChooser.APPROVE_OPTION) {
+                String filePath = fileChooser.getSelectedFile().getAbsolutePath();
+                if (!filePath.toLowerCase().endsWith(".xlsx")) filePath += ".xlsx";
+
+                org.apache.poi.ss.usermodel.Workbook workbook = new org.apache.poi.xssf.usermodel.XSSFWorkbook();
+                org.apache.poi.ss.usermodel.Sheet sheet = workbook.createSheet(tenBang);
+
+                // --- 1. GỌI HÀM LẤY STYLE CHUNG ---
+                org.apache.poi.ss.usermodel.CellStyle headerStyle = taoStyleTieuDe(workbook);
+                org.apache.poi.ss.usermodel.CellStyle dataStyle = taoStyleDuLieu(workbook);
+
+                // --- 2. IN HEADER ---
+                String[] headers = {
+                    "ID Giải Thưởng", "CCCD Thí Sinh", "Cấp Giải", "Mã Môn", "Loại Giải", "Điểm Cộng (Có Môn)", "Điểm Cộng (Không Môn)"
+                };
+                org.apache.poi.ss.usermodel.Row headerRow = sheet.createRow(0);
+                headerRow.setHeightInPoints(25);
+                
+                for (int i = 0; i < headers.length; i++) {
+                    org.apache.poi.ss.usermodel.Cell cell = headerRow.createCell(i);
+                    cell.setCellValue(headers[i]);
+                    cell.setCellStyle(headerStyle); 
+                }
+
+                // --- 3. IN DATA ---
+                int rowNum = 1;
+                for (Entity.giaiThuongETT gt : ds) {
+                    org.apache.poi.ss.usermodel.Row row = sheet.createRow(rowNum++);
+                    
+                    // Lưu ý: Nếu ID giải thưởng cậu đặt tên khác thì sửa gt.getIdGt() lại cho khớp nhé
+                    Object[] rowData = {
+                        gt.getIdGt(),
+                        gt.getCccd() != null ? gt.getCccd() : "",
+                        gt.getCapGiai() != null ? gt.getCapGiai() : "",
+                        gt.getMaMon() != null ? gt.getMaMon() : "",
+                        gt.getLoaiGiai() != null ? gt.getLoaiGiai() : "",
+                        gt.getDiemCongCoMon() != null ? gt.getDiemCongCoMon() : "",
+                        gt.getDiemCongKhongMon() != null ? gt.getDiemCongKhongMon() : ""
+                    };
+
+                    for (int i = 0; i < rowData.length; i++) {
+                        org.apache.poi.ss.usermodel.Cell cell = row.createCell(i);
+                        cell.setCellStyle(dataStyle); 
+                        
+                        if (rowData[i] instanceof Number) {
+                            cell.setCellValue(((Number) rowData[i]).doubleValue());
+                        } else {
+                            cell.setCellValue(rowData[i].toString());
+                        }
+                    }
+                }
+
+                // --- 4. TÚT TÁT LẠI CỘT CHO ĐẸP ---
+                for (int i = 0; i < headers.length; i++) {
+                    sheet.autoSizeColumn(i);
+                    sheet.setColumnWidth(i, sheet.getColumnWidth(i) + 1000); 
+                }
+                sheet.createFreezePane(0, 1); 
+
+                // Xuất file
+                try (java.io.FileOutputStream out = new java.io.FileOutputStream(filePath)) {
+                    workbook.write(out);
+                }
+                workbook.close();
+                javax.swing.JOptionPane.showMessageDialog(parent, "Xuất file thành công!\n" + filePath, "Thành công", javax.swing.JOptionPane.INFORMATION_MESSAGE);
+            }
+        } catch (Exception e) {
+            e.printStackTrace();
+            javax.swing.JOptionPane.showMessageDialog(parent, "Lỗi khi xuất: " + e.getMessage(), "Lỗi", javax.swing.JOptionPane.ERROR_MESSAGE);
+        }
+    }
+    
     // =========================================================================
     // HÀM 3: ĐỌC FILE EXCEL TRẢ VỀ MẢNG DỮ LIỆU THÔ (DÙNG CHUNG CHO MỌI BẢNG)
     // =========================================================================
