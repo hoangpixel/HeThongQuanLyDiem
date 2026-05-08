@@ -95,6 +95,7 @@ public class detailChungChi extends javax.swing.JDialog {
         txtDiemChungChi = new javax.swing.JTextField();
 
         setDefaultCloseOperation(javax.swing.WindowConstants.DISPOSE_ON_CLOSE);
+        setTitle("Chi tiết chứng chỉ");
 
         jPanel3.setBackground(new java.awt.Color(255, 255, 204));
 
