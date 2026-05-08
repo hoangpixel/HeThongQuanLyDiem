@@ -50,6 +50,9 @@ public class nguyenVongXetTuyenETT {
     @Column(name = "tt_thm")
     private String ttThm;
     
+    @Column(name = "diem_utqd_goc")
+    private Double diemUtqdGoc;
+    
     // Thêm vào trong class nguyenVongXetTuyenETT
 
 @Transient // Quan trọng: Để Hibernate không báo lỗi thiếu cột trong DB
@@ -202,5 +205,6 @@ private double diemUuTien;
     }
     
     
-    
+    public Double getDiemUtqdGoc() { return diemUtqdGoc; }
+    public void setDiemUtqdGoc(Double diemUtqdGoc) { this.diemUtqdGoc = diemUtqdGoc; }
 }

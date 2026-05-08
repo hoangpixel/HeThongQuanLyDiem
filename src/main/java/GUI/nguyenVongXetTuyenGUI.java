@@ -64,9 +64,9 @@ public nguyenVongXetTuyenGUI() {
         btnChiTiet.addActionListener(e -> hienThiChiTietNV());
         
         loadDataToTable();
-        table.getColumnModel().getColumn(9).setMinWidth(0);
-        table.getColumnModel().getColumn(9).setMaxWidth(0);
-        table.getColumnModel().getColumn(9).setWidth(0);
+        table.getColumnModel().getColumn(10).setMinWidth(0);
+        table.getColumnModel().getColumn(10).setMaxWidth(0);
+        table.getColumnModel().getColumn(10).setWidth(0);
         loadComboBox();
         phanQuyenGiaoDien();
     }
@@ -149,6 +149,7 @@ public nguyenVongXetTuyenGUI() {
             row.add(ct.getNvMaNganh());
             row.add(ct.getNvTt());
             row.add(ct.getDiemThxt());
+            row.add(ct.getDiemUtqdGoc());
             row.add(ct.getDiemUtqd());
             row.add(ct.getDiemCong());
             row.add(ct.getDiemXetTuyen());
@@ -176,6 +177,7 @@ public nguyenVongXetTuyenGUI() {
         header.add("ID ngành");
         header.add("Thứ tự");
         header.add("Điểm THXT");
+        header.add("Điểm UT Gốc");
         header.add("Điểm UTQD");
         header.add("Điềm cộng");
         header.add("Điểm tổng");
@@ -201,6 +203,7 @@ public nguyenVongXetTuyenGUI() {
             row.add(ct.getNvMaNganh());
             row.add(ct.getNvTt());
             row.add(ct.getDiemThxt());
+            row.add(ct.getDiemUtqdGoc());
             row.add(ct.getDiemUtqd());
             row.add(ct.getDiemCong());
             row.add(ct.getDiemXetTuyen());
@@ -217,64 +220,68 @@ public nguyenVongXetTuyenGUI() {
     }
 
 private void hienThiDialogThemMoi() {
-    JFrame topFrame = (JFrame) SwingUtilities.getWindowAncestor(this);
-    insertNguyenVong dialog = new insertNguyenVong(topFrame, true);
-    dialog.setVisible(true);
+        JFrame topFrame = (JFrame) SwingUtilities.getWindowAncestor(this);
+        insertNguyenVong dialog = new insertNguyenVong(topFrame, true);
+        dialog.setVisible(true);
 
-if (dialog.xacNhanThem()) {
-        nguyenVongXetTuyenETT nv = dialog.getNguyenVong();
+        if (dialog.xacNhanThem()) {
+            // Lấy thằng đại diện ảo từ Form Con mang về (Chứa CCCD và Thứ tự NV)
+            nguyenVongXetTuyenETT nvDaiDien = dialog.getNguyenVong();
 
-        // 1. Lúc này hàm thêm của BUS đã nhét "nv" vào cuối biến "ds" rồi.
-        // Việc đầu tiên: SẮP XẾP lại "ds" ngay trên RAM (Tốc độ ánh sáng, không gọi DB)
-        Collections.sort(busNguyenVong.ds, new java.util.Comparator<nguyenVongXetTuyenETT>() {
-            @Override
-            public int compare(nguyenVongXetTuyenETT nv1, nguyenVongXetTuyenETT nv2) {
-                int cccdCompare = nv1.getNnCccd().compareTo(nv2.getNnCccd());
-                if (cccdCompare != 0) return cccdCompare;
-                return Integer.compare(nv1.getNvTt(), nv2.getNvTt());
+            // 1. PHÁ HỦY RAM CŨ VÀ LOAD LẠI DATA MỚI TỪ DB
+            busNguyenVong.ds = null; 
+            busNguyenVong.layDanhSach(); 
+
+            // --- ĐÃ XÓA SẠCH KHÚC SẮP XẾP: Trả về trạng thái nguyên thủy từ Database ---
+
+            // 2. BUILD LẠI BẢNG TỪ RAM
+            fullDataList.clear();
+            int viTriCuaHangMoiThem = 0; 
+            boolean daTimThay = false;
+
+            for (int i = 0; i < busNguyenVong.ds.size(); i++) {
+                nguyenVongXetTuyenETT item = busNguyenVong.ds.get(i);
+                
+                // Convert object → Vector
+                Vector row = new Vector();
+                row.add(item.getIdNv());
+                row.add(item.getNnCccd());
+                row.add(item.getNvMaNganh());
+                row.add(item.getNvTt());
+                row.add(item.getDiemThxt());
+                
+                // Điểm ưu tiên gốc
+                row.add(item.getDiemUtqdGoc()); 
+                
+                row.add(item.getDiemUtqd());
+                row.add(item.getDiemCong());
+                row.add(item.getDiemXetTuyen());
+                row.add(item.getNvKetQua());
+                row.add(item.getNvKeys());
+                row.add(item.getTtPhuongThuc());
+                row.add(item.getTtThm());
+
+                fullDataList.add(row);
+
+                // 3. DÒ TÌM VỊ TRÍ ĐỂ NHẢY TRANG
+                if (nvDaiDien != null && !daTimThay) {
+                    if (item.getNnCccd().equals(nvDaiDien.getNnCccd()) && item.getNvTt() == nvDaiDien.getNvTt()) {
+                        viTriCuaHangMoiThem = i; // Lấy vị trí dòng cuối cùng vừa được add của thí sinh đó
+                        daTimThay = true; 
+                    }
+                }
             }
-        });
 
-        // 2. Làm mới toàn bộ fullDataList dựa trên ds đã sắp xếp
-        fullDataList.clear();
-        int viTriCuaHangMoiThem = 0; // Biến để lưu vết xem thằng mới thêm rớt vào dòng thứ mấy
+            // 4. CẬP NHẬT TRANG
+            totalPages = (int) Math.ceil((double) fullDataList.size() / rowsPerPage);
+            if (totalPages == 0) totalPages = 1;
 
-        for (int i = 0; i < busNguyenVong.ds.size(); i++) {
-            nguyenVongXetTuyenETT item = busNguyenVong.ds.get(i);
-            
-            // Convert object → Vector
-            Vector row = new Vector();
-            row.add(item.getIdNv());
-            row.add(item.getNnCccd());
-            row.add(item.getNvMaNganh());
-            row.add(item.getNvTt());
-            row.add(item.getDiemThxt());
-            row.add(item.getDiemUtqd());
-            row.add(item.getDiemCong());
-            row.add(item.getDiemXetTuyen());
-            row.add(item.getNvKetQua());
-            row.add(item.getNvKeys());
-            row.add(item.getTtPhuongThuc());
-            row.add(item.getTtThm());
+            currentPage = (viTriCuaHangMoiThem / rowsPerPage) + 1;
 
-            fullDataList.add(row);
-
-            // Tìm dấu vết thằng vừa thêm bằng nv_keys (CCCD_ThuTuNV)
-            if (item.getNvKeys().equals(nv.getNvKeys())) {
-                viTriCuaHangMoiThem = i;
-            }
+            // 5. RENDER LÊN GIAO DIỆN
+            renderCurrentPage();
         }
-
-        // 3. Cập nhật lại tổng số trang
-        totalPages = (int) Math.ceil((double) fullDataList.size() / rowsPerPage);
-
-        // 4. 🔥 BÍ QUYẾT: Tính toán xem vị trí mới thêm nó rớt vào Trang số mấy để nhảy tới!
-        currentPage = (viTriCuaHangMoiThem / rowsPerPage) + 1;
-
-        // 5. Render lại đúng cái trang chứa nguyện vọng vừa thêm
-        renderCurrentPage();
     }
-}
 
 private void hienThiDialogSua() {
         int row = table.getSelectedRow();
@@ -447,6 +454,7 @@ private void hienThiDialogSua() {
             row.add(ct.getNvMaNganh());
             row.add(ct.getNvTt());
             row.add(ct.getDiemThxt());
+            row.add(ct.getDiemUtqdGoc());
             row.add(ct.getDiemUtqd());
             row.add(ct.getDiemCong());
             row.add(ct.getDiemXetTuyen());

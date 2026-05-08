@@ -333,4 +333,15 @@ public class nganhToHopBUS {
         }
         return dskq;
     }
+    
+    public ArrayList<Entity.toHopETT> layDanhSachToHopTheoNganh(String maNganh) {
+        // Tránh lỗi null rớ ngớ
+        if (maNganh == null || maNganh.trim().isEmpty()) {
+            return new java.util.ArrayList<>();
+        }
+        
+        // Nhớ đổi tên class DAO cho đúng với tên file của ông nha
+        DAO.nganhToHopDAO dao = new DAO.nganhToHopDAO(); 
+        return dao.layDanhSachToHopTheoNganh(maNganh);
+    }
 }
