@@ -378,36 +378,36 @@ private void hienThiDialogXoa() {
     }
 
     private void hienThiChiTietNganh() {
-    int row = table.getSelectedRow();
-    if (row != -1) {
-        int modelIndex = table.convertRowIndexToModel(row);
-        int absoluteIndex = (currentPage - 1) * rowsPerPage + modelIndex;
-        
-        // 1. Lấy ID từ Vector của dòng đang chọn trên UI
-        Vector selectedRowData = (Vector) fullDataList.get(absoluteIndex);
-        
-        // 🔥 Vẫn là nguyên tắc cũ: Đảm bảo cột 0 của bạn đang chứa idnganh
-        int idCanTim = (int) selectedRowData.get(0); 
-        
-        // 2. Quét danh sách gốc để tìm "chính chủ"
-        Entity.nganhETT nganhChiTiet = null;
-        for (Entity.nganhETT item : busNganh.ds) {
-            if (item.getIdnganh() == idCanTim) { 
-                nganhChiTiet = item;
-                break;
+        int row = table.getSelectedRow();
+        if (row != -1) {
+            int modelIndex = table.convertRowIndexToModel(row);
+            int absoluteIndex = (currentPage - 1) * rowsPerPage + modelIndex;
+
+            // 1. Lấy ID từ Vector của dòng đang chọn trên UI
+            Vector selectedRowData = (Vector) fullDataList.get(absoluteIndex);
+
+            // 🔥 Vẫn là nguyên tắc cũ: Đảm bảo cột 0 của bạn đang chứa idnganh
+            int idCanTim = (int) selectedRowData.get(0); 
+
+            // 2. Quét danh sách gốc để tìm "chính chủ"
+            Entity.nganhETT nganhChiTiet = null;
+            for (Entity.nganhETT item : busNganh.ds) {
+                if (item.getIdnganh() == idCanTim) { 
+                    nganhChiTiet = item;
+                    break;
+                }
             }
-        }
-        
-        // 3. Có data thì mở Form, không thì báo lỗi (bắt case ngoại lệ)
-        if (nganhChiTiet != null) {
-            JFrame topFrame = (JFrame) SwingUtilities.windowForComponent(this);
-            detailNganh dialog = new detailNganh(topFrame, true, nganhChiTiet);
-            dialog.setVisible(true);
+
+            // 3. Có data thì mở Form, không thì báo lỗi (bắt case ngoại lệ)
+            if (nganhChiTiet != null) {
+                JFrame topFrame = (JFrame) SwingUtilities.windowForComponent(this);
+                detailNganh dialog = new detailNganh(topFrame, true, nganhChiTiet);
+                dialog.setVisible(true);
+            } else {
+                javax.swing.JOptionPane.showMessageDialog(this, "Lỗi: Không tìm thấy dữ liệu chi tiết trong Database/RAM!");
+            }
         } else {
-            javax.swing.JOptionPane.showMessageDialog(this, "Lỗi: Không tìm thấy dữ liệu chi tiết trong Database/RAM!");
+            javax.swing.JOptionPane.showMessageDialog(this, "Vui lòng chọn một ngành để xem chi tiết!");
         }
-    } else {
-        javax.swing.JOptionPane.showMessageDialog(this, "Vui lòng chọn một ngành để xem chi tiết!");
     }
-}
 }

@@ -212,5 +212,34 @@ public boolean suaNganhToHop(Entity.nganhToHopETT nth) {
             }
         } catch (Exception e) { e.printStackTrace(); }
         return heSo;
-    }    
+    }
+
+    public java.util.ArrayList<Entity.toHopETT> layDanhSachToHopTheoNganh(String maNganh) {
+        java.util.ArrayList<Entity.toHopETT> resultList = new java.util.ArrayList<>();
+        
+        org.hibernate.Session session = HibernateUtil.getSessionFactory().openSession();
+        
+        try {
+            // HQL: Khớp từng milimet với tên biến trong 2 file Entity của Boss
+            // t.matohop (chữ thường - theo toHopETT) 
+            // n.maToHop, n.maNganh (chữ hoa T, N - theo nganhToHopETT)
+            String hql = "SELECT t FROM toHopETT t WHERE t.matohop IN " +
+                         "(SELECT n.maToHop FROM nganhToHopETT n WHERE n.maNganh = :maNganh)";
+            
+            org.hibernate.query.Query<Entity.toHopETT> query = session.createQuery(hql, Entity.toHopETT.class);
+            query.setParameter("maNganh", maNganh);
+            
+            resultList = (java.util.ArrayList<Entity.toHopETT>) query.list();
+            
+        } catch (Exception e) {
+            e.printStackTrace();
+            System.out.println("❌ Lỗi khi lấy danh sách tổ hợp theo ngành: " + maNganh);
+        } finally {
+            if (session != null && session.isOpen()) {
+                session.close();
+            }
+        }
+        
+        return resultList;
+    }
 }

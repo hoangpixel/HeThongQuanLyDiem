@@ -18,6 +18,7 @@ import java.util.Vector;
 import javax.swing.JFrame;
 import javax.swing.JOptionPane;
 import javax.swing.SwingUtilities;
+import EXCEL.ExcelHelper;
 /**
  *
  * @author Dat
@@ -36,8 +37,10 @@ public class chungChiGUI extends BaseTableGUI {
         btnThem.addActionListener(e -> hienThiDialogThem());
         btnSua.addActionListener(e -> hienThiDialogSua());
         btnXoa.addActionListener(e -> hienThiDialogXoa());
-        btnReFresh.addActionListener(e -> thucHienRefresh()); // Bấm nút Refresh là load lại kho
+        btnExcel.addActionListener(e -> hienThiExcel());
+        btnReFresh.addActionListener(e -> thucHienRefresh());
         btnTimKiem.addActionListener(e -> thucHienTimKiem());
+        btnChiTiet.addActionListener(e -> hienThiChiTietCC());
 
         // 3. Tự động bưng dữ liệu lên
         loadDataToTable();
@@ -125,7 +128,13 @@ public class chungChiGUI extends BaseTableGUI {
         String tim = txtTimKiem.getText().trim();
         int index = cbxTimKiem.getSelectedIndex();
         
-        ArrayList<chungChiETT> dskq = busCC.layDanhSach(); // Tạm lấy full để lọc tay nếu BUS chưa có hàm timKiem
+        if (tim.isEmpty()) {
+            JOptionPane.showMessageDialog(this, "Vui lòng nhập nội dung cần tìm");
+            txtTimKiem.requestFocus();
+            return;
+        }
+        
+        ArrayList<chungChiETT> dskq = busCC.timKiemCoBan(tim, index);
         List<Vector> dsHienThi = new ArrayList<>();
 
         for (chungChiETT item : dskq) 
@@ -252,26 +261,100 @@ public class chungChiGUI extends BaseTableGUI {
     }
 }
 
-    private void thucHienRefresh() {
-        // Tải lại dữ liệu mới nhất từ DB
+    public void thucHienRefresh() {
+        // 1. Reset thanh tìm kiếm
+        cbxTimKiem.setSelectedIndex(0);
+        txtTimKiem.setText(null);
+
+        // 2. Kéo data mới nhất từ DB lên
+        // ⚠️ Đổi 'busChungChi' thành tên biến BUS thực tế của bạn
         busCC.layDanhSach(); 
 
-        // Xóa và đổ lại fullDataList để đồng bộ với BaseTableGUI
+        // 3. Clear data cũ trên Table
         fullDataList.clear();
-        for (int i = 0; i < busCC.ds.size(); i++) {
-            chungChiETT item = busCC.ds.get(i);
+        List<Vector> dataList = new ArrayList<>();
+
+        // 4. Đổ data mới vào Vector
+        for (Entity.chungChiETT ct : busCC.ds) {
             Vector row = new Vector();
-            row.add(i + 1);
-            row.add(item.getCccd());
-            row.add(item.getLoaiChungChi());
-            row.add(item.getDiemChungChi());
-            row.add(item.getDiemQuyDoi());
-            row.add(item.getDiemCong());
-            fullDataList.add(row);
+            row.add(ct.getIdCc());
+            row.add(ct.getCccd() != null ? ct.getCccd() : "");
+            row.add(ct.getLoaiChungChi() != null ? ct.getLoaiChungChi() : "");
+            row.add(ct.getDiemChungChi() != null ? ct.getDiemChungChi() : "");
+            row.add(ct.getDiemQuyDoi() != null ? ct.getDiemQuyDoi() : "");
+            row.add(ct.getDiemCong() != null ? ct.getDiemCong() : "");
+
+            dataList.add(row);
         }
 
-        // Tính toán lại phân trang
-        totalPages = (int) Math.ceil((double) fullDataList.size() / rowsPerPage);
-        renderCurrentPage();
+        // 5. Cập nhật giao diện
+        setTableData(dataList);
+    }
+    
+    private void hienThiChiTietCC() {
+        int row = table.getSelectedRow();
+        if (row != -1) {
+            int modelIndex = table.convertRowIndexToModel(row);
+            int absoluteIndex = (currentPage - 1) * rowsPerPage + modelIndex;
+            Vector selectedRowData = fullDataList.get(absoluteIndex);
+
+            int idCcCanTim = Integer.parseInt(selectedRowData.get(0).toString()); 
+            Entity.chungChiETT chungChiCu = null;
+
+            for (Entity.chungChiETT cc : busCC.ds) {
+                if (cc.getIdCc() == idCcCanTim) {
+                    chungChiCu = cc;
+                    break;
+                }
+            }
+
+
+            // Gọi dialog hiển thị
+            if (chungChiCu != null) {
+                JFrame topFrame = (JFrame) javax.swing.SwingUtilities.windowForComponent(this);
+                FUNC_GUI.detailChungChi dialog = new FUNC_GUI.detailChungChi(topFrame, true, chungChiCu);
+                dialog.setVisible(true);
+            }
+        } else {
+            javax.swing.JOptionPane.showMessageDialog(this, "Vui lòng chọn một dòng để xem chi tiết!");
+        }
+    }
+    
+    public void hienThiExcel()
+    {
+        javax.swing.JFrame topFrame = (javax.swing.JFrame) javax.swing.SwingUtilities.windowForComponent(this);
+        // Nhớ tạo JDialog excelChungChi nhé
+        FUNC_GUI.excelChungChi dialog = new FUNC_GUI.excelChungChi(topFrame, true);
+        dialog.setVisible(true);
+        
+        if(dialog.getXacNhanImport())
+        {
+            javax.swing.JFileChooser fileChooser = new javax.swing.JFileChooser();
+            fileChooser.setDialogTitle("Chọn file Excel để nhập dữ liệu Chứng chỉ");
+            javax.swing.filechooser.FileNameExtensionFilter filter = new javax.swing.filechooser.FileNameExtensionFilter("Excel Files (*.xls, *.xlsx)", "xls", "xlsx");
+            fileChooser.setFileFilter(filter);
+
+            int result = fileChooser.showOpenDialog(this);
+            if (result == javax.swing.JFileChooser.APPROVE_OPTION) {
+                // Lấy đường dẫn file
+                String filePath = fileChooser.getSelectedFile().getAbsolutePath();
+                
+                // Gọi BUS xử lý và nhận thông báo kết quả (Cậu nhớ viết hàm này trong chungChiBUS)
+                String thongBao = busCC.nhapDuLieuTuExcel(filePath);
+                
+                javax.swing.JOptionPane.showMessageDialog(this, thongBao, "Kết quả Nhập Excel", javax.swing.JOptionPane.INFORMATION_MESSAGE);
+                
+                // Xong xuôi thì làm mới lại bảng
+                thucHienRefresh();
+            }
+        } 
+        else if(dialog.getXacNhanExport())
+        {
+            // Lấy danh sách chứng chỉ mới nhất
+            java.util.ArrayList<Entity.chungChiETT> fullDanhSach = busCC.layDanhSach();
+            
+            // Nhớ bổ sung hàm xuatDanhSachChungChiRaExcel bên trong class ExcelHelper
+            ExcelHelper.xuatDanhSachChungChiRaExcel(fullDanhSach, this, "DanhSachChungChi");
+        }
     }
 }

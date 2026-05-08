@@ -29,7 +29,7 @@ public ArrayList<nguyenVongXetTuyenETT> layDanhSach() {
             
             // Tụi bây xài cái ở trên á cái này là t để sắp xếp cho đẹp
             List<nguyenVongXetTuyenETT> listTuDB = session.createQuery(
-                "FROM nguyenVongXetTuyenETT ORDER BY nnCccd ASC, nvTt ASC", 
+                "FROM nguyenVongXetTuyenETT", 
                 nguyenVongXetTuyenETT.class).list();
 
             // Bước 2: Chuyển cái List của Hibernate thành ArrayList của bạn
@@ -202,5 +202,42 @@ public ArrayList<nguyenVongXetTuyenETT> layDanhSach() {
         }
         
         return maxThuTu;
+    }
+    
+    // =========================================================
+    // 🔥 KIỂM TRA TRÙNG NGUYỆN VỌNG (CÙNG CCCD VÀ MÃ NGÀNH)
+    // =========================================================
+    public boolean kiemTraTrungNganh(String cccd, String maNganh) {
+        boolean isTrung = false;
+        
+        // Nhớ đổi tên file HibernateUtil cho khớp với project của Boss nha
+        org.hibernate.Session session = HibernateUtil.getSessionFactory().openSession();
+        
+        try {
+            // HQL: Đếm số lượng nguyện vọng thỏa điều kiện
+            String hql = "SELECT COUNT(nv) FROM nguyenVongXetTuyenETT nv WHERE nv.nnCccd = :cccd AND nv.nvMaNganh = :maNganh";
+            
+            org.hibernate.query.Query<Long> query = session.createQuery(hql, Long.class);
+            query.setParameter("cccd", cccd);
+            query.setParameter("maNganh", maNganh);
+            
+            // Lấy kết quả đếm
+            Long count = query.uniqueResult();
+            
+            // Nếu > 0 nghĩa là đã từng đăng ký ngành này rồi
+            if (count != null && count > 0) {
+                isTrung = true;
+            }
+            
+        } catch (Exception e) {
+            e.printStackTrace();
+            System.out.println("❌ Lỗi khi kiểm tra trùng ngành cho CCCD: " + cccd);
+        } finally {
+            if (session != null && session.isOpen()) {
+                session.close();
+            }
+        }
+        
+        return isTrung;
     }
 }

@@ -397,31 +397,49 @@ public class insertChungChi extends javax.swing.JDialog {
     }
 
     String loaiCC = cboLoaiChungChi.getSelectedItem().toString();
+    String diemGoc = "";
     
-    // ĐÃ ĐỔI TÊN Ở ĐÂY:
-    String diemGoc = loaiCC.equals("Tiếng Anh - TOEIC (4 kỹ năng)") 
-                     ? (txtNghe.getText() + "/" + txtDoc.getText() + "/" + txtNoi.getText() + "/" + txtViet.getText())
-                     : txtDiemChungChi.getText().trim();
+//    // ĐÃ ĐỔI TÊN Ở ĐÂY:
+//    String diemGoc = loaiCC.equals("Tiếng Anh - TOEIC (4 kỹ năng)") 
+//                     ? (txtNghe.getText() + "/" + txtDoc.getText() + "/" + txtNoi.getText() + "/" + txtViet.getText())
+//                     : txtDiemChungChi.getText().trim();
 
+    if (loaiCC.equals("Tiếng Anh - TOEIC (4 kỹ năng)")) {
+        try {
+            int n = Integer.parseInt(txtNghe.getText().trim());
+            int d = Integer.parseInt(txtDoc.getText().trim());
+            int s = Integer.parseInt(txtNoi.getText().trim());
+            int w = Integer.parseInt(txtViet.getText().trim());
+            int tongDiem = n + d + s + w; // Cộng tổng 4 ô
+            diemGoc = String.valueOf(tongDiem); // Ví dụ: "1100"
+        } catch (Exception ex) {
+            javax.swing.JOptionPane.showMessageDialog(this, "Vui lòng nhập đầy đủ 4 điểm kỹ năng TOEIC hợp lệ!");
+            return;
+        }
+    } else {
+        // Nếu là IELTS hoặc loại khác thì lấy từ ô điểm bình thường
+        diemGoc = txtDiemChungChi.getText().trim();
+    }
+    
     try {
-        chungChiETT ett = new chungChiETT();
+        Entity.chungChiETT ett = new Entity.chungChiETT();
         ett.setCccd(cccd);
         ett.setLoaiChungChi(loaiCC); 
-        ett.setDiemChungChi(diemGoc); 
+        ett.setDiemChungChi(diemGoc); // Lúc này diemGoc đã là điểm tổng
         ett.setDiemQuyDoi(Double.parseDouble(txtDiemQuyDoi.getText())); 
         ett.setDiemCong(Double.parseDouble(txtDiemCong.getText()));
 
-        chungChiBUS bus = new chungChiBUS();
+        BUS.chungChiBUS bus = new BUS.chungChiBUS();
         if (bus.themCC(ett)) {
             this.chungchi = ett;
             this.xacNhan = true; 
-            JOptionPane.showMessageDialog(this, "Thêm thành công!");
+            javax.swing.JOptionPane.showMessageDialog(this, "Thêm thành công!");
             this.dispose();
         } else {
-            JOptionPane.showMessageDialog(this, "Thêm thất bại!");
+            javax.swing.JOptionPane.showMessageDialog(this, "Thêm thất bại!");
         }
     } catch (Exception e) {
-        JOptionPane.showMessageDialog(this, "Lỗi: " + e.getMessage());
+        javax.swing.JOptionPane.showMessageDialog(this, "Lỗi: " + e.getMessage());
     }
     }//GEN-LAST:event_btnThemActionPerformed
 

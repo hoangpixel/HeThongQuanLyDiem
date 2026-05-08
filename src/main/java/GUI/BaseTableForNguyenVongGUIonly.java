@@ -427,7 +427,7 @@ private void styleComponents() {
             }
 
             // 3. ĐỔI MÀU CHỮ CHO CỘT TRẠNG THÁI
-            int cotTrangThaiIndex = 8; 
+            int cotTrangThaiIndex = 9; 
 
             if (column == cotTrangThaiIndex) {
                 String status = value != null ? value.toString().trim() : "";
