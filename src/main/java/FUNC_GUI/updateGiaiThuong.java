@@ -28,6 +28,7 @@ public class updateGiaiThuong extends javax.swing.JDialog {
         txtDiemCongKhongMon.setEditable(false);
         
         fillData();
+        this.setLocationRelativeTo(null);
     }
 
     /**
@@ -63,6 +64,7 @@ public class updateGiaiThuong extends javax.swing.JDialog {
         btnSua = new javax.swing.JButton();
 
         setDefaultCloseOperation(javax.swing.WindowConstants.DISPOSE_ON_CLOSE);
+        setTitle("Sửa giải thưởng");
 
         jPanel3.setBackground(new java.awt.Color(204, 204, 255));
 

@@ -36,6 +36,7 @@ public class insertChungChi extends javax.swing.JDialog {
         pnlNormal.setVisible(true);
         
         this.pack();
+        this.setLocationRelativeTo(null);
     }
     public void initCertData() {
         certificateData.put("Tiếng Anh - IELTS", new String[]{"4.0", "4.5", "5.0", "5.5", "6.0", "6.5", "7.0", "7.5", "8.0", "8.5", "9.0"});
@@ -87,6 +88,7 @@ public class insertChungChi extends javax.swing.JDialog {
         txtViet = new javax.swing.JTextField();
 
         setDefaultCloseOperation(javax.swing.WindowConstants.DISPOSE_ON_CLOSE);
+        setTitle("Thêm chứng chỉ");
 
         jPanel3.setBackground(new java.awt.Color(153, 255, 153));
 

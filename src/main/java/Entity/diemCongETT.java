@@ -128,7 +128,7 @@ public class diemCongETT {
 
     private void tinhDiemTong() {
         if (diemCC != null && diemUtxt != null) {
-            this.diemTong = diemCC + diemUtxt;
+            this.diemTong = Math.min(diemCC + diemUtxt, 3.0);
         }
     }
 }

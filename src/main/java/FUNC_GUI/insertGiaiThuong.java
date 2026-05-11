@@ -23,6 +23,8 @@ public class insertGiaiThuong extends javax.swing.JDialog {
         initComponents();
         txtDiemCongCoMon.setEditable(false);
         txtDiemCongKhongMon.setEditable(false);
+        
+        this.setLocationRelativeTo(null);
     }
 
     /**
@@ -56,6 +58,7 @@ public class insertGiaiThuong extends javax.swing.JDialog {
         btnThem1 = new javax.swing.JButton();
 
         setDefaultCloseOperation(javax.swing.WindowConstants.DISPOSE_ON_CLOSE);
+        setTitle("Thêm giải thưởng");
 
         jPanel3.setBackground(new java.awt.Color(153, 255, 153));
 

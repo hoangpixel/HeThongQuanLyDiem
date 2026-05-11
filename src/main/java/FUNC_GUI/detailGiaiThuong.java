@@ -92,6 +92,7 @@ public class detailGiaiThuong extends javax.swing.JDialog {
         btnThoat1 = new javax.swing.JButton();
 
         setDefaultCloseOperation(javax.swing.WindowConstants.DISPOSE_ON_CLOSE);
+        setTitle("Chi tiết giải thưởng");
 
         jPanel3.setBackground(new java.awt.Color(255, 255, 204));
 

@@ -57,6 +57,7 @@ public class updateChungChi extends javax.swing.JDialog {
         }
         
         this.pack(); // Co giãn giao diện cho vừa khít
+        this.setLocationRelativeTo(null);
     }
     /**
      * This method is called from within the constructor to initialize the form.
@@ -97,6 +98,7 @@ public class updateChungChi extends javax.swing.JDialog {
         txtViet = new javax.swing.JTextField();
 
         setDefaultCloseOperation(javax.swing.WindowConstants.DISPOSE_ON_CLOSE);
+        setTitle("Sửa chứng chỉ");
 
         jPanel3.setBackground(new java.awt.Color(204, 204, 255));
 

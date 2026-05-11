@@ -39,6 +39,8 @@ public class insertDiemCong extends javax.swing.JDialog {
         super(parent, modal);
         initComponents();
         setLocationRelativeTo(parent);
+        // Bind thủ công vì NetBeans không tự sinh cho cboPT
+        cboPT.addActionListener(this::cboPTActionPerformed);
     }
 
     /**
@@ -322,18 +324,13 @@ public class insertDiemCong extends javax.swing.JDialog {
     }//GEN-LAST:event_txtMaNganhActionPerformed
 
     private void btnChonCCCDActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_btnChonCCCDActionPerformed
-        // TODO add your handling code here:
-        JFrame topFrame =(JFrame) SwingUtilities.getWindowAncestor(this);
-        selectThiSinh dialog =new selectThiSinh(topFrame,true);
+        JFrame topFrame = (JFrame) SwingUtilities.getWindowAncestor(this);
+        SELECT_GUI.selectThiSinh dialog = new SELECT_GUI.selectThiSinh(topFrame, true);
         dialog.setVisible(true);
-        if(dialog.getXacNhan()) {
+        if (dialog.getXacNhan()) {
             Entity.thiSinhXetTuyenETT thiSinh = dialog.getThiSinh();
             this.cccd = thiSinh.getCccd();
             txtCCCD.setText(this.cccd);
-
-            // Chú ý: Entity của bạn là getDiemUt() hay getDiemUtxt()? 
-            // Hãy sửa cho khớp với file thiSinhXetTuyenETT của bạn
-            //txtDiemUTXT.setText(String.valueOf(thiSinh.getDoiTuong())); 
             capNhatDiemTuDong();
         }
     }//GEN-LAST:event_btnChonCCCDActionPerformed
@@ -456,92 +453,68 @@ public class insertDiemCong extends javax.swing.JDialog {
     public void capNhatDiemTuDong() {
         if (cccd == null || cccd.trim().isEmpty()) return;
 
-        double diemCC_de_Cong = 0.0;     // Lấy từ cột diem_cong (dành cho khối không có Anh)
-        double diemCC_de_ThayThe = 0.0; // Lấy từ cột diem_quydoi (để so sánh môn Anh)
-        double diemGT_de_Cong = 0.0;
-        double diemGocSauThayThe = 0.0;
+        // === CÁC BIẾN TÍNH TOÁN ===
+        double diemCC_de_ThayThe = 0.0; // Điểm quy đổi chứng chỉ (để thay thế điểm thi môn Anh)
+        double diemCC_de_Cong    = 0.0; // Điểm cộng từ chứng chỉ (IELTS/ngoại ngữ)
+        double diemGT_de_Cong    = 0.0; // Điểm cộng từ giải thưởng
 
         try (org.hibernate.Session session = CONFIG.HibernateUtil.getSessionFactory().openSession()) {
-            // 1. LẤY DỮ LIỆU CHỨNG CHỈ (Theo đúng tên cột diem_quydoi, diem_cong trong DB)
+
+            // 1. LẤY ĐIỂM CHỨNG CHỈ: diem_quydoi (thay thế môn Anh) + diem_cong (cộng thêm nếu không thay thế)
             String sqlCC = "SELECT diem_quydoi, diem_cong FROM xt_chungchi WHERE cccd = :cccd LIMIT 1";
             Object[] ccData = (Object[]) session.createNativeQuery(sqlCC).setParameter("cccd", cccd).uniqueResult();
-
             if (ccData != null) {
-                diemCC_de_ThayThe = ((Number) ccData[0]).doubleValue(); 
-                diemCC_de_Cong = ((Number) ccData[1]).doubleValue();    
+                diemCC_de_ThayThe = ((Number) ccData[0]).doubleValue(); // Điểm quy đổi (thay thế môn Anh)
+                diemCC_de_Cong    = ((Number) ccData[1]).doubleValue(); // Điểm cộng thêm (IELTS bonus)
             }
 
-            // 2. LẤY DỮ LIỆU GIẢI THƯỞNG
+            // 2. LẤY ĐIỂM GIẢI THƯỞNG
             String sqlGT = "SELECT ma_mon, diem_cong_co_mon, diem_cong_khong_mon " +
-                   "FROM xt_giathuong WHERE TRIM(cccd) = TRIM(:cccd) LIMIT 1";
+                           "FROM xt_giathuong WHERE TRIM(cccd) = TRIM(:cccd) LIMIT 1";
             Object[] gtData = (Object[]) session.createNativeQuery(sqlGT).setParameter("cccd", cccd).uniqueResult();
 
-            // 3. KIỂM TRA TỔ HỢP
+            // 3. KIỂM TRA TỔ HỢP VÀ TÍNH ĐIỂM GIẢI THƯỞNG
             boolean coMonAnh = false;
             if (toHopMonDaChon != null) {
-                txtDiemCC.setText("0");
-                txtDiemUTXT.setText("0");
-                txtDiemTong.setText("0");
-                // Kiểm tra mã môn N1 (Tiếng Anh) trong tổ hợp
-                coMonAnh = "N1".equals(toHopMonDaChon.getMon1()) || 
-                           "N1".equals(toHopMonDaChon.getMon2()) || 
+                coMonAnh = "N1".equals(toHopMonDaChon.getMon1()) ||
+                           "N1".equals(toHopMonDaChon.getMon2()) ||
                            "N1".equals(toHopMonDaChon.getMon3());
 
-                // Xử lý điểm Giải thưởng
                 if (gtData != null) {
                     String maMonGiai = (String) gtData[0];
-                    double dCoMon = ((Number) gtData[1]).doubleValue();
+                    double dCoMon    = ((Number) gtData[1]).doubleValue();
                     double dKhongMon = ((Number) gtData[2]).doubleValue();
 
-                    if (maMonGiai != null && (
-                        maMonGiai.equals(toHopMonDaChon.getMon1()) || 
-                        maMonGiai.equals(toHopMonDaChon.getMon2()) || 
-                        maMonGiai.equals(toHopMonDaChon.getMon3())
-                    )) {
-                        diemGT_de_Cong = dCoMon;
-                    } else {
-                        diemGT_de_Cong = dKhongMon;
-                    }
+                    boolean trungMon = maMonGiai != null && (
+                        maMonGiai.equals(toHopMonDaChon.getMon1()) ||
+                        maMonGiai.equals(toHopMonDaChon.getMon2()) ||
+                        maMonGiai.equals(toHopMonDaChon.getMon3()));
+
+                    diemGT_de_Cong = trungMon ? dCoMon : dKhongMon;
                 }
-                // 🔥 HIỂN THỊ ĐIỂM GIẢI THƯỞNG (UTXT)
-                txtDiemUTXT.setText(String.valueOf(diemGT_de_Cong));
-            }
 
-            // 4. TÍNH ĐIỂM GỐC VÀ SO SÁNH QUY ĐỔI MÔN ANH
-            BUS.diemThiBUS dtBus = new BUS.diemThiBUS();
-            Entity.diemThiETT dt = dtBus.layDiemTheoCCCD(cccd);
-
-            if (dt != null && toHopMonDaChon != null) {
-                // Sử dụng hàm phụ layDiemTuEntity ở dưới để tránh lỗi "cannot find symbol"
-                double d1 = layDiemTuEntity(dt, toHopMonDaChon.getMon1());
-                double d2 = layDiemTuEntity(dt, toHopMonDaChon.getMon2());
-                double d3 = layDiemTuEntity(dt, toHopMonDaChon.getMon3());
-
+                // 4. Nếu tổ hợp có N1 → chứng chỉ đã THAY THẾ vào điểm thi Anh
+                //    → KHÔNG cộng thêm diem_cong nữa (tránh tính 2 lần)
                 if (coMonAnh) {
-                    // Nếu tổ hợp có N1, so sánh Math.max giữa điểm thi và điểm quy đổi chứng chỉ
-                    if ("N1".equals(toHopMonDaChon.getMon1())) d1 = Math.max(d1, diemCC_de_ThayThe);
-                    if ("N1".equals(toHopMonDaChon.getMon2())) d2 = Math.max(d2, diemCC_de_ThayThe);
-                    if ("N1".equals(toHopMonDaChon.getMon3())) d3 = Math.max(d3, diemCC_de_ThayThe);
-
-                    // Khi đã dùng thay thế môn Anh thì không tính điểm cộng chứng chỉ nữa
-                    diemCC_de_Cong = 0; 
+                    diemCC_de_Cong = 0.0;
                 }
-                diemGocSauThayThe = d1 + d2 + d3;
             }
-            System.out.println("TO HOP: " + (toHopMonDaChon == null ? "NULL" : toHopMonDaChon.getMatohop()));
-            System.out.println("GT DATA: " + gtData);
-            System.out.println("CCCD truyền vào: [" + cccd + "]");
+
+            System.out.println("[DiemCong] CCCD=[" + cccd + "] CC=" + diemCC_de_Cong
+                + " GT=" + diemGT_de_Cong);
+
         } catch (Exception e) {
             e.printStackTrace();
         }
-        // 6. KHỐNG CHẾ TRẦN ĐIỂM CỘNG 3.0 (Theo thang 30)
-        double tongDiemCongThucTe = diemCC_de_Cong + diemGT_de_Cong;
-        double tongDiemCongSauKhongChe = Math.min(tongDiemCongThucTe, 3.0);
 
-        // Cập nhật lên ô txtDiemCC (Hiển thị phần điểm được cộng thêm)
+        // 5. HIỂN THỊ KẾT QUẢ LÊN FORM
+        // Điểm CC = điểm chứng chỉ (IELTS/ngoại ngữ)
         txtDiemCC.setText(String.valueOf(diemCC_de_Cong));
 
-        // 7. TÍNH TỔNG ĐIỂM XÉT TUYỂN CUỐI CÙNG
+        // Điểm UTXT = điểm giải thưởng
+        txtDiemUTXT.setText(String.valueOf(diemGT_de_Cong));
+
+        // Tổng = CC + UTXT, tối đa 3.0
         double tongCong = Math.min(diemCC_de_Cong + diemGT_de_Cong, 3.0);
         txtDiemTong.setText(String.valueOf(tongCong));
     }
