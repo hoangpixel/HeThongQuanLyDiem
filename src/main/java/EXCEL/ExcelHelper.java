@@ -147,7 +147,7 @@ public class ExcelHelper {
 
                 // --- 2. IN HEADER ---
                 String[] headers = {
-                    "ID NV", "CCCD", "ID Ngành", "Thứ Tự", "Điểm THXT", 
+                    "ID NV", "CCCD", "ID Ngành", "Thứ Tự", "Điểm THXT", "Điểm UT Gốc" ,
                     "Điểm UTQD", "Điểm Cộng", "Điểm Tổng", "Kết Quả NV", 
                     "Keys", "Phương Thức", "Tổ Hợp"
                 };
@@ -171,6 +171,7 @@ public class ExcelHelper {
                         nv.getNvMaNganh() != null ? nv.getNvMaNganh() : "",
                         nv.getNvTt(),
                         nv.getDiemThxt() != null ? nv.getDiemThxt() : 0.0,
+                        nv.getDiemUtqdGoc()!= null ? nv.getDiemUtqdGoc() : 0.0,
                         nv.getDiemUtqd() != null ? nv.getDiemUtqd() : 0.0,
                         nv.getDiemCong() != null ? nv.getDiemCong() : 0.0,
                         nv.getDiemXetTuyen() != null ? nv.getDiemXetTuyen() : 0.0,

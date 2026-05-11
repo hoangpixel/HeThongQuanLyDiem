@@ -390,73 +390,93 @@ public class nguyenVongXetTuyenBUS {
         }
     }
     
-    private double parseDoubleSafe(String val) {
-        try {
-            if (val == null || val.trim().isEmpty()) return 0.0;
-            return Double.parseDouble(val.trim());
-        } catch (Exception e) {
-            return 0.0;
-        }
-    }
 
-    // =====================================================================
-    // HÀM IMPORT CHÍNH THỨC ĐÃ FIX LỖI ĐIỂM SỐ 0.0
-    // =====================================================================
-    public String nhapDuLieuTuExcel(String filePath) {
+public String nhapDuLieuTuExcel(String filePath) {
         try {
             // 1. Lấy ma trận dữ liệu từ Excel
             ArrayList<ArrayList<String>> data = EXCEL.ExcelHelper.docFileExcel(filePath);
             
-            if (data.size() <= 1) {
+            // Chặn ngay từ cửa nếu file trống hoặc không đọc được
+            if (data == null || data.isEmpty() || data.size() <= 1) {
                 return "File Excel trống hoặc chỉ có mỗi dòng Tiêu đề!";
             }
 
             int soDongThanhCong = 0;
             int soDongThatBai = 0;
-            nguyenVongXetTuyenDAO dao = new nguyenVongXetTuyenDAO();
+            DAO.nguyenVongXetTuyenDAO dao = new DAO.nguyenVongXetTuyenDAO(); // ⚠️ Nhớ thêm DAO. vào trước cho chắc cú
 
+            // Duyệt từ dòng 1 (bỏ qua dòng 0 là tiêu đề)
             for (int i = 1; i < data.size(); i++) {
                 ArrayList<String> row = data.get(i);
                 
+                // 🛑 CHỐT CHẶN 1: Nếu dòng Excel bị rỗng hoàn toàn (do lỡ tay format ở cuối file)
+                if (row == null || row.isEmpty()) {
+                    continue; // Bỏ qua không tính là thất bại
+                }
+                
                 try {
+                    // 🛑 CHỐT CHẶN 2: File chuẩn của mình có 13 cột (0 đến 12). 
+                    // Nếu dòng nào ít hơn 13 cột thì chắc chắn là bị thiếu dữ liệu, cho rớt luôn!
+                    if (row.size() < 13) {
+                        System.out.println("⚠️ Dòng " + (i+1) + " bị thiếu cột (chỉ có " + row.size() + " cột). Bỏ qua!");
+                        soDongThatBai++;
+                        continue; 
+                    }
+
                     nguyenVongXetTuyenETT nv = new nguyenVongXetTuyenETT();
                     
-                    nv.setNnCccd(row.get(1));              // Cột B (Index 1): CCCD
-                    nv.setNvMaNganh(row.get(2));           // Cột C (Index 2): Mã Ngành
+                    // --- GÁN DỮ LIỆU --- (Nhớ check lại số thứ tự cột Excel thực tế nha Boss)
+                    nv.setNnCccd(row.get(1));              // Cột B: CCCD
+                    nv.setNvMaNganh(row.get(2));           // Cột C: Mã Ngành
+                    nv.setNvTt((int) parseDoubleSafe(row.get(3))); // Cột D: Thứ Tự NV
                     
-                    // Ép kiểu Thứ tự an toàn (Xử lý luôn vụ Excel tự chèn số thực kiểu "1.0")
-                    nv.setNvTt((int) parseDoubleSafe(row.get(3))); // Cột D (Index 3): Thứ Tự NV
+                    nv.setDiemThxt(parseDoubleSafe(row.get(4)));   // Cột E: Điểm THXT
+                    nv.setDiemUtqdGoc(parseDoubleSafe(row.get(5)));// Cột F: Ưu tiên Gốc
+                    nv.setDiemUtqd(parseDoubleSafe(row.get(6)));   // Cột G: Ưu tiên (bị bóp)
+                    nv.setDiemCong(parseDoubleSafe(row.get(7)));   // Cột H: Điểm Cộng
+                    nv.setDiemXetTuyen(parseDoubleSafe(row.get(8))); // Cột I: Tổng Điểm
                     
-                    // --- ĐỌC TRỰC TIẾP ĐIỂM SỐ TỪ FILE EXCEL (KHÔNG GÁN MÙ QUÁNG NỮA) ---
-                    nv.setDiemThxt(parseDoubleSafe(row.get(4)));   // Cột E (Index 4): Điểm THXT
-                    nv.setDiemUtqd(parseDoubleSafe(row.get(5)));   // Cột F (Index 5): Điểm Ưu tiên (Khu vực)
-                    nv.setDiemCong(parseDoubleSafe(row.get(6)));   // Cột G (Index 6): Điểm Cộng (Giải/IELTS)
-                    nv.setDiemXetTuyen(parseDoubleSafe(row.get(7))); // Cột H (Index 7): Tổng Điểm
+                    String ketQua = row.get(9);
+                    nv.setNvKetQua(ketQua != null && !ketQua.trim().isEmpty() ? ketQua : "Chờ xét"); // Cột J
                     
-                    String ketQua = row.get(8);
-                    nv.setNvKetQua(ketQua != null && !ketQua.isEmpty() ? ketQua : "Chờ xét"); // Cột I (Index 8)
+                    // Cột K (Index 10) là Keys, lát nữa mình tự tạo, không đọc từ Excel
                     
-                    nv.setTtPhuongThuc(row.get(10));       // Cột K (Index 10): Phương thức
-                    nv.setTtThm(row.get(11));              // Cột L (Index 11): Tổ hợp
+                    nv.setTtPhuongThuc(row.get(11));       // Cột L: Phương thức
+                    nv.setTtThm(row.get(12));              // Cột M: Tổ hợp
                     
-                    // Tạo key ẩn
-                    nv.setNvKeys(nv.getNnCccd() + "_" + nv.getNvTt());
+                    // Tạo key ẩn để chống trùng
+                    nv.setNvKeys(nv.getNnCccd() + "_" + nv.getNvTt() + "_" + nv.getTtPhuongThuc() + "_" + nv.getTtThm());
 
-                    // 4. Đẩy xuống DAO để Thêm vào Database (Nhớ sửa tên hàm cho khớp DAO của ông nha)
+                    // 4. Đẩy xuống DAO để Thêm vào DB
                     if (dao.saveNguyenVong(nv)) { 
                         soDongThanhCong++;
                     } else {
+                        System.out.println("❌ Lỗi lưu DB tại dòng " + (i+1));
                         soDongThatBai++;
                     }
                 } catch (Exception ex) {
-                    soDongThatBai++; // Lỗi ép kiểu hoặc thiếu dữ liệu thì tính là thất bại dòng đó
+                    System.out.println("❌ Lỗi ép kiểu/dữ liệu tại dòng " + (i+1) + ": " + ex.getMessage());
+                    soDongThatBai++; 
                 }
             }
-            return "Nhập thành công: " + soDongThanhCong + " dòng.\nLỗi/Trùng lặp: " + soDongThatBai + " dòng.";
+            
+            return "Nhập thành công: " + soDongThanhCong + " dòng.\nLỗi/Trùng lặp/Thiếu: " + soDongThatBai + " dòng.";
 
         } catch (Exception e) {
             e.printStackTrace();
-            return "Lỗi khi đọc file Excel: " + e.getMessage();
+            return "Lỗi cấu trúc khi đọc file Excel: " + e.getMessage();
+        }
+    }
+    
+    // Hàm hỗ trợ ép kiểu an toàn (Boss kiểm tra xem có hàm này chưa nha, nếu chưa thì thêm vô)
+    private double parseDoubleSafe(String value) {
+        if (value == null || value.trim().isEmpty()) {
+            return 0.0;
+        }
+        try {
+            return Double.parseDouble(value.replace(",", ".")); // Đề phòng Excel xuất dấu phẩy
+        } catch (NumberFormatException e) {
+            return 0.0;
         }
     }
     
