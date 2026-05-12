@@ -99,19 +99,30 @@ public class chungChiDAO {
     public boolean checkToHopCoMonAnh(String cccd) {
         boolean coMonAnh = false;
         try (Session session = HibernateUtil.getSessionFactory().openSession()) {
-            String sql = "SELECT th.ten_tohop FROM xt_thisinhxettuyen25 ts " + 
+            // Bỏ LIMIT 1 đi để lấy hết tất cả các tổ hợp môn của các nguyện vọng
+            String sql = "SELECT th.tentohop FROM xt_thisinhxettuyen25 ts " + 
                          "JOIN xt_nguyenvongxettuyen nv ON ts.cccd = nv.nn_cccd " +
                          "JOIN xt_tohop_monthi th ON nv.tt_thm = th.matohop " +
-                         "WHERE ts.cccd = :cccd LIMIT 1";
-            
-            Object result = session.createNativeQuery(sql).setParameter("cccd", cccd).uniqueResult();
-            if (result != null) {
-                String tenTohop = result.toString();
-                if (tenTohop.contains("Anh") || tenTohop.contains("Tiếng Anh")) {
-                    coMonAnh = true;
+                         "WHERE ts.cccd = :cccd";
+
+            // Dùng list() thay vì uniqueResult()
+            List<String> results = session.createNativeQuery(sql, String.class).setParameter("cccd", cccd).list();
+
+            if (results != null && !results.isEmpty()) {
+                // Sửa Object thành String luôn cho nó đồng bộ và mượt mà
+                for (String result : results) { 
+                    if (result != null) {
+                        String tenTohop = result.toLowerCase();
+                        if (tenTohop.contains("anh")) {
+                            coMonAnh = true;
+                            break; // Thấy 1 cái có môn Anh là đủ điều kiện rồi, thoát vòng lặp luôn cho nhẹ máy
+                        }
+                    }
                 }
             }
-        } catch (Exception e) { e.printStackTrace(); }
+        } catch (Exception e) { 
+            e.printStackTrace(); 
+        }
         return coMonAnh;
     }
 }

@@ -399,29 +399,34 @@ public class insertChungChi extends javax.swing.JDialog {
     }
 
     String loaiCC = cboLoaiChungChi.getSelectedItem().toString();
-    String diemGoc = "";
+    String diemGoc = loaiCC.equals("Tiếng Anh - TOEIC (4 kỹ năng)") 
+                     ? (txtNghe.getText().trim() + "/" + txtDoc.getText().trim() + "/" + txtNoi.getText().trim() + "/" + txtViet.getText().trim())
+                     : txtDiemChungChi.getText().trim();
     
-//    // ĐÃ ĐỔI TÊN Ở ĐÂY:
-//    String diemGoc = loaiCC.equals("Tiếng Anh - TOEIC (4 kỹ năng)") 
-//                     ? (txtNghe.getText() + "/" + txtDoc.getText() + "/" + txtNoi.getText() + "/" + txtViet.getText())
-//                     : txtDiemChungChi.getText().trim();
-
     if (loaiCC.equals("Tiếng Anh - TOEIC (4 kỹ năng)")) {
-        try {
-            int n = Integer.parseInt(txtNghe.getText().trim());
-            int d = Integer.parseInt(txtDoc.getText().trim());
-            int s = Integer.parseInt(txtNoi.getText().trim());
-            int w = Integer.parseInt(txtViet.getText().trim());
-            int tongDiem = n + d + s + w; // Cộng tổng 4 ô
-            diemGoc = String.valueOf(tongDiem); // Ví dụ: "1100"
-        } catch (Exception ex) {
-            javax.swing.JOptionPane.showMessageDialog(this, "Vui lòng nhập đầy đủ 4 điểm kỹ năng TOEIC hợp lệ!");
-            return;
-        }
-    } else {
-        // Nếu là IELTS hoặc loại khác thì lấy từ ô điểm bình thường
-        diemGoc = txtDiemChungChi.getText().trim();
+    if (txtNghe.getText().isEmpty() || txtDoc.getText().isEmpty() || 
+        txtNoi.getText().isEmpty() || txtViet.getText().isEmpty()) {
+        javax.swing.JOptionPane.showMessageDialog(this, "Vui lòng nhập đầy đủ điểm 4 kỹ năng TOEIC!");
+        return;
     }
+}
+
+//    if (loaiCC.equals("Tiếng Anh - TOEIC (4 kỹ năng)")) {
+//        try {
+//            int n = Integer.parseInt(txtNghe.getText().trim());
+//            int d = Integer.parseInt(txtDoc.getText().trim());
+//            int s = Integer.parseInt(txtNoi.getText().trim());
+//            int w = Integer.parseInt(txtViet.getText().trim());
+//            int tongDiem = n + d + s + w; // Cộng tổng 4 ô
+//            diemGoc = String.valueOf(tongDiem); // Ví dụ: "1100"
+//        } catch (Exception ex) {
+//            javax.swing.JOptionPane.showMessageDialog(this, "Vui lòng nhập đầy đủ 4 điểm kỹ năng TOEIC hợp lệ!");
+//            return;
+//        }
+//    } else {
+//        // Nếu là IELTS hoặc loại khác thì lấy từ ô điểm bình thường
+//        diemGoc = txtDiemChungChi.getText().trim();
+//    }
     
     try {
         Entity.chungChiETT ett = new Entity.chungChiETT();
@@ -475,6 +480,7 @@ public class insertChungChi extends javax.swing.JDialog {
 //        this.revalidate();
 //        this.repaint();
         this.pack();
+        this.setLocationRelativeTo(null);
     }//GEN-LAST:event_cboLoaiChungChiActionPerformed
 
     private void txtCCCDActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_txtCCCDActionPerformed
@@ -483,22 +489,22 @@ public class insertChungChi extends javax.swing.JDialog {
 
     private void txtNgheCaretUpdate(javax.swing.event.CaretEvent evt) {//GEN-FIRST:event_txtNgheCaretUpdate
         // TODO add your handling code here:
-        updateResultToeic4();
+        tinhToanDiem();
     }//GEN-LAST:event_txtNgheCaretUpdate
 
     private void txtDocCaretUpdate(javax.swing.event.CaretEvent evt) {//GEN-FIRST:event_txtDocCaretUpdate
         // TODO add your handling code here:
-        updateResultToeic4();
+        tinhToanDiem();
     }//GEN-LAST:event_txtDocCaretUpdate
 
     private void txtNoiCaretUpdate(javax.swing.event.CaretEvent evt) {//GEN-FIRST:event_txtNoiCaretUpdate
         // TODO add your handling code here:
-        updateResultToeic4();
+        tinhToanDiem();
     }//GEN-LAST:event_txtNoiCaretUpdate
 
     private void txtVietCaretUpdate(javax.swing.event.CaretEvent evt) {//GEN-FIRST:event_txtVietCaretUpdate
         // TODO add your handling code here:
-        updateResultToeic4();
+        tinhToanDiem();
     }//GEN-LAST:event_txtVietCaretUpdate
 
     private void txtDiemChungChiActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_txtDiemChungChiActionPerformed
@@ -525,36 +531,36 @@ public class insertChungChi extends javax.swing.JDialog {
         // TODO add your handling code here:
     }//GEN-LAST:event_txtNgheActionPerformed
     
-    private void updateResultToeic4() {
-    try {
-        // Lấy giá trị từ 4 ô (nhớ check empty)
-        if(txtNghe.getText().isEmpty() || txtDoc.getText().isEmpty() || 
-           txtNoi.getText().isEmpty() || txtViet.getText().isEmpty()) {
-           txtDiemQuyDoi.setText("0");
-           txtDiemCong.setText("0");
-           return;
-        }
-        
-        int n = Integer.parseInt(txtNghe.getText());
-        int d = Integer.parseInt(txtDoc.getText());
-        int s = Integer.parseInt(txtNoi.getText());
-        int w = Integer.parseInt(txtViet.getText());
-
-        // Logic Math.min như đã bàn
-        int levelNghe = (n >= 490) ? 10 : (n >= 400) ? 9 : (n >= 275) ? 8 : 0;
-        int levelDoc  = (d >= 455) ? 10 : (d >= 385) ? 9 : (d >= 275) ? 8 : 0;
-        int levelNoi  = (s >= 180) ? 10 : (s >= 160) ? 9 : (s >= 120) ? 8 : 0;
-        int levelViet = (w >= 180) ? 10 : (w >= 150) ? 9 : (w >= 120) ? 8 : 0;
-
-        int finalLevel = Math.min(Math.min(levelNghe, levelDoc), Math.min(levelNoi, levelViet));
-        
-        txtDiemQuyDoi.setText(String.valueOf(finalLevel));
-        double bonus = (finalLevel == 10) ? 2.0 : (finalLevel == 9) ? 1.5 : (finalLevel == 8) ? 1.0 : 0;
-        txtDiemCong.setText(String.valueOf(bonus));
-    } catch (NumberFormatException e) {
-        // Tránh lỗi khi user gõ chữ
-    }
-}
+//    private void updateResultToeic4() {
+//    try {
+//        // Lấy giá trị từ 4 ô (nhớ check empty)
+//        if(txtNghe.getText().isEmpty() || txtDoc.getText().isEmpty() || 
+//           txtNoi.getText().isEmpty() || txtViet.getText().isEmpty()) {
+//           txtDiemQuyDoi.setText("0");
+//           txtDiemCong.setText("0");
+//           return;
+//        }
+//        
+//        int n = Integer.parseInt(txtNghe.getText());
+//        int d = Integer.parseInt(txtDoc.getText());
+//        int s = Integer.parseInt(txtNoi.getText());
+//        int w = Integer.parseInt(txtViet.getText());
+//
+//        // Logic Math.min như đã bàn
+//        int levelNghe = (n >= 490) ? 10 : (n >= 400) ? 9 : (n >= 275) ? 8 : 0;
+//        int levelDoc  = (d >= 455) ? 10 : (d >= 385) ? 9 : (d >= 275) ? 8 : 0;
+//        int levelNoi  = (s >= 180) ? 10 : (s >= 160) ? 9 : (s >= 120) ? 8 : 0;
+//        int levelViet = (w >= 180) ? 10 : (w >= 150) ? 9 : (w >= 120) ? 8 : 0;
+//
+//        int finalLevel = Math.min(Math.min(levelNghe, levelDoc), Math.min(levelNoi, levelViet));
+//        
+//        txtDiemQuyDoi.setText(String.valueOf(finalLevel));
+//        double bonus = (finalLevel == 10) ? 2.0 : (finalLevel == 9) ? 1.5 : (finalLevel == 8) ? 1.0 : 0;
+//        txtDiemCong.setText(String.valueOf(bonus));
+//    } catch (NumberFormatException e) {
+//        // Tránh lỗi khi user gõ chữ
+//    }
+//}
 
     // Hàm 1: Kiểm tra ô TOEIC có trống không
     private boolean checkEmptyToeic() {

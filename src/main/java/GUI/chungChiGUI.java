@@ -241,8 +241,6 @@ public class chungChiGUI extends BaseTableGUI {
                 int absoluteIndex = (currentPage - 1) * rowsPerPage + modelIndex;
                 fullDataList.remove(absoluteIndex);
 
-                fullDataList.remove(absoluteIndex);
-
                 totalPages = (int) Math.ceil((double) fullDataList.size() / rowsPerPage);
 
                 if (currentPage > totalPages && totalPages > 0) {
@@ -251,7 +249,7 @@ public class chungChiGUI extends BaseTableGUI {
 
                 renderCurrentPage();
                 
-                JOptionPane.showMessageDialog(this, "Xóa chứng chỉ thành công!");
+//                JOptionPane.showMessageDialog(this, "Xóa chứng chỉ thành công!");
             } else {
                 JOptionPane.showMessageDialog(this, "Xóa chứng chỉ thất bại");
             }
@@ -262,33 +260,43 @@ public class chungChiGUI extends BaseTableGUI {
 }
 
     public void thucHienRefresh() {
-        // 1. Reset thanh tìm kiếm
+        // 1. Reset thanh tìm kiếm cho sạch sẽ
         cbxTimKiem.setSelectedIndex(0);
         txtTimKiem.setText(null);
 
-        // 2. Kéo data mới nhất từ DB lên
-        // ⚠️ Đổi 'busChungChi' thành tên biến BUS thực tế của bạn
+        // 2. Tải lại dữ liệu mới nhất từ Database vào RAM
+        busCC.ds = null; // Phá RAM cũ đi để ép nó chọc xuống DB lấy cái mới nhất
         busCC.layDanhSach(); 
 
-        // 3. Clear data cũ trên Table
+        // 3. Xóa sạch dữ liệu cũ trên bảng (Vector chứa full data)
         fullDataList.clear();
-        List<Vector> dataList = new ArrayList<>();
 
-        // 4. Đổ data mới vào Vector
-        for (Entity.chungChiETT ct : busCC.ds) {
-            Vector row = new Vector();
-            row.add(ct.getIdCc());
-            row.add(ct.getCccd() != null ? ct.getCccd() : "");
-            row.add(ct.getLoaiChungChi() != null ? ct.getLoaiChungChi() : "");
-            row.add(ct.getDiemChungChi() != null ? ct.getDiemChungChi() : "");
-            row.add(ct.getDiemQuyDoi() != null ? ct.getDiemQuyDoi() : "");
-            row.add(ct.getDiemCong() != null ? ct.getDiemCong() : "");
+        // 4. Đổ lại dữ liệu từ RAM vào fullDataList (Phải GIỐNG HỆT thứ tự cột của loadDataToTable)
+        if (busCC.ds != null) {
+            for (int i = 0; i < busCC.ds.size(); i++) {
+                Entity.chungChiETT item = busCC.ds.get(i);
+                java.util.Vector row = new java.util.Vector();
 
-            dataList.add(row);
+                row.add(item.getIdCc()); 
+                row.add(item.getCccd() != null ? item.getCccd() : "");
+                row.add(item.getLoaiChungChi() != null ? item.getLoaiChungChi() : "");
+                row.add(item.getDiemChungChi() != null ? item.getDiemChungChi() : "");
+                row.add(item.getDiemQuyDoi() != null ? item.getDiemQuyDoi() : 0.0);
+                row.add(item.getDiemCong() != null ? item.getDiemCong() : 0.0);
+
+                fullDataList.add(row);
+            }
         }
 
-        // 5. Cập nhật giao diện
-        setTableData(dataList);
+        // 5. Tính toán lại tổng số trang cho Pagination
+        totalPages = (int) Math.ceil((double) fullDataList.size() / rowsPerPage);
+        if (totalPages == 0) totalPages = 1;
+        currentPage = 1; // Nhảy về trang 1 cho khỏi lỗi out of bounds
+
+        // 6. Vẽ lại bảng
+        renderCurrentPage();
+
+        javax.swing.JOptionPane.showMessageDialog(this, "Đã đồng bộ dữ liệu chứng chỉ mới nhất từ Database!");
     }
     
     private void hienThiChiTietCC() {

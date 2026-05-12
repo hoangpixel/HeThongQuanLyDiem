@@ -135,14 +135,13 @@ public void loadDataToTable() {
             row.add(item.getTennganh());
             row.add(item.getN_tohopgoc());
             row.add(item.getN_chitieu());
-            row.add(item.getN_diemsanthpt() != null ? item.getN_diemsanthpt() : "");
-            row.add(item.getN_diemsanvsat() != null ? item.getN_diemsanvsat() : "");
-            row.add(item.getN_diemsandgnl() != null ? item.getN_diemsandgnl() : "");
-            row.add(item.getDiemchuan_thpt() != null ? item.getDiemchuan_thpt() : 0);
-            row.add(item.getDiemchuan_vsat() != null ? item.getDiemchuan_vsat() : 0);
-            row.add(item.getDiemchuan_dgnl() != null ? item.getDiemchuan_dgnl() : 0);
-            
-            // Check an toàn, lỡ Ngành đó chưa có ai đăng ký (trong DB là NULL) thì in ra số 0
+            // Check an toàn, Ngành trong DB là NULL thì in ra 0
+            row.add(item.getN_diemsanthpt() != null ? item.getN_diemsanthpt() : 0.0);
+            row.add(item.getN_diemsanvsat() != null ? item.getN_diemsanvsat() : 0.0);
+            row.add(item.getN_diemsandgnl() != null ? item.getN_diemsandgnl() : 0.0);
+            row.add(item.getDiemchuan_thpt() != null ? item.getDiemchuan_thpt() : 0.0);
+            row.add(item.getDiemchuan_vsat() != null ? item.getDiemchuan_vsat() : 0.0);
+            row.add(item.getDiemchuan_dgnl() != null ? item.getDiemchuan_dgnl() : 0.0);
             row.add(item.getSlDangKy() != null ? item.getSlDangKy() : 0);
             
             dataList.add(row);
@@ -232,12 +231,12 @@ private void hienThiDialogSua() {
                     rowData.add(nvMoi.getN_tohopgoc());
                     rowData.add(nvMoi.getN_chitieu());
                     
-                    rowData.add(nvMoi.getN_diemsanthpt() != null ? nvMoi.getN_diemsanthpt() : "");
-                    rowData.add(nvMoi.getN_diemsanvsat() != null ? nvMoi.getN_diemsanvsat() : "");
-                    rowData.add(nvMoi.getN_diemsandgnl() != null ? nvMoi.getN_diemsandgnl() : "");
-                    rowData.add(nvMoi.getDiemchuan_thpt() != null ? nvMoi.getDiemchuan_thpt() : "");
-                    rowData.add(nvMoi.getDiemchuan_vsat() != null ? nvMoi.getDiemchuan_vsat() : "");
-                    rowData.add(nvMoi.getDiemchuan_dgnl() != null ? nvMoi.getDiemchuan_dgnl() : "");
+                    rowData.add(nvMoi.getN_diemsanthpt() != null ? nvMoi.getN_diemsanthpt() : 0.0);
+                    rowData.add(nvMoi.getN_diemsanvsat() != null ? nvMoi.getN_diemsanvsat() : 0.0);
+                    rowData.add(nvMoi.getN_diemsandgnl() != null ? nvMoi.getN_diemsandgnl() : 0.0);
+                    rowData.add(nvMoi.getDiemchuan_thpt() != null ? nvMoi.getDiemchuan_thpt() : 0.0);
+                    rowData.add(nvMoi.getDiemchuan_vsat() != null ? nvMoi.getDiemchuan_vsat() : 0.0);
+                    rowData.add(nvMoi.getDiemchuan_dgnl() != null ? nvMoi.getDiemchuan_dgnl() : 0.0);
                     
                     // 🚀 ĐÃ XÓA DÒNG N_diemtrungtuyen
                     // 🚀 ĐÃ THÊM LẠI CỘT SỐ LƯỢNG ĐĂNG KÝ
@@ -307,12 +306,12 @@ private void thucHienRefresh() {
             row.add(item.getTennganh());
             row.add(item.getN_tohopgoc());
             row.add(item.getN_chitieu());
-            row.add(item.getN_diemsanthpt() != null ? item.getN_diemsanthpt() : "");
-            row.add(item.getN_diemsanvsat() != null ? item.getN_diemsanvsat() : "");
-            row.add(item.getN_diemsandgnl() != null ? item.getN_diemsandgnl() : "");
-            row.add(item.getDiemchuan_thpt() != null ? item.getDiemchuan_thpt() : 0);
-            row.add(item.getDiemchuan_vsat() != null ? item.getDiemchuan_vsat() : 0);
-            row.add(item.getDiemchuan_dgnl() != null ? item.getDiemchuan_dgnl() : 0);
+            row.add(item.getN_diemsanthpt() != null ? item.getN_diemsanthpt() : 0.0);
+            row.add(item.getN_diemsanvsat() != null ? item.getN_diemsanvsat() : 0.0);
+            row.add(item.getN_diemsandgnl() != null ? item.getN_diemsandgnl() : 0.0);
+            row.add(item.getDiemchuan_thpt() != null ? item.getDiemchuan_thpt() : 0.0);
+            row.add(item.getDiemchuan_vsat() != null ? item.getDiemchuan_vsat() : 0.0);
+            row.add(item.getDiemchuan_dgnl() != null ? item.getDiemchuan_dgnl() : 0.0);
             
             // 🚀 ĐÃ SỬA: Đưa cột SL ĐK vào thay cho cột Điểm Trung Tuyển
             row.add(item.getSlDangKy() != null ? item.getSlDangKy() : 0);
@@ -392,12 +391,12 @@ public void thucHienTimKiem()
             row.add(ct.getTennganh());
             row.add(ct.getN_tohopgoc());
             row.add(ct.getN_chitieu());
-            row.add(ct.getN_diemsanthpt() != null ? ct.getN_diemsanthpt() : "");
-            row.add(ct.getN_diemsanvsat() != null ? ct.getN_diemsanvsat() : "");
-            row.add(ct.getN_diemsandgnl() != null ? ct.getN_diemsandgnl() : "");
-            row.add(ct.getDiemchuan_thpt() != null ? ct.getDiemchuan_thpt() : "");
-            row.add(ct.getDiemchuan_vsat() != null ? ct.getDiemchuan_vsat() : "");
-            row.add(ct.getDiemchuan_dgnl() != null ? ct.getDiemchuan_dgnl() : "");
+            row.add(ct.getN_diemsanthpt() != null ? ct.getN_diemsanthpt() : 0.0);
+            row.add(ct.getN_diemsanvsat() != null ? ct.getN_diemsanvsat() : 0.0);
+            row.add(ct.getN_diemsandgnl() != null ? ct.getN_diemsandgnl() : 0.0);
+            row.add(ct.getDiemchuan_thpt() != null ? ct.getDiemchuan_thpt() : 0.0);
+            row.add(ct.getDiemchuan_vsat() != null ? ct.getDiemchuan_vsat() : 0.0);
+            row.add(ct.getDiemchuan_dgnl() != null ? ct.getDiemchuan_dgnl() : 0.0);
             
             // Cột số 9: Số lượng đăng ký
             row.add(ct.getSlDangKy() != null ? ct.getSlDangKy() : 0);

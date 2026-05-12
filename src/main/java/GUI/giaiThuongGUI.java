@@ -241,7 +241,6 @@ public class giaiThuongGUI extends BaseTableGUI {
                     // Xóa khỏi fullDataList để đồng bộ UI
                     int modelIndex = table.convertRowIndexToModel(row);
                     int absoluteIndex = (currentPage - 1) * rowsPerPage + modelIndex;
-                    fullDataList.remove(absoluteIndex);
                     
                     // 🔥 Xóa luôn phần tử đó trong fullDataList để đồng bộ
                     fullDataList.remove(absoluteIndex);
@@ -257,36 +256,48 @@ public class giaiThuongGUI extends BaseTableGUI {
                     // 🔥 Vẽ lại bảng cực mượt
                     renderCurrentPage();
                 } else {
-                    JOptionPane.showMessageDialog(this, "Xóa nguyện vọng thất bại");
+                    JOptionPane.showMessageDialog(this, "Xóa giải thưởng thất bại");
                 }
             }
         }
     }
 
     private void thucHienRefresh() {
+        // 1. Reset thanh tìm kiếm
         cbxTimKiem.setSelectedIndex(0);
         txtTimKiem.setText(null);
-        
+
+        // 2. Phá RAM cũ, ép kéo data mới nhất từ DB lên
+        busGT.ds = null;
         busGT.layDanhSach();
 
+        // 3. Xóa sạch dữ liệu trên Table hiện tại
         fullDataList.clear();
-        List<Vector> dataList = new ArrayList<>();
 
-        for (giaiThuongETT ct : busGT.ds) 
-        {
-            Vector row = new Vector();
-            row.add(ct.getIdGt());
-            row.add(ct.getCccd());
-            row.add(ct.getCapGiai());
-            row.add(ct.getMaMon());
-            row.add(ct.getLoaiGiai());
-            row.add(ct.getDiemCongCoMon());
-            row.add(ct.getDiemCongKhongMon());
+        // 4. Đổ data mới vào Vector
+        if (busGT.ds != null) {
+            for (giaiThuongETT ct : busGT.ds) {
+                Vector row = new Vector();
+                row.add(ct.getIdGt());
+                row.add(ct.getCccd() != null ? ct.getCccd() : "");
+                row.add(ct.getCapGiai() != null ? ct.getCapGiai() : "");
+                row.add(ct.getMaMon() != null ? ct.getMaMon() : "");
+                row.add(ct.getLoaiGiai() != null ? ct.getLoaiGiai() : "");
+                row.add(ct.getDiemCongCoMon() != null ? ct.getDiemCongCoMon() : 0.0);
+                row.add(ct.getDiemCongKhongMon() != null ? ct.getDiemCongKhongMon() : 0.0);
 
-            dataList.add(row);
+                fullDataList.add(row);
+            }
         }
 
-        setTableData(dataList);
+        // 5. Tính toán lại tổng số trang cho an toàn
+        totalPages = (int) Math.ceil((double) fullDataList.size() / rowsPerPage);
+        if (totalPages == 0) totalPages = 1;
+        currentPage = 1; // Nhảy về trang 1
+
+        // 6. Cập nhật giao diện
+        renderCurrentPage();
+        javax.swing.JOptionPane.showMessageDialog(this, "Đã đồng bộ dữ liệu giải thưởng mới nhất!");
     }
     
     private void hienThiChiTietGT() {
@@ -296,11 +307,11 @@ public class giaiThuongGUI extends BaseTableGUI {
             int absoluteIndex = (currentPage - 1) * rowsPerPage + modelIndex;
             Vector selectedRowData = fullDataList.get(absoluteIndex);
 
-            int idCcCanTim = Integer.parseInt(selectedRowData.get(0).toString()); 
+            int idGtCanTim = Integer.parseInt(selectedRowData.get(0).toString()); 
             giaiThuongETT giaiThuongCu = null;
 
             for (giaiThuongETT gt : busGT.ds) {
-                if (gt.getIdGt() == idCcCanTim) {
+                if (gt.getIdGt() == idGtCanTim) {
                     giaiThuongCu = gt;
                     break;
                 }
