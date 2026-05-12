@@ -187,53 +187,57 @@ public void loadDataToTable() {
     }
 
 private void hienThiDialogSua() {
-    int row = table.getSelectedRow();
-    if (row != -1) {
-        int modelIndex = table.convertRowIndexToModel(row);
-        int absoluteIndex = (currentPage - 1) * rowsPerPage + modelIndex;
+        int row = table.getSelectedRow();
+        if (row != -1) {
+            int modelIndex = table.convertRowIndexToModel(row);
+            int absoluteIndex = (currentPage - 1) * rowsPerPage + modelIndex;
 
-        // 1. Lấy ID từ Vector để đảm bảo tìm đúng đối tượng trong danh sách gốc
-        Vector selectedRowData = (Vector) fullDataList.get(absoluteIndex);
-        int idCanTim = (int) selectedRowData.get(0); 
+            // 1. Lấy ID từ Vector để đảm bảo tìm đúng đối tượng trong danh sách gốc
+            Vector selectedRowData = (Vector) fullDataList.get(absoluteIndex);
+            int idCanTim = (int) selectedRowData.get(0); 
 
-        // 2. Tìm đối tượng trong BUS (Dùng loop cho an toàn nếu BUS chưa có findById)
-        Entity.nganhETT nganhCu = null;
-        for (Entity.nganhETT item : busNganh.ds) {
-            if (item.getIdnganh() == idCanTim) {
-                nganhCu = item;
-                break;
+            // 2. Tìm đối tượng trong BUS (Dùng loop cho an toàn nếu BUS chưa có findById)
+            Entity.nganhETT nganhCu = null;
+            for (Entity.nganhETT item : busNganh.ds) {
+                if (item.getIdnganh() == idCanTim) {
+                    nganhCu = item;
+                    break;
+                }
             }
-        }
 
-        if (nganhCu != null) {
-            JFrame topFrame = (JFrame) SwingUtilities.windowForComponent(this);
-            updateNganh dialog = new updateNganh(topFrame, true, nganhCu);
-            dialog.setVisible(true);
+            if (nganhCu != null) {
+                JFrame topFrame = (JFrame) SwingUtilities.windowForComponent(this);
+                updateNganh dialog = new updateNganh(topFrame, true, nganhCu);
+                dialog.setVisible(true);
 
-            if (dialog.xacNhan) {
-                Entity.nganhETT nvMoi = dialog.getNganh();
-                Vector rowData = new java.util.Vector();
-                rowData.add(nvMoi.getIdnganh()); 
-                rowData.add(nvMoi.getManganh());
-                rowData.add(nvMoi.getTennganh());
-                rowData.add(nvMoi.getN_tohopgoc());
-                rowData.add(nvMoi.getN_chitieu());
-                
-                rowData.add(nvMoi.getN_diemsanthpt() != null ? nvMoi.getN_diemsanthpt() : "");
-                rowData.add(nvMoi.getN_diemsanvsat() != null ? nvMoi.getN_diemsanvsat() : "");
-                rowData.add(nvMoi.getN_diemsandgnl() != null ? nvMoi.getN_diemsandgnl() : "");
-                rowData.add(nvMoi.getN_diemtrungtuyen() != null ? nvMoi.getN_diemtrungtuyen() : "");
+                if (dialog.xacNhan) {
+                    Entity.nganhETT nvMoi = dialog.getNganh();
+                    Vector rowData = new java.util.Vector();
+                    rowData.add(nvMoi.getIdnganh()); 
+                    rowData.add(nvMoi.getManganh());
+                    rowData.add(nvMoi.getTennganh());
+                    rowData.add(nvMoi.getN_tohopgoc());
+                    rowData.add(nvMoi.getN_chitieu());
+                    
+                    rowData.add(nvMoi.getN_diemsanthpt() != null ? nvMoi.getN_diemsanthpt() : "");
+                    rowData.add(nvMoi.getN_diemsanvsat() != null ? nvMoi.getN_diemsanvsat() : "");
+                    rowData.add(nvMoi.getN_diemsandgnl() != null ? nvMoi.getN_diemsandgnl() : "");
+                    
+                    // 🚀 ĐÃ XÓA DÒNG N_diemtrungtuyen
+                    // 🚀 ĐÃ THÊM LẠI CỘT SỐ LƯỢNG ĐĂNG KÝ
+                    rowData.add(nvMoi.getSlDangKy() != null ? nvMoi.getSlDangKy() : 0);
 
-                fullDataList.set(absoluteIndex, rowData);
-                renderCurrentPage(); 
+                    fullDataList.set(absoluteIndex, rowData);
+                    renderCurrentPage(); 
+                }
+            } else {
+                JOptionPane.showMessageDialog(this, "Không tìm thấy dữ liệu gốc!");
             }
         } else {
-            JOptionPane.showMessageDialog(this, "Không tìm thấy dữ liệu gốc!");
+            JOptionPane.showMessageDialog(this, "Vui lòng chọn một ngành để sửa!");
         }
-    } else {
-        JOptionPane.showMessageDialog(this, "Vui lòng chọn một ngành để sửa!");
     }
-}
+
 private void hienThiDialogXoa() {
     int row = table.getSelectedRow();
     if (row != -1) {

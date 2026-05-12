@@ -18,12 +18,13 @@ import javax.swing.SwingUtilities;
 import FUNC_GUI.insertNguyenVong;
 import FUNC_GUI.deleteNguyenVong;
 import FUNC_GUI.updateNguyenVong;
-import FUNC_GUI.excelNguyenVong;
+import FUNC_GUI.excelNguyenVongSybau;
 import java.util.Collections;
 import javax.swing.JOptionPane;
 import EXCEL.ExcelHelper;
 import CAL.*;
 import FUNC_GUI.detailNguyenVong;
+import FUNC_GUI.excelNguyenVong;
 import java.lang.reflect.Array;
 
 public class nguyenVongXetTuyenGUI extends BaseTableForNguyenVongGUIonly {
@@ -368,10 +369,44 @@ private void hienThiDialogSua() {
     }
      
     
+//    private void thucHienTinhToanKetQua() {
+//        int confirm = javax.swing.JOptionPane.showConfirmDialog(this, 
+//            "CẢNH BÁO: Hành động này sẽ khóa sổ và xét duyệt toàn bộ nguyện vọng trên hệ thống.\n" +
+//            "Hệ thống sẽ tự động tổng hợp điểm, phân bổ chỉ tiêu và áp dụng tiêu chí phụ.\n" +
+//            "Bạn có chắc chắn muốn tiến hành xét tuyển?", 
+//            "Xác nhận Chốt Sổ", 
+//            javax.swing.JOptionPane.YES_NO_OPTION, 
+//            javax.swing.JOptionPane.WARNING_MESSAGE);
+//            
+//        if (confirm == javax.swing.JOptionPane.YES_OPTION) {
+//            
+//            // --- BƯỚC 1: GỌI BUS ĐỂ TỰ ĐỘNG CẬP NHẬT CHỈ TIÊU ---
+//            // Cất ghế cho team Tuyển thẳng, V-SAT, ĐGNL...
+//            nganhBUS nBus = new nganhBUS();
+//            if (nBus.capNhatChiTieuThucTe()) {
+//                System.out.println("Hệ thống đã cập nhật lại chỉ tiêu thực tế thành công!");
+//            }
+//            
+//            // --- BƯỚC 2: KÉO DỮ LIỆU ĐÃ TÍNH SẴN TỪ DB LÊN ---
+//            // (Thầy nói đúng: KHÔNG TÍNH LẠI NỮA, vì ở Form Con đã tính và lưu sẵn diem_xet_tuyen rồi)
+//            busNguyenVong.layDanhSach(); 
+//
+//            // --- BƯỚC 3: THUẬT TOÁN DOMINO CHÉM CHỈ TIÊU VÀ ĐẨY RỚT ---
+//            // Thuật toán của ông sẽ dựa vào cái nv.getDiemXetTuyen() đã có sẵn để làm việc
+//            busNguyenVong.sapXepKetQuaTheoChiTieu();
+//            busNguyenVong.capNhatDiemChuanTuDong();
+//            
+//            // --- BƯỚC 4: LÀM MỚI GIAO DIỆN ---
+//            busNguyenVong.ds = null; // Phá RAM cũ
+//            loadDataToTable(); // Load RAM mới đã có trạng thái ĐẬU/RỚT
+//            
+//            javax.swing.JOptionPane.showMessageDialog(this, "Hệ thống đã phân bổ chỉ tiêu và xét duyệt thành công!");
+//        }
+//    }
+    
     private void thucHienTinhToanKetQua() {
         int confirm = javax.swing.JOptionPane.showConfirmDialog(this, 
             "CẢNH BÁO: Hành động này sẽ khóa sổ và xét duyệt toàn bộ nguyện vọng trên hệ thống.\n" +
-            "Hệ thống sẽ tự động tổng hợp điểm, phân bổ chỉ tiêu và áp dụng tiêu chí phụ.\n" +
             "Bạn có chắc chắn muốn tiến hành xét tuyển?", 
             "Xác nhận Chốt Sổ", 
             javax.swing.JOptionPane.YES_NO_OPTION, 
@@ -379,60 +414,102 @@ private void hienThiDialogSua() {
             
         if (confirm == javax.swing.JOptionPane.YES_OPTION) {
             
-            // --- BƯỚC 1: GỌI BUS ĐỂ TỰ ĐỘNG CẬP NHẬT CHỈ TIÊU ---
-            // Cất ghế cho team Tuyển thẳng, V-SAT, ĐGNL...
-            nganhBUS nBus = new nganhBUS();
-            if (nBus.capNhatChiTieuThucTe()) {
-                System.out.println("Hệ thống đã cập nhật lại chỉ tiêu thực tế thành công!");
-            }
-            
+            // --- ĐÃ XÓA BƯỚC 1 (Gọi hàm capNhatChiTieuThucTe) ---
+
             // --- BƯỚC 2: KÉO DỮ LIỆU ĐÃ TÍNH SẴN TỪ DB LÊN ---
-            // (Thầy nói đúng: KHÔNG TÍNH LẠI NỮA, vì ở Form Con đã tính và lưu sẵn diem_xet_tuyen rồi)
             busNguyenVong.layDanhSach(); 
 
-            // --- BƯỚC 3: THUẬT TOÁN DOMINO CHÉM CHỈ TIÊU VÀ ĐẨY RỚT ---
-            // Thuật toán của ông sẽ dựa vào cái nv.getDiemXetTuyen() đã có sẵn để làm việc
+            // --- BƯỚC 3: THUẬT TOÁN DOMINO (Giờ nó sẽ lấy n_chitieu ra làm việc) ---
             busNguyenVong.sapXepKetQuaTheoChiTieu();
             busNguyenVong.capNhatDiemChuanTuDong();
             
             // --- BƯỚC 4: LÀM MỚI GIAO DIỆN ---
-            busNguyenVong.ds = null; // Phá RAM cũ
-            loadDataToTable(); // Load RAM mới đã có trạng thái ĐẬU/RỚT
+            busNguyenVong.ds = null; 
+            loadDataToTable(); 
             
             javax.swing.JOptionPane.showMessageDialog(this, "Hệ thống đã phân bổ chỉ tiêu và xét duyệt thành công!");
         }
     }
     
-    public void hienThiExcel()
-    {
+public void hienThiExcel() {
         JFrame topFrame = (JFrame) SwingUtilities.windowForComponent(this);
         excelNguyenVong dialog = new excelNguyenVong(topFrame, true);
-        dialog.setVisible(true);
-        if(dialog.getXacNhanImport())
-        {
-            javax.swing.JFileChooser fileChooser = new javax.swing.JFileChooser();
-        fileChooser.setDialogTitle("Chọn file Excel để nhập dữ liệu");
-        javax.swing.filechooser.FileNameExtensionFilter filter = new javax.swing.filechooser.FileNameExtensionFilter("Excel Files (*.xls, *.xlsx)", "xls", "xlsx");
-        fileChooser.setFileFilter(filter);
+        dialog.setVisible(true); 
+        
+        // --- SAU KHI DIALOG BỊ ĐÓNG (DISPOSE), CODE SẼ TIẾP TỤC CHẠY TỪ ĐÂY ---
 
-        int result = fileChooser.showOpenDialog(this);
-        if (result == javax.swing.JFileChooser.APPROVE_OPTION) {
-            // Lấy đường dẫn file
-            String filePath = fileChooser.getSelectedFile().getAbsolutePath();
-            
-            // Gọi BUS xử lý và nhận thông báo kết quả
-            String thongBao = busNguyenVong.nhapDuLieuTuExcel(filePath);
-            
-            JOptionPane.showMessageDialog(this, thongBao, "Kết quả Nhập Excel", javax.swing.JOptionPane.INFORMATION_MESSAGE);
-            
-            // Xong xuôi thì làm mới lại cái bảng trên màn hình
-            busNguyenVong.ds = null;
-            loadDataToTable();
-        }
-        }else if(dialog.getXacNhanExport())
-        {
+        if (dialog.getXacNhanImport()) {
+            javax.swing.JFileChooser fileChooser = new javax.swing.JFileChooser();
+            fileChooser.setDialogTitle("Chọn file Excel để nhập dữ liệu");
+            javax.swing.filechooser.FileNameExtensionFilter filter = new javax.swing.filechooser.FileNameExtensionFilter("Excel Files (*.xls, *.xlsx)", "xls", "xlsx");
+            fileChooser.setFileFilter(filter);
+
+            int result = fileChooser.showOpenDialog(this);
+            if (result == javax.swing.JFileChooser.APPROVE_OPTION) {
+                String filePath = fileChooser.getSelectedFile().getAbsolutePath();
+                String thongBao = busNguyenVong.nhapDuLieuTuExcel(filePath);
+                JOptionPane.showMessageDialog(this, thongBao, "Kết quả Nhập Excel", javax.swing.JOptionPane.INFORMATION_MESSAGE);
+                busNguyenVong.ds = null;
+                loadDataToTable();
+            }
+        } 
+        else if (dialog.getXacNhanExport()) {
+            // Xuất DS Gốc
             ArrayList<nguyenVongXetTuyenETT> fullDanhSach = busNguyenVong.layDanhSach();
             ExcelHelper.xuatDanhSachNguyenVongRaExcel(fullDanhSach, this, "DanhSachNguyenVong");
+        } 
+// 🚀 KIỂM TRA NÚT XUẤT DS TRÚNG TUYỂN
+        else if (dialog.getXacNhanExportDSTrungTuyen()) {
+            ArrayList<nguyenVongXetTuyenETT> dsDau = new ArrayList<>();
+            for (nguyenVongXetTuyenETT nv : busNguyenVong.layDanhSach()) {
+                if ("Đã đậu".equals(nv.getNvKetQua())) {
+                    dsDau.add(nv);
+                }
+            }
+            if (dsDau.isEmpty()) {
+                JOptionPane.showMessageDialog(this, "Chưa có danh sách trúng tuyển. Vui lòng bấm Tính Kết Quả trước!");
+                return;
+            }
+            
+            // 🚀 ĐÃ SỬA: Gom theo Mã Ngành cho gọn, rồi bên trong mỗi ngành sẽ Xếp CCCD tăng dần
+            dsDau.sort((nv1, nv2) -> {
+                int nganhCompare = nv1.getNvMaNganh().compareTo(nv2.getNvMaNganh());
+                if (nganhCompare != 0) return nganhCompare;
+                
+                // So sánh chuỗi CCCD
+                return nv1.getNnCccd().compareTo(nv2.getNnCccd()); 
+            });
+            
+            // Gọi Helper
+            ExcelHelper.xuatDanhSachTrungTuyenRaExcel(dsDau, this, "DanhSachTrungTuyen");
+        } 
+        
+        // 🚀 KIỂM TRA NÚT XUẤT THỐNG KÊ SL
+        else if (dialog.getXacNhanExportSLPhuongThuc()) {
+            java.util.HashMap<String, java.util.HashMap<String, Integer>> thongKeMap = new java.util.HashMap<>();
+            for (nguyenVongXetTuyenETT nv : busNguyenVong.layDanhSach()) {
+                if ("Đã đậu".equals(nv.getNvKetQua())) {
+                    String nganh = nv.getNvMaNganh();
+                    String pt = nv.getTtPhuongThuc();
+                    thongKeMap.putIfAbsent(nganh, new java.util.HashMap<>());
+                    java.util.HashMap<String, Integer> ptMap = thongKeMap.get(nganh);
+                    ptMap.put(pt, ptMap.getOrDefault(pt, 0) + 1);
+                }
+            }
+            if (thongKeMap.isEmpty()) {
+                JOptionPane.showMessageDialog(this, "Chưa có dữ liệu trúng tuyển để thống kê!");
+                return;
+            }
+            
+            // 🚀 THÊM MỚI: Kéo danh sách Tên Ngành từ BUS lên để ném qua cho Excel
+            BUS.nganhBUS nBus = new BUS.nganhBUS();
+            java.util.HashMap<String, String> mapTenNganh = new java.util.HashMap<>();
+            for (Entity.nganhETT ng : nBus.layDanhSach()) {
+                mapTenNganh.put(ng.getManganh(), ng.getTennganh());
+            }
+
+            // Gọi Helper (Truyền thêm cái mapTenNganh vào hàm)
+            ExcelHelper.xuatThongKePhuongThucRaExcel(thongKeMap, mapTenNganh, this, "ThongKe_TrunTuyen_TheoPhuongThuc");
         }
     }
     

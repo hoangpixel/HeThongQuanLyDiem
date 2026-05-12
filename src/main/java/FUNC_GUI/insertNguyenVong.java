@@ -300,52 +300,81 @@ public class insertNguyenVong extends javax.swing.JDialog {
             if (nvBus.themNguyenVong(createNguyenVong(cccd, maNganh, thuTuNV, "Xét tuyển thẳng", "Không", 30.0, 0.0, 0.0, 0.0, 30.0, ketQuaNV))) soDongLuuThanhCong++;
         }
 
-        // 🔥 CHIẾN DỊCH 2: QUÉT TỔ HỢP (THPT, V-SAT, ĐGNL)
+// 🔥 CHIẾN DỊCH 2: QUÉT TỔ HỢP (THPT, V-SAT, ĐGNL)
         if (diemThi != null) {
             ArrayList<Entity.toHopETT> dsToHop = nthBus.layDanhSachToHopTheoNganh(maNganh);
+            
+            // Cắm cờ để xét ĐGNL 1 lần duy nhất cho Tổ hợp gốc (tránh bị lặp)
+            boolean daXetDGNL = false; 
+
             for (Entity.toHopETT toHop : dsToHop) {
                 String maTH = toHop.getMatohop(), m1 = toHop.getMon1(), m2 = toHop.getMon2(), m3 = toHop.getMon3();
+                
+                // 🎯 2.3 ĐGNL (CHỈ XÉT VỚI TỔ HỢP GỐC)
+                // Đưa lên đầu tiên, không bị ảnh hưởng bởi điểm liệt của các môn thành phần
+// 🎯 2.3 ĐGNL (CHỈ XÉT VỚI TỔ HỢP GỐC)
+                if (maTH.equals(toHopGoc) && !daXetDGNL) {
+                    double dNL = (diemThi.getNl1() != null) ? diemThi.getNl1() : 0.0;
+                    if (dNL > 0) {
+                        double thxt_nl = Math.round(CAL.AdmissionsConverter.quyDoiDiemChung("ĐGNL HCM", maTH, "", dNL, dsQuyDoi)*100.0)/100.0;
+                        if (thxt_nl > 0) {
+                            
+                            // 🚀 ĐÃ SỬA: Đổi diemCongIeltsGoc thành dCongIelts cho khớp với biến ông khai báo
+                            double dCong = dCongIelts + (gtData != null ? ((Number)gtData[2]).doubleValue() : 0.0);
+                            dCong = Math.min(dCong, 3.0); // Chặn trần 3.0 điểm cộng
+                            
+                            double ut_nl = (thxt_nl + dCong >= 22.5) ? Math.round(((30-thxt_nl-dCong)/7.5)*diemUTQDGoc*100.0)/100.0 : diemUTQDGoc;
+                            if (nvBus.themNguyenVong(createNguyenVong(cccd, maNganh, thuTuNV, "ĐGNL HCM", maTH, thxt_nl, diemUTQDGoc, ut_nl, dCong, Math.min(30.0, Math.round((thxt_nl+ut_nl+dCong)*100.0)/100.0), ketQuaNV))) {
+                                soDongLuuThanhCong++;
+                                daXetDGNL = true; // Xong rồi thì cắm cờ, không xét lại nữa
+                            }
+                        }
+                    }
+                }
+
+                // ------------------------------------------------------------------
+                // TIẾP TỤC XÉT THPT VÀ V-SAT
+                // ------------------------------------------------------------------
                 double d1 = layDiemTheoMaMon(diemThi, m1), d2 = layDiemTheoMaMon(diemThi, m2), d3 = layDiemTheoMaMon(diemThi, m3);
 
-                // --- CHẶN ĐIỂM LIỆT (Sử dụng điểm thi thực tế) ---
+                // --- CHẶN ĐIỂM LIỆT (Chỉ áp dụng cho THPT và V-SAT) ---
                 if (d1 <= 1.0 || d2 <= 1.0 || d3 <= 1.0) continue;
 
                 // --- TÍNH ĐIỂM CỘNG KHUYẾN KHÍCH ---
                 boolean coAnh = "N1".equals(m1) || "N1".equals(m2) || "N1".equals(m3);
-                double dCong = Math.min((coAnh ? 0 : dCongIelts) + (gtData != null ? ((String)gtData[0]).matches(m1+"|"+m2+"|"+m3) ? (double)gtData[1] : (double)gtData[2] : 0), 3.0);
+                double dCong = Math.min((coAnh ? 0 : dCongIelts) + (gtData != null ? ((String)gtData[0]).matches(m1+"|"+m2+"|"+m3) ? ((Number)gtData[1]).doubleValue() : ((Number)gtData[2]).doubleValue() : 0), 3.0);
                 
                 double[] hs = nthBus.layHeSoMon(maNganh, maTH);
                 double W = hs[0] + hs[1] + hs[2], doLech = nthBus.layDoLechDiem(maNganh, maTH);
+                
                 if (W <= 0) continue;
 
-                // 🎯 2.1 XÉT THPT (ĐƯỢC BÙ IELTS)
-                double d1_t = "N1".equals(m1) ? Math.max(d1, dQDIelts) : d1;
-                double d2_t = "N1".equals(m2) ? Math.max(d2, dQDIelts) : d2;
-                double d3_t = "N1".equals(m3) ? Math.max(d3, dQDIelts) : d3;
-                
-                if (d1_t <= 10 && d2_t <= 10 && d3_t <= 10) {
+                // 🎯 PHÂN NHÁNH LOGIC: CHỈ XÉT 1 TRONG 2 (THPT hoặc V-SAT)
+                if (d1 <= 10.0 && d2 <= 10.0 && d3 <= 10.0) {
+                    
+                    // 🎯 TRƯỜNG HỢP 1: XÉT THPT (ĐƯỢC BÙ IELTS)
+                    double d1_t = "N1".equals(m1) ? Math.max(d1, dQDIelts) : d1;
+                    double d2_t = "N1".equals(m2) ? Math.max(d2, dQDIelts) : d2;
+                    double d3_t = "N1".equals(m3) ? Math.max(d3, dQDIelts) : d3;
+                    
                     double thxt = Math.round(((d1_t*hs[0] + d2_t*hs[1] + d3_t*hs[2])/W)*300.0)/100.0;
                     double ut = (thxt + dCong >= 22.5) ? Math.round(((30-thxt-dCong)/7.5)*diemUTQDGoc*100.0)/100.0 : diemUTQDGoc;
+                    
                     if (nvBus.themNguyenVong(createNguyenVong(cccd, maNganh, thuTuNV, "Xét THPT", maTH, thxt, diemUTQDGoc, ut, dCong, Math.min(30.0, Math.round((thxt+ut+dCong+doLech)*100.0)/100.0), ketQuaNV))) soDongLuuThanhCong++;
-                }
-
-                // 🎯 2.2 V-SAT (KHÔNG BÙ IELTS - Lấy điểm d1, d2, d3 gốc)
-                double v1 = CAL.AdmissionsConverter.quyDoiDiemChung("Đánh giá V-SAT", maTH, m1, d1, dsQuyDoi);
-                double v2 = CAL.AdmissionsConverter.quyDoiDiemChung("Đánh giá V-SAT", maTH, m2, d2, dsQuyDoi);
-                double v3 = CAL.AdmissionsConverter.quyDoiDiemChung("Đánh giá V-SAT", maTH, m3, d3, dsQuyDoi);
-                double thxt_v = Math.round(((v1*hs[0] + v2*hs[1] + v3*hs[2])/W)*300.0)/100.0;
-                if (thxt_v > 0) {
-                    double ut_v = (thxt_v + dCong >= 22.5) ? Math.round(((30-thxt_v-dCong)/7.5)*diemUTQDGoc*100.0)/100.0 : diemUTQDGoc;
-                    if (nvBus.themNguyenVong(createNguyenVong(cccd, maNganh, thuTuNV, "Đánh giá V-SAT", maTH, thxt_v, diemUTQDGoc, ut_v, dCong, Math.min(30.0, Math.round((thxt_v+ut_v+dCong+doLech)*100.0)/100.0), ketQuaNV))) soDongLuuThanhCong++;
-                }
-
-                // 🎯 2.3 ĐGNL (CHỈ TỔ HỢP GỐC)
-                if (maTH.equals(toHopGoc)) {
-                    double dNL = (diemThi.getNl1() != null) ? diemThi.getNl1() : 0.0;
-                    double thxt_nl = Math.round(CAL.AdmissionsConverter.quyDoiDiemChung("ĐGNL HCM", maTH, "", dNL, dsQuyDoi)*100.0)/100.0;
-                    if (thxt_nl > 0) {
-                        double ut_nl = (thxt_nl + dCong >= 22.5) ? Math.round(((30-thxt_nl-dCong)/7.5)*diemUTQDGoc*100.0)/100.0 : diemUTQDGoc;
-                        if (nvBus.themNguyenVong(createNguyenVong(cccd, maNganh, thuTuNV, "ĐGNL HCM", maTH, thxt_nl, diemUTQDGoc, ut_nl, dCong, Math.min(30.0, Math.round((thxt_nl+ut_nl+dCong)*100.0)/100.0), ketQuaNV))) soDongLuuThanhCong++;
+                    
+                } else {
+                    
+                    // 🎯 TRƯỜNG HỢP 2: ĐÁNH GIÁ V-SAT (KHÔNG BÙ IELTS)
+                    double v1 = CAL.AdmissionsConverter.quyDoiDiemChung("Đánh giá V-SAT", maTH, m1, d1, dsQuyDoi);
+                    double v2 = CAL.AdmissionsConverter.quyDoiDiemChung("Đánh giá V-SAT", maTH, m2, d2, dsQuyDoi);
+                    double v3 = CAL.AdmissionsConverter.quyDoiDiemChung("Đánh giá V-SAT", maTH, m3, d3, dsQuyDoi);
+                    
+                    if (v1 > 0 && v2 > 0 && v3 > 0) {
+                        double thxt_v = Math.round(((v1*hs[0] + v2*hs[1] + v3*hs[2])/W)*300.0)/100.0;
+                        if (thxt_v > 0) {
+                            double ut_v = (thxt_v + dCong >= 22.5) ? Math.round(((30-thxt_v-dCong)/7.5)*diemUTQDGoc*100.0)/100.0 : diemUTQDGoc;
+                            if (nvBus.themNguyenVong(createNguyenVong(cccd, maNganh, thuTuNV, "Đánh giá V-SAT", maTH, thxt_v, diemUTQDGoc, ut_v, dCong, Math.min(30.0, Math.round((thxt_v+ut_v+dCong+doLech)*100.0)/100.0), ketQuaNV))) soDongLuuThanhCong++;
+                        }
                     }
                 }
             }

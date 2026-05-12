@@ -46,7 +46,6 @@ public class updateNganh extends javax.swing.JDialog {
         SwingUtilities.invokeLater(() -> {
         btnThoat.requestFocusInWindow();
         });
-        //tuDongTinhTong();
     }
 
     @SuppressWarnings("unchecked")
@@ -312,15 +311,12 @@ public class updateNganh extends javax.swing.JDialog {
     // CÁC HÀM XỬ LÝ SỰ KIỆN NÚT BẤM (EVENTS)
 
     private void btnThemActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_btnThemActionPerformed
-
-        if(!kiemTraHopLe()) 
-        {
-            return;
-        }
+if(!kiemTraHopLe()) return;
 
         nganh.setTennganh(txtTenNganh.getText().trim());
         nganh.setN_tohopgoc(txtToHopGoc.getText().trim());
-        // Lấy con số tổng từ ô gõ tay
+        
+        // 🚀 CHỈ LẤY ĐÚNG 1 CỤC CHỈ TIÊU CHUNG NÀY
         nganh.setN_chitieu(Integer.parseInt(txtChiTieu.getText().trim()));
 
         try {
@@ -330,28 +326,12 @@ public class updateNganh extends javax.swing.JDialog {
             nganh.setN_diemtrungtuyen(txtDiemTrungTuyen.getText().isEmpty() ? null : Double.valueOf(txtDiemTrungTuyen.getText()));
         } catch(Exception e){e.printStackTrace();}
         
-        // Gán cứng giá trị 0 cho các cột chi tiết
-        nganh.setN_tuyenthang("0");
-        nganh.setSl_xtt(0);
-        nganh.setN_dgnl("0");
-        nganh.setSl_dgnl(0);
-        this.nganh.setN_thpt("0");
-        this.nganh.setSl_thpt(0);
-        nganh.setN_vsat("0");
-        nganh.setSl_vsat(0);
+        // --- ĐÃ XÓA SẠCH ĐOẠN GÁN sl_thpt, sl_vsat BẰNG 0 Ở ĐÂY ---
 
-//        nganh.setN_tuyenthang(chkTuyenThang.isSelected() ? "1" : "0");
-//        nganh.setSl_xtt(chkTuyenThang.isSelected() ? Integer.parseInt(txtTuyenThang.getText().trim()) : 0);
-//        nganh.setN_dgnl(chkThiDGNL.isSelected() ? "1" : "0");
-//        nganh.setSl_dgnl(chkThiDGNL.isSelected() ? Integer.parseInt(txtThiDGNL.getText().trim()) : 0);
-//        this.nganh.setN_thpt(chkThiTHPT.isSelected() ? "1" : "0");
-//        this.nganh.setSl_thpt(chkThiTHPT.isSelected() ? Integer.parseInt(txtThiTHPT.getText().trim()) : 0);
-//        nganh.setN_vsat(chkThiVSAT.isSelected() ? "1" : "0");
-//        nganh.setSl_vsat(chkThiVSAT.isSelected() ? Integer.parseInt(txtThiVSAT.getText().trim()) : 0);
-
+        // Lưu xuống DB thẳng luôn, KHÔNG CẦN gọi hàm phân bổ chỉ tiêu (capNhatChiTieuThucTe) nữa!
         if (bus.suaNganh(this.nganh)) {
             this.xacNhan = true;
-            JOptionPane.showMessageDialog(this, "Sửa ngành thành công");
+            JOptionPane.showMessageDialog(this, "Sửa ngành thành công!");
             dispose();
         } else {
             JOptionPane.showMessageDialog(this, "Sửa ngành thất bại");
@@ -441,23 +421,6 @@ public class updateNganh extends javax.swing.JDialog {
             return false; 
         }
         
-//        if (chkTuyenThang.isSelected()) {
-//            try { Integer.parseInt(txtTuyenThang.getText().trim()); } 
-//            catch (Exception e) { JOptionPane.showMessageDialog(this, "Chỉ tiêu Tuyển thẳng phải là con số"); return false; }
-//        }
-//        if (chkThiDGNL.isSelected()) {
-//            try { Integer.parseInt(txtThiDGNL.getText().trim()); } 
-//            catch (Exception e) { JOptionPane.showMessageDialog(this, "Chỉ tiêu ĐGNL phải là con số"); return false; }
-//        }
-//        if (chkThiTHPT.isSelected()) {
-//            try { Integer.parseInt(txtThiTHPT.getText().trim()); } 
-//            catch (Exception e) { JOptionPane.showMessageDialog(this, "Chỉ tiêu THPT phải là con số"); return false; }
-//        }
-//        if (chkThiVSAT.isSelected()) {
-//            try { Integer.parseInt(txtThiVSAT.getText().trim()); } 
-//            catch (Exception e) { JOptionPane.showMessageDialog(this, "Chỉ tiêu V-SAT phải là con số"); return false; }
-//        }
-        
         try {
             if (!txtDiemSanTHPT.getText().trim().isEmpty()) Double.parseDouble(txtDiemSanTHPT.getText().trim());
             if (!txtDiemSanVSAT.getText().trim().isEmpty()) Double.parseDouble(txtDiemSanVSAT.getText().trim());
@@ -470,56 +433,6 @@ public class updateNganh extends javax.swing.JDialog {
         
         return true;
     }
-
-//    private void tuDongTinhTong() {
-//        int xttt = 0, dgnl = 0, vsat = 0, thpt = 0;
-//        try {
-//            // Sử dụng helper để parse số an toàn
-//            xttt = parseSafeInt(txtTuyenThang.getText());
-//            dgnl = parseSafeInt(txtThiDGNL.getText());
-//            vsat = parseSafeInt(txtThiVSAT.getText());
-//            thpt = parseSafeInt(txtThiTHPT.getText());
-//        } catch (Exception e) {}
-//
-//        int tong = xttt + dgnl + vsat + thpt;
-//        txtChiTieu.setText(String.valueOf(tong));
-//    }
-
-        // Hàm phụ trợ để tránh lỗi khi ô text trống
-//    private int parseSafeInt(String text) {
-//        if (text == null || text.trim().isEmpty()) return 0;
-//        try {
-//            return Integer.parseInt(text.trim());
-//        } catch (NumberFormatException e) {
-//            return 0;
-//        }
-//    }
-
-//    private void thietLapOChon(javax.swing.JCheckBox cb, javax.swing.JTextField txt, String n_val, Object sl_val) {
-//        int soLuong = 0;
-//        if (sl_val != null) {
-//            try {
-//                soLuong = Integer.parseInt(sl_val.toString());
-//            } catch (Exception e) {}
-//        }
-//        
-//        boolean active = ("1".equals(n_val)) || (soLuong > 0);
-//        cb.setSelected(active);
-//        txt.setEnabled(active);
-//        txt.setEditable(active);
-//        txt.setText(sl_val != null ? String.valueOf(sl_val) : "0");
-//        txt.setBackground(active ? java.awt.Color.WHITE : new java.awt.Color(240, 240, 240));
-//
-//        // Gắn công tắc thông minh ngay tại đây
-//        cb.addActionListener(e -> {
-//            boolean s = cb.isSelected();
-//            txt.setEnabled(s);
-//            txt.setEditable(s);
-//            if (!s) txt.setText("0"); // Bỏ tích thì reset về 0
-//            txt.setBackground(s ? java.awt.Color.WHITE : new java.awt.Color(240, 240, 240));
-//            tuDongTinhTong(); // Tự động tính lại tổng chỉ tiêu
-//        });
-//    }
     
     public boolean xacNhanThem() {
         return xacNhan;

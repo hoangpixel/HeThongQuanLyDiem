@@ -213,6 +213,176 @@ public class ExcelHelper {
         }
     }
     
+    public static void xuatDanhSachTrungTuyenRaExcel(ArrayList<nguyenVongXetTuyenETT> dsDau, java.awt.Component parent, String tenBang) {
+        try {
+            if (dsDau == null || dsDau.isEmpty()) {
+                JOptionPane.showMessageDialog(parent, "Không có dữ liệu để xuất!", "Cảnh báo", JOptionPane.WARNING_MESSAGE);
+                return;
+            }
+
+            JFileChooser fileChooser = new JFileChooser();
+            fileChooser.setDialogTitle("Chọn vị trí lưu Danh sách Trúng Tuyển");
+            fileChooser.setFileFilter(new javax.swing.filechooser.FileNameExtensionFilter("Excel Files (*.xlsx)", "xlsx"));
+            fileChooser.setSelectedFile(new java.io.File(tenBang + ".xlsx"));
+
+            if (fileChooser.showSaveDialog(parent) == JFileChooser.APPROVE_OPTION) {
+                String filePath = fileChooser.getSelectedFile().getAbsolutePath();
+                if (!filePath.toLowerCase().endsWith(".xlsx")) filePath += ".xlsx";
+
+                org.apache.poi.ss.usermodel.Workbook workbook = new org.apache.poi.xssf.usermodel.XSSFWorkbook();
+                org.apache.poi.ss.usermodel.Sheet sheet = workbook.createSheet(tenBang);
+
+                // --- 1. LẤY STYLE ---
+                org.apache.poi.ss.usermodel.CellStyle headerStyle = taoStyleTieuDe(workbook);
+                org.apache.poi.ss.usermodel.CellStyle dataStyle = taoStyleDuLieu(workbook);
+
+                // --- 2. IN HEADER ---
+                String[] headers = {
+                    "Mã Ngành", "CCCD", "Thứ Tự NV Đậu", "Điểm Xét Tuyển", "Phương Thức", "Tổ Hợp"
+                };
+                org.apache.poi.ss.usermodel.Row headerRow = sheet.createRow(0);
+                headerRow.setHeightInPoints(25);
+                
+                for (int i = 0; i < headers.length; i++) {
+                    org.apache.poi.ss.usermodel.Cell cell = headerRow.createCell(i);
+                    cell.setCellValue(headers[i]);
+                    cell.setCellStyle(headerStyle);
+                }
+
+                // --- 3. IN DATA ---
+                int rowNum = 1;
+                for (nguyenVongXetTuyenETT nv : dsDau) {
+                    org.apache.poi.ss.usermodel.Row row = sheet.createRow(rowNum++);
+                    
+                    Object[] rowData = {
+                        nv.getNvMaNganh() != null ? nv.getNvMaNganh() : "",
+                        nv.getNnCccd() != null ? nv.getNnCccd() : "",
+                        nv.getNvTt(),
+                        nv.getDiemXetTuyen() != null ? nv.getDiemXetTuyen() : 0.0,
+                        nv.getTtPhuongThuc() != null ? nv.getTtPhuongThuc() : "",
+                        nv.getTtThm() != null ? nv.getTtThm() : ""
+                    };
+
+                    for (int i = 0; i < rowData.length; i++) {
+                        org.apache.poi.ss.usermodel.Cell cell = row.createCell(i);
+                        cell.setCellStyle(dataStyle);
+                        
+                        if (rowData[i] instanceof Number) {
+                            cell.setCellValue(((Number) rowData[i]).doubleValue());
+                        } else {
+                            cell.setCellValue(rowData[i].toString());
+                        }
+                    }
+                }
+
+                // --- 4. TÚT TÁT LẠI CỘT ---
+                for (int i = 0; i < headers.length; i++) {
+                    sheet.autoSizeColumn(i);
+                    sheet.setColumnWidth(i, sheet.getColumnWidth(i) + 1000); 
+                }
+                sheet.createFreezePane(0, 1);
+
+                // Xuất file
+                try (java.io.FileOutputStream out = new java.io.FileOutputStream(filePath)) {
+                    workbook.write(out);
+                }
+                workbook.close();
+                JOptionPane.showMessageDialog(parent, "Xuất danh sách trúng tuyển thành công!\n" + filePath, "Thành công", JOptionPane.INFORMATION_MESSAGE);
+            }
+        } catch (Exception e) {
+            e.printStackTrace();
+            JOptionPane.showMessageDialog(parent, "Lỗi khi xuất: " + e.getMessage(), "Lỗi", JOptionPane.ERROR_MESSAGE);
+        }
+    }
+    
+public static void xuatThongKePhuongThucRaExcel(java.util.HashMap<String, java.util.HashMap<String, Integer>> thongKeMap, java.util.HashMap<String, String> mapTenNganh, java.awt.Component parent, String tenBang) {
+        try {
+            if (thongKeMap == null || thongKeMap.isEmpty()) {
+                JOptionPane.showMessageDialog(parent, "Không có dữ liệu thống kê để xuất!", "Cảnh báo", JOptionPane.WARNING_MESSAGE);
+                return;
+            }
+
+            javax.swing.JFileChooser fileChooser = new javax.swing.JFileChooser();
+            fileChooser.setDialogTitle("Chọn vị trí lưu Thống kê Số lượng Trúng Tuyển");
+            fileChooser.setFileFilter(new javax.swing.filechooser.FileNameExtensionFilter("Excel Files (*.xlsx)", "xlsx"));
+            fileChooser.setSelectedFile(new java.io.File(tenBang + ".xlsx"));
+
+            if (fileChooser.showSaveDialog(parent) == javax.swing.JFileChooser.APPROVE_OPTION) {
+                String filePath = fileChooser.getSelectedFile().getAbsolutePath();
+                if (!filePath.toLowerCase().endsWith(".xlsx")) filePath += ".xlsx";
+
+                org.apache.poi.ss.usermodel.Workbook workbook = new org.apache.poi.xssf.usermodel.XSSFWorkbook();
+                org.apache.poi.ss.usermodel.Sheet sheet = workbook.createSheet("Thống Kê");
+
+                org.apache.poi.ss.usermodel.CellStyle headerStyle = taoStyleTieuDe(workbook);
+                org.apache.poi.ss.usermodel.CellStyle dataStyle = taoStyleDuLieu(workbook);
+
+                // --- 2. IN HEADER ---
+                // 🚀 ĐÃ SỬA: Chèn thêm cột "Tên Ngành"
+                String[] headers = {
+                    "Mã Ngành", "Tên Ngành", "Xét Tuyển Thẳng", "Xét THPT", "Đánh giá V-SAT", "ĐGNL HCM", "Tổng Đậu"
+                };
+                org.apache.poi.ss.usermodel.Row headerRow = sheet.createRow(0);
+                headerRow.setHeightInPoints(25);
+                
+                for (int i = 0; i < headers.length; i++) {
+                    org.apache.poi.ss.usermodel.Cell cell = headerRow.createCell(i);
+                    cell.setCellValue(headers[i]);
+                    cell.setCellStyle(headerStyle);
+                }
+
+                // --- 3. IN DATA ---
+                int rowNum = 1;
+                for (String maNganh : thongKeMap.keySet()) {
+                    org.apache.poi.ss.usermodel.Row row = sheet.createRow(rowNum++);
+                    java.util.HashMap<String, Integer> pThucMap = thongKeMap.get(maNganh);
+                    
+                    // 🚀 ĐÃ SỬA: Dò Tên Ngành dựa vào Mã Ngành
+                    String tenNganh = mapTenNganh.getOrDefault(maNganh, "Chưa xác định");
+
+                    int slXTT = pThucMap.getOrDefault("Xét tuyển thẳng", 0);
+                    int slTHPT = pThucMap.getOrDefault("Xét THPT", 0);
+                    int slVSAT = pThucMap.getOrDefault("Đánh giá V-SAT", 0);
+                    int slDGNL = pThucMap.getOrDefault("ĐGNL HCM", 0);
+                    int tongDau = slXTT + slTHPT + slVSAT + slDGNL;
+
+                    // 🚀 ĐÃ SỬA: Nhét Tên Ngành vào mảng dữ liệu
+                    Object[] rowData = {
+                        maNganh, tenNganh, slXTT, slTHPT, slVSAT, slDGNL, tongDau
+                    };
+
+                    for (int i = 0; i < rowData.length; i++) {
+                        org.apache.poi.ss.usermodel.Cell cell = row.createCell(i);
+                        cell.setCellStyle(dataStyle);
+                        
+                        if (rowData[i] instanceof Number) {
+                            cell.setCellValue(((Number) rowData[i]).intValue()); // Số lượng là Int
+                        } else {
+                            cell.setCellValue(rowData[i].toString());
+                        }
+                    }
+                }
+
+                // --- 4. TÚT TÁT LẠI CỘT ---
+                for (int i = 0; i < headers.length; i++) {
+                    sheet.autoSizeColumn(i);
+                    sheet.setColumnWidth(i, sheet.getColumnWidth(i) + 1000); 
+                }
+                sheet.createFreezePane(0, 1);
+
+                // Xuất file
+                try (java.io.FileOutputStream out = new java.io.FileOutputStream(filePath)) {
+                    workbook.write(out);
+                }
+                workbook.close();
+                javax.swing.JOptionPane.showMessageDialog(parent, "Xuất báo cáo thống kê thành công!\n" + filePath, "Thành công", javax.swing.JOptionPane.INFORMATION_MESSAGE);
+            }
+        } catch (Exception e) {
+            e.printStackTrace();
+            javax.swing.JOptionPane.showMessageDialog(parent, "Lỗi khi xuất: " + e.getMessage(), "Lỗi", javax.swing.JOptionPane.ERROR_MESSAGE);
+        }
+    }
+    
         public static void xuatDanhSachNganhToHopRaExcel(ArrayList<nganhToHopETT> ds, java.awt.Component parent, String tenBang) {
         try {
             if (ds == null || ds.isEmpty()) {
