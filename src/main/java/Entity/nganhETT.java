@@ -81,6 +81,14 @@ public class nganhETT {
 
     @Column(name = "diemchuan_xtt")
     private Double diemchuan_xtt;
+    
+    @Column(name = "sl_dangky")
+    private Integer slDangKy;
+
+    // Getter và Setter
+    public Integer getSlDangKy() { return slDangKy; }
+    public void setSlDangKy(Integer slDangKy) { this.slDangKy = slDangKy; }
+    
     // ===== Getter & Setter =====
 
     public int getIdnganh() {

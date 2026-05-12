@@ -115,19 +115,67 @@ public boolean capNhatChiTieuThucTe() {
         }
     }
 
-// Hàm nhận nguyên cái Map điểm chuẩn từ BUS và Update 1 lần duy nhất
-    public boolean capNhatDanhSachDiemChuan(java.util.HashMap<String, Double> diemChuanMap) {
+//// Hàm nhận nguyên cái Map điểm chuẩn từ BUS và Update 1 lần duy nhất
+//    public boolean capNhatDanhSachDiemChuan(java.util.HashMap<String, Double> diemChuanMap) {
+//        try (org.hibernate.Session session = CONFIG.HibernateUtil.getSessionFactory().openSession()) {
+//            session.beginTransaction(); // MỞ KẾT NỐI 1 LẦN
+//
+//            // Quét qua cái Map
+//            for (java.util.Map.Entry<String, Double> entry : diemChuanMap.entrySet()) {
+//                String[] parts = entry.getKey().split("_");
+//                String maNganh = parts[0];
+//                String phuongThuc = parts[1];
+//                double diemChuan = entry.getValue();
+//
+//                // Dùng switch-case cho sạch đẹp thay vì if-else lằng nhằng
+//                String sqlUpdate = "";
+//                switch (phuongThuc) {
+//                    case "Đánh giá V-SAT":
+//                        sqlUpdate = "UPDATE xt_nganh SET diemchuan_vsat = :dc WHERE manganh = :ma"; break;
+//                    case "ĐGNL HCM":
+//                        sqlUpdate = "UPDATE xt_nganh SET diemchuan_dgnl = :dc WHERE manganh = :ma"; break;
+//                    case "Xét THPT":
+//                        sqlUpdate = "UPDATE xt_nganh SET diemchuan_thpt = :dc WHERE manganh = :ma"; break;
+//                    case "Xét tuyển thẳng":
+//                        sqlUpdate = "UPDATE xt_nganh SET diemchuan_xtt = :dc WHERE manganh = :ma"; break;
+//                }
+//
+//                if (!sqlUpdate.isEmpty()) {
+//                    session.createNativeQuery(sqlUpdate)
+//                           .setParameter("dc", diemChuan)
+//                           .setParameter("ma", maNganh)
+//                           .executeUpdate(); // Chạy ngầm Update
+//                }
+//            }
+//            
+//            session.getTransaction().commit(); // CHỐT SỔ TẤT CẢ VÀ ĐÓNG KẾT NỐI
+//            return true;
+//        } catch (Exception e) {
+//            e.printStackTrace();
+//            return false;
+//        }
+//    }
+    
+    // =========================================================
+    // 🔥 CẬP NHẬT ĐIỂM CHUẨN VÀ TỔNG SỐ ĐĂNG KÝ BẰNG NATIVE SQL
+    // =========================================================
+    public boolean capNhatDanhSachDiemChuanVaSoLuong(java.util.HashMap<String, Double> diemChuanMap, java.util.HashMap<String, Integer> slDangKyMap) {
+        // Nhớ check lại đường dẫn CONFIG.HibernateUtil hay HibernateUtil nha Boss
+        org.hibernate.Transaction transaction = null;
         try (org.hibernate.Session session = CONFIG.HibernateUtil.getSessionFactory().openSession()) {
-            session.beginTransaction(); // MỞ KẾT NỐI 1 LẦN
+            transaction = session.beginTransaction(); // MỞ KẾT NỐI 1 LẦN
 
-            // Quét qua cái Map
+            // ---------------------------------------------------------
+            // 1. QUÉT MAP ĐIỂM CHUẨN (Giữ nguyên logic xịn xò của Boss)
+            // ---------------------------------------------------------
             for (java.util.Map.Entry<String, Double> entry : diemChuanMap.entrySet()) {
                 String[] parts = entry.getKey().split("_");
+                if (parts.length < 2) continue; // Chặn lỗi out of bounds
+                
                 String maNganh = parts[0];
                 String phuongThuc = parts[1];
                 double diemChuan = entry.getValue();
 
-                // Dùng switch-case cho sạch đẹp thay vì if-else lằng nhằng
                 String sqlUpdate = "";
                 switch (phuongThuc) {
                     case "Đánh giá V-SAT":
@@ -147,10 +195,31 @@ public boolean capNhatChiTieuThucTe() {
                            .executeUpdate(); // Chạy ngầm Update
                 }
             }
+
+            // ---------------------------------------------------------
+            // 2. QUÉT MAP SỐ LƯỢNG ĐĂNG KÝ VÀ UPDATE
+            // ---------------------------------------------------------
+            if (slDangKyMap != null) {
+                for (java.util.Map.Entry<String, Integer> entry : slDangKyMap.entrySet()) {
+                    String maNganh = entry.getKey();
+                    int soLuong = entry.getValue();
+
+                    // Cập nhật số lượng cho ngành tương ứng
+                    String sqlUpdateSL = "UPDATE xt_nganh SET sl_dangky = :sl WHERE manganh = :ma";
+                    session.createNativeQuery(sqlUpdateSL)
+                           .setParameter("sl", soLuong)
+                           .setParameter("ma", maNganh)
+                           .executeUpdate();
+                }
+            }
             
-            session.getTransaction().commit(); // CHỐT SỔ TẤT CẢ VÀ ĐÓNG KẾT NỐI
+            transaction.commit(); // CHỐT SỔ TẤT CẢ VÀ ĐÓNG KẾT NỐI
             return true;
+            
         } catch (Exception e) {
+            if (transaction != null) {
+                transaction.rollback(); // Có lỗi thì quay xe, không lưu bậy
+            }
             e.printStackTrace();
             return false;
         }

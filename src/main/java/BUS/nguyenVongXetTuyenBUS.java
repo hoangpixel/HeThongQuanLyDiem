@@ -361,32 +361,89 @@ public class nguyenVongXetTuyenBUS {
     
     
     
+//    public void capNhatDiemChuanTuDong() {
+//        if (ds == null || ds.isEmpty()) return;
+//
+//        // 1. TẠO MAP CHỨA DATA LỌC (LOGIC TẦNG BUS)
+//        HashMap<String, Double> diemChuanMap = new HashMap<>();
+//
+//        // Quét qua để tìm "Kẻ thủ khoa ngược" (Đứa đậu với điểm thấp nhất)
+//        for (nguyenVongXetTuyenETT nv : ds) {
+//            if ("Đã đậu".equals(nv.getNvKetQua())) {
+//                String key = nv.getNvMaNganh() + "_" + nv.getTtPhuongThuc();
+//                double diem = nv.getDiemXetTuyen();
+//
+//                if (!diemChuanMap.containsKey(key) || diem < diemChuanMap.get(key)) {
+//                    diemChuanMap.put(key, diem);
+//                }
+//            }
+//        }
+//
+//        // 2. GIAO VIỆC CHO DAO XUỐNG DATABASE XỬ LÝ (TÁCH BẠCH)
+//        // Gọi nganhDAO vì mình đang update vào bảng Ngành
+//        nganhDAO nDao = new nganhDAO(); 
+//        
+//        if (nDao.capNhatDanhSachDiemChuan(diemChuanMap)) {
+//            System.out.println("Đã chốt điểm chuẩn tự động thành công!");
+//        } else {
+//            System.out.println("Có lỗi xảy ra khi chốt điểm chuẩn!");
+//        }
+//    }
+    
     public void capNhatDiemChuanTuDong() {
         if (ds == null || ds.isEmpty()) return;
 
-        // 1. TẠO MAP CHỨA DATA LỌC (LOGIC TẦNG BUS)
+        // 1. TẠO MAP CHỨA DATA LỌC
+        // Map 1: Lưu Điểm Chuẩn (Key: Mã Ngành + Phương Thức)
         HashMap<String, Double> diemChuanMap = new HashMap<>();
+        
+        // Map 2: Lưu Số lượng Thí sinh Đăng ký (Key: Mã Ngành)
+        // ⚠️ Lưu ý: Vì 1 thí sinh có thể có nhiều phương thức, mình dùng HashSet chứa CCCD để KHÔNG ĐẾM TRÙNG 1 thằng 2 lần.
+        HashMap<String, java.util.HashSet<String>> mapSoLuongNganh = new HashMap<>();
 
-        // Quét qua để tìm "Kẻ thủ khoa ngược" (Đứa đậu với điểm thấp nhất)
+        // 2. QUÉT QUA DANH SÁCH ĐỂ THU THẬP DỮ LIỆU
         for (nguyenVongXetTuyenETT nv : ds) {
-            if ("Đã đậu".equals(nv.getNvKetQua())) {
-                String key = nv.getNvMaNganh() + "_" + nv.getTtPhuongThuc();
+            String maNganh = nv.getNvMaNganh();
+            String cccd = nv.getNnCccd();
+            String pt = nv.getTtPhuongThuc();
+            String ketQua = nv.getNvKetQua();
+
+            // --- A. GHI NHẬN ĐIỂM CHUẨN (Chỉ lấy đứa "Đã đậu") ---
+            if ("Đã đậu".equals(ketQua)) {
+                String keyDiem = maNganh + "_" + pt;
                 double diem = nv.getDiemXetTuyen();
 
-                if (!diemChuanMap.containsKey(key) || diem < diemChuanMap.get(key)) {
-                    diemChuanMap.put(key, diem);
+                if (!diemChuanMap.containsKey(keyDiem) || diem < diemChuanMap.get(keyDiem)) {
+                    diemChuanMap.put(keyDiem, diem);
                 }
+            }
+
+            // --- B. ĐẾM SỐ LƯỢNG ĐĂNG KÝ ---
+            // Bỏ qua những dòng đã bị hệ thống đánh dấu là "Bỏ qua" (Những dòng rớt nội bộ do thi Hoa hậu)
+            // Chỉ đếm những dòng chính thức tham gia xét tuyển (Đã đậu, Đã trượt, Chờ xét, Không xét)
+            if (!"Bỏ qua".equals(ketQua)) {
+                if (!mapSoLuongNganh.containsKey(maNganh)) {
+                    mapSoLuongNganh.put(maNganh, new java.util.HashSet<>());
+                }
+                // Thêm CCCD vào HashSet, vì HashSet không chứa trùng lặp nên 1 CCCD có xuất hiện 10 lần cũng chỉ đếm 1.
+                mapSoLuongNganh.get(maNganh).add(cccd);
             }
         }
 
-        // 2. GIAO VIỆC CHO DAO XUỐNG DATABASE XỬ LÝ (TÁCH BẠCH)
-        // Gọi nganhDAO vì mình đang update vào bảng Ngành
-        nganhDAO nDao = new nganhDAO(); 
+        // 3. ĐÓNG GÓI SỐ LƯỢNG ĐĂNG KÝ TỪ HASHSET SANG INTEGER ĐỂ TRUYỀN XUỐNG DAO
+        HashMap<String, Integer> slDangKyMap = new HashMap<>();
+        for (String maNganh : mapSoLuongNganh.keySet()) {
+            slDangKyMap.put(maNganh, mapSoLuongNganh.get(maNganh).size());
+        }
+
+        // 4. GIAO VIỆC CHO DAO XUỐNG DATABASE XỬ LÝ 
+        DAO.nganhDAO nDao = new DAO.nganhDAO(); 
         
-        if (nDao.capNhatDanhSachDiemChuan(diemChuanMap)) {
-            System.out.println("Đã chốt điểm chuẩn tự động thành công!");
+        // Gọi DAO cập nhật ĐỒNG THỜI Điểm chuẩn và Số lượng đăng ký
+        if (nDao.capNhatDanhSachDiemChuanVaSoLuong(diemChuanMap, slDangKyMap)) {
+            System.out.println("Đã chốt điểm chuẩn & Cập nhật tổng số đăng ký thành công!");
         } else {
-            System.out.println("Có lỗi xảy ra khi chốt điểm chuẩn!");
+            System.out.println("Có lỗi xảy ra khi chốt kết quả vào bảng Ngành!");
         }
     }
     

@@ -87,7 +87,6 @@ public class NganhGUI extends BaseTableGUI {
         });
     }
     
-    // Thiết lập danh sách các cột hiển thị (Header)
     public void headerTable() {
         Vector<String> header = new Vector<>();
         header.add("ID Ngành");
@@ -98,7 +97,7 @@ public class NganhGUI extends BaseTableGUI {
         header.add("Điểm Sàn THPT");
         header.add("Điểm Sàn V-SAT");
         header.add("Điểm Sàn ĐGNL");
-        //header.add("Điểm Chuẩn");
+        header.add("SL ĐK"); // <-- Cột số 9
         tableModel.setColumnIdentifiers(header);
     }
     
@@ -116,12 +115,10 @@ public class NganhGUI extends BaseTableGUI {
         //cbxTimKiem.addItem("Điểm Chuẩn");
     }
 
-    // Lệnh lôi dữ liệu từ kho (Database) qua BUS rồi đẩy lên bảng Swing
-    public void loadDataToTable() {
-        // Ra lệnh cho BUS quét dọn danh sách mới nhất
-        if (busNganh.ds == null) {
-            busNganh.layDanhSach();
-        }
+public void loadDataToTable() {
+        // Phá bỏ bộ nhớ đệm (RAM cũ) để ÉP hệ thống luôn kéo dữ liệu MỚI NHẤT từ DB
+        busNganh.ds = null;
+        busNganh.layDanhSach();
 
         List<Vector> dataList = new ArrayList<>();
         for (nganhETT item : busNganh.ds) {
@@ -134,12 +131,18 @@ public class NganhGUI extends BaseTableGUI {
             row.add(item.getN_diemsanthpt() != null ? item.getN_diemsanthpt() : "");
             row.add(item.getN_diemsanvsat() != null ? item.getN_diemsanvsat() : "");
             row.add(item.getN_diemsandgnl() != null ? item.getN_diemsandgnl() : "");
-            //row.add(item.getN_diemtrungtuyen() != null ? item.getN_diemtrungtuyen() : "");
+            
+            // Check an toàn, lỡ Ngành đó chưa có ai đăng ký (trong DB là NULL) thì in ra số 0
+            row.add(item.getSlDangKy() != null ? item.getSlDangKy() : 0);
+            
             dataList.add(row);
         }
 
-        // Giao dữ liệu cho BaseTableGUI để nó tự lo vụ chia trang 5 dòng/trang
+        // Giao dữ liệu cho BaseTableGUI để tính toán
         setTableData(dataList);
+        
+        // 🚀 ĐÃ THÊM: BẮT BUỘC PHẢI GỌI HÀM NÀY ĐỂ VẼ BẢNG
+        renderCurrentPage(); 
     }
 
     // ==============================================================
@@ -267,38 +270,42 @@ private void hienThiDialogXoa() {
     }
 }
 
-    private void thucHienRefresh()
-    {
-    // 1. Tải lại dữ liệu mới nhất từ Database vào RAM (busNganh.ds)
-    busNganh.layDanhSach(); 
+private void thucHienRefresh() {
+        // 1. Tải lại dữ liệu mới nhất từ Database vào RAM
+        busNganh.ds = null; // Phá RAM cũ đi cho chắc
+        busNganh.layDanhSach(); 
 
-    // 2. Xóa sạch dữ liệu cũ trên bảng (Vector hiển thị)
-    fullDataList.clear();
+        // 2. Xóa sạch dữ liệu cũ trên bảng (Vector hiển thị)
+        fullDataList.clear();
 
-    // 3. Đổ lại dữ liệu từ RAM vào fullDataList
-    for (int i = 0; i < busNganh.ds.size(); i++) {
-        Entity.nganhETT item = busNganh.ds.get(i);
-        java.util.Vector row = new java.util.Vector();
-        row.add(i + 1); // Số thứ tự
-        row.add(item.getManganh());
-        row.add(item.getTennganh());
-        row.add(item.getN_tohopgoc());
-        row.add(item.getN_chitieu());
-        row.add(item.getN_diemsanthpt() != null ? item.getN_diemsanthpt() : "");
-        row.add(item.getN_diemsanvsat() != null ? item.getN_diemsanvsat() : "");
-        row.add(item.getN_diemsandgnl() != null ? item.getN_diemsandgnl() : "");
-        row.add(item.getN_diemtrungtuyen() != null ? item.getN_diemtrungtuyen() : "");
+        // 3. Đổ lại dữ liệu từ RAM vào fullDataList (Phải GIỐNG HỆT thứ tự cột của loadDataToTable)
+        for (int i = 0; i < busNganh.ds.size(); i++) {
+            Entity.nganhETT item = busNganh.ds.get(i);
+            java.util.Vector row = new java.util.Vector();
+            row.add(item.getIdnganh()); // Dùng ID thật, không dùng i+1 để tránh lỗi khi Sửa/Xóa
+            row.add(item.getManganh());
+            row.add(item.getTennganh());
+            row.add(item.getN_tohopgoc());
+            row.add(item.getN_chitieu());
+            row.add(item.getN_diemsanthpt() != null ? item.getN_diemsanthpt() : "");
+            row.add(item.getN_diemsanvsat() != null ? item.getN_diemsanvsat() : "");
+            row.add(item.getN_diemsandgnl() != null ? item.getN_diemsandgnl() : "");
+            
+            // 🚀 ĐÃ SỬA: Đưa cột SL ĐK vào thay cho cột Điểm Trung Tuyển
+            row.add(item.getSlDangKy() != null ? item.getSlDangKy() : 0);
+            
+            fullDataList.add(row);
+        }
+
+        // 4. Tính toán lại tổng số trang
+        totalPages = (int) Math.ceil((double) fullDataList.size() / rowsPerPage);
+        if (totalPages == 0) totalPages = 1;
+        currentPage = 1; // Nhảy về trang 1 cho khỏi lỗi out of bounds
         
-        fullDataList.add(row);
-    }
+        // 5. Vẽ lại bảng
+        renderCurrentPage();
 
-    // 4. Tính toán lại tổng số trang
-    totalPages = (int) Math.ceil((double) fullDataList.size() / rowsPerPage);
-    
-    // 5. Vẽ lại bảng
-    renderCurrentPage();
-
-    javax.swing.JOptionPane.showMessageDialog(this, "Đã đồng bộ dữ liệu mới nhất từ Database");
+        javax.swing.JOptionPane.showMessageDialog(this, "Đã đồng bộ dữ liệu mới nhất từ Database");
     }
     
     public void hienThiExcel()
@@ -339,7 +346,7 @@ private void hienThiDialogXoa() {
         }
     }
 
-    public void thucHienTimKiem()
+public void thucHienTimKiem()
     {
         String tim = txtTimKiem.getText().trim();
         int index = cbxTimKiem.getSelectedIndex();
@@ -365,12 +372,21 @@ private void hienThiDialogXoa() {
             row.add(ct.getN_diemsanthpt() != null ? ct.getN_diemsanthpt() : "");
             row.add(ct.getN_diemsanvsat() != null ? ct.getN_diemsanvsat() : "");
             row.add(ct.getN_diemsandgnl() != null ? ct.getN_diemsandgnl() : "");
-            row.add(ct.getN_diemtrungtuyen() != null ? ct.getN_diemtrungtuyen() : "");
+            
+            // 🚀 ĐÃ XÓA DÒNG N_diemtrungtuyen ĐỂ KHÔNG BỊ LỆCH CỘT
+            
+            // Cột số 9: Số lượng đăng ký
+            row.add(ct.getSlDangKy() != null ? ct.getSlDangKy() : 0);
 
             dsHienThi.add(row);
         }
 
+        // Giao data cho hệ thống phân trang
         setTableData(dsHienThi);
+        
+        // 🚀 ĐÃ THÊM: Bắt buộc gọi hàm này để nó load UI lên màn hình
+        renderCurrentPage();
+        
         if(dsHienThi.isEmpty())
         {
             JOptionPane.showMessageDialog(this, "Không tìm thấy dữ liệu phù hợp");
