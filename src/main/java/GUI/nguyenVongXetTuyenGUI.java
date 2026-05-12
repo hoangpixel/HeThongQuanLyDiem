@@ -124,6 +124,7 @@ public nguyenVongXetTuyenGUI() {
         cbxTimKiem.addItem("Kết quả");
         cbxTimKiem.addItem("Phương thức");
         cbxTimKiem.addItem("Tổ hợp");
+        cbxTimKiem.addItem("THM Cao Nhất");
     }
     
     public void thucHienTimKiem()
@@ -131,7 +132,7 @@ public nguyenVongXetTuyenGUI() {
         String tim = txtTimKiem.getText().trim();
         int index = cbxTimKiem.getSelectedIndex();
         
-        if(tim.isEmpty())
+        if(tim.isEmpty() && index != 11)
         {
             JOptionPane.showMessageDialog(this, "Vui lòng nhập nội dung cần tìm");
             txtTimKiem.requestFocus();
@@ -509,7 +510,7 @@ public void hienThiExcel() {
             }
 
             // Gọi Helper (Truyền thêm cái mapTenNganh vào hàm)
-            ExcelHelper.xuatThongKePhuongThucRaExcel(thongKeMap, mapTenNganh, this, "ThongKe_TrunTuyen_TheoPhuongThuc");
+            ExcelHelper.xuatThongKePhuongThucRaExcel(thongKeMap, mapTenNganh, this, "DanhSachTheoTungPT");
         }
     }
     

@@ -82,29 +82,62 @@ public class navbarGUI extends JPanel {
         // 👉 GIẢM KHOẢNG TRỐNG DƯỚI ĐƯỜNG KẺ TRƯỚC KHI VÀO MENU (từ 25 xuống 15)
         add(Box.createVerticalStrut(15));
 
-        // ================= MENU BUTTONS =================
-        // ... (Khúc dưới giữ nguyên)
 
-        // ================= MENU BUTTONS =================
+//        // ================= MENU BUTTONS =================
+//        btnThiSinh = createButton("Quản lý Thí sinh");
+//        btnNganh = createButton("Quản lý Ngành học");
+//        btnToHopMon = createButton("Quản lý Tổ hợp môn");
+//        btnNganhToHop = createButton("Tổ hợp - Ngành");
+//        btnBangQuyDoi = createButton("Bảng quy đổi V-SAT");
+//        btnDiemThi = createButton("Quản lý Điểm thi");
+//        btnDiemCong = createButton("Điểm cộng & Ưu tiên");
+//        btnNguyenVong = createButton("Nguyện vọng xét tuyển");
+//        btnTaiKhoan = createButton("Quản lý Tài khoản");
+//        btnChungChi = createButton("Chứng chỉ");
+//        btnGiaiThuong = createButton("Giải thưởng");
+//        btnPhanQuyen = createButton("Phân quyền");
+//        
+//        JButton[] menus = {btnThiSinh, btnNganh, btnToHopMon, btnNganhToHop, btnBangQuyDoi, btnDiemThi, btnDiemCong, btnNguyenVong, btnTaiKhoan, btnChungChi, btnGiaiThuong, btnPhanQuyen};
+//        
+//        String[] tables = {
+//            "xt_thisinhxettuyen25", "xt_nganh", "xt_tohop_monthi", "xt_nganh_tohop", "xt_bangquydoi", 
+//            "xt_diemthixettuyen", "xt_diemcongxettuyen", "xt_nguyenvongxettuyen", "xt_taikhoan", "xt_chungchi", "xt_giathuong", "xt_phanquyen"
+//        };
+
+// ================= MENU BUTTONS =================
+        
+        // --- CỤM 1: NGHIỆP VỤ XÉT TUYỂN ---
         btnThiSinh = createButton("Quản lý Thí sinh");
+        btnDiemThi = createButton("Quản lý Điểm thi");
+        btnChungChi = createButton("Chứng chỉ");
+        btnGiaiThuong = createButton("Giải thưởng");
+        btnNguyenVong = createButton("Nguyện vọng xét tuyển");
+        
+        // --- CỤM 2: DANH MỤC & QUY ĐỊNH ---
         btnNganh = createButton("Quản lý Ngành học");
         btnToHopMon = createButton("Quản lý Tổ hợp môn");
         btnNganhToHop = createButton("Tổ hợp - Ngành");
         btnBangQuyDoi = createButton("Bảng quy đổi V-SAT");
-        btnDiemThi = createButton("Quản lý Điểm thi");
         btnDiemCong = createButton("Điểm cộng & Ưu tiên");
-        btnNguyenVong = createButton("Nguyện vọng xét tuyển");
+        
+        // --- CỤM 3: HỆ THỐNG ---
         btnTaiKhoan = createButton("Quản lý Tài khoản");
-        btnChungChi = createButton("Chứng chỉ");
-        btnGiaiThuong = createButton("Giải thưởng");
         btnPhanQuyen = createButton("Phân quyền");
         
-        JButton[] menus = {btnThiSinh, btnNganh, btnToHopMon, btnNganhToHop, btnBangQuyDoi, btnDiemThi, btnDiemCong, btnNguyenVong, btnTaiKhoan, btnChungChi, btnGiaiThuong, btnPhanQuyen};
-        
-        String[] tables = {
-            "xt_thisinhxettuyen25", "xt_nganh", "xt_tohop_monthi", "xt_nganh_tohop", "xt_bangquydoi", 
-            "xt_diemthixettuyen", "xt_diemcongxettuyen", "xt_nguyenvongxettuyen", "xt_taikhoan", "xt_chungchi", "xt_giathuong", "xt_phanquyen"
+        // 🚀 ĐÃ SỬA: Sắp xếp lại mảng menus theo đúng thứ tự hiển thị ở trên
+        JButton[] menus = {
+            btnThiSinh, btnDiemThi, btnChungChi, btnGiaiThuong, btnNguyenVong, 
+            btnNganh, btnToHopMon, btnNganhToHop, btnBangQuyDoi, btnDiemCong, 
+            btnTaiKhoan, btnPhanQuyen
         };
+        
+        // 🚀 ĐÃ SỬA: Sắp xếp lại mảng tables khớp 100% với thứ tự của mảng menus (Rất quan trọng để phân quyền không bị lộn)
+        String[] tables = {
+            "xt_thisinhxettuyen25", "xt_diemthixettuyen", "xt_chungchi", "xt_giathuong", "xt_nguyenvongxettuyen", 
+            "xt_nganh", "xt_tohop_monthi", "xt_nganh_tohop", "xt_bangquydoi", "xt_diemcongxettuyen", 
+            "xt_taikhoan", "xt_phanquyen"
+        };
+
 
         boolean isAdmin = false;
         if (BUS.taiKhoanBUS.taiKhoanHienTai != null) {

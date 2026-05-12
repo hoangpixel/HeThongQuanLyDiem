@@ -771,8 +771,62 @@ public String nhapDuLieuTuExcel(String filePath) {
         ArrayList<nguyenVongXetTuyenETT> dskq = new ArrayList<nguyenVongXetTuyenETT>();
         String tuKhoa = tim.trim().toLowerCase();
         
+// 🚀 NẾU TÌM THM CAO NHẤT (Index 11) - LẤY CỦA TẤT CẢ THÍ SINH
+        if (index == 11) {
+            
+            // 🚀 ĐÃ SỬA: Dùng LinkedHashMap thay vì HashMap để giữ nguyên thứ tự dòng của Thí sinh
+            java.util.LinkedHashMap<String, ArrayList<nguyenVongXetTuyenETT>> mapHocSinh = new java.util.LinkedHashMap<>();
+            
+            for (nguyenVongXetTuyenETT nv : ds) {
+                if (nv != null && nv.getNnCccd() != null) {
+                    // Nếu người dùng có gõ CCCD thì chỉ lọc thằng đó, còn bỏ trống thì lấy hết
+                    if (!tuKhoa.isEmpty() && !nv.getNnCccd().toLowerCase().equals(tuKhoa)) {
+                        continue; 
+                    }
+                    
+                    String cccd = nv.getNnCccd();
+                    if (!mapHocSinh.containsKey(cccd)) {
+                        mapHocSinh.put(cccd, new ArrayList<>());
+                    }
+                    mapHocSinh.get(cccd).add(nv);
+                }
+            }
+
+            // ... (Đoạn dưới giữ nguyên, đi từng thằng thí sinh, tìm Max, gom hàng...)
+            // 2. Đi từng thằng thí sinh, tìm cái NV có điểm cao nhất của nó
+            for (String cccd : mapHocSinh.keySet()) {
+                ArrayList<nguyenVongXetTuyenETT> listNV = mapHocSinh.get(cccd);
+                double diemMax = -1.0;
+                String thmMax = "";
+                
+                // Tìm Max
+                for (nguyenVongXetTuyenETT nv : listNV) {
+                    if (nv.getTtThm() != null && !nv.getTtThm().isEmpty() && !nv.getTtThm().equals("Không")) {
+                        if (nv.getDiemXetTuyen() > diemMax) {
+                            diemMax = nv.getDiemXetTuyen();
+                            thmMax = nv.getTtThm();
+                        }
+                    }
+                }
+                
+                // Gom hàng
+                if (!thmMax.isEmpty()) {
+                    for (nguyenVongXetTuyenETT nv : listNV) {
+                        if (nv.getTtThm() != null && nv.getTtThm().equalsIgnoreCase(thmMax) && nv.getDiemXetTuyen() == diemMax) {
+                            dskq.add(nv);
+                        }
+                    }
+                }
+            }
+            return dskq;
+        }
+        
         for(nguyenVongXetTuyenETT ct : ds)
         {
+            if(ct == null)
+            {
+                continue;
+            }
             switch (index) {
                 case 0:
                     if(String.valueOf(ct.getIdNv()).toLowerCase().contains(tuKhoa))

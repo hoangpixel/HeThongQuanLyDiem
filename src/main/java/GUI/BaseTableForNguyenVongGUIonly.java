@@ -429,7 +429,7 @@ private void styleComponents() {
             // 3. ĐỔI MÀU CHỮ CHO CỘT TRẠNG THÁI
             int cotTrangThaiIndex = 9; 
 
-            if (column == cotTrangThaiIndex) {
+if (column == cotTrangThaiIndex) {
                 String status = value != null ? value.toString().trim() : "";
                 
                 // 🔥 SỬA Ở ĐÂY: Dùng deriveFont để in đậm mà vẫn giữ nguyên font chữ app
@@ -439,16 +439,19 @@ private void styleComponents() {
                 if (status.equalsIgnoreCase("Chờ xét")) {
                     c.setForeground(Color.BLACK);
                 } else if (status.equalsIgnoreCase("Đã đậu")) {
-                    c.setForeground(new Color(46, 204, 113)); // Xanh lá dịu mắt
+                    c.setForeground(new Color(46, 204, 113));  // Xanh lá dịu mắt
                 } else if (status.equalsIgnoreCase("Đã trượt")) {
-                    c.setForeground(new Color(231, 76, 60));  // Đỏ cảnh báo
+                    c.setForeground(new Color(231, 76, 60));   // Đỏ cảnh báo
                 } else if (status.equalsIgnoreCase("Không xét")) {
                     c.setForeground(new Color(108, 122, 137)); // Xám đậm
+                } else if (status.equalsIgnoreCase("Bỏ qua")) {
+                    // 🚀 THÊM MỚI Ở ĐÂY: Chữ Bỏ qua màu vàng cam (dễ nhìn trên nền trắng)
+                    c.setForeground(new Color(211, 84, 0)); 
                 } else {
                     c.setForeground(isSelected ? Color.WHITE : Color.BLACK);
                 }
                 
-                // Nếu dòng đang được chọn (bôi xanh)
+                // Nếu dòng đang được chọn (bôi xanh) thì bắt buộc chữ màu trắng cho dễ đọc
                 if (isSelected) {
                     c.setForeground(Color.WHITE);
                 }

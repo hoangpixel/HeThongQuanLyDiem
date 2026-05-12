@@ -348,7 +348,7 @@
                 <StringItem index="0" value="X&#xe9;t THPT"/>
                 <StringItem index="1" value="X&#xe9;t H&#x1ecd;c B&#x1ea1;"/>
                 <StringItem index="2" value="&#x110;GNL HCM"/>
-                <StringItem index="3" value="Tuy&#x1ec3;n Th&#x1eb3;ng"/>
+                <StringItem index="3" value="X&#xe9;t Tuy&#x1ec3;n Th&#x1eb3;ng"/>
               </StringArray>
             </Property>
             <Property name="enabled" type="boolean" value="false"/>
