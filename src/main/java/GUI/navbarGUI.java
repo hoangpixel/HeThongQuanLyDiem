@@ -8,7 +8,7 @@ import java.awt.event.ActionListener;
 
 public class navbarGUI extends JPanel {
 
-    public JButton btnThiSinh, btnDiemThi, btnPhanQuyen, btnNganh, btnToHopMon, btnNganhToHop, btnBangQuyDoi, btnDiemCong, btnNguyenVong, btnDangXuat, btnTaiKhoan, btnChungChi, btnGiaiThuong;
+    public JButton btnThiSinh, btnDiemThi, btnPhanQuyen, btnNganh, btnToHopMon, btnNganhToHop, btnBangQuyDoi, btnDiemCong, btnNguyenVong, btnDangXuat, btnTaiKhoan, btnChungChi, btnGiaiThuong, btnThongKe;
 
     private final Color COLOR_BG = new Color(15, 124, 133); 
     private final Color COLOR_HOVER = new Color(25, 149, 159); 
@@ -153,6 +153,11 @@ public class navbarGUI extends JPanel {
 
         // ================= NÚT ĐĂNG XUẤT =================
         add(Box.createVerticalGlue()); 
+        
+        // ================= NÚT THỐNG KÊ (Dưới cùng trên Đăng xuất) =================
+        btnThongKe = createButton("Thống kê");
+        add(btnThongKe);
+        add(Box.createVerticalStrut(8));
         
         btnDangXuat = createButton("Đăng xuất");
         btnDangXuat.setForeground(COLOR_DANGER); 

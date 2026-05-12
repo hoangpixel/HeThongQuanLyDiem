@@ -80,6 +80,9 @@ public class contentGUI extends JFrame {
             contentPanel.add(new toHopGUI(), "tohop");
         }
         
+        // Thống kê (Mặc định cho Admin hoặc có thể thêm quyền riêng)
+        contentPanel.add(new ThongKeGUI(), "thongke");
+        
         add(contentPanel, BorderLayout.CENTER);
 
         // 👉 Bắt sự kiện nút từ navbar
@@ -122,5 +125,9 @@ public class contentGUI extends JFrame {
           nav.btnPhanQuyen.addActionListener(e -> {
             cardLayout.show(contentPanel, "phanquyen");
         });  
+          
+          nav.btnThongKe.addActionListener(e -> {
+            cardLayout.show(contentPanel, "thongke");
+        });
     }
 }

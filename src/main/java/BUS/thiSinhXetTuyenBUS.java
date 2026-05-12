@@ -331,4 +331,27 @@ public class thiSinhXetTuyenBUS {
 
         return null; // Mọi thứ ổn
     }
+
+    // ================== THỐNG KÊ ==================
+    public HashMap<String, Integer> thongKeTheoDoiTuong() {
+        layDanhSach(); 
+        HashMap<String, Integer> map = new HashMap<>();
+        for (thiSinhXetTuyenETT ts : ds) {
+            String dt = ts.getDoiTuong();
+            if (dt == null || dt.trim().isEmpty()) dt = "Chưa xác định";
+            map.put(dt, map.getOrDefault(dt, 0) + 1);
+        }
+        return map;
+    }
+
+    public HashMap<String, Integer> thongKeTheoKhuVuc() {
+        layDanhSach();
+        HashMap<String, Integer> map = new HashMap<>();
+        for (thiSinhXetTuyenETT ts : ds) {
+            String kv = ts.getKhuVuc();
+            if (kv == null || kv.trim().isEmpty()) kv = "Chưa xác định";
+            map.put(kv, map.getOrDefault(kv, 0) + 1);
+        }
+        return map;
+    }
 }
