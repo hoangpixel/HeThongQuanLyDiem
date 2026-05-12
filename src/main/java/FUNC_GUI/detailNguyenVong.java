@@ -179,7 +179,7 @@ public class detailNguyenVong extends javax.swing.JDialog {
         jLabel5.setFont(new java.awt.Font("Segoe UI", 0, 14)); // NOI18N
         jLabel5.setText("Phương thức : ");
 
-        cboPT.setModel(new javax.swing.DefaultComboBoxModel<>(new String[] { "Xét THPT", "Xét Học Bạ", "ĐGNL HCM", "Xét Tuyển Thẳng" }));
+        cboPT.setModel(new javax.swing.DefaultComboBoxModel<>(new String[] { "Xét THPT", "Xét Học Bạ", "ĐGNL HCM", "Xét tuyển thẳng" }));
         cboPT.setEnabled(false);
         cboPT.addActionListener(this::cboPTActionPerformed);
 

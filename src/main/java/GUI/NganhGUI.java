@@ -138,9 +138,9 @@ public void loadDataToTable() {
             row.add(item.getN_diemsanthpt() != null ? item.getN_diemsanthpt() : "");
             row.add(item.getN_diemsanvsat() != null ? item.getN_diemsanvsat() : "");
             row.add(item.getN_diemsandgnl() != null ? item.getN_diemsandgnl() : "");
-            row.add(item.getDiemchuan_thpt() != null ? item.getDiemchuan_thpt() : "");
-            row.add(item.getDiemchuan_vsat() != null ? item.getDiemchuan_vsat() : "");
-            row.add(item.getDiemchuan_dgnl() != null ? item.getDiemchuan_dgnl() : "");
+            row.add(item.getDiemchuan_thpt() != null ? item.getDiemchuan_thpt() : 0);
+            row.add(item.getDiemchuan_vsat() != null ? item.getDiemchuan_vsat() : 0);
+            row.add(item.getDiemchuan_dgnl() != null ? item.getDiemchuan_dgnl() : 0);
             
             // Check an toàn, lỡ Ngành đó chưa có ai đăng ký (trong DB là NULL) thì in ra số 0
             row.add(item.getSlDangKy() != null ? item.getSlDangKy() : 0);
@@ -310,9 +310,9 @@ private void thucHienRefresh() {
             row.add(item.getN_diemsanthpt() != null ? item.getN_diemsanthpt() : "");
             row.add(item.getN_diemsanvsat() != null ? item.getN_diemsanvsat() : "");
             row.add(item.getN_diemsandgnl() != null ? item.getN_diemsandgnl() : "");
-            row.add(item.getDiemchuan_thpt() != null ? item.getDiemchuan_thpt() : "");
-            row.add(item.getDiemchuan_vsat() != null ? item.getDiemchuan_vsat() : "");
-            row.add(item.getDiemchuan_dgnl() != null ? item.getDiemchuan_dgnl() : "");
+            row.add(item.getDiemchuan_thpt() != null ? item.getDiemchuan_thpt() : 0);
+            row.add(item.getDiemchuan_vsat() != null ? item.getDiemchuan_vsat() : 0);
+            row.add(item.getDiemchuan_dgnl() != null ? item.getDiemchuan_dgnl() : 0);
             
             // 🚀 ĐÃ SỬA: Đưa cột SL ĐK vào thay cho cột Điểm Trung Tuyển
             row.add(item.getSlDangKy() != null ? item.getSlDangKy() : 0);

@@ -54,7 +54,10 @@ public class selectNganh extends javax.swing.JDialog {
         cbxTimKiem.addItem("Sàn THPT");
         cbxTimKiem.addItem("Sàn V-SAT");
         cbxTimKiem.addItem("Sàn ĐGNL");
-        cbxTimKiem.addItem("Điểm Chuẩn");
+        cbxTimKiem.addItem("Chuẩn THPT");
+        cbxTimKiem.addItem("Chuẩn V-SAT");
+        cbxTimKiem.addItem("Chuẩn ĐGNL");
+        cbxTimKiem.addItem("SL ĐK");
     }
     
     public void docSQL()
@@ -87,18 +90,15 @@ public class selectNganh extends javax.swing.JDialog {
             row.add(ct.getTennganh());
             row.add(ct.getN_tohopgoc());
             row.add(ct.getN_chitieu());
-//            row.add(ct.getN_diemsanthpt());
-//            row.add(ct.getN_diemsanvsat());
-//            row.add(ct.getN_diemsandgnl());
-//            row.add(ct.getN_diemtrungtuyen());
-//            row.add(ct.getN_tuyenthang());
-//            row.add(ct.getN_dgnl());
-//            row.add(ct.getN_thpt());
-//            row.add(ct.getN_vsat());
-            row.add(ct.getSl_xtt());
-            row.add(ct.getSl_dgnl());
-            row.add(ct.getSl_vsat());
-            row.add(ct.getSl_thpt());
+            row.add(ct.getN_diemsanthpt() != null ? ct.getN_diemsanthpt() : "");
+            row.add(ct.getN_diemsanvsat() != null ? ct.getN_diemsanvsat() : "");
+            row.add(ct.getN_diemsandgnl() != null ? ct.getN_diemsandgnl() : "");
+            row.add(ct.getDiemchuan_thpt() != null ? ct.getDiemchuan_thpt() : 0);
+            row.add(ct.getDiemchuan_vsat() != null ? ct.getDiemchuan_vsat() : 0);
+            row.add(ct.getDiemchuan_dgnl() != null ? ct.getDiemchuan_dgnl() : 0);
+            
+            // Check an toàn, lỡ Ngành đó chưa có ai đăng ký (trong DB là NULL) thì in ra số 0
+            row.add(ct.getSlDangKy() != null ? ct.getSlDangKy() : 0);
             model.addRow(row);
     }
 
@@ -118,21 +118,18 @@ public class selectNganh extends javax.swing.JDialog {
     void header()
     {
         Vector headerVec = new Vector();
-        headerVec.add("ID");
-        headerVec.add("ID ngành");
-        headerVec.add("Tên ngành");
-        headerVec.add("Tổ hợp gốc");
-        headerVec.add("Chỉ tiêu");
-//        headerVec.add("Điểm sàn");
-//        headerVec.add("Điểm trúng tuyển");
-//        headerVec.add("Tuyển thẳng");
-//        headerVec.add("DGNL");
-//        headerVec.add("THPT");
-//        headerVec.add("VSAT");
-        headerVec.add("SL XTT");
-        headerVec.add("SL DGNL");
-        headerVec.add("SL VSAT");
-        headerVec.add("SL THPT");
+        headerVec.add("ID Ngành");
+        headerVec.add("Mã Ngành");
+        headerVec.add("Tên Ngành");
+        headerVec.add("Tổ Hợp Gốc");
+        headerVec.add("Chỉ Tiêu");
+        headerVec.add("Sàn THPT");
+        headerVec.add("Sàn V-SAT");
+        headerVec.add("Sàn ĐGNL");
+        headerVec.add("Chuẩn THPT");
+        headerVec.add("Chuẩn V-SAT");
+        headerVec.add("Chuẩn ĐGNL");
+        headerVec.add("SL ĐK"); // <-- Cột số 9
         model = new DefaultTableModel(headerVec, 0){
             @Override
             public boolean isCellEditable(int row, int column){
@@ -328,16 +325,16 @@ public class selectNganh extends javax.swing.JDialog {
                         .addContainerGap()
                         .addComponent(jScrollPane1, javax.swing.GroupLayout.DEFAULT_SIZE, 969, Short.MAX_VALUE))
                     .addGroup(jPanel3Layout.createSequentialGroup()
-                        .addGap(336, 336, 336)
+                        .addGap(268, 268, 268)
                         .addComponent(btnFirst)
-                        .addGap(18, 18, 18)
+                        .addGap(31, 31, 31)
                         .addComponent(btnPrev, javax.swing.GroupLayout.PREFERRED_SIZE, 49, javax.swing.GroupLayout.PREFERRED_SIZE)
                         .addGap(18, 18, 18)
                         .addComponent(lbPageInFo, javax.swing.GroupLayout.PREFERRED_SIZE, 37, javax.swing.GroupLayout.PREFERRED_SIZE)
-                        .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED)
-                        .addComponent(btnNext, javax.swing.GroupLayout.PREFERRED_SIZE, 49, javax.swing.GroupLayout.PREFERRED_SIZE)
                         .addGap(18, 18, 18)
-                        .addComponent(btnLast, javax.swing.GroupLayout.PREFERRED_SIZE, 49, javax.swing.GroupLayout.PREFERRED_SIZE)
+                        .addComponent(btnNext, javax.swing.GroupLayout.PREFERRED_SIZE, 49, javax.swing.GroupLayout.PREFERRED_SIZE)
+                        .addGap(31, 31, 31)
+                        .addComponent(btnLast)
                         .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED, javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE)
                         .addComponent(jButton1, javax.swing.GroupLayout.PREFERRED_SIZE, 102, javax.swing.GroupLayout.PREFERRED_SIZE)))
                 .addContainerGap())
