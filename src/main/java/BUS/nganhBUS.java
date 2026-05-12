@@ -177,8 +177,26 @@ public class nganhBUS {
                         dskq.add(ct);
                     }
                     break;
-                case 8: // Tìm theo Điểm chuẩn
-                    if(ct.getN_diemtrungtuyen() != null && String.valueOf(ct.getN_diemtrungtuyen()).toLowerCase().contains(tuKhoa))
+                case 8: // Tìm theo Chuẩn THPT
+                    if(ct.getDiemchuan_thpt() != null && String.valueOf(ct.getDiemchuan_thpt()).toLowerCase().contains(tuKhoa)) 
+                    {
+                        dskq.add(ct);
+                    }
+                    break;
+                case 9: // Tìm theo Chuẩn V-SAT
+                    if(ct.getDiemchuan_vsat() != null && String.valueOf(ct.getDiemchuan_vsat()).toLowerCase().contains(tuKhoa)) 
+                    {
+                        dskq.add(ct);
+                    }
+                    break;
+                case 10: // Tìm theo Chuẩn ĐGNL
+                    if(ct.getDiemchuan_dgnl() != null && String.valueOf(ct.getDiemchuan_dgnl()).toLowerCase().contains(tuKhoa))
+                    {
+                        dskq.add(ct);
+                    }
+                    break;
+                case 11: // Tìm theo SL ĐK
+                    if(ct.getSlDangKy() != null && String.valueOf(ct.getSlDangKy()).toLowerCase().contains(tuKhoa))
                     {
                         dskq.add(ct);
                     }
@@ -245,7 +263,11 @@ public class nganhBUS {
                     ng.setN_diemsanthpt(parseDoubleForNganh(getCellSafe(row, 5)));
                     ng.setN_diemsanvsat(parseDoubleForNganh(getCellSafe(row, 6)));
                     ng.setN_diemsandgnl(parseDoubleForNganh(getCellSafe(row, 7)));
-                    ng.setN_diemtrungtuyen(parseDoubleForNganh(getCellSafe(row, 8)));
+                    //ng.setN_diemtrungtuyen(parseDoubleForNganh(getCellSafe(row, 8)));
+                    ng.setDiemchuan_thpt(parseDoubleForNganh(getCellSafe(row, 8)));
+                    ng.setDiemchuan_vsat(parseDoubleForNganh(getCellSafe(row, 9)));
+                    ng.setDiemchuan_dgnl(parseDoubleForNganh(getCellSafe(row, 10)));
+                    ng.setSlDangKy((int) parseDoubleSafe(getCellSafe(row, 11)));
 
                     // --- QUYẾT ĐỊNH THÊM HAY SỬA XUỐNG DB ---
                     boolean success;

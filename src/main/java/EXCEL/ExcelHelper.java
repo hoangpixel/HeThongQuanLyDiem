@@ -1018,7 +1018,7 @@ public static void xuatThongKePhuongThucRaExcel(java.util.HashMap<String, java.u
                 // --- 2. IN HEADER ---
                 String[] headers = {
                     "ID Ngành", "Mã Ngành", "Tên Ngành", "Tổ Hợp Gốc", "Chỉ Tiêu", 
-                    "Sàn THPT", "Sàn V-SAT", "Sàn ĐGNL", "Điểm Chuẩn"
+                    "Sàn THPT", "Sàn V-SAT", "Sàn ĐGNL", "Chuẩn THPT", "Chuẩn V-SAT", "Chuẩn ĐGNL", "SL ĐK"
                 };
                 org.apache.poi.ss.usermodel.Row headerRow = sheet.createRow(0);
                 headerRow.setHeightInPoints(25);
@@ -1044,7 +1044,11 @@ public static void xuatThongKePhuongThucRaExcel(java.util.HashMap<String, java.u
                         ng.getN_diemsanthpt() != null ? ng.getN_diemsanthpt() : "",
                         ng.getN_diemsanvsat() != null ? ng.getN_diemsanvsat() : "",
                         ng.getN_diemsandgnl() != null ? ng.getN_diemsandgnl() : "",
-                        ng.getN_diemtrungtuyen() != null ? ng.getN_diemtrungtuyen() : ""
+                        //ng.getN_diemtrungtuyen() != null ? ng.getN_diemtrungtuyen() : ""
+                        ng.getDiemchuan_thpt() != null ? ng.getDiemchuan_thpt() : "",
+                        ng.getDiemchuan_vsat() != null ? ng.getDiemchuan_vsat() : "",
+                        ng.getDiemchuan_dgnl() != null ? ng.getDiemchuan_dgnl() : "",
+                        ng.getSlDangKy() != null ? ng.getSlDangKy() : 0
                     };
 
                     for (int i = 0; i < rowData.length; i++) {

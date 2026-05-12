@@ -94,9 +94,12 @@ public class NganhGUI extends BaseTableGUI {
         header.add("Tên Ngành");
         header.add("Tổ Hợp Gốc");
         header.add("Chỉ Tiêu");
-        header.add("Điểm Sàn THPT");
-        header.add("Điểm Sàn V-SAT");
-        header.add("Điểm Sàn ĐGNL");
+        header.add("Sàn THPT");
+        header.add("Sàn V-SAT");
+        header.add("Sàn ĐGNL");
+        header.add("Chuẩn THPT");
+        header.add("Chuẩn V-SAT");
+        header.add("Chuẩn ĐGNL");
         header.add("SL ĐK"); // <-- Cột số 9
         tableModel.setColumnIdentifiers(header);
     }
@@ -112,6 +115,10 @@ public class NganhGUI extends BaseTableGUI {
         cbxTimKiem.addItem("Sàn THPT");
         cbxTimKiem.addItem("Sàn V-SAT");
         cbxTimKiem.addItem("Sàn ĐGNL");
+        cbxTimKiem.addItem("Chuẩn THPT");
+        cbxTimKiem.addItem("Chuẩn V-SAT");
+        cbxTimKiem.addItem("Chuẩn ĐGNL");
+        cbxTimKiem.addItem("SL ĐK");
         //cbxTimKiem.addItem("Điểm Chuẩn");
     }
 
@@ -131,6 +138,9 @@ public void loadDataToTable() {
             row.add(item.getN_diemsanthpt() != null ? item.getN_diemsanthpt() : "");
             row.add(item.getN_diemsanvsat() != null ? item.getN_diemsanvsat() : "");
             row.add(item.getN_diemsandgnl() != null ? item.getN_diemsandgnl() : "");
+            row.add(item.getDiemchuan_thpt() != null ? item.getDiemchuan_thpt() : "");
+            row.add(item.getDiemchuan_vsat() != null ? item.getDiemchuan_vsat() : "");
+            row.add(item.getDiemchuan_dgnl() != null ? item.getDiemchuan_dgnl() : "");
             
             // Check an toàn, lỡ Ngành đó chưa có ai đăng ký (trong DB là NULL) thì in ra số 0
             row.add(item.getSlDangKy() != null ? item.getSlDangKy() : 0);
@@ -167,7 +177,10 @@ public void loadDataToTable() {
             row.add(nv.getN_diemsanthpt() != null ? nv.getN_diemsanthpt() : "");
             row.add(nv.getN_diemsanvsat() != null ? nv.getN_diemsanvsat() : "");
             row.add(nv.getN_diemsandgnl() != null ? nv.getN_diemsandgnl() : "");
-            row.add(nv.getN_diemtrungtuyen() != null ? nv.getN_diemtrungtuyen() : "");
+            //row.add(nv.getN_diemtrungtuyen() != null ? nv.getN_diemtrungtuyen() : "");
+            row.add(nv.getDiemchuan_thpt() != null ? nv.getDiemchuan_thpt() : "");
+            row.add(nv.getDiemchuan_vsat() != null ? nv.getDiemchuan_vsat() : "");
+            row.add(nv.getDiemchuan_dgnl() != null ? nv.getDiemchuan_dgnl() : "");
         
             // Nếu bảng hiển thị các cột sl_... thì add thêm vào đây
             // row.add(nv.getSl_xtt()); 
@@ -222,6 +235,9 @@ private void hienThiDialogSua() {
                     rowData.add(nvMoi.getN_diemsanthpt() != null ? nvMoi.getN_diemsanthpt() : "");
                     rowData.add(nvMoi.getN_diemsanvsat() != null ? nvMoi.getN_diemsanvsat() : "");
                     rowData.add(nvMoi.getN_diemsandgnl() != null ? nvMoi.getN_diemsandgnl() : "");
+                    rowData.add(nvMoi.getDiemchuan_thpt() != null ? nvMoi.getDiemchuan_thpt() : "");
+                    rowData.add(nvMoi.getDiemchuan_vsat() != null ? nvMoi.getDiemchuan_vsat() : "");
+                    rowData.add(nvMoi.getDiemchuan_dgnl() != null ? nvMoi.getDiemchuan_dgnl() : "");
                     
                     // 🚀 ĐÃ XÓA DÒNG N_diemtrungtuyen
                     // 🚀 ĐÃ THÊM LẠI CỘT SỐ LƯỢNG ĐĂNG KÝ
@@ -294,6 +310,9 @@ private void thucHienRefresh() {
             row.add(item.getN_diemsanthpt() != null ? item.getN_diemsanthpt() : "");
             row.add(item.getN_diemsanvsat() != null ? item.getN_diemsanvsat() : "");
             row.add(item.getN_diemsandgnl() != null ? item.getN_diemsandgnl() : "");
+            row.add(item.getDiemchuan_thpt() != null ? item.getDiemchuan_thpt() : "");
+            row.add(item.getDiemchuan_vsat() != null ? item.getDiemchuan_vsat() : "");
+            row.add(item.getDiemchuan_dgnl() != null ? item.getDiemchuan_dgnl() : "");
             
             // 🚀 ĐÃ SỬA: Đưa cột SL ĐK vào thay cho cột Điểm Trung Tuyển
             row.add(item.getSlDangKy() != null ? item.getSlDangKy() : 0);
@@ -376,8 +395,9 @@ public void thucHienTimKiem()
             row.add(ct.getN_diemsanthpt() != null ? ct.getN_diemsanthpt() : "");
             row.add(ct.getN_diemsanvsat() != null ? ct.getN_diemsanvsat() : "");
             row.add(ct.getN_diemsandgnl() != null ? ct.getN_diemsandgnl() : "");
-            
-            // 🚀 ĐÃ XÓA DÒNG N_diemtrungtuyen ĐỂ KHÔNG BỊ LỆCH CỘT
+            row.add(ct.getDiemchuan_thpt() != null ? ct.getDiemchuan_thpt() : "");
+            row.add(ct.getDiemchuan_vsat() != null ? ct.getDiemchuan_vsat() : "");
+            row.add(ct.getDiemchuan_dgnl() != null ? ct.getDiemchuan_dgnl() : "");
             
             // Cột số 9: Số lượng đăng ký
             row.add(ct.getSlDangKy() != null ? ct.getSlDangKy() : 0);

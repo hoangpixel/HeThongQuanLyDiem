@@ -35,7 +35,7 @@ public class updateNganh extends javax.swing.JDialog {
         txtDiemSanTHPT.setText(data.getN_diemsanthpt() != null ? String.valueOf(data.getN_diemsanthpt()) : "");
         txtDiemSanVSAT.setText(data.getN_diemsanvsat() != null ? String.valueOf(data.getN_diemsanvsat()) : "");
         txtDiemSanDGNL.setText(data.getN_diemsandgnl() != null ? String.valueOf(data.getN_diemsandgnl()) : "");
-        txtDiemTrungTuyen.setText(data.getN_diemtrungtuyen() != null ? String.valueOf(data.getN_diemtrungtuyen()) : "");
+//        txtDiemTrungTuyen.setText(data.getN_diemtrungtuyen() != null ? String.valueOf(data.getN_diemtrungtuyen()) : "");
         txtDiemSanTHPT.setEditable(true);
         txtDiemSanVSAT.setEditable(true);
         txtDiemSanDGNL.setEditable(true);
@@ -59,8 +59,6 @@ public class updateNganh extends javax.swing.JDialog {
         jLabel4 = new javax.swing.JLabel();
         txtDiemSanTHPT = new javax.swing.JTextField();
         jLabel10 = new javax.swing.JLabel();
-        jLabel11 = new javax.swing.JLabel();
-        txtDiemTrungTuyen = new javax.swing.JTextField();
         btnChonToHopGoc = new javax.swing.JButton();
         txtMaNganh = new javax.swing.JTextField();
         txtTenNganh = new javax.swing.JTextField();
@@ -99,13 +97,6 @@ public class updateNganh extends javax.swing.JDialog {
 
         jLabel10.setFont(new java.awt.Font("Segoe UI", 0, 14)); // NOI18N
         jLabel10.setText("Chỉ tiêu :");
-
-        jLabel11.setFont(new java.awt.Font("Segoe UI", 0, 14)); // NOI18N
-        jLabel11.setText("Điểm trúng tuyển :");
-
-        txtDiemTrungTuyen.setEditable(false);
-        txtDiemTrungTuyen.setText("30");
-        txtDiemTrungTuyen.addActionListener(this::txtDiemTrungTuyenActionPerformed);
 
         btnChonToHopGoc.setText("...");
         btnChonToHopGoc.addActionListener(this::btnChonToHopGocActionPerformed);
@@ -170,13 +161,11 @@ public class updateNganh extends javax.swing.JDialog {
                             .addGroup(jPanel1Layout.createSequentialGroup()
                                 .addGroup(jPanel1Layout.createParallelGroup(javax.swing.GroupLayout.Alignment.TRAILING)
                                     .addComponent(jLabel5, javax.swing.GroupLayout.PREFERRED_SIZE, 123, javax.swing.GroupLayout.PREFERRED_SIZE)
-                                    .addComponent(jLabel6, javax.swing.GroupLayout.PREFERRED_SIZE, 123, javax.swing.GroupLayout.PREFERRED_SIZE)
-                                    .addComponent(jLabel11, javax.swing.GroupLayout.PREFERRED_SIZE, 123, javax.swing.GroupLayout.PREFERRED_SIZE))
+                                    .addComponent(jLabel6, javax.swing.GroupLayout.PREFERRED_SIZE, 123, javax.swing.GroupLayout.PREFERRED_SIZE))
                                 .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED)
                                 .addGroup(jPanel1Layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
                                     .addComponent(txtDiemSanVSAT, javax.swing.GroupLayout.PREFERRED_SIZE, 188, javax.swing.GroupLayout.PREFERRED_SIZE)
-                                    .addComponent(txtDiemSanDGNL, javax.swing.GroupLayout.PREFERRED_SIZE, 188, javax.swing.GroupLayout.PREFERRED_SIZE)
-                                    .addComponent(txtDiemTrungTuyen, javax.swing.GroupLayout.PREFERRED_SIZE, 188, javax.swing.GroupLayout.PREFERRED_SIZE))))
+                                    .addComponent(txtDiemSanDGNL, javax.swing.GroupLayout.PREFERRED_SIZE, 188, javax.swing.GroupLayout.PREFERRED_SIZE))))
                         .addGap(49, 49, 49)))
                 .addContainerGap(javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE))
         );
@@ -212,10 +201,6 @@ public class updateNganh extends javax.swing.JDialog {
                 .addGroup(jPanel1Layout.createParallelGroup(javax.swing.GroupLayout.Alignment.BASELINE)
                     .addComponent(txtDiemSanDGNL, javax.swing.GroupLayout.PREFERRED_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.PREFERRED_SIZE)
                     .addComponent(jLabel6))
-                .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.UNRELATED)
-                .addGroup(jPanel1Layout.createParallelGroup(javax.swing.GroupLayout.Alignment.BASELINE)
-                    .addComponent(txtDiemTrungTuyen, javax.swing.GroupLayout.PREFERRED_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.PREFERRED_SIZE)
-                    .addComponent(jLabel11))
                 .addContainerGap(javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE))
         );
 
@@ -323,7 +308,7 @@ if(!kiemTraHopLe()) return;
             nganh.setN_diemsanthpt(txtDiemSanTHPT.getText().isEmpty() ? null : Double.valueOf(txtDiemSanTHPT.getText()));
             nganh.setN_diemsanvsat(txtDiemSanVSAT.getText().isEmpty() ? null : Double.valueOf(txtDiemSanVSAT.getText()));
             nganh.setN_diemsandgnl(txtDiemSanDGNL.getText().isEmpty() ? null : Double.valueOf(txtDiemSanDGNL.getText()));
-            nganh.setN_diemtrungtuyen(txtDiemTrungTuyen.getText().isEmpty() ? null : Double.valueOf(txtDiemTrungTuyen.getText()));
+//            nganh.setN_diemtrungtuyen(txtDiemTrungTuyen.getText().isEmpty() ? null : Double.valueOf(txtDiemTrungTuyen.getText()));
         } catch(Exception e){e.printStackTrace();}
         
         // --- ĐÃ XÓA SẠCH ĐOẠN GÁN sl_thpt, sl_vsat BẰNG 0 Ở ĐÂY ---
@@ -369,10 +354,6 @@ if(!kiemTraHopLe()) return;
     private void txtToHopGocActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_txtToHopGocActionPerformed
         // TODO add your handling code here:
     }//GEN-LAST:event_txtToHopGocActionPerformed
-
-    private void txtDiemTrungTuyenActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_txtDiemTrungTuyenActionPerformed
-        // TODO add your handling code here:
-    }//GEN-LAST:event_txtDiemTrungTuyenActionPerformed
 
     private void txtDiemSanTHPTActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_txtDiemSanTHPTActionPerformed
         // TODO add your handling code here:
@@ -425,9 +406,9 @@ if(!kiemTraHopLe()) return;
             if (!txtDiemSanTHPT.getText().trim().isEmpty()) Double.parseDouble(txtDiemSanTHPT.getText().trim());
             if (!txtDiemSanVSAT.getText().trim().isEmpty()) Double.parseDouble(txtDiemSanVSAT.getText().trim());
             if (!txtDiemSanDGNL.getText().trim().isEmpty()) Double.parseDouble(txtDiemSanDGNL.getText().trim());
-            if (!txtDiemTrungTuyen.getText().trim().isEmpty()) Double.parseDouble(txtDiemTrungTuyen.getText().trim());
+//            if (!txtDiemTrungTuyen.getText().trim().isEmpty()) Double.parseDouble(txtDiemTrungTuyen.getText().trim());
         } catch (Exception e) {
-            JOptionPane.showMessageDialog(this, "Các ô Điểm sàn và Điểm trúng tuyển phải là con số hợp lệ (ví dụ: 18.5)");
+            JOptionPane.showMessageDialog(this, "Các ô Điểm sàn phải là con số hợp lệ (ví dụ: 18.5)");
             return false;
         }
         
@@ -448,7 +429,6 @@ if(!kiemTraHopLe()) return;
     private javax.swing.JButton btnThoat;
     private javax.swing.JLabel jLabel1;
     private javax.swing.JLabel jLabel10;
-    private javax.swing.JLabel jLabel11;
     private javax.swing.JLabel jLabel2;
     private javax.swing.JLabel jLabel3;
     private javax.swing.JLabel jLabel4;
@@ -462,7 +442,6 @@ if(!kiemTraHopLe()) return;
     private javax.swing.JTextField txtDiemSanDGNL;
     private javax.swing.JTextField txtDiemSanTHPT;
     private javax.swing.JTextField txtDiemSanVSAT;
-    private javax.swing.JTextField txtDiemTrungTuyen;
     private javax.swing.JTextField txtMaNganh;
     private javax.swing.JTextField txtTenNganh;
     private javax.swing.JTextField txtToHopGoc;
