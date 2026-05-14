@@ -38,6 +38,7 @@ public class insertDiemCong extends javax.swing.JDialog {
     public insertDiemCong(java.awt.Frame parent, boolean modal) {
         super(parent, modal);
         initComponents();
+        setTitle("Thêm Điểm Cộng");
         setLocationRelativeTo(parent);
         // Bind thủ công vì NetBeans không tự sinh cho cboPT
         cboPT.addActionListener(this::cboPTActionPerformed);

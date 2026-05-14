@@ -66,6 +66,7 @@ import javax.swing.SwingUtilities;
 
 
         setLocationRelativeTo(parent);
+        setTitle("Sửa Điểm Cộng");
     }
 
     /**

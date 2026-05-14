@@ -115,6 +115,7 @@ public class updateThiSinh extends javax.swing.JDialog {
         jPanel2.revalidate();
         jPanel2.repaint();
 
+        setTitle("Sửa Thí Sinh");
         setLocationRelativeTo(parent);
 
         // 🔥 ĐỔ DỮ LIỆU

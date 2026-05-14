@@ -95,6 +95,7 @@ public class insertThiSinh extends javax.swing.JDialog {
         javax.swing.GroupLayout layout = (javax.swing.GroupLayout) jPanel1.getLayout();
         layout.replace(cboNgaySinh, dateNgaySinh);
         cboNgaySinh.setVisible(false); // ẩn combobox cũ
+        setTitle("Thêm Thí Sinh");
         setLocationRelativeTo(parent);
     }
 
