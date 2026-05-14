@@ -510,46 +510,6 @@ public class updateChungChi extends javax.swing.JDialog {
         // TODO add your handling code here:
     }//GEN-LAST:event_txtNgheActionPerformed
 
-//    private void loadDataToCboDiemPhuThuoc(String certName) {
-//        cboDiemChungChi.removeAllItems();
-//        if (certificateData.containsKey(certName)) {
-//            for (String score : certificateData.get(certName)) {
-//                cboDiemChungChi.addItem(score);
-//            }
-//        }
-//    }
-    
-//    private void updateResultToeic4() {
-//    try {
-//        // Lấy giá trị từ 4 ô (nhớ check empty)
-//        if(txtNghe.getText().isEmpty() || txtDoc.getText().isEmpty() || 
-//           txtNoi.getText().isEmpty() || txtViet.getText().isEmpty()) {
-//           txtDiemQuyDoi.setText("0");
-//           txtDiemCong.setText("0");
-//           return;
-//        }
-//        
-//        int n = Integer.parseInt(txtNghe.getText());
-//        int d = Integer.parseInt(txtDoc.getText());
-//        int s = Integer.parseInt(txtNoi.getText());
-//        int w = Integer.parseInt(txtViet.getText());
-//
-//        // Logic Math.min như đã bàn
-//        int levelNghe = (n >= 490) ? 10 : (n >= 400) ? 9 : (n >= 275) ? 8 : 0;
-//        int levelDoc  = (d >= 455) ? 10 : (d >= 385) ? 9 : (d >= 275) ? 8 : 0;
-//        int levelNoi  = (s >= 180) ? 10 : (s >= 160) ? 9 : (s >= 120) ? 8 : 0;
-//        int levelViet = (w >= 180) ? 10 : (w >= 150) ? 9 : (w >= 120) ? 8 : 0;
-//
-//        int finalLevel = Math.min(Math.min(levelNghe, levelDoc), Math.min(levelNoi, levelViet));
-//        
-//        txtDiemQuyDoi.setText(String.valueOf(finalLevel));
-//        double bonus = (finalLevel == 10) ? 2.0 : (finalLevel == 9) ? 1.5 : (finalLevel == 8) ? 1.0 : 0;
-//        txtDiemCong.setText(String.valueOf(bonus));
-//    } catch (NumberFormatException e) {
-//        // Tránh lỗi khi user gõ chữ
-//    }
-//}
-
     // Hàm 1: Kiểm tra ô TOEIC có trống không
     private boolean checkEmptyToeic() {
         return txtNghe.getText().trim().isEmpty() || txtDoc.getText().trim().isEmpty() || 
@@ -591,27 +551,48 @@ private void tinhToanDiem() {
                 int v = Integer.parseInt(input);
                 qd = (v >= 627) ? 10 : (v >= 500) ? 9 : (v >= 450) ? 8 : 0;
             }
+            else if (loai.contains("Tiếng Anh - TOEFL iBT")) {
+                int v = Integer.parseInt(input);
+                qd = (v >= 94) ? 10 : (v >= 46) ? 9 : (v >= 30) ? 8 : 0;
+            }
+            else if (loai.contains("PTE Academic")) {
+                int v = Integer.parseInt(input);
+                qd = (v >= 76) ? 10 : (v >= 59) ? 9 : (v >= 43) ? 8 : 0;
+            }
+            else if (loai.contains("Linguaskill")) {
+                int v = Integer.parseInt(input);
+                qd = (v >= 180) ? 10 : (v >= 160) ? 9 : (v >= 140) ? 8 : 0;
+            }
+            else if (loai.contains("Aptis ESOL (General)")) {
+                if (input.equalsIgnoreCase("C")) qd = 10;
+                else if (input.equalsIgnoreCase("B2")) qd = 9;
+                else if (input.equalsIgnoreCase("B1")) qd = 8;
+            }
+            else if (loai.contains("Aptis ESOL (Advanced)")) {
+                if (input.equalsIgnoreCase("C1")) qd = 10;
+                else if (input.equalsIgnoreCase("B2")) qd = 9;
+                else if (input.equalsIgnoreCase("B1")) qd = 8;
+            }
             else if (loai.equals("Tiếng Anh - VSTEP")) {
                 if (input.contains("5")) qd = 10;
                 else if (input.contains("4")) qd = 9;
                 else if (input.contains("3")) qd = 8;
             }
-            // Thêm các case TOEFL iBT, PTE... tương tự
         }
 
-        // Tính điểm quy đổi và cộng (Logic cũ)
+        // Tính điểm quy đổi và cộng
         if (qd == 10) cg = 2.0;
         else if (qd == 9) cg = 1.5;
         else if (qd == 8) cg = 1.0;
 
         txtDiemQuyDoi.setText(String.valueOf(qd));
-        
+        txtDiemCong.setText(String.valueOf(cg));
         // chungChiBUS bus = new chungChiBUS();
-        if (!cccd.isEmpty() && bus.checkToHopCoMonAnh(cccd)) {
-            txtDiemCong.setText("0.0"); // Có môn Anh -> Không được cộng
-        } else {
-            txtDiemCong.setText(String.valueOf(cg)); // Không có môn Anh -> Được cộng
-        }
+//        if (!cccd.isEmpty() && bus.checkToHopCoMonAnh(cccd)) {
+//            txtDiemCong.setText("0.0"); // Có môn Anh -> Không được cộng
+//        } else {
+//            txtDiemCong.setText(String.valueOf(cg)); // Không có môn Anh -> Được cộng
+//        }
 
     } catch (Exception e) {
         txtDiemQuyDoi.setText("0");

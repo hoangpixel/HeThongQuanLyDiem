@@ -363,11 +363,19 @@ public class updateGiaiThuong extends javax.swing.JDialog {
                 default -> { co = 0.0; khong = 0.0; }
             }
         }
-        if (maMonList.contains(maMon)) {
-            txtDiemCongCoMon.setText(String.valueOf(co));
+//        if (maMonList.contains(maMon)) {
+//            txtDiemCongCoMon.setText(String.valueOf(co));
+//            txtDiemCongKhongMon.setText("0.0");
+//        } else {
+//            txtDiemCongCoMon.setText("0.0");
+//            txtDiemCongKhongMon.setText(String.valueOf(khong));
+//        }
+        if (maMon.isEmpty()) {
+            txtDiemCongCoMon.setText("0.0");
             txtDiemCongKhongMon.setText("0.0");
         } else {
-            txtDiemCongCoMon.setText("0.0");
+            // Hiển thị cả 2 mức điểm
+            txtDiemCongCoMon.setText(String.valueOf(co));
             txtDiemCongKhongMon.setText(String.valueOf(khong));
         }
     }
