@@ -117,7 +117,7 @@ public class navbarGUI extends JPanel {
         btnNganh = createButton("Quản lý Ngành học");
         btnToHopMon = createButton("Quản lý Tổ hợp môn");
         btnNganhToHop = createButton("Tổ hợp - Ngành");
-        btnBangQuyDoi = createButton("Bảng quy đổi V-SAT");
+        btnBangQuyDoi = createButton("Bảng quy đổi");
         btnDiemCong = createButton("Điểm cộng & Ưu tiên");
         
         // --- CỤM 3: HỆ THỐNG ---

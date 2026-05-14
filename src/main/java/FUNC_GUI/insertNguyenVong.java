@@ -311,38 +311,64 @@ public class insertNguyenVong extends javax.swing.JDialog {
                 String maTH = toHop.getMatohop(), m1 = toHop.getMon1(), m2 = toHop.getMon2(), m3 = toHop.getMon3();
                 
                 // 🎯 2.3 ĐGNL (CHỈ XÉT VỚI TỔ HỢP GỐC)
-                // Đưa lên đầu tiên, không bị ảnh hưởng bởi điểm liệt của các môn thành phần
-// 🎯 2.3 ĐGNL (CHỈ XÉT VỚI TỔ HỢP GỐC)
-                if (maTH.equals(toHopGoc) && !daXetDGNL) {
+if (maTH.equals(toHopGoc) && !daXetDGNL) {
                     double dNL = (diemThi.getNl1() != null) ? diemThi.getNl1() : 0.0;
                     if (dNL > 0) {
                         double thxt_nl = Math.round(CAL.AdmissionsConverter.quyDoiDiemChung("ĐGNL HCM", maTH, "", dNL, dsQuyDoi)*100.0)/100.0;
                         if (thxt_nl > 0) {
                             
-                            // 🚀 ĐÃ SỬA: Đổi diemCongIeltsGoc thành dCongIelts cho khớp với biến ông khai báo
-                            double dCong = dCongIelts + (gtData != null ? ((Number)gtData[2]).doubleValue() : 0.0);
-                            dCong = Math.min(dCong, 3.0); // Chặn trần 3.0 điểm cộng
+                            // 🚀 ĐÃ SỬA: Xử lý chuỗi siêu an toàn (cắt khoảng trắng & không phân biệt hoa thường)
+                            boolean coAnhNL = "N1".equalsIgnoreCase(m1.trim()) || "N1".equalsIgnoreCase(m2.trim()) || "N1".equalsIgnoreCase(m3.trim());
+                            
+                            double diemGiaiThuongNL = 0.0;
+                            if (gtData != null) {
+                                String gtMon = ((String)gtData[0]).trim();
+                                boolean trungMon = gtMon.equalsIgnoreCase(m1.trim()) || gtMon.equalsIgnoreCase(m2.trim()) || gtMon.equalsIgnoreCase(m3.trim());
+                                diemGiaiThuongNL = trungMon ? ((Number)gtData[1]).doubleValue() : ((Number)gtData[2]).doubleValue();
+                            }
+                            
+                            double dCong = Math.min((coAnhNL ? 0 : dCongIelts) + diemGiaiThuongNL, 3.0); // Trần 3 điểm
                             
                             double ut_nl = (thxt_nl + dCong >= 22.5) ? Math.round(((30-thxt_nl-dCong)/7.5)*diemUTQDGoc*100.0)/100.0 : diemUTQDGoc;
                             if (nvBus.themNguyenVong(createNguyenVong(cccd, maNganh, thuTuNV, "ĐGNL HCM", maTH, thxt_nl, diemUTQDGoc, ut_nl, dCong, Math.min(30.0, Math.round((thxt_nl+ut_nl+dCong)*100.0)/100.0), ketQuaNV))) {
                                 soDongLuuThanhCong++;
-                                daXetDGNL = true; // Xong rồi thì cắm cờ, không xét lại nữa
+                                daXetDGNL = true; 
                             }
                         }
                     }
                 }
 
-                // ------------------------------------------------------------------
+// ------------------------------------------------------------------
                 // TIẾP TỤC XÉT THPT VÀ V-SAT
                 // ------------------------------------------------------------------
-                double d1 = layDiemTheoMaMon(diemThi, m1), d2 = layDiemTheoMaMon(diemThi, m2), d3 = layDiemTheoMaMon(diemThi, m3);
+                double d1_raw = layDiemTheoMaMon(diemThi, m1);
+                double d2_raw = layDiemTheoMaMon(diemThi, m2);
+                double d3_raw = layDiemTheoMaMon(diemThi, m3);
 
-                // --- CHẶN ĐIỂM LIỆT (Chỉ áp dụng cho THPT và V-SAT) ---
-                if (d1 <= 1.0 || d2 <= 1.0 || d3 <= 1.0) continue;
+                boolean isN1_1 = "N1".equalsIgnoreCase(m1.trim());
+                boolean isN1_2 = "N1".equalsIgnoreCase(m2.trim());
+                boolean isN1_3 = "N1".equalsIgnoreCase(m3.trim());
+
+                // 🚀 ĐÃ SỬA LỖI LIỆT: Bù điểm IELTS (thang 10) TRƯỚC khi xét điểm liệt 
+                // (Cứu nét cho những đứa có IELTS nhưng bỏ thi môn Tiếng Anh nên điểm gốc = 0)
+                double d1_check = isN1_1 ? Math.max(d1_raw, dQDIelts) : d1_raw;
+                double d2_check = isN1_2 ? Math.max(d2_raw, dQDIelts) : d2_raw;
+                double d3_check = isN1_3 ? Math.max(d3_raw, dQDIelts) : d3_raw;
+
+                // --- CHẶN ĐIỂM LIỆT ---
+                if (d1_check <= 1.0 || d2_check <= 1.0 || d3_check <= 1.0) continue;
 
                 // --- TÍNH ĐIỂM CỘNG KHUYẾN KHÍCH ---
-                boolean coAnh = "N1".equals(m1) || "N1".equals(m2) || "N1".equals(m3);
-                double dCong = Math.min((coAnh ? 0 : dCongIelts) + (gtData != null ? ((String)gtData[0]).matches(m1+"|"+m2+"|"+m3) ? ((Number)gtData[1]).doubleValue() : ((Number)gtData[2]).doubleValue() : 0), 3.0);
+                boolean coAnh = isN1_1 || isN1_2 || isN1_3;
+                
+                double diemGiaiThuong = 0.0;
+                if (gtData != null) {
+                    String gtMon = ((String)gtData[0]).trim();
+                    boolean trungMon = gtMon.equalsIgnoreCase(m1.trim()) || gtMon.equalsIgnoreCase(m2.trim()) || gtMon.equalsIgnoreCase(m3.trim());
+                    diemGiaiThuong = trungMon ? ((Number)gtData[1]).doubleValue() : ((Number)gtData[2]).doubleValue();
+                }
+                
+                double dCong = Math.min((coAnh ? 0 : dCongIelts) + diemGiaiThuong, 3.0);
                 
                 double[] hs = nthBus.layHeSoMon(maNganh, maTH);
                 double W = hs[0] + hs[1] + hs[2], doLech = nthBus.layDoLechDiem(maNganh, maTH);
@@ -350,12 +376,13 @@ public class insertNguyenVong extends javax.swing.JDialog {
                 if (W <= 0) continue;
 
                 // 🎯 PHÂN NHÁNH LOGIC: CHỈ XÉT 1 TRONG 2 (THPT hoặc V-SAT)
-                if (d1 <= 10.0 && d2 <= 10.0 && d3 <= 10.0) {
+                // Lưu ý: Dùng điểm raw gốc để phân nhánh, vì V-SAT điểm thô thường là thang 100/150
+                if (d1_raw <= 10.0 && d2_raw <= 10.0 && d3_raw <= 10.0) {
                     
                     // 🎯 TRƯỜNG HỢP 1: XÉT THPT (ĐƯỢC BÙ IELTS)
-                    double d1_t = "N1".equals(m1) ? Math.max(d1, dQDIelts) : d1;
-                    double d2_t = "N1".equals(m2) ? Math.max(d2, dQDIelts) : d2;
-                    double d3_t = "N1".equals(m3) ? Math.max(d3, dQDIelts) : d3;
+                    double d1_t = d1_check; // Lấy luôn điểm đã max với IELTS ở trên
+                    double d2_t = d2_check;
+                    double d3_t = d3_check;
                     
                     double thxt = Math.round(((d1_t*hs[0] + d2_t*hs[1] + d3_t*hs[2])/W)*300.0)/100.0;
                     double ut = (thxt + dCong >= 22.5) ? Math.round(((30-thxt-dCong)/7.5)*diemUTQDGoc*100.0)/100.0 : diemUTQDGoc;
@@ -364,10 +391,15 @@ public class insertNguyenVong extends javax.swing.JDialog {
                     
                 } else {
                     
-                    // 🎯 TRƯỜNG HỢP 2: ĐÁNH GIÁ V-SAT (KHÔNG BÙ IELTS)
-                    double v1 = CAL.AdmissionsConverter.quyDoiDiemChung("Đánh giá V-SAT", maTH, m1, d1, dsQuyDoi);
-                    double v2 = CAL.AdmissionsConverter.quyDoiDiemChung("Đánh giá V-SAT", maTH, m2, d2, dsQuyDoi);
-                    double v3 = CAL.AdmissionsConverter.quyDoiDiemChung("Đánh giá V-SAT", maTH, m3, d3, dsQuyDoi);
+                    // 🎯 TRƯỜNG HỢP 2: ĐÁNH GIÁ V-SAT (BÂY GIỜ ĐÃ ĐƯỢC BÙ IELTS Y HỆT SGU)
+                    double v1_goc = CAL.AdmissionsConverter.quyDoiDiemChung("Đánh giá V-SAT", maTH, m1, d1_raw, dsQuyDoi);
+                    double v2_goc = CAL.AdmissionsConverter.quyDoiDiemChung("Đánh giá V-SAT", maTH, m2, d2_raw, dsQuyDoi);
+                    double v3_goc = CAL.AdmissionsConverter.quyDoiDiemChung("Đánh giá V-SAT", maTH, m3, d3_raw, dsQuyDoi);
+                    
+                    // 🚀 ĐÃ SỬA: Lấy điểm quy đổi V-SAT đem so găng với IELTS (Vì cả 2 giờ đều nằm ở hệ 10)
+                    double v1 = isN1_1 ? Math.max(v1_goc, dQDIelts) : v1_goc;
+                    double v2 = isN1_2 ? Math.max(v2_goc, dQDIelts) : v2_goc;
+                    double v3 = isN1_3 ? Math.max(v3_goc, dQDIelts) : v3_goc;
                     
                     if (v1 > 0 && v2 > 0 && v3 > 0) {
                         double thxt_v = Math.round(((v1*hs[0] + v2*hs[1] + v3*hs[2])/W)*300.0)/100.0;
