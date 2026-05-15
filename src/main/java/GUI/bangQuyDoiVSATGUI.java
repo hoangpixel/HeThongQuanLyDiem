@@ -6,6 +6,7 @@ import Entity.bangQuyDoiETT;
 import EXCEL.ExcelHelper;
 import FUNC_GUI.deleteBangQuyDoi;
 import FUNC_GUI.detailBangQuyDoi;
+import FUNC_GUI.excelBangQuyDoi;
 import FUNC_GUI.insertBangQuyDoi;
 import FUNC_GUI.updateBangQuyDoi;
 import java.util.ArrayList;
@@ -14,6 +15,7 @@ import java.util.Vector;
 import javax.swing.DefaultComboBoxModel;
 import javax.swing.JOptionPane;
 import javax.swing.SwingUtilities;
+import javax.swing.JFrame;
 
 public class bangQuyDoiVSATGUI extends BaseTableGUI {
 
@@ -40,7 +42,7 @@ public class bangQuyDoiVSATGUI extends BaseTableGUI {
         btnSua.addActionListener(e -> hienThiDialogSua());
         btnXoa.addActionListener(e -> hienThiDialogXoa());
         btnChiTiet.addActionListener(e -> thucHienChiTiet());
-        btnExcel.addActionListener(e -> ExcelHelper.xuatJTableRaExcel(table, this, "BangQuyDoiVSAT"));
+        btnExcel.addActionListener(e -> thucHienExcel());
         btnReFresh.addActionListener(e -> thucHienRefresh());
         btnTimKiem.addActionListener(e -> thucHienTimKiem());
         // Giả sử cột Phương thức nằm ở vị trí số 3, Tổ hợp số 4 (Nhớ đếm index từ 0
@@ -369,5 +371,15 @@ public class bangQuyDoiVSATGUI extends BaseTableGUI {
             return KHONG;
         }
         return item.getMon();
+    }
+
+    private void thucHienExcel() {
+        JFrame topFrame = (JFrame) SwingUtilities.getWindowAncestor(this);
+        excelBangQuyDoi dialog = new excelBangQuyDoi(topFrame, true);
+        dialog.setVisible(true);
+
+        if (dialog.getXacNhanExport()) {
+            ExcelHelper.xuatJTableRaExcel(table, this, "BangQuyDoiVSAT");
+        }
     }
 }

@@ -6,12 +6,15 @@ import Entity.diemThiETT;
 import EXCEL.ExcelHelper;
 import FUNC_GUI.deleteDiemThi;
 import FUNC_GUI.detailDiemThi;
+import FUNC_GUI.excelDiemThi;
 import FUNC_GUI.insertDiemThi;
 import FUNC_GUI.updateDiemThi;
 
 import java.util.ArrayList;
 import java.util.List;
 import java.util.Vector;
+import javax.swing.JFrame;
+import javax.swing.SwingUtilities;
 import javax.swing.DefaultComboBoxModel;
 import javax.swing.JOptionPane;
 import javax.swing.SwingUtilities;
@@ -35,7 +38,7 @@ public class diemThiXetTuyenGUI extends BaseTableGUI {
         btnThem.addActionListener(e -> hienThiDialogThem());
         btnSua.addActionListener(e -> hienThiDialogSua());
         btnXoa.addActionListener(e -> thucHienXoa());
-        btnExcel.addActionListener(e -> ExcelHelper.xuatJTableRaExcel(table, this, "BangDiemThi"));
+        btnExcel.addActionListener(e -> thucHienExcel());
         btnReFresh.addActionListener(e -> thucHienRefresh());
         btnTimKiem.addActionListener(e -> thucHienTimKiem());
         btnChiTiet.addActionListener(e -> thucHienChiTiet());
@@ -428,4 +431,14 @@ public class diemThiXetTuyenGUI extends BaseTableGUI {
         dialog.setLocationRelativeTo(owner);
         dialog.setVisible(true);
     }
-}
+    
+    private void thucHienExcel() {
+        JFrame topFrame = (JFrame) SwingUtilities.getWindowAncestor(this);
+        excelDiemThi dialog = new excelDiemThi(topFrame, true);
+        dialog.setVisible(true);
+
+        if (dialog.getXacNhanExport()) {
+            ExcelHelper.xuatJTableRaExcel(table, this, "BangDiemThi");
+        }
+    }
+    }
