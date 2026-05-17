@@ -332,6 +332,7 @@ public class insertDiemCong extends javax.swing.JDialog {
             Entity.thiSinhXetTuyenETT thiSinh = dialog.getThiSinh();
             this.cccd = thiSinh.getCccd();
             txtCCCD.setText(this.cccd);
+            resetBorderMacDinh();
             capNhatDiemTuDong();
         }
     }//GEN-LAST:event_btnChonCCCDActionPerformed
@@ -341,16 +342,15 @@ public class insertDiemCong extends javax.swing.JDialog {
     }//GEN-LAST:event_txtCCCDActionPerformed
 
     private void btnChonMaNganhActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_btnChonMaNganhActionPerformed
-        // TODO add your handling code here:
-          JFrame topFrame = (JFrame) SwingUtilities.getWindowAncestor(this);
+        JFrame topFrame = (JFrame) SwingUtilities.getWindowAncestor(this);
         selectNganh dialog = new selectNganh(topFrame, true);
         dialog.setVisible(true);
-        if(dialog.getXacNhan())
-        {
+        if (dialog.getXacNhan()) {
             nganhETT nganh = dialog.getNganh();
             maNganh = nganh.getManganh();
             txtMaNganh.setText(maNganh);
-            capNhatDiemTuDong(); 
+            resetBorderMacDinh();
+            capNhatDiemTuDong();
         }
     }//GEN-LAST:event_btnChonMaNganhActionPerformed
 
@@ -359,17 +359,16 @@ public class insertDiemCong extends javax.swing.JDialog {
     }//GEN-LAST:event_txtMaToHopActionPerformed
 
     private void btnChonMaToHopActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_btnChonMaToHopActionPerformed
-        // TODO add your handling code here:
-         JFrame topFrame = (JFrame) SwingUtilities.getWindowAncestor(this);
+        JFrame topFrame = (JFrame) SwingUtilities.getWindowAncestor(this);
         selectToHop dialog = new selectToHop(topFrame, true);
         dialog.setVisible(true);
-        if(dialog.getXacNhan())
-        {
+        if (dialog.getXacNhan()) {
             toHopMonDaChon = dialog.getToHopETT();
             toHopETT toHopETT = dialog.getToHopETT();
             toHopMon = toHopETT.getMatohop();
-            txtMaToHop.setText(toHopMon);     
-            capNhatDiemTuDong(); 
+            txtMaToHop.setText(toHopMon);
+            resetBorderMacDinh();
+            capNhatDiemTuDong();
         }
     }//GEN-LAST:event_btnChonMaToHopActionPerformed
 
@@ -379,73 +378,92 @@ public class insertDiemCong extends javax.swing.JDialog {
     }//GEN-LAST:event_btnThoatActionPerformed
 
     private void btnThemActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_btnThemActionPerformed
-         if (!kiemTraHopLe()) {
-        JOptionPane.showMessageDialog(this, "Vui lòng nhập đầy đủ thông tin!");
-        return;
-    }
-
-    try {
-        diemCongETT dcNew = new diemCongETT();
-
-        // ===== 1. THÔNG TIN =====
-        dcNew.setTsCccd(txtCCCD.getText().trim());
-        dcNew.setMaNganh(txtMaNganh.getText().trim());
-        dcNew.setMaToHop(txtMaToHop.getText().trim());
-        dcNew.setPhuongThuc(cboPT.getSelectedItem().toString());
-        dcNew.setGhiChu(txtGhiChu.getText().trim());
-
-        // ===== 2. ĐIỂM =====
-        double dCC = txtDiemCC.getText().isEmpty() ? 0 : Double.parseDouble(txtDiemCC.getText());
-
-        double dUT = 0;
-        try {
-             dUT = txtDiemUTXT.getText().isEmpty() ? 0 : Double.parseDouble(txtDiemUTXT.getText());
-        } catch (Exception e) {
-            dUT = 0;
-        }
-
-        double dTong = txtDiemTong.getText().isEmpty() ? 0 : Double.parseDouble(txtDiemTong.getText());
-
-        dcNew.setDiemCC(dCC);
-        dcNew.setDiemUtxt(dUT);
-        dcNew.setDiemTong(dTong); // 🔥 QUAN TRỌNG
-
-        // ===== 3. KEY =====
-        dcNew.setDcKeys(
-            txtCCCD.getText().trim() + "_" +
-            txtMaNganh.getText().trim() + "_" +
-            txtMaToHop.getText().trim() + "_" +
-            cboPT.getSelectedItem().toString()
-        );
-
-        // ===== 4. GỌI BUS (CHUẨN MVC) =====
-        diemCongBUS bus = new diemCongBUS();
-        diemCongETT existing = bus.layDiemCongChinhXac(
-            txtCCCD.getText().trim(),
-            txtMaNganh.getText().trim(),
-            txtMaToHop.getText().trim(),
-            cboPT.getSelectedItem().toString()
-        );
-
-        if (existing != null) {
-            JOptionPane.showMessageDialog(this, "Dữ liệu đã tồn tại!");
+        if (!kiemTraHopLe()) {
+            JOptionPane.showMessageDialog(this,
+                "Vui lòng nhập đầy đủ thông tin bắt buộc:\n• CCCD thí sinh\n• Mã ngành\n• Mã tổ hợp",
+                "Thiếu thông tin",
+                JOptionPane.WARNING_MESSAGE);
             return;
         }
-         boolean saveOK = bus.themDiemCong(dcNew);
-        if (saveOK) {
-            JOptionPane.showMessageDialog(this, "Thêm thành công!");
-            this.dc = dcNew;
-            xacNhan = true;
-            dispose();
-        } else {
-            JOptionPane.showMessageDialog(this, "Thêm thất bại!");
-        }
 
-    } catch (Exception e) {
-        JOptionPane.showMessageDialog(this, "Lỗi dữ liệu!");
-        e.printStackTrace();
-    }
+        try {
+            String cccdVal     = txtCCCD.getText().trim();
+            String maNganhVal  = txtMaNganh.getText().trim();
+            String maToHopVal  = txtMaToHop.getText().trim();
+            String phuongThucVal = cboPT.getSelectedItem().toString();
+
+            // ===== KIỂM TRA TRÙNG LẶP TRƯỚC KHI THÊM =====
+            diemCongBUS bus = new diemCongBUS();
+            diemCongETT existing = bus.layDiemCongChinhXac(
+                cccdVal, maNganhVal, maToHopVal, phuongThucVal
+            );
+
+            if (existing != null) {
+                // Tô đỏ border các field bị trùng
+                javax.swing.border.Border borderLoi =
+                    javax.swing.BorderFactory.createLineBorder(java.awt.Color.RED, 2);
+                txtCCCD.setBorder(borderLoi);
+                txtMaNganh.setBorder(borderLoi);
+                txtMaToHop.setBorder(borderLoi);
+                cboPT.setBorder(borderLoi);
+
+                String thongBaoTrung =
+                    "[!] Diem cong da ton tai! Khong the them trung lap.\n\n" +
+                    "=========================================\n" +
+                    "  Thi sinh (CCCD) : " + existing.getTsCccd() + "\n" +
+                    "  Ma nganh        : " + existing.getMaNganh() + "\n" +
+                    "  To hop mon      : " + existing.getMaToHop() + "\n" +
+                    "  Phuong thuc     : " + existing.getPhuongThuc() + "\n" +
+                    "=========================================\n" +
+                    "Vui long thay doi mot trong cac thong tin tren.";
+
+                JOptionPane.showMessageDialog(
+                    this,
+                    thongBaoTrung,
+                    "Trùng lặp điểm cộng",
+                    JOptionPane.ERROR_MESSAGE
+                );
+                return;
+            }
+
+            // ===== KHÔNG TRÙNG → TIẾN HÀNH THÊM =====
+            resetBorderMacDinh();
+
+            diemCongETT dcNew = new diemCongETT();
+            dcNew.setTsCccd(cccdVal);
+            dcNew.setMaNganh(maNganhVal);
+            dcNew.setMaToHop(maToHopVal);
+            dcNew.setPhuongThuc(phuongThucVal);
+            dcNew.setGhiChu(txtGhiChu.getText().trim());
+            dcNew.setDcKeys(cccdVal + "_" + maNganhVal + "_" + maToHopVal + "_" + phuongThucVal);
+
+            double dCC = txtDiemCC.getText().isEmpty() ? 0 : Double.parseDouble(txtDiemCC.getText());
+            double dUT = 0;
+            try {
+                dUT = txtDiemUTXT.getText().isEmpty() ? 0 : Double.parseDouble(txtDiemUTXT.getText());
+            } catch (Exception e) { dUT = 0; }
+            double dTong = txtDiemTong.getText().isEmpty() ? 0 : Double.parseDouble(txtDiemTong.getText());
+
+            dcNew.setDiemCC(dCC);
+            dcNew.setDiemUtxt(dUT);
+            dcNew.setDiemTong(dTong);
+
+            boolean saveOK = bus.themDiemCong(dcNew);
+            if (saveOK) {
+                JOptionPane.showMessageDialog(this, "Thêm điểm cộng thành công!", "Thành công", JOptionPane.INFORMATION_MESSAGE);
+                this.dc = dcNew;
+                xacNhan = true;
+                dispose();
+            } else {
+                JOptionPane.showMessageDialog(this, "Thêm thất bại! Vui lòng thử lại.", "Lỗi", JOptionPane.ERROR_MESSAGE);
+            }
+
+        } catch (Exception e) {
+            JOptionPane.showMessageDialog(this, "Lỗi dữ liệu: " + e.getMessage(), "Lỗi", JOptionPane.ERROR_MESSAGE);
+            e.printStackTrace();
+        }
     }//GEN-LAST:event_btnThemActionPerformed
+
      private void cboPTActionPerformed(java.awt.event.ActionEvent evt) {                                      
         // TODO add your handling code here:
         String phuongThuc = cboPT.getSelectedItem().toString();
@@ -551,6 +569,19 @@ private double layDiemTuEntity(Entity.diemThiETT dt, String maMon) {
             default: return 0.0;
         }
     }
+    /**
+     * Reset border các field về mặc định (xóa viền đỏ báo trùng lặp).
+     * Được gọi khi người dùng thay đổi bất kỳ thông tin nào.
+     */
+    private void resetBorderMacDinh() {
+        javax.swing.border.Border borderMacDinh =
+            javax.swing.UIManager.getBorder("TextField.border");
+        txtCCCD.setBorder(borderMacDinh);
+        txtMaNganh.setBorder(borderMacDinh);
+        txtMaToHop.setBorder(borderMacDinh);
+        cboPT.setBorder(javax.swing.UIManager.getBorder("ComboBox.border"));
+    }
+
     private boolean kiemTraHopLe() {
         if (txtCCCD.getText().trim().isEmpty()) return false;
         if (txtMaNganh.getText().trim().isEmpty()) return false;

@@ -348,16 +348,15 @@ import javax.swing.SwingUtilities;
     }//GEN-LAST:event_txtCCCDActionPerformed
 
     private void btnChonMaNganhActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_btnChonMaNganhActionPerformed
-        // TODO add your handling code here:
-          JFrame topFrame = (JFrame) SwingUtilities.getWindowAncestor(this);
+        JFrame topFrame = (JFrame) SwingUtilities.getWindowAncestor(this);
         selectNganh dialog = new selectNganh(topFrame, true);
         dialog.setVisible(true);
-        if(dialog.getXacNhan())
-        {
+        if (dialog.getXacNhan()) {
             nganhETT nganh = dialog.getNganh();
             maNganh = nganh.getManganh();
             txtMaNganh.setText(maNganh);
-            capNhatDiemTuDong(); 
+            resetBorderMacDinh();
+            capNhatDiemTuDong();
         }
     }//GEN-LAST:event_btnChonMaNganhActionPerformed
 
@@ -366,17 +365,16 @@ import javax.swing.SwingUtilities;
     }//GEN-LAST:event_txtMaToHopActionPerformed
 
     private void btnChonMaToHopActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_btnChonMaToHopActionPerformed
-        // TODO add your handling code here:
-           JFrame topFrame = (JFrame) SwingUtilities.getWindowAncestor(this);
+        JFrame topFrame = (JFrame) SwingUtilities.getWindowAncestor(this);
         selectToHop dialog = new selectToHop(topFrame, true);
         dialog.setVisible(true);
-        if(dialog.getXacNhan())
-        {
+        if (dialog.getXacNhan()) {
             toHopMonDaChon = dialog.getToHopETT();
             toHopETT toHopETT = dialog.getToHopETT();
             toHopMon = toHopETT.getMatohop();
-            txtMaToHop.setText(toHopMon);     
-            capNhatDiemTuDong(); 
+            txtMaToHop.setText(toHopMon);
+            resetBorderMacDinh();
+            capNhatDiemTuDong();
         }
     }//GEN-LAST:event_btnChonMaToHopActionPerformed
 
@@ -386,48 +384,85 @@ import javax.swing.SwingUtilities;
     }//GEN-LAST:event_btnThoatActionPerformed
 
     private void btnSuaActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_btnSuaActionPerformed
-                                     
+        if (txtMaNganh.getText().trim().isEmpty() || txtMaToHop.getText().trim().isEmpty()) {
+            JOptionPane.showMessageDialog(this,
+                "Vui lòng nhập đầy đủ thông tin bắt buộc:\n• Mã ngành\n• Mã tổ hợp",
+                "Thiếu thông tin",
+                JOptionPane.WARNING_MESSAGE);
+            return;
+        }
+
         try {
-            dc.setTsCccd(txtCccd.getText().trim());
-            dc.setMaNganh(txtMaNganh.getText().trim());
-            dc.setMaToHop(txtMaToHop.getText().trim());
-            dc.setPhuongThuc(jComboBox1.getSelectedItem().toString());
+            String cccdVal      = txtCccd.getText().trim();
+            String maNganhVal   = txtMaNganh.getText().trim();
+            String maToHopVal   = txtMaToHop.getText().trim();
+            String phuongThucVal = jComboBox1.getSelectedItem().toString();
 
-            // 🔥 GHI CHÚ
+            // ===== KIỂM TRA TRÙNG LẶP (bỏ qua chính bản ghi đang sửa) =====
+            BUS.diemCongBUS bus = new BUS.diemCongBUS();
+            Entity.diemCongETT existing = bus.layDiemCongChinhXac(
+                cccdVal, maNganhVal, maToHopVal, phuongThucVal
+            );
+
+            // Nếu tìm thấy bản ghi khác (không phải chính nó) → trùng lặp
+            if (existing != null && existing.getIdDiemCong() != dc.getIdDiemCong()) {
+                javax.swing.border.Border borderLoi =
+                    javax.swing.BorderFactory.createLineBorder(java.awt.Color.RED, 2);
+                txtMaNganh.setBorder(borderLoi);
+                txtMaToHop.setBorder(borderLoi);
+                jComboBox1.setBorder(borderLoi);
+
+                String thongBaoTrung =
+                    "[!] Diem cong da ton tai! Khong the luu trung lap.\n\n" +
+                    "=========================================\n" +
+                    "  Thi sinh (CCCD) : " + existing.getTsCccd() + "\n" +
+                    "  Ma nganh        : " + existing.getMaNganh() + "\n" +
+                    "  To hop mon      : " + existing.getMaToHop() + "\n" +
+                    "  Phuong thuc     : " + existing.getPhuongThuc() + "\n" +
+                    "=========================================\n" +
+                    "Vui long thay doi ma nganh, to hop hoac phuong thuc.";
+
+                JOptionPane.showMessageDialog(
+                    this,
+                    thongBaoTrung,
+                    "Trùng lặp điểm cộng",
+                    JOptionPane.ERROR_MESSAGE
+                );
+                return;
+            }
+
+            // ===== KHÔNG TRÙNG → CẬP NHẬT =====
+            resetBorderMacDinh();
+
+            dc.setTsCccd(cccdVal);
+            dc.setMaNganh(maNganhVal);
+            dc.setMaToHop(maToHopVal);
+            dc.setPhuongThuc(phuongThucVal);
             dc.setGhiChu(txtGhiChu.getText().trim());
+            dc.setDcKeys(cccdVal + "_" + maNganhVal + "_" + maToHopVal + "_" + phuongThucVal);
 
-            double dCC = Double.parseDouble(txtDiemCC.getText().isEmpty() ? "0" : txtDiemCC.getText());
-            double dUT = Double.parseDouble(txtDiemUTXT.getText().isEmpty() ? "0" : txtDiemUTXT.getText());
-            double dTong = Double.parseDouble(txtDiemTong.getText().isEmpty() ? "0" : txtDiemTong.getText());
+            double dCC   = txtDiemCC.getText().isEmpty()   ? 0 : Double.parseDouble(txtDiemCC.getText());
+            double dUT   = txtDiemUTXT.getText().isEmpty() ? 0 : Double.parseDouble(txtDiemUTXT.getText());
+            double dTong = txtDiemTong.getText().isEmpty() ? 0 : Double.parseDouble(txtDiemTong.getText());
 
             dc.setDiemCC(dCC);
             dc.setDiemUtxt(dUT);
             dc.setDiemTong(dTong);
 
-            // 🔥 UPDATE DB (QUAN TRỌNG NHẤT)
-            org.hibernate.Session session = null;
-            org.hibernate.Transaction tx = null;
-
-            try {
-                session = CONFIG.HibernateUtil.getSessionFactory().openSession();
-                tx = session.beginTransaction();
-
-                session.update(dc); // 🔥 BẮT BUỘC
-
-                tx.commit();
-
-            } catch (Exception e) {
-                if (tx != null) tx.rollback();
-                JOptionPane.showMessageDialog(this, "Lỗi cập nhật DB!");
-                e.printStackTrace();
-                return; // ❗ không đóng form nếu lỗi
+            boolean saveOK = bus.suaDiemCong(dc);
+            if (saveOK) {
+                JOptionPane.showMessageDialog(this, "Cập nhật điểm cộng thành công!", "Thành công", JOptionPane.INFORMATION_MESSAGE);
+                xacNhan = true;
+                dispose();
+            } else {
+                JOptionPane.showMessageDialog(this, "Cập nhật thất bại! Vui lòng thử lại.", "Lỗi", JOptionPane.ERROR_MESSAGE);
             }
 
-            xacNhan = true;
-            dispose();
-
+        } catch (NumberFormatException e) {
+            JOptionPane.showMessageDialog(this, "Dữ liệu điểm không hợp lệ!", "Lỗi dữ liệu", JOptionPane.ERROR_MESSAGE);
         } catch (Exception e) {
-            JOptionPane.showMessageDialog(this, "Không được đổi dữ liệu CCCD!");
+            JOptionPane.showMessageDialog(this, "Lỗi: " + e.getMessage(), "Lỗi", JOptionPane.ERROR_MESSAGE);
+            e.printStackTrace();
         }
     }//GEN-LAST:event_btnSuaActionPerformed
 
@@ -524,6 +559,17 @@ import javax.swing.SwingUtilities;
     /**
      * @param args the command line arguments
      */
+    /**
+     * Reset border các field về mặc định (xóa viền đỏ báo trùng lặp).
+     */
+    private void resetBorderMacDinh() {
+        javax.swing.border.Border borderMacDinh =
+            javax.swing.UIManager.getBorder("TextField.border");
+        txtMaNganh.setBorder(borderMacDinh);
+        txtMaToHop.setBorder(borderMacDinh);
+        jComboBox1.setBorder(javax.swing.UIManager.getBorder("ComboBox.border"));
+    }
+
     public boolean isXacNhan() {
         return xacNhan;
     }
