@@ -409,14 +409,14 @@ public class insertThiSinh extends javax.swing.JDialog {
 
         // ===== ĐỒI TƯỢNG (Đồng bộ với logic tính điểm Nguyện vọng) =====
         cboNoiSinh2.removeAllItems();
-        cboNoiSinh2.addItem("Không - Không ưu tiên");
-        cboNoiSinh2.addItem("ĐT1 - Người dân tộc thiểu số");
-        cboNoiSinh2.addItem("ĐT2 - Công nhân trực tiếp");
-        cboNoiSinh2.addItem("ĐT3 - Thương binh, bệnh binh");
-        cboNoiSinh2.addItem("ĐT4 - Con liệt sĩ, con thương binh");
-        cboNoiSinh2.addItem("ĐT5 - Thanh niên xung phong");
-        cboNoiSinh2.addItem("ĐT6 - Con người có công");
-        cboNoiSinh2.addItem("ĐT7 - Người khuyết tật");
+        cboNoiSinh2.addItem("ĐT1");
+        cboNoiSinh2.addItem("ĐT2");
+        cboNoiSinh2.addItem("ĐT3");
+        cboNoiSinh2.addItem("ĐT4");
+        cboNoiSinh2.addItem("ĐT5");
+        cboNoiSinh2.addItem("ĐT6");
+        cboNoiSinh2.addItem("ĐT7");
+        cboNoiSinh2.addItem("ĐT8");
 
         // ===== KHU VỰC =====
         cboKhuVuc.removeAllItems();
