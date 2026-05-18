@@ -286,18 +286,33 @@ public class insertGiaiThuong extends javax.swing.JDialog {
     }//GEN-LAST:event_btnThoat1ActionPerformed
 
     private void btnThem1ActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_btnThem1ActionPerformed
+        String cccd = txtCCCD.getText().trim();
+        String maMon = txtMaMon.getText().trim().toUpperCase();
+
+        if (cccd.isEmpty() || maMon.isEmpty()) {
+            javax.swing.JOptionPane.showMessageDialog(this, "Vui lòng nhập đầy đủ CCCD và Mã môn!");
+            return;
+        }
         giaiThuongETT gt = new giaiThuongETT();
-        gt.setCccd(txtCCCD.getText().trim());
+        gt.setCccd(cccd);
         gt.setCapGiai(cboCapGiai.getSelectedItem().toString());
         gt.setDoiTuong("Học sinh giỏi");
         gt.setMaMon(txtMaMon.getText().trim().toUpperCase());
         gt.setLoaiGiai(cboLoaiGiai.getSelectedItem().toString());
         gt.setDiemCongCoMon(Double.parseDouble(txtDiemCongCoMon.getText()));
         gt.setDiemCongKhongMon(Double.parseDouble(txtDiemCongKhongMon.getText()));
+        
+        BUS.giaiThuongBUS bus = new BUS.giaiThuongBUS();
+        if (bus.checkTrungGiaiThuong(gt.getCccd(), gt.getCapGiai(), gt.getMaMon())) {
+            javax.swing.JOptionPane.showMessageDialog(this, 
+                "Thí sinh đã có giải thưởng môn [" + gt.getMaMon() + "] cấp [" + gt.getCapGiai() + "]", 
+                "Lỗi trùng lặp", 
+                javax.swing.JOptionPane.WARNING_MESSAGE);
+            return;
+        }
 
-        // 2. Đẩy xuống BUS -> DAO -> Hibernate
-        if (new giaiThuongBUS().themGT(gt)) {
-            // LƯU LẠI CHÍNH CÁI OBJECT ĐÃ CÓ ID TỪ DATABASE
+        // Đẩy xuống BUS -> DAO -> Hibernate
+        if (bus.themGT(gt)) {
             this.giaithuong = gt; 
             this.xacNhan = true;
             javax.swing.JOptionPane.showMessageDialog(this, "Thêm giải thưởng thành công!");

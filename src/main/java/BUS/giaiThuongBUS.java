@@ -235,4 +235,9 @@ public class giaiThuongBUS {
         try { return Double.parseDouble(value.trim()); } 
         catch (Exception e) { return 0.0; }
     }
+    
+    public boolean checkTrungGiaiThuong(String cccd, String capGiai, String maMon) {
+        if (cccd == null || cccd.trim().isEmpty() || maMon.trim().isEmpty()) return false;
+        return data.checkTrungGiaiThuong(cccd, capGiai, maMon);
+    }
 }

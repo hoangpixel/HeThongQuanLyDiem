@@ -392,62 +392,53 @@ public class insertChungChi extends javax.swing.JDialog {
     }//GEN-LAST:event_btnThoatActionPerformed
 
     private void btnThemActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_btnThemActionPerformed
-    String cccd = txtCCCD.getText().trim();
-    if (cccd.isEmpty()) {
-        JOptionPane.showMessageDialog(this, "Vui lòng nhập CCCD!");
-        return;
-    }
-
-    String loaiCC = cboLoaiChungChi.getSelectedItem().toString();
-    String diemGoc = loaiCC.equals("Tiếng Anh - TOEIC (4 kỹ năng)") 
-                     ? (txtNghe.getText().trim() + "/" + txtDoc.getText().trim() + "/" + txtNoi.getText().trim() + "/" + txtViet.getText().trim())
-                     : txtDiemChungChi.getText().trim();
-    
-    if (loaiCC.equals("Tiếng Anh - TOEIC (4 kỹ năng)")) {
-    if (txtNghe.getText().isEmpty() || txtDoc.getText().isEmpty() || 
-        txtNoi.getText().isEmpty() || txtViet.getText().isEmpty()) {
-        javax.swing.JOptionPane.showMessageDialog(this, "Vui lòng nhập đầy đủ điểm 4 kỹ năng TOEIC!");
-        return;
-    }
-}
-
-//    if (loaiCC.equals("Tiếng Anh - TOEIC (4 kỹ năng)")) {
-//        try {
-//            int n = Integer.parseInt(txtNghe.getText().trim());
-//            int d = Integer.parseInt(txtDoc.getText().trim());
-//            int s = Integer.parseInt(txtNoi.getText().trim());
-//            int w = Integer.parseInt(txtViet.getText().trim());
-//            int tongDiem = n + d + s + w; // Cộng tổng 4 ô
-//            diemGoc = String.valueOf(tongDiem); // Ví dụ: "1100"
-//        } catch (Exception ex) {
-//            javax.swing.JOptionPane.showMessageDialog(this, "Vui lòng nhập đầy đủ 4 điểm kỹ năng TOEIC hợp lệ!");
-//            return;
-//        }
-//    } else {
-//        // Nếu là IELTS hoặc loại khác thì lấy từ ô điểm bình thường
-//        diemGoc = txtDiemChungChi.getText().trim();
-//    }
-    
-    try {
-        Entity.chungChiETT ett = new Entity.chungChiETT();
-        ett.setCccd(cccd);
-        ett.setLoaiChungChi(loaiCC); 
-        ett.setDiemChungChi(diemGoc); // Lúc này diemGoc đã là điểm tổng
-        ett.setDiemQuyDoi(Double.parseDouble(txtDiemQuyDoi.getText())); 
-        ett.setDiemCong(Double.parseDouble(txtDiemCong.getText()));
-
-        BUS.chungChiBUS bus = new BUS.chungChiBUS();
-        if (bus.themCC(ett)) {
-            this.chungchi = ett;
-            this.xacNhan = true; 
-            javax.swing.JOptionPane.showMessageDialog(this, "Thêm thành công!");
-            this.dispose();
-        } else {
-            javax.swing.JOptionPane.showMessageDialog(this, "Thêm thất bại!");
+        String cccd = txtCCCD.getText().trim();
+        if (cccd.isEmpty()) {
+            JOptionPane.showMessageDialog(this, "Vui lòng nhập CCCD!");
+            return;
         }
-    } catch (Exception e) {
-        javax.swing.JOptionPane.showMessageDialog(this, "Lỗi: " + e.getMessage());
-    }
+
+        String loaiCC = cboLoaiChungChi.getSelectedItem().toString();
+        String diemGoc = loaiCC.equals("Tiếng Anh - TOEIC (4 kỹ năng)") 
+                         ? (txtNghe.getText().trim() + "/" + txtDoc.getText().trim() + "/" + txtNoi.getText().trim() + "/" + txtViet.getText().trim())
+                         : txtDiemChungChi.getText().trim();
+
+        if (loaiCC.equals("Tiếng Anh - TOEIC (4 kỹ năng)")) {
+            if (txtNghe.getText().isEmpty() || txtDoc.getText().isEmpty() || 
+                txtNoi.getText().isEmpty() || txtViet.getText().isEmpty()) {
+                javax.swing.JOptionPane.showMessageDialog(this, "Vui lòng nhập đầy đủ điểm 4 kỹ năng TOEIC!");
+                return;
+            }
+        }
+        
+        BUS.chungChiBUS bus = new BUS.chungChiBUS();
+        if (bus.checkTrungChungChi(cccd, loaiCC)) {
+            javax.swing.JOptionPane.showMessageDialog(this, 
+                "Thí sinh đã có chứng chỉ [" + loaiCC + "]", 
+                "Lỗi trùng lặp", 
+                javax.swing.JOptionPane.WARNING_MESSAGE);
+            return;
+        }
+
+        try {
+            Entity.chungChiETT ett = new Entity.chungChiETT();
+            ett.setCccd(cccd);
+            ett.setLoaiChungChi(loaiCC); 
+            ett.setDiemChungChi(diemGoc); // Lúc này diemGoc đã là điểm tổng
+            ett.setDiemQuyDoi(Double.parseDouble(txtDiemQuyDoi.getText())); 
+            ett.setDiemCong(Double.parseDouble(txtDiemCong.getText()));
+
+            if (bus.themCC(ett)) {
+                this.chungchi = ett;
+                this.xacNhan = true; 
+                javax.swing.JOptionPane.showMessageDialog(this, "Thêm thành công!");
+                this.dispose();
+            } else {
+                javax.swing.JOptionPane.showMessageDialog(this, "Thêm thất bại!");
+            }
+        } catch (Exception e) {
+            javax.swing.JOptionPane.showMessageDialog(this, "Lỗi: " + e.getMessage());
+        }
     }//GEN-LAST:event_btnThemActionPerformed
 
     private void txtDiemCongActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_txtDiemCongActionPerformed

@@ -125,4 +125,18 @@ public class chungChiDAO {
         }
         return coMonAnh;
     }
+    
+    public boolean checkTrungChungChi(String cccd, String loaiChungChi) {
+        try (Session session = HibernateUtil.getSessionFactory().openSession()) {
+            String sql = "SELECT COUNT(*) FROM xt_chungchi WHERE cccd = :cccd AND loai_chung_chi = :loai";
+            Number count = (Number) session.createNativeQuery(sql)
+                    .setParameter("cccd", cccd)
+                    .setParameter("loai", loaiChungChi)
+                    .uniqueResult();
+            return count != null && count.intValue() > 0; // Trả về true nếu đã tồn tại >= 1 cái
+        } catch (Exception e) {
+            e.printStackTrace();
+            return false;
+        }
+    }
 }

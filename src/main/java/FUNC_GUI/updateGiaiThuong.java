@@ -13,13 +13,13 @@ import javax.swing.JFrame;
  */
 public class updateGiaiThuong extends javax.swing.JDialog {
     private boolean xacNhan = false;
-    private giaiThuongETT currentGt;
+    private giaiThuongETT giaithuong;
     private static final java.util.logging.Logger logger = java.util.logging.Logger.getLogger(updateGiaiThuong.class.getName());
     
 
     public updateGiaiThuong(java.awt.Frame parent, boolean modal, giaiThuongETT gt) {
         super(parent, modal);
-        this.currentGt = gt;
+        this.giaithuong = gt;
         initComponents();
         
         txtCCCD.setEditable(false);
@@ -308,10 +308,47 @@ public class updateGiaiThuong extends javax.swing.JDialog {
     }//GEN-LAST:event_btnThoat1ActionPerformed
 
     private void btnSuaActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_btnSuaActionPerformed
-        giaiThuongETT gt = getGiaiThuong();
-        if (new giaiThuongBUS().suaGT(gt)) {
-            xacNhan = true;
-            dispose();
+        String capGiaiMoi = cboCapGiai.getSelectedItem().toString();
+        String maMonMoi = txtMaMon.getText().trim().toUpperCase();
+
+        // 1. Chặn lỗi để trống mã môn
+        if (maMonMoi.isEmpty()) {
+            javax.swing.JOptionPane.showMessageDialog(this, "Vui lòng nhập Mã môn!");
+            return;
+        }
+
+        // =======================================================
+        // 🔥 CHỐT CHẶN KIỂM TRA TRÙNG (DÀNH RIÊNG CHO SỬA)
+        // Nếu ĐỔI Cấp giải HOẶC ĐỔI Mã môn thì mới đi kiểm tra
+        // =======================================================
+        if (!capGiaiMoi.equals(giaithuong.getCapGiai()) || !maMonMoi.equals(giaithuong.getMaMon())) {
+            BUS.giaiThuongBUS bus = new BUS.giaiThuongBUS();
+            if (bus.checkTrungGiaiThuong(giaithuong.getCccd(), capGiaiMoi, maMonMoi)) {
+                javax.swing.JOptionPane.showMessageDialog(this, 
+                    "Thí sinh đã có giải thưởng môn [" + maMonMoi + "] cấp [" + capGiaiMoi + "]", 
+                    "Lỗi trùng lặp", 
+                    javax.swing.JOptionPane.WARNING_MESSAGE);
+                return;
+            }
+        }
+        // =======================================================
+
+        try {
+            giaithuong.setCapGiai(capGiaiMoi);
+            giaithuong.setMaMon(maMonMoi);
+            giaithuong.setLoaiGiai(cboLoaiGiai.getSelectedItem().toString());
+            giaithuong.setDiemCongCoMon(Double.parseDouble(txtDiemCongCoMon.getText()));
+            giaithuong.setDiemCongKhongMon(Double.parseDouble(txtDiemCongKhongMon.getText()));
+
+            if (new BUS.giaiThuongBUS().suaGT(giaithuong)) {
+                xacNhan = true;
+                javax.swing.JOptionPane.showMessageDialog(this, "Cập nhật giải thưởng thành công!");
+                dispose();
+            } else {
+                javax.swing.JOptionPane.showMessageDialog(this, "Cập nhật thất bại!");
+            }
+        } catch (Exception e) {
+            javax.swing.JOptionPane.showMessageDialog(this, "Lỗi dữ liệu: " + e.getMessage());
         }
     }//GEN-LAST:event_btnSuaActionPerformed
 
@@ -386,27 +423,27 @@ public class updateGiaiThuong extends javax.swing.JDialog {
     }
 
     public giaiThuongETT getGiaiThuong() {
-        currentGt.setCapGiai(cboCapGiai.getSelectedItem().toString());
-        currentGt.setDoiTuong(cboDoiTuong.getSelectedItem().toString());
-        currentGt.setMaMon(txtMaMon.getText().trim().toUpperCase());
-        currentGt.setLoaiGiai(cboLoaiGiai.getSelectedItem().toString());
-        currentGt.setDiemCongCoMon(Double.parseDouble(txtDiemCongCoMon.getText()));
-        currentGt.setDiemCongKhongMon(Double.parseDouble(txtDiemCongKhongMon.getText()));
+        giaithuong.setCapGiai(cboCapGiai.getSelectedItem().toString());
+        giaithuong.setDoiTuong(cboDoiTuong.getSelectedItem().toString());
+        giaithuong.setMaMon(txtMaMon.getText().trim().toUpperCase());
+        giaithuong.setLoaiGiai(cboLoaiGiai.getSelectedItem().toString());
+        giaithuong.setDiemCongCoMon(Double.parseDouble(txtDiemCongCoMon.getText()));
+        giaithuong.setDiemCongKhongMon(Double.parseDouble(txtDiemCongKhongMon.getText()));
 
-        return currentGt;
+        return giaithuong;
     }
     
     private void fillData() {
-        if (currentGt != null) {
-            txtCCCD.setText(currentGt.getCccd());
-            cboCapGiai.setSelectedItem(currentGt.getCapGiai());
-            cboDoiTuong.setSelectedItem(currentGt.getDoiTuong());
-            txtMaMon.setText(currentGt.getMaMon());
-            cboLoaiGiai.setSelectedItem(currentGt.getLoaiGiai());
-            txtDiemCongCoMon.setText(String.valueOf(currentGt.getDiemCongCoMon()));
-            txtDiemCongKhongMon.setText(String.valueOf(currentGt.getDiemCongKhongMon()));
+        if (giaithuong != null) {
+            txtCCCD.setText(giaithuong.getCccd());
+            cboCapGiai.setSelectedItem(giaithuong.getCapGiai());
+            cboDoiTuong.setSelectedItem(giaithuong.getDoiTuong());
+            txtMaMon.setText(giaithuong.getMaMon());
+            cboLoaiGiai.setSelectedItem(giaithuong.getLoaiGiai());
+            txtDiemCongCoMon.setText(String.valueOf(giaithuong.getDiemCongCoMon()));
+            txtDiemCongKhongMon.setText(String.valueOf(giaithuong.getDiemCongKhongMon()));
 
-            tinhToanDiem(); // Gọi lại hàm tính điểm để đảm bảo tính toán khớp với các Combo Box
+            tinhToanDiem();
         }
     }
 

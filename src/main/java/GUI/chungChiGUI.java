@@ -175,15 +175,13 @@ public class chungChiGUI extends BaseTableGUI {
                 row.add(cc.getDiemCong());
 
                 fullDataList.add(row);
-            }
-
+            
             // 3. Tính toán lại phân trang và nhảy tới trang cuối hoặc trang chứa dữ liệu mới
             totalPages = (int) Math.ceil((double) fullDataList.size() / rowsPerPage);
-
             currentPage = totalPages;
-
             renderCurrentPage();
         }
+    }
 
     private void hienThiDialogSua() {
         int row = table.getSelectedRow();
