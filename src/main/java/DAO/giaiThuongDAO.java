@@ -81,4 +81,19 @@ public class giaiThuongDAO {
             return true;
         } catch (Exception e) { if (tx != null) tx.rollback(); return false; }
     }
+    
+    public boolean checkTrungGiaiThuong(String cccd, String capGiai, String maMon) {
+        try (Session session = HibernateUtil.getSessionFactory().openSession()) {
+            String sql = "SELECT COUNT(*) FROM xt_giathuong WHERE cccd = :cccd AND cap_giai = :capGiai AND ma_mon = :maMon";
+            Number count = (Number) session.createNativeQuery(sql)
+                    .setParameter("cccd", cccd)
+                    .setParameter("capGiai", capGiai)
+                    .setParameter("maMon", maMon)
+                    .uniqueResult();
+            return count != null && count.intValue() > 0; 
+        } catch (Exception e) {
+            e.printStackTrace();
+            return false;
+        }
+    }
 }

@@ -234,4 +234,9 @@ public class chungChiBUS {
         try { return Double.parseDouble(value.trim()); } 
         catch (Exception e) { return 0.0; }
     }
+    
+    public boolean checkTrungChungChi(String cccd, String loaiChungChi) {
+        if (cccd == null || cccd.trim().isEmpty()) return false;
+        return data.checkTrungChungChi(cccd, loaiChungChi);
+    }
 }

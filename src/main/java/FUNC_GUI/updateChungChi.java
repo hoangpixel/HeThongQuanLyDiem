@@ -413,6 +413,16 @@ public class updateChungChi extends javax.swing.JDialog {
         String diemGoc = loaiCC.equals("Tiếng Anh - TOEIC (4 kỹ năng)") 
                          ? (txtNghe.getText() + "/" + txtDoc.getText() + "/" + txtNoi.getText() + "/" + txtViet.getText())
                          : txtDiemChungChi.getText().trim();
+        
+        if (!loaiCC.equals(chungChi.getLoaiChungChi())) {
+            if (bus.checkTrungChungChi(chungChi.getCccd(), loaiCC)) {
+                javax.swing.JOptionPane.showMessageDialog(this, 
+                    "Thí sinh đã có chứng chỉ [" + loaiCC + "]", 
+                    "Lỗi trùng lặp", 
+                    javax.swing.JOptionPane.WARNING_MESSAGE);
+                return;
+            }
+        }
 
         try {
             // Cập nhật lại các thuộc tính cho đối tượng chungChi hiện tại
@@ -421,8 +431,7 @@ public class updateChungChi extends javax.swing.JDialog {
             chungChi.setDiemQuyDoi(Double.parseDouble(txtDiemQuyDoi.getText()));
             chungChi.setDiemCong(Double.parseDouble(txtDiemCong.getText()));
 
-            // Gọi BUS để thực hiện UPDATE xuống Database
-            if (bus.suaCC(chungChi)) { // Giả sử Đạt đã viết hàm update trong BUS
+            if (bus.suaCC(chungChi)) {
                 xacNhan = true;
                 JOptionPane.showMessageDialog(this, "Cập nhật chứng chỉ thành công!");
                 dispose();
