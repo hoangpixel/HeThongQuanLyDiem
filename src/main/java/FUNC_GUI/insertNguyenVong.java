@@ -43,8 +43,6 @@ public class insertNguyenVong extends javax.swing.JDialog {
     public String cccd;
     public String toHopMon;
     public String maNganh;
-    public double doLechDiem = 0.0;
-    private Double diemUuTienGoc = null;
     
     public Entity.toHopETT toHopMonDaChon = null;
     /**
@@ -315,7 +313,7 @@ public class insertNguyenVong extends javax.swing.JDialog {
 //
 //            for (Entity.toHopETT toHop : dsToHop) {
 //                String maTH = toHop.getMatohop(), m1 = toHop.getMon1(), m2 = toHop.getMon2(), m3 = toHop.getMon3();
-//                
+//                double doLechThucTe = maTH.equals(toHopGoc) ? 0.0 : nthBus.layDoLechDiem(maNganh, maTH);
 //                // 🎯 2.3 ĐGNL (CHỈ XÉT VỚI TỔ HỢP GỐC)
 //                if (maTH.equals(toHopGoc) && !daXetDGNL) {
 //                    double dNL = (diemThi.getNl1() != null) ? diemThi.getNl1() : 0.0;
@@ -357,7 +355,7 @@ public class insertNguyenVong extends javax.swing.JDialog {
 //                if (d1_check <= 1.0 || d2_check <= 1.0 || d3_check <= 1.0) continue;
 //                
 //                double[] hs = nthBus.layHeSoMon(maNganh, maTH);
-//                double W = hs[0] + hs[1] + hs[2], doLech = nthBus.layDoLechDiem(maNganh, maTH);
+//                double W = hs[0] + hs[1] + hs[2];
 //                if (W <= 0) continue;
 //
 //                // 🎯 PHÂN NHÁNH LOGIC: CHỈ XÉT 1 TRONG 2 (THPT hoặc V-SAT)
@@ -372,7 +370,7 @@ public class insertNguyenVong extends javax.swing.JDialog {
 //                    // 🛡️ ĐÃ THÊM Math.max CHẶN ÂM
 //                    double ut = (thxt + dCongTHPT >= 22.5) ? Math.round((Math.max(0.0, 30 - thxt - dCongTHPT) / 7.5) * diemUTQDGoc * 100.0) / 100.0 : diemUTQDGoc;
 //                    
-//                    if (nvBus.themNguyenVong(createNguyenVong(cccd, maNganh, thuTuNV, "Xét THPT", maTH, thxt, diemUTQDGoc, ut, dCongTHPT, Math.min(30.0, Math.round((thxt+ut+dCongTHPT+doLech)*100.0)/100.0), ketQuaNV))) {
+//                    if (nvBus.themNguyenVong(createNguyenVong(cccd, maNganh, thuTuNV, "Xét THPT", maTH, thxt, diemUTQDGoc, ut, dCongTHPT, Math.min(30.0, Math.round((thxt+ut+dCongTHPT+doLechThucTe)*100.0)/100.0), ketQuaNV))) {
 //                         soDongLuuThanhCong++;
 //                    }
 //
@@ -396,7 +394,7 @@ public class insertNguyenVong extends javax.swing.JDialog {
 //
 //                            // 🛡️ ĐÃ THÊM Math.max CHẶN ÂM
 //                            double ut_v = (thxt_v + dCongVSAT >= 22.5) ? Math.round((Math.max(0.0, 30 - thxt_v - dCongVSAT) / 7.5) * diemUTQDGoc * 100.0) / 100.0 : diemUTQDGoc;
-//                            if (nvBus.themNguyenVong(createNguyenVong(cccd, maNganh, thuTuNV, "Đánh giá V-SAT", maTH, thxt_v, diemUTQDGoc, ut_v, dCongVSAT, Math.min(30.0, Math.round((thxt_v+ut_v+dCongVSAT+doLech)*100.0)/100.0), ketQuaNV))) {
+//                            if (nvBus.themNguyenVong(createNguyenVong(cccd, maNganh, thuTuNV, "Đánh giá V-SAT", maTH, thxt_v, diemUTQDGoc, ut_v, dCongVSAT, Math.min(30.0, Math.round((thxt_v+ut_v+dCongVSAT+doLechThucTe)*100.0)/100.0), ketQuaNV))) {
 //                                soDongLuuThanhCong++;
 //                            }
 //                        }
@@ -505,7 +503,7 @@ public class insertNguyenVong extends javax.swing.JDialog {
 
             for (Entity.toHopETT toHop : dsToHop) {
                 String maTH = toHop.getMatohop(), m1 = toHop.getMon1(), m2 = toHop.getMon2(), m3 = toHop.getMon3();
-                
+                double doLechThucTe = maTH.equals(toHopGoc) ? 0.0 : nthBus.layDoLechDiem(maNganh, maTH);
                 // 🎯 2.3 ĐGNL (CHỈ XÉT VỚI TỔ HỢP GỐC)
 if (maTH.equals(toHopGoc) && !daXetDGNL) {
                     double dNL = (diemThi.getNl1() != null) ? diemThi.getNl1() : 0.0;
@@ -569,7 +567,7 @@ if (maTH.equals(toHopGoc) && !daXetDGNL) {
                 double dCong = Math.min((coAnh ? 0 : dCongIelts) + diemGiaiThuong, 3.0);
                 
                 double[] hs = nthBus.layHeSoMon(maNganh, maTH);
-                double W = hs[0] + hs[1] + hs[2], doLech = nthBus.layDoLechDiem(maNganh, maTH);
+                double W = hs[0] + hs[1] + hs[2];
                 
                 if (W <= 0) continue;
 
@@ -585,7 +583,7 @@ if (maTH.equals(toHopGoc) && !daXetDGNL) {
                     double thxt = Math.round(((d1_t*hs[0] + d2_t*hs[1] + d3_t*hs[2])/W)*300.0)/100.0;
                     double ut = (thxt + dCong >= 22.5) ? Math.round((Math.max(0.0, 30 - thxt - dCong) / 7.5) * diemUTQDGoc * 100.0) / 100.0 : diemUTQDGoc;
                     
-                    if (nvBus.themNguyenVong(createNguyenVong(cccd, maNganh, thuTuNV, "Xét THPT", maTH, thxt, diemUTQDGoc, ut, dCong, Math.min(30.0, Math.round((thxt+ut+dCong+doLech)*100.0)/100.0), ketQuaNV)))
+                    if (nvBus.themNguyenVong(createNguyenVong(cccd, maNganh, thuTuNV, "Xét THPT", maTH, thxt, diemUTQDGoc, ut, dCong, Math.min(30.0, Math.round((thxt+ut+dCong+doLechThucTe)*100.0)/100.0), ketQuaNV)))
                     {
                          soDongLuuThanhCong++;
                          double diemCC_THPT = coAnh ? 0 : dCongIelts;
@@ -609,7 +607,7 @@ if (maTH.equals(toHopGoc) && !daXetDGNL) {
                         double thxt_v = Math.round(((v1*hs[0] + v2*hs[1] + v3*hs[2])/W)*300.0)/100.0;
                         if (thxt_v > 0) {
                             double ut_v = (thxt_v + dCong >= 22.5) ? Math.round((Math.max(0.0, 30 - thxt_v - dCong) / 7.5) * diemUTQDGoc * 100.0) / 100.0 : diemUTQDGoc;
-                            if (nvBus.themNguyenVong(createNguyenVong(cccd, maNganh, thuTuNV, "Đánh giá V-SAT", maTH, thxt_v, diemUTQDGoc, ut_v, dCong, Math.min(30.0, Math.round((thxt_v+ut_v+dCong+doLech)*100.0)/100.0), ketQuaNV))) 
+                            if (nvBus.themNguyenVong(createNguyenVong(cccd, maNganh, thuTuNV, "Đánh giá V-SAT", maTH, thxt_v, diemUTQDGoc, ut_v, dCong, Math.min(30.0, Math.round((thxt_v+ut_v+dCong+doLechThucTe)*100.0)/100.0), ketQuaNV))) 
                             {
                                 soDongLuuThanhCong++;
                                 double diemCC_VSAT = coAnh ? 0 : dCongIelts;
