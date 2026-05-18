@@ -235,7 +235,7 @@ public class insertNguyenVong extends javax.swing.JDialog {
         dispose();
     }//GEN-LAST:event_btnThoatActionPerformed
 
-//    private void btnThemActionPerformed(java.awt.event.ActionEvent evt) {                                        
+//private void btnThemActionPerformed(java.awt.event.ActionEvent evt) {                                        
 //        // 1. KIỂM TRA ĐẦU VÀO & TRÙNG NGÀNH
 //        String cccd = txtCCCD.getText().trim();
 //        String maNganh = txtMaNganh.getText().trim();
@@ -295,10 +295,17 @@ public class insertNguyenVong extends javax.swing.JDialog {
 //            if (ng.getManganh().equals(maNganh)) { toHopGoc = ng.getN_tohopgoc(); break; }
 //        }
 //
-//        // 🔥 CHIẾN DỊCH 1: XÉT TUYỂN THẲNG
+//        // 🔥 CHIẾN DỊCH 1: XÉT TUYỂN THẲNG (Giai đoạn 2)
 //        Entity.quyTacGiaiThuongETT quyTac = (ttGiai != null) ? qtBus.layQuyTac(ttGiai[0], ttGiai[1]) : null;
 //        if (quyTac != null && quyTac.getXetTuyenThang() == 1) {
-//            if (nvBus.themNguyenVong(createNguyenVong(cccd, maNganh, thuTuNV, "Xét tuyển thẳng", "Không", 30.0, 0.0, 0.0, 0.0, 30.0, ketQuaNV))) soDongLuuThanhCong++; 
+//            // Chọc DB xem cán bộ có cấp quyền Tuyển thẳng cho đứa này ở bảng Điểm Cộng chưa
+//            diemCongETT dcXTT = dcBus.layDiemCongChinhXac(cccd, maNganh, "Không", "Xét tuyển thẳng");
+//            double dCongXTT = (dcXTT != null) ? dcXTT.getDiemTong() : 0.0; 
+//            
+//            // Dù điểm cộng có là bao nhiêu thì Tuyển thẳng vẫn là 30 điểm
+//            if (nvBus.themNguyenVong(createNguyenVong(cccd, maNganh, thuTuNV, "Xét tuyển thẳng", "Không", 30.0, 0.0, 0.0, dCongXTT, 30.0, ketQuaNV))) {
+//                soDongLuuThanhCong++; 
+//            }
 //        }
 //
 //        // 🔥 CHIẾN DỊCH 2: QUÉT TỔ HỢP (THPT, V-SAT, ĐGNL)
@@ -320,6 +327,7 @@ public class insertNguyenVong extends javax.swing.JDialog {
 //                            diemCongETT dcNL = dcBus.layDiemCongChinhXac(cccd, maNganh, maTH, "ĐGNL HCM");
 //                            double dCong = (dcNL != null) ? dcNL.getDiemTong() : 0.0; 
 //                            
+//                            // 🛡️ ĐÃ THÊM Math.max CHẶN ÂM
 //                            double ut_nl = (thxt_nl + dCong >= 22.5) ? Math.round((Math.max(0.0, 30 - thxt_nl - dCong) / 7.5) * diemUTQDGoc * 100.0) / 100.0 : diemUTQDGoc;
 //                            if (nvBus.themNguyenVong(createNguyenVong(cccd, maNganh, thuTuNV, "ĐGNL HCM", maTH, thxt_nl, diemUTQDGoc, ut_nl, dCong, Math.min(30.0, Math.round((thxt_nl+ut_nl+dCong)*100.0)/100.0), ketQuaNV))) {
 //                                soDongLuuThanhCong++;
@@ -361,6 +369,7 @@ public class insertNguyenVong extends javax.swing.JDialog {
 //                    double dCongTHPT = (dcTHPT != null) ? dcTHPT.getDiemTong() : 0.0;
 //
 //                    double thxt = Math.round(((d1_check*hs[0] + d2_check*hs[1] + d3_check*hs[2])/W)*300.0)/100.0;
+//                    // 🛡️ ĐÃ THÊM Math.max CHẶN ÂM
 //                    double ut = (thxt + dCongTHPT >= 22.5) ? Math.round((Math.max(0.0, 30 - thxt - dCongTHPT) / 7.5) * diemUTQDGoc * 100.0) / 100.0 : diemUTQDGoc;
 //                    
 //                    if (nvBus.themNguyenVong(createNguyenVong(cccd, maNganh, thuTuNV, "Xét THPT", maTH, thxt, diemUTQDGoc, ut, dCongTHPT, Math.min(30.0, Math.round((thxt+ut+dCongTHPT+doLech)*100.0)/100.0), ketQuaNV))) {
@@ -385,6 +394,7 @@ public class insertNguyenVong extends javax.swing.JDialog {
 //                            diemCongETT dcVSAT = dcBus.layDiemCongChinhXac(cccd, maNganh, maTH, "Đánh giá V-SAT");
 //                            double dCongVSAT = (dcVSAT != null) ? dcVSAT.getDiemTong() : 0.0;
 //
+//                            // 🛡️ ĐÃ THÊM Math.max CHẶN ÂM
 //                            double ut_v = (thxt_v + dCongVSAT >= 22.5) ? Math.round((Math.max(0.0, 30 - thxt_v - dCongVSAT) / 7.5) * diemUTQDGoc * 100.0) / 100.0 : diemUTQDGoc;
 //                            if (nvBus.themNguyenVong(createNguyenVong(cccd, maNganh, thuTuNV, "Đánh giá V-SAT", maTH, thxt_v, diemUTQDGoc, ut_v, dCongVSAT, Math.min(30.0, Math.round((thxt_v+ut_v+dCongVSAT+doLech)*100.0)/100.0), ketQuaNV))) {
 //                                soDongLuuThanhCong++;
