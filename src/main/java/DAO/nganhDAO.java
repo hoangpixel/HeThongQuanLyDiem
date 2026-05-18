@@ -224,4 +224,30 @@ public boolean capNhatChiTieuThucTe() {
             return false;
         }
     }
+    
+// Cập nhật số lượng đăng ký cho 1 ngành - Chuẩn Hibernate
+    public boolean capNhatSoLuongDangKy(String maNganh, int soLuong) {
+        Transaction transaction = null;
+        try (Session session = HibernateUtil.getSessionFactory().openSession()) {
+            transaction = session.beginTransaction();
+            
+            // 🚀 ĐÃ SỬA: Dùng đúng tên biến slDangKy trong nganhETT
+            String hql = "UPDATE nganhETT n SET n.slDangKy = :soLuong WHERE n.manganh = :maNganh";
+            
+            int result = session.createQuery(hql)
+                                .setParameter("soLuong", soLuong)
+                                .setParameter("maNganh", maNganh)
+                                .executeUpdate();
+            
+            transaction.commit();
+            return result > 0; 
+            
+        } catch (Exception e) {
+            if (transaction != null) {
+                transaction.rollback(); 
+            }
+            e.printStackTrace();
+            return false;
+        }
+    }
 }

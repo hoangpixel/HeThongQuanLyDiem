@@ -179,9 +179,9 @@ public nguyenVongXetTuyenGUI() {
         header.add("ID ngành");
         header.add("Thứ tự");
         header.add("Điểm THXT");
-        header.add("Điểm UT Gốc");
-        header.add("Điểm UTQD");
-        header.add("Điềm cộng");
+        header.add("Điểm ƯT Gốc");
+        header.add("Điểm ƯTQD");
+        header.add("Điểm cộng");
         header.add("Điểm tổng");
         header.add("Kết quả NV");
         header.add("Keys");

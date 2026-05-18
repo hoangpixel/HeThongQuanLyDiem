@@ -75,10 +75,10 @@ public class diemCongXetTuyenGUI extends BaseTableGUI {
         TableColumnModel columnModel = table.getColumnModel();
         columnModel.getColumn(0).setPreferredWidth(50);
         columnModel.getColumn(1).setPreferredWidth(120);
-        columnModel.getColumn(2).setPreferredWidth(250);
+        columnModel.getColumn(2).setPreferredWidth(220);
         columnModel.getColumn(3).setPreferredWidth(100);
         columnModel.getColumn(4).setPreferredWidth(130);
-        columnModel.getColumn(5).setPreferredWidth(100);
+        columnModel.getColumn(5).setPreferredWidth(130);
         columnModel.getColumn(6).setPreferredWidth(120);
         columnModel.getColumn(7).setPreferredWidth(100);
         columnModel.getColumn(8).setPreferredWidth(150);
@@ -243,7 +243,7 @@ public class diemCongXetTuyenGUI extends BaseTableGUI {
     public void headerTable() {
         Vector<String> header = new Vector<>();
         header.add("ID"); header.add("CCCD"); header.add("Tên ngành"); header.add("Mã tổ hợp");
-        header.add("Phương thức"); header.add("Điểm cộng"); header.add("Điểm ưu tiên");
+        header.add("Phương thức"); header.add("Điểm chứng chỉ"); header.add("Điểm giải");
         header.add("Điểm tổng"); header.add("Ghi chú");
         tableModel.setColumnIdentifiers(header);
     }

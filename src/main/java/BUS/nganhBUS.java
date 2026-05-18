@@ -311,4 +311,11 @@ public class nganhBUS {
         }
         return "";
     }
+    
+    public boolean capNhatSoLuongDangKy(String maNganh, int soLuong) {
+        if (maNganh == null || maNganh.trim().isEmpty() || soLuong < 0) {
+            return false;
+        }
+        return data.capNhatSoLuongDangKy(maNganh, soLuong);
+    }
 }

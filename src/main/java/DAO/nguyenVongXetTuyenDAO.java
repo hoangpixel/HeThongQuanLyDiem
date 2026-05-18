@@ -240,4 +240,24 @@ public ArrayList<nguyenVongXetTuyenETT> layDanhSach() {
         
         return isTrung;
     }
+    
+// Đếm số lượng thí sinh đăng ký vào ngành (Không đếm trùng CCCD) - Chuẩn Hibernate
+    public int demSoThangDangKyKhongTrung(String maNganh) {
+        int count = 0;
+        try (Session session = HibernateUtil.getSessionFactory().openSession()) {
+            
+            // Dùng đúng tên biến nnCccd và nvMaNganh trong nguyenVongXetTuyenETT
+            String hql = "SELECT COUNT(DISTINCT nv.nnCccd) FROM nguyenVongXetTuyenETT nv WHERE nv.nvMaNganh = :maNganh";
+            
+            Long result = session.createQuery(hql, Long.class)
+                                 .setParameter("maNganh", maNganh)
+                                 .uniqueResult();
+            if (result != null) {
+                count = result.intValue();
+            }
+        } catch (Exception e) {
+            e.printStackTrace();
+        }
+        return count;
+    }
 }

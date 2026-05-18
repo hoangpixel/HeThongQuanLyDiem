@@ -108,7 +108,7 @@ btnTimKiem = new RoundedButton("TÌM KIẾM");
         );
         pnlSearch.setBorder(BorderFactory.createCompoundBorder(searchBorder, new EmptyBorder(5, 5, 5, 5)));
 
-        cbxTimKiem = new JComboBox<>(new String[]{"Messi", "Bucac", "Anh 7"});
+        cbxTimKiem = new JComboBox<>(new String[]{"abc", "xyz", "Anh 7"});
         txtTimKiem = new JTextField(15);
         btnTimKiem = new JButton("TÌM KIẾM");
         

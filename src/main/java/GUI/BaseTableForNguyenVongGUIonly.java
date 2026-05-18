@@ -17,6 +17,7 @@ public class BaseTableForNguyenVongGUIonly extends JPanel {
     // Khai báo các components
     public JButton btnThem, btnSua, btnXoa, btnExcel, btnReFresh, btnTimKiem, btnChiTiet, btnTinhToanKetQua;
     public JComboBox<String> cbxTimKiem;
+    public JComboBox<String> cbxTrangThai;
     public JTextField txtTimKiem;
     public JTable table;
     public DefaultTableModel tableModel;
@@ -98,7 +99,6 @@ btnTinhToanKetQua = new RoundedButton("TÍNH TOÁN KQ");
         pnlActions.add(btnReFresh);
 
         // 2. GroupBox: Tìm kiếm (Bên phải)
-// 2. GroupBox: Tìm kiếm (Bên phải)
         // 🔥 FIX: Thay FlowLayout bằng GridBagLayout để tự động căn giữa theo chiều dọc
         JPanel pnlSearch = new JPanel(new GridBagLayout());
         pnlSearch.setBackground(Color.WHITE);
@@ -111,7 +111,7 @@ btnTinhToanKetQua = new RoundedButton("TÍNH TOÁN KQ");
         );
         pnlSearch.setBorder(BorderFactory.createCompoundBorder(searchBorder, new EmptyBorder(5, 5, 5, 5)));
 
-        cbxTimKiem = new JComboBox<>(new String[]{"Messi", "Bucac", "Anh 7"});
+        cbxTimKiem = new JComboBox<>(new String[]{"abc", "xyz", "Anh 7"});
         txtTimKiem = new JTextField(15);
         btnTimKiem = new JButton("TÌM KIẾM");
         
@@ -446,7 +446,7 @@ if (column == cotTrangThaiIndex) {
                     c.setForeground(new Color(108, 122, 137)); // Xám đậm
                 } else if (status.equalsIgnoreCase("Bỏ qua")) {
                     // 🚀 THÊM MỚI Ở ĐÂY: Chữ Bỏ qua màu vàng cam (dễ nhìn trên nền trắng)
-                    c.setForeground(new Color(211, 84, 0)); 
+                    c.setForeground(new Color(204, 153, 0));
                 } else {
                     c.setForeground(isSelected ? Color.WHITE : Color.BLACK);
                 }

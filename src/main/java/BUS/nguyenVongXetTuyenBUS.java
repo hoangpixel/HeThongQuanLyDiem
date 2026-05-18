@@ -771,35 +771,35 @@ public String nhapDuLieuTuExcel(String filePath) {
         ArrayList<nguyenVongXetTuyenETT> dskq = new ArrayList<nguyenVongXetTuyenETT>();
         String tuKhoa = tim.trim().toLowerCase();
         
-// 🚀 NẾU TÌM THM CAO NHẤT (Index 11) - LẤY CỦA TẤT CẢ THÍ SINH
+// 🚀 NẾU TÌM THM CAO NHẤT (Index 11) - THEO TỪNG THÍ SINH VÀ TỪNG NGÀNH
         if (index == 11) {
             
-            // 🚀 ĐÃ SỬA: Dùng LinkedHashMap thay vì HashMap để giữ nguyên thứ tự dòng của Thí sinh
+            // Dùng LinkedHashMap để giữ nguyên thứ tự
             java.util.LinkedHashMap<String, ArrayList<nguyenVongXetTuyenETT>> mapHocSinh = new java.util.LinkedHashMap<>();
             
             for (nguyenVongXetTuyenETT nv : ds) {
                 if (nv != null && nv.getNnCccd() != null) {
-                    // Nếu người dùng có gõ CCCD thì chỉ lọc thằng đó, còn bỏ trống thì lấy hết
                     if (!tuKhoa.isEmpty() && !nv.getNnCccd().toLowerCase().equals(tuKhoa)) {
                         continue; 
                     }
                     
-                    String cccd = nv.getNnCccd();
-                    if (!mapHocSinh.containsKey(cccd)) {
-                        mapHocSinh.put(cccd, new ArrayList<>());
+                    // 🚀 ĐÃ SỬA: Chìa khóa gom nhóm bây giờ là "CCCD_MãNgành"
+                    String keyGomNhom = nv.getNnCccd() + "_" + nv.getNvMaNganh();
+                    
+                    if (!mapHocSinh.containsKey(keyGomNhom)) {
+                        mapHocSinh.put(keyGomNhom, new ArrayList<>());
                     }
-                    mapHocSinh.get(cccd).add(nv);
+                    mapHocSinh.get(keyGomNhom).add(nv);
                 }
             }
 
-            // ... (Đoạn dưới giữ nguyên, đi từng thằng thí sinh, tìm Max, gom hàng...)
-            // 2. Đi từng thằng thí sinh, tìm cái NV có điểm cao nhất của nó
-            for (String cccd : mapHocSinh.keySet()) {
-                ArrayList<nguyenVongXetTuyenETT> listNV = mapHocSinh.get(cccd);
+            // Quét qua từng cái rổ (mỗi rổ là 1 Ngành của 1 Thí sinh)
+            for (String keyGomNhom : mapHocSinh.keySet()) {
+                ArrayList<nguyenVongXetTuyenETT> listNV = mapHocSinh.get(keyGomNhom);
                 double diemMax = -1.0;
                 String thmMax = "";
                 
-                // Tìm Max
+                // Tìm tổ hợp có điểm Max trong cùng 1 ngành đó
                 for (nguyenVongXetTuyenETT nv : listNV) {
                     if (nv.getTtThm() != null && !nv.getTtThm().isEmpty() && !nv.getTtThm().equals("Không")) {
                         if (nv.getDiemXetTuyen() > diemMax) {
@@ -809,9 +809,10 @@ public String nhapDuLieuTuExcel(String filePath) {
                     }
                 }
                 
-                // Gom hàng
+                // Gom hàng mang ra kết quả
                 if (!thmMax.isEmpty()) {
                     for (nguyenVongXetTuyenETT nv : listNV) {
+                        // Chỉ lấy đúng cái nguyện vọng có tổ hợp bằng với tổ hợp Max và điểm bằng điểm Max
                         if (nv.getTtThm() != null && nv.getTtThm().equalsIgnoreCase(thmMax) && nv.getDiemXetTuyen() == diemMax) {
                             dskq.add(nv);
                         }
@@ -923,5 +924,9 @@ public String nhapDuLieuTuExcel(String filePath) {
         // Gọi DAO (Nhớ check lại tên class DAO nha)
         DAO.nguyenVongXetTuyenDAO dao = new DAO.nguyenVongXetTuyenDAO();
         return dao.kiemTraTrungNganh(cccd, maNganh);
+    }
+    
+    public int demSoThangDangKyKhongTrung(String maNganh) {
+        return data.demSoThangDangKyKhongTrung(maNganh);
     }
 }
