@@ -822,6 +822,52 @@ public String nhapDuLieuTuExcel(String filePath) {
             return dskq;
         }
         
+        // 🚀 NẾU TÌM ĐIỂM CAO NHẤT (Index 12) - THEO TỪNG THÍ SINH (Bất chấp ngành/tổ hợp)
+        if (index == 12) {
+            
+            // Dùng LinkedHashMap để phân rổ theo thí sinh
+            java.util.LinkedHashMap<String, ArrayList<nguyenVongXetTuyenETT>> mapHocSinh = new java.util.LinkedHashMap<>();
+            
+            // BƯỚC 1: Phân rổ. Chìa khóa chỉ là CCCD
+            for (nguyenVongXetTuyenETT nv : ds) {
+                if (nv != null && nv.getNnCccd() != null) {
+                    if (!tuKhoa.isEmpty() && !nv.getNnCccd().toLowerCase().equals(tuKhoa)) {
+                        continue; 
+                    }
+                    
+                    String cccd = nv.getNnCccd();
+                    
+                    if (!mapHocSinh.containsKey(cccd)) {
+                        mapHocSinh.put(cccd, new ArrayList<>());
+                    }
+                    mapHocSinh.get(cccd).add(nv);
+                }
+            }
+
+            // BƯỚC 2: Quét từng rổ để tìm ra nguyện vọng có điểm xét tuyển cao nhất
+            for (String cccd : mapHocSinh.keySet()) {
+                ArrayList<nguyenVongXetTuyenETT> listNV = mapHocSinh.get(cccd);
+                double diemMax = -1.0;
+                
+                // Tìm Điểm Max
+                for (nguyenVongXetTuyenETT nv : listNV) {
+                    // Không cần loại trừ "Không" vì Tuyển thẳng (30đ) cũng có quyền là điểm cao nhất
+                    if (nv.getDiemXetTuyen() > diemMax) {
+                        diemMax = nv.getDiemXetTuyen();
+                    }
+                }
+                
+                // BƯỚC 3: Xuất hàng. Lấy ra TẤT CẢ các nguyện vọng của đứa đó mà có điểm = điểm Max
+                // (Lấy tất cả đề phòng trường hợp nó nộp 2 ngành khác nhau nhưng điểm xét tuyển bằng y chang nhau)
+                for (nguyenVongXetTuyenETT nv : listNV) {
+                    if (nv.getDiemXetTuyen() == diemMax) {
+                        dskq.add(nv);
+                    }
+                }
+            }
+            return dskq;
+        }
+        
         for(nguyenVongXetTuyenETT ct : ds)
         {
             if(ct == null)

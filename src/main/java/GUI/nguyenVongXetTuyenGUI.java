@@ -125,6 +125,7 @@ public nguyenVongXetTuyenGUI() {
         cbxTimKiem.addItem("Phương thức");
         cbxTimKiem.addItem("Tổ hợp");
         cbxTimKiem.addItem("THM Cao Nhất");
+        cbxTimKiem.addItem("Điểm cao nhất");
     }
     
     public void thucHienTimKiem()
@@ -132,7 +133,7 @@ public nguyenVongXetTuyenGUI() {
         String tim = txtTimKiem.getText().trim();
         int index = cbxTimKiem.getSelectedIndex();
         
-        if(tim.isEmpty() && index != 11)
+        if(tim.isEmpty() && index != 11 && index != 12)
         {
             JOptionPane.showMessageDialog(this, "Vui lòng nhập nội dung cần tìm");
             txtTimKiem.requestFocus();
