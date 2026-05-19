@@ -25,6 +25,7 @@ import EXCEL.ExcelHelper;
 import CAL.*;
 import FUNC_GUI.detailNguyenVong;
 import FUNC_GUI.excelNguyenVong;
+import FUNC_GUI.timKiemNangCaoNguỵenVong;
 import java.lang.reflect.Array;
 
 public class nguyenVongXetTuyenGUI extends BaseTableForNguyenVongGUIonly {
@@ -62,6 +63,7 @@ public nguyenVongXetTuyenGUI() {
         btnExcel.addActionListener(e -> hienThiExcel());
         btnReFresh.addActionListener(e -> thucHienRefresh());
         btnTimKiem.addActionListener(e -> thucHienTimKiem());
+        btnLoc.addActionListener(e -> thucHienTimKiemNangCao());
         btnChiTiet.addActionListener(e -> hienThiChiTietNV());
         
         loadDataToTable();
@@ -168,6 +170,47 @@ public nguyenVongXetTuyenGUI() {
         if(dsHienThi.isEmpty())
         {
             JOptionPane.showMessageDialog(this, "Không tìm thấy dữ liệu phù hợp");
+        }
+    }
+    
+    public void thucHienTimKiemNangCao()
+    {
+        JFrame topFrame = (JFrame) SwingUtilities.getWindowAncestor(this);
+        timKiemNangCaoNguỵenVong dialog = new timKiemNangCaoNguỵenVong(topFrame, true);
+        dialog.setVisible(true);
+        
+        if(dialog.getXacNhan())
+        {
+            // Lấy danh sách từ form con về
+            ArrayList<nguyenVongXetTuyenETT> danhSachDaLoc = dialog.getDanhSachLoc();
+            
+            // Ép vào Vector y chang hàm Tìm kiếm cơ bản của ông
+            List<Vector> dsHienThi = new ArrayList<>();
+            for (nguyenVongXetTuyenETT ct : danhSachDaLoc) {
+                Vector row = new Vector();
+                row.add(ct.getIdNv());
+                row.add(ct.getNnCccd());
+                row.add(ct.getNvMaNganh());
+                row.add(ct.getNvTt());
+                row.add(ct.getDiemThxt());
+                row.add(ct.getDiemUtqdGoc());
+                row.add(ct.getDiemUtqd());
+                row.add(ct.getDiemCong());
+                row.add(ct.getDiemXetTuyen());
+                row.add(ct.getNvKetQua());
+                row.add(ct.getNvKeys());
+                row.add(ct.getTtPhuongThuc());
+                row.add(ct.getTtThm());
+
+                dsHienThi.add(row);
+            }
+
+            // Gọi hàm render lên bảng
+            setTableData(dsHienThi);
+            
+            if (dsHienThi.isEmpty()) {
+                JOptionPane.showMessageDialog(this, "Không tìm thấy dữ liệu phù hợp với bộ lọc!");
+            }
         }
     }
     

@@ -975,4 +975,80 @@ public String nhapDuLieuTuExcel(String filePath) {
     public int demSoThangDangKyKhongTrung(String maNganh) {
         return data.demSoThangDangKyKhongTrung(maNganh);
     }
+public ArrayList<nguyenVongXetTuyenETT> timKiemNangCao(String cccd, String maNganh, String toHop, int thuTuNV, String phuongThuc, String ketQua) {
+        
+        if (ds == null) {
+            layDanhSach();
+        }
+        
+        ArrayList<nguyenVongXetTuyenETT> dskq = new ArrayList<>();
+        
+        // Chuẩn hóa đầu vào
+        String fCccd = (cccd != null) ? cccd.trim().toLowerCase() : "";
+        String fMaNganh = (maNganh != null) ? maNganh.trim().toLowerCase() : "";
+        String fToHop = (toHop != null) ? toHop.trim().toLowerCase() : "";
+        String fPhuongThuc = (phuongThuc != null) ? phuongThuc.trim().toLowerCase() : "";
+        String fKetQua = (ketQua != null) ? ketQua.trim().toLowerCase() : "";
+
+        // Xử lý các giá trị mặc định của ComboBox
+        if (fPhuongThuc.equals("tất cả")) fPhuongThuc = "";
+        if (fKetQua.equals("tất cả")) fKetQua = "";
+        if (fToHop.equals("tất cả")) fToHop = "";
+
+        for (nguyenVongXetTuyenETT ct : ds) {
+            if (ct == null) continue;
+
+            boolean isMatch = true; 
+
+            // 1. Lọc theo CCCD
+            if (!fCccd.isEmpty()) {
+                if (ct.getNnCccd() == null || !ct.getNnCccd().toLowerCase().contains(fCccd)) {
+                    isMatch = false;
+                }
+            }
+
+            // 2. Lọc theo Mã Ngành
+            if (isMatch && !fMaNganh.isEmpty()) {
+                if (ct.getNvMaNganh() == null || !ct.getNvMaNganh().toLowerCase().contains(fMaNganh)) {
+                    isMatch = false;
+                }
+            }
+
+            // 3. Lọc theo Tổ Hợp
+            if (isMatch && !fToHop.isEmpty()) {
+                if (ct.getTtThm() == null || !ct.getTtThm().toLowerCase().contains(fToHop)) {
+                    isMatch = false;
+                }
+            }
+
+            // 4. Lọc theo Thứ tự NV (Tìm chính xác bằng Exact Match)
+            // 🚀 ĐÃ SỬA: Nếu JSpinner là 0 (hoặc số âm) thì coi như "Tất cả" (Không lọc)
+            if (isMatch && thuTuNV > 0) {
+                if (ct.getNvTt() != thuTuNV) {
+                    isMatch = false;
+                }
+            }
+
+            // 5. Lọc theo Phương thức
+            if (isMatch && !fPhuongThuc.isEmpty()) {
+                if (ct.getTtPhuongThuc() == null || !ct.getTtPhuongThuc().toLowerCase().equals(fPhuongThuc)) {
+                    isMatch = false;
+                }
+            }
+
+            // 6. Lọc theo Kết quả
+            if (isMatch && !fKetQua.isEmpty()) {
+                if (ct.getNvKetQua() == null || !ct.getNvKetQua().toLowerCase().equals(fKetQua)) {
+                    isMatch = false;
+                }
+            }
+
+            // Nếu khớp hết thì gom vào
+            if (isMatch) {
+                dskq.add(ct);
+            }
+        }
+
+        return dskq;
+    }
 }

@@ -15,7 +15,8 @@ import CONFIG.RoundedButton;
 public class BaseTableForNguyenVongGUIonly extends JPanel {
 
     // Khai báo các components
-    public JButton btnThem, btnSua, btnXoa, btnExcel, btnReFresh, btnTimKiem, btnChiTiet, btnTinhToanKetQua;
+    // 🚀 THÊM NÚT LỌC Ở ĐÂY
+    public JButton btnThem, btnSua, btnXoa, btnExcel, btnReFresh, btnTimKiem, btnLoc, btnChiTiet, btnTinhToanKetQua;
     public JComboBox<String> cbxTimKiem;
     public JComboBox<String> cbxTrangThai;
     public JTextField txtTimKiem;
@@ -34,7 +35,6 @@ public class BaseTableForNguyenVongGUIonly extends JPanel {
     public int currentPage = 1;
     public final int rowsPerPage = 20; // CHỐT HIỂN THỊ 20 DÒNG 1 TRANG
     public int totalPages = 1;
-//    private List<Object[]> fullDataList = new ArrayList<>(); // Biến lưu trữ toàn bộ dữ liệu
     public List<Vector> fullDataList = new ArrayList<>();
 
     public BaseTableForNguyenVongGUIonly() {
@@ -53,15 +53,13 @@ public class BaseTableForNguyenVongGUIonly extends JPanel {
         pnlTop.setBackground(Color.WHITE);
 
         // 1. GroupBox: Xử lý chức năng (Bên trái)
-//        pnlActions = new JPanel(new FlowLayout(FlowLayout.LEFT, 10, 10));
-//        pnlActions.setBackground(Color.WHITE);
-JPanel wrapper = new JPanel(new FlowLayout(FlowLayout.CENTER, 10, 10));
-wrapper.setBackground(Color.WHITE);
+        JPanel wrapper = new JPanel(new FlowLayout(FlowLayout.CENTER, 10, 10));
+        wrapper.setBackground(Color.WHITE);
 
-pnlActions = new JPanel(new GridLayout(1, 6, 13, 10));
-pnlActions.setBackground(Color.WHITE);
+        pnlActions = new JPanel(new GridLayout(1, 6, 13, 10));
+        pnlActions.setBackground(Color.WHITE);
 
-wrapper.add(pnlActions);
+        wrapper.add(pnlActions);
         
         actionBorder = BorderFactory.createTitledBorder(
             BorderFactory.createLineBorder(new Color(200, 200, 200)), 
@@ -71,20 +69,14 @@ wrapper.add(pnlActions);
         );
         pnlActions.setBorder(BorderFactory.createCompoundBorder(actionBorder, new EmptyBorder(5, 5, 5, 5)));
 
-//        btnThem = new JButton("THÊM");
-//        btnSua = new JButton("SỬA");
-//        btnXoa = new JButton("XÓA");
-//        btnChiTiet = new JButton("CHI TIẾT");
-//        btnExcel = new JButton("EXCEL");
-//        btnReFresh = new JButton("Refresh");
-btnThem = new RoundedButton("THÊM");
-btnSua = new RoundedButton("SỬA");
-btnXoa = new RoundedButton("XÓA");
-btnChiTiet = new RoundedButton("CHI TIẾT");
-btnExcel = new RoundedButton("EXCEL");
-btnReFresh = new RoundedButton("Refresh");
-btnTimKiem = new RoundedButton("TÌM KIẾM");
-btnTinhToanKetQua = new RoundedButton("TÍNH TOÁN KQ");
+        btnThem = new RoundedButton("THÊM");
+        btnSua = new RoundedButton("SỬA");
+        btnXoa = new RoundedButton("XÓA");
+        btnChiTiet = new RoundedButton("CHI TIẾT");
+        btnExcel = new RoundedButton("EXCEL");
+        btnReFresh = new RoundedButton("Refresh");
+        btnTimKiem = new RoundedButton("TÌM KIẾM");
+        btnTinhToanKetQua = new RoundedButton("TÍNH TOÁN KQ");
         
         btnSua.setEnabled(false);
         btnXoa.setEnabled(false);
@@ -99,7 +91,6 @@ btnTinhToanKetQua = new RoundedButton("TÍNH TOÁN KQ");
         pnlActions.add(btnReFresh);
 
         // 2. GroupBox: Tìm kiếm (Bên phải)
-        // 🔥 FIX: Thay FlowLayout bằng GridBagLayout để tự động căn giữa theo chiều dọc
         JPanel pnlSearch = new JPanel(new GridBagLayout());
         pnlSearch.setBackground(Color.WHITE);
         
@@ -115,6 +106,9 @@ btnTinhToanKetQua = new RoundedButton("TÍNH TOÁN KQ");
         txtTimKiem = new JTextField(15);
         btnTimKiem = new JButton("TÌM KIẾM");
         
+        // 🚀 KHỞI TẠO NÚT LỌC Ở ĐÂY
+        btnLoc = new JButton("LỌC"); 
+        
         // Tạo một panel con (inner panel) dùng FlowLayout để dàn hàng ngang
         JPanel innerSearch = new JPanel(new FlowLayout(FlowLayout.RIGHT, 10, 0));
         innerSearch.setBackground(Color.WHITE);
@@ -122,6 +116,7 @@ btnTinhToanKetQua = new RoundedButton("TÍNH TOÁN KQ");
         innerSearch.add(cbxTimKiem);
         innerSearch.add(txtTimKiem);
         innerSearch.add(btnTimKiem);
+        innerSearch.add(btnLoc); // 🚀 ÉP NÚT LỌC VÀO CẠNH NÚT TÌM KIẾM
 
         // Thêm panel con vào panel Tìm kiếm
         pnlSearch.add(innerSearch);
@@ -336,6 +331,9 @@ private void styleComponents() {
     btnChiTiet.setIcon(loadAndScaleIcon("information.png", iconSize));
     btnTimKiem.setIcon(loadAndScaleIcon("search.png", 24));
     btnTinhToanKetQua.setIcon(loadAndScaleIcon("cogwheel.png", iconSize));
+    
+    // 🚀 GẮN ICON CHO NÚT LỌC (Ông nhớ kiếm 1 cái file filter.png chép vào thư mục IMG nha)
+    btnLoc.setIcon(loadAndScaleIcon("filter.png", 24));
 
     // Ép chữ nằm phía DƯỚI icon và căn giữa cho 5 nút chức năng
     JButton[] actionBtns = {btnThem, btnSua, btnXoa, btnExcel, btnReFresh,btnChiTiet,btnTinhToanKetQua};
@@ -348,23 +346,24 @@ private void styleComponents() {
         }
     }
     
-    // Riêng nút Tìm Kiếm thì để chữ ngang hàng với Icon cho đỡ tốn diện tích
+    // Riêng nút Tìm Kiếm và Lọc thì để chữ ngang hàng với Icon cho đỡ tốn diện tích
     if (btnTimKiem.getIcon() != null) {
         btnTimKiem.setVerticalTextPosition(SwingConstants.CENTER);
         btnTimKiem.setHorizontalTextPosition(SwingConstants.RIGHT);
     }
+    if (btnLoc.getIcon() != null) {
+        btnLoc.setVerticalTextPosition(SwingConstants.CENTER);
+        btnLoc.setHorizontalTextPosition(SwingConstants.RIGHT);
+    }
 
     // ===== STYLE BUTTON CHUNG =====
-    JButton[] allBtns = {btnThem, btnSua,btnTinhToanKetQua, btnXoa, btnExcel, btnReFresh, btnTimKiem, btnFirst, btnPrev, btnNext, btnLast, btnChiTiet};
+    // 🚀 ĐÃ BỔ SUNG btnLoc VÀO MẢNG ĐỂ NÓ NHẬN FONT CHỮ VÀ HIỆU ỨNG CHUỘT LUÔN
+    JButton[] allBtns = {btnThem, btnSua,btnTinhToanKetQua, btnXoa, btnExcel, btnReFresh, btnTimKiem, btnLoc, btnFirst, btnPrev, btnNext, btnLast, btnChiTiet};
     for (JButton btn : allBtns) {
         btn.setFont(mainFont);
         btn.setFocusPainted(false);
         btn.setCursor(new Cursor(Cursor.HAND_CURSOR));
     }
-
-    // Nút Xóa vẫn để màu đỏ cho cảnh báo nguy hiểm
-//    btnXoa.setBackground(new Color(231, 76, 60));
-//    btnXoa.setForeground(Color.WHITE);
 
     // ===== INPUT =====
     txtTimKiem.setFont(mainFont);
@@ -398,7 +397,6 @@ private void styleComponents() {
     table.setShowGrid(false);
     table.setIntercellSpacing(new Dimension(0, 0));
 
-    // ===== RENDERER (CĂN GIỮA + ZEBRA STRIPE) =====
 // ===== RENDERER (CĂN GIỮA + ZEBRA STRIPE + ĐỔI MÀU CHỮ THEO TRẠNG THÁI) =====
 
     table.setDefaultRenderer(Object.class, new DefaultTableCellRenderer() {
@@ -445,7 +443,6 @@ if (column == cotTrangThaiIndex) {
                 } else if (status.equalsIgnoreCase("Không xét")) {
                     c.setForeground(new Color(108, 122, 137)); // Xám đậm
                 } else if (status.equalsIgnoreCase("Bỏ qua")) {
-                    // 🚀 THÊM MỚI Ở ĐÂY: Chữ Bỏ qua màu vàng cam (dễ nhìn trên nền trắng)
                     c.setForeground(new Color(204, 153, 0));
                 } else {
                     c.setForeground(isSelected ? Color.WHITE : Color.BLACK);

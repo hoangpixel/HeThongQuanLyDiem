@@ -98,7 +98,7 @@ public class selectMon extends javax.swing.JDialog {
     
     public void insertTable()
     {
-        model.setRowCount(0); // xóa dữ liệu cũ (nếu có)
+        model.setRowCount(0);
 
         model.addRow(new Object[]{"TO", "Toán"});
         model.addRow(new Object[]{"LI", "Lý"});
@@ -109,7 +109,8 @@ public class selectMon extends javax.swing.JDialog {
         model.addRow(new Object[]{"VA", "Văn"});
         model.addRow(new Object[]{"N1", "Ngoại ngữ"});
         model.addRow(new Object[]{"TI", "Tin học"});
-        model.addRow(new Object[]{"KHAC", "Môn khác"});
+        model.addRow(new Object[]{"CNCN", "Công nghệ Công nghiệp"});
+        model.addRow(new Object[]{"CNNN", "Công nghệ Nông nghiệp"});
         model.addRow(new Object[]{"KTPL", "Kinh tế & Pháp luật"});
         model.addRow(new Object[]{"NK1", "Năng khiếu 1"});
         model.addRow(new Object[]{"NK2", "Năng khiếu 2"});
