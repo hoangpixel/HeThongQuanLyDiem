@@ -8,6 +8,7 @@ import java.awt.*;
 import java.awt.geom.Arc2D;
 import java.util.*;
 import java.util.stream.Collectors;
+import javax.swing.table.DefaultTableCellRenderer;
 
 public class ThongKeGUI extends JPanel {
 
@@ -79,7 +80,7 @@ public class ThongKeGUI extends JPanel {
         pnlSummary.setMaximumSize(new Dimension(Integer.MAX_VALUE, 110));
         
         pnlSummary.add(createMiniCard("THÍ SINH", tsBus.layDanhSach().size(), "Hồ sơ", new Color(52, 152, 219)));
-        pnlSummary.add(createMiniCard("NGUYỆN VỌNG", nvBus.layDanhSach().size(), "Lượt chọn", new Color(46, 204, 113)));
+        pnlSummary.add(createMiniCard("NGUYỆN VỌNG", nvBus.layDanhSach().size(), "Đăng ký", new Color(46, 204, 113)));
         pnlSummary.add(createMiniCard("CHỨNG CHỈ", ccBus.layDanhSach().size(), "Văn bằng", new Color(241, 196, 15)));
         pnlSummary.add(createMiniCard("GIẢI THƯỞNG", gtBus.layDanhSach().size(), "Giải thưởng", new Color(231, 76, 60)));
         
@@ -125,10 +126,84 @@ public class ThongKeGUI extends JPanel {
         pnlRow3.add(createChartPanel("Phân loại Chứng chỉ (Biểu đồ Ngang)", mapCC, "hbar", 400));
 
         mainContent.add(pnlRow3);
+        mainContent.add(Box.createVerticalStrut(25));
+
+        // ====================================================================
+        // 🚀 THÊM BẢNG 1: THỐNG KÊ SỐ LƯỢNG TRÚNG TUYỂN THEO TỪNG PHƯƠNG THỨC
+        // ====================================================================
+        mainContent.add(createThongKePhuongThucTable());
+        mainContent.add(Box.createVerticalStrut(25));
+
+        // ====================================================================
+        // 🚀 THÊM BẢNG 2: DANH SÁCH CHI TIẾT THÍ SINH ĐẬU (DÀI HƠN)
+        // ====================================================================
+        mainContent.add(createChiTietTrungTuyenTable());
+        mainContent.add(Box.createVerticalStrut(40)); // Padding đít cho dễ cuộn
 
         mainContent.revalidate();
         mainContent.repaint();
     }
+    
+//    private void initDashboard() {
+//        mainContent.removeAll();
+//
+//        // 1. Summary Cards
+//        JPanel pnlSummary = new JPanel(new GridLayout(1, 4, 25, 0));
+//        pnlSummary.setOpaque(false);
+//        pnlSummary.setPreferredSize(new Dimension(0, 110)); 
+//        pnlSummary.setMaximumSize(new Dimension(Integer.MAX_VALUE, 110));
+//        
+//        pnlSummary.add(createMiniCard("THÍ SINH", tsBus.layDanhSach().size(), "Hồ sơ", new Color(52, 152, 219)));
+//        pnlSummary.add(createMiniCard("NGUYỆN VỌNG", nvBus.layDanhSach().size(), "Lượt chọn", new Color(46, 204, 113)));
+//        pnlSummary.add(createMiniCard("CHỨNG CHỈ", ccBus.layDanhSach().size(), "Văn bằng", new Color(241, 196, 15)));
+//        pnlSummary.add(createMiniCard("GIẢI THƯỞNG", gtBus.layDanhSach().size(), "Giải thưởng", new Color(231, 76, 60)));
+//        
+//        mainContent.add(pnlSummary);
+//        mainContent.add(Box.createVerticalStrut(25));
+//
+//        // 2. Line Chart: Trend
+//        Map<String, Integer> birthYearMap = new TreeMap<>();
+//        for (thiSinhXetTuyenETT ts : tsBus.layDanhSach()) {
+//            if (ts.getNgaySinh() != null) {
+//                Calendar cal = Calendar.getInstance();
+//                cal.setTime(ts.getNgaySinh());
+//                birthYearMap.put(String.valueOf(cal.get(Calendar.YEAR)), birthYearMap.getOrDefault(String.valueOf(cal.get(Calendar.YEAR)), 0) + 1);
+//            }
+//        }
+//        mainContent.add(createChartPanel("Xu hướng Năm sinh của Thí sinh (Biểu đồ Đường)", birthYearMap, "line", 380));
+//        mainContent.add(Box.createVerticalStrut(25));
+//
+//        // 3. Bar & Pie Row
+//        JPanel pnlRow2 = new JPanel(new GridLayout(1, 2, 25, 0));
+//        pnlRow2.setOpaque(false);
+//        pnlRow2.setPreferredSize(new Dimension(0, 400));
+//        pnlRow2.setMaximumSize(new Dimension(Integer.MAX_VALUE, 400));
+//        
+//        pnlRow2.add(createChartPanel("Thí sinh theo Khu vực (Biểu đồ Cột)", tsBus.thongKeTheoKhuVuc(), "bar", 400));
+//        pnlRow2.add(createChartPanel("Thí sinh theo Đối tượng (Biểu đồ Tròn)", tsBus.thongKeTheoDoiTuong(), "pie", 400));
+//        
+//        mainContent.add(pnlRow2);
+//        mainContent.add(Box.createVerticalStrut(25));
+//
+//        // 4. Accounts & Certificates
+//        JPanel pnlRow3 = new JPanel(new GridLayout(1, 2, 25, 0));
+//        pnlRow3.setOpaque(false);
+//        pnlRow3.setPreferredSize(new Dimension(0, 400));
+//        pnlRow3.setMaximumSize(new Dimension(Integer.MAX_VALUE, 400));
+//
+//        Map<String, Integer> mapTK = tkBus.layDanhSach().stream()
+//                .collect(Collectors.groupingBy(tk -> tk.getTrangThai() == 1 ? "Hoạt động" : "Bị khóa", Collectors.summingInt(e -> 1)));
+//        pnlRow3.add(createChartPanel("Trạng thái Tài khoản (Biểu đồ Tròn)", mapTK, "pie", 400));
+//
+//        Map<String, Integer> mapCC = ccBus.layDanhSach().stream()
+//                .collect(Collectors.groupingBy(cc -> cc.getLoaiChungChi() == null || cc.getLoaiChungChi().isEmpty() ? "Khác" : cc.getLoaiChungChi(), Collectors.summingInt(e -> 1)));
+//        pnlRow3.add(createChartPanel("Phân loại Chứng chỉ (Biểu đồ Ngang)", mapCC, "hbar", 400));
+//
+//        mainContent.add(pnlRow3);
+//
+//        mainContent.revalidate();
+//        mainContent.repaint();
+//    }
 
     private JPanel createMiniCard(String title, int value, String unit, Color color) {
         JPanel card = new JPanel(new BorderLayout()) {
@@ -337,6 +412,231 @@ public class ThongKeGUI extends JPanel {
                 g2.drawString(String.format("%,d", val), x - 12, y - 12);
                 prevX = x; prevY = y; i++;
             }
+        }
+    }
+    
+// ========================================================================
+    // 🚀 BẢNG 1: THỐNG KÊ PHƯƠNG THỨC (ĐÃ ÁP DỤNG KHUÔN PHÂN TRANG + TÌM KIẾM)
+    // ========================================================================
+    private JPanel createThongKePhuongThucTable() {
+        String[] cols = {"Mã Ngành", "Tên Ngành", "Xét Tuyển Thẳng", "Xét THPT", "Đánh giá V-SAT", "ĐGNL HCM", "Tổng Đậu"};
+        java.util.List<Object[]> dataList = new ArrayList<>();
+
+        java.util.HashMap<String, java.util.HashMap<String, Integer>> thongKeMap = new java.util.HashMap<>();
+        for (Entity.nguyenVongXetTuyenETT nv : nvBus.layDanhSach()) {
+            if ("Đã đậu".equals(nv.getNvKetQua())) {
+                String nganh = nv.getNvMaNganh();
+                String pt = nv.getTtPhuongThuc();
+                thongKeMap.putIfAbsent(nganh, new java.util.HashMap<>());
+                thongKeMap.get(nganh).put(pt, thongKeMap.get(nganh).getOrDefault(pt, 0) + 1);
+            }
+        }
+        
+        BUS.nganhBUS nBus = new BUS.nganhBUS();
+        java.util.HashMap<String, String> mapTenNganh = new java.util.HashMap<>();
+        for (Entity.nganhETT ng : nBus.layDanhSach()) { mapTenNganh.put(ng.getManganh(), ng.getTennganh()); }
+
+        for (String maNganh : thongKeMap.keySet()) {
+            java.util.HashMap<String, Integer> ptMap = thongKeMap.get(maNganh);
+            int slXTT = ptMap.getOrDefault("Xét tuyển thẳng", 0);
+            int slTHPT = ptMap.getOrDefault("Xét THPT", 0);
+            int slVSAT = ptMap.getOrDefault("Đánh giá V-SAT", 0);
+            int slDGNL = ptMap.getOrDefault("ĐGNL HCM", 0);
+            int tong = slXTT + slTHPT + slVSAT + slDGNL;
+            dataList.add(new Object[]{maNganh, mapTenNganh.getOrDefault(maNganh, "Chưa xác định"), slXTT, slTHPT, slVSAT, slDGNL, tong});
+        }
+
+        // 🚀 Gọi Khuôn thần thánh ra xài
+        return new PaginatedTablePanel("Thống kê Số lượng Trúng tuyển theo Phương thức", cols, dataList);
+    }
+
+    // ========================================================================
+    // 🚀 BẢNG 2: CHI TIẾT TRÚNG TUYỂN (ĐÃ ÁP DỤNG KHUÔN PHÂN TRANG + TÌM KIẾM)
+    // ========================================================================
+    private JPanel createChiTietTrungTuyenTable() {
+        String[] cols = {"Mã Ngành", "CCCD", "Thứ Tự NV", "Điểm Xét Tuyển", "Phương Thức", "Tổ Hợp"};
+        java.util.List<Object[]> dataList = new ArrayList<>();
+
+        ArrayList<Entity.nguyenVongXetTuyenETT> dsDau = new ArrayList<>();
+        for (Entity.nguyenVongXetTuyenETT nv : nvBus.layDanhSach()) {
+            if ("Đã đậu".equals(nv.getNvKetQua())) dsDau.add(nv);
+        }
+        
+        dsDau.sort((nv1, nv2) -> {
+            int nganhCompare = nv1.getNvMaNganh().compareTo(nv2.getNvMaNganh());
+            if (nganhCompare != 0) return nganhCompare;
+            return nv1.getNnCccd().compareTo(nv2.getNnCccd()); 
+        });
+
+        for (Entity.nguyenVongXetTuyenETT nv : dsDau) {
+            dataList.add(new Object[]{nv.getNvMaNganh(), nv.getNnCccd(), nv.getNvTt(), nv.getDiemXetTuyen(), nv.getTtPhuongThuc(), nv.getTtThm()});
+        }
+
+        // 🚀 Gọi Khuôn thần thánh ra xài
+        return new PaginatedTablePanel("Danh sách Chi tiết Thí sinh Trúng tuyển", cols, dataList);
+    }
+
+    // Vẫn giữ lại cái hàm styleTable nha ông
+    private void styleTable(JTable table) {
+        table.setRowHeight(30);
+        table.setShowGrid(false);
+        table.setIntercellSpacing(new Dimension(0, 0));
+        table.setFont(new Font("Segoe UI", Font.PLAIN, 13));
+        table.setSelectionBackground(new Color(52, 152, 219));
+        table.setSelectionForeground(Color.WHITE);
+
+        javax.swing.table.JTableHeader header = table.getTableHeader();
+        header.setFont(new Font("Segoe UI", Font.BOLD, 13));
+        header.setPreferredSize(new Dimension(100, 35));
+        header.setBackground(new Color(41, 128, 185)); 
+        header.setForeground(Color.WHITE);
+        ((javax.swing.table.DefaultTableCellRenderer) header.getDefaultRenderer()).setHorizontalAlignment(JLabel.CENTER);
+
+        table.setDefaultRenderer(Object.class, new javax.swing.table.DefaultTableCellRenderer() {
+            @Override
+            public Component getTableCellRendererComponent(JTable table, Object value, boolean isSelected, boolean hasFocus, int row, int column) {
+                Component c = super.getTableCellRendererComponent(table, value, isSelected, hasFocus, row, column);
+                setHorizontalAlignment(JLabel.CENTER);
+                if (!isSelected) c.setBackground(row % 2 == 0 ? Color.WHITE : new Color(245, 245, 245));
+                return c;
+            }
+        });
+    }
+    
+    // ========================================================================
+    // 🚀 KHUÔN ĐÚC BẢNG NĂNG ĐỘNG (CÓ SEARCH ĐỘNG + PHÂN TRANG)
+    // ========================================================================
+// ========================================================================
+    // 🚀 KHUÔN ĐÚC BẢNG NĂNG ĐỘNG (ĐÃ THÊM VIỀN BO GÓC GIỐNG CHART)
+    // ========================================================================
+    private class PaginatedTablePanel extends JPanel {
+        private JTable table;
+        private javax.swing.table.DefaultTableModel model;
+        private java.util.List<Object[]> allData;
+        private java.util.List<Object[]> filteredData;
+        private int currentPage = 1;
+        private int rowsPerPage = 15; // Mỗi trang 15 dòng
+        private JLabel lblPage;
+        private JButton btnPrev, btnNext;
+        private JTextField txtSearch;
+
+        public PaginatedTablePanel(String title, String[] columns, java.util.List<Object[]> data) {
+            this.allData = data;
+            this.filteredData = new ArrayList<>(data);
+
+            setLayout(new BorderLayout(0, 10));
+            
+            // 🚀 TẮT OPAQUE ĐỂ VẼ ĐƯỢC BO GÓC KHÔNG BỊ LẸM TRẮNG
+            setOpaque(false);
+            setBackground(COLOR_CARD);
+            
+            // 🚀 Chỉnh lại lề cho y chang các biểu đồ khác (20px)
+            setBorder(new EmptyBorder(20, 20, 20, 20)); 
+            setPreferredSize(new Dimension(0, 450)); 
+            setMaximumSize(new Dimension(Integer.MAX_VALUE, 450));
+
+            // --- HEADER: TITLE + THANH TÌM KIẾM ---
+            JPanel pnlTop = new JPanel(new BorderLayout());
+            pnlTop.setOpaque(false);
+            
+            JLabel lblTitle = new JLabel(title);
+            lblTitle.setFont(new Font("Segoe UI", Font.BOLD, 17));
+            lblTitle.setForeground(COLOR_TEXT);
+            pnlTop.add(lblTitle, BorderLayout.WEST);
+
+            JPanel pnlSearch = new JPanel(new FlowLayout(FlowLayout.RIGHT, 10, 0));
+            pnlSearch.setOpaque(false);
+            JLabel lblLoc = new JLabel("Lọc nhanh:");
+            lblLoc.setFont(new Font("Segoe UI", Font.BOLD, 13));
+            
+            txtSearch = new JTextField(20);
+            txtSearch.setPreferredSize(new Dimension(200, 30));
+            txtSearch.addKeyListener(new java.awt.event.KeyAdapter() {
+                public void keyReleased(java.awt.event.KeyEvent evt) {
+                    updateFilter();
+                }
+            });
+            pnlSearch.add(lblLoc);
+            pnlSearch.add(txtSearch);
+            pnlTop.add(pnlSearch, BorderLayout.EAST);
+
+            add(pnlTop, BorderLayout.NORTH);
+
+            // --- TABLE ---
+            model = new javax.swing.table.DefaultTableModel(columns, 0) {
+                public boolean isCellEditable(int r, int c) { return false; }
+            };
+            table = new JTable(model);
+            styleTable(table); 
+            
+            JScrollPane scroll = new JScrollPane(table);
+            scroll.setBorder(BorderFactory.createLineBorder(new Color(230, 230, 230))); // Thêm viền nhẹ cho bảng bên trong
+            add(scroll, BorderLayout.CENTER);
+
+            // --- BỘ ĐIỀU KHIỂN PHÂN TRANG ---
+            JPanel pnlBot = new JPanel(new FlowLayout(FlowLayout.CENTER, 20, 5));
+            pnlBot.setOpaque(false);
+            
+            btnPrev = new JButton("<< Trước");
+            btnNext = new JButton("Sau >>");
+            lblPage = new JLabel("1/1");
+            lblPage.setFont(new Font("Segoe UI", Font.BOLD, 13));
+            
+            Font btnFont = new Font("Segoe UI", Font.PLAIN, 12);
+            btnPrev.setFont(btnFont); btnNext.setFont(btnFont);
+            btnPrev.setCursor(new Cursor(Cursor.HAND_CURSOR));
+            btnNext.setCursor(new Cursor(Cursor.HAND_CURSOR));
+
+            btnPrev.addActionListener(e -> { if(currentPage > 1) { currentPage--; renderPage(); }});
+            btnNext.addActionListener(e -> { if(currentPage < getTotalPages()) { currentPage++; renderPage(); }});
+            
+            pnlBot.add(btnPrev); 
+            pnlBot.add(lblPage); 
+            pnlBot.add(btnNext);
+            add(pnlBot, BorderLayout.SOUTH);
+
+            renderPage(); 
+        }
+
+        // 🚀 THÊM HÀM VẼ BO GÓC BẰNG GRAPHICS2D (Tương tự CreateChartPanel)
+        @Override
+        protected void paintComponent(Graphics g) {
+            Graphics2D g2 = (Graphics2D) g;
+            g2.setRenderingHint(RenderingHints.KEY_ANTIALIASING, RenderingHints.VALUE_ANTIALIAS_ON);
+            g2.setColor(getBackground());
+            g2.fillRoundRect(0, 0, getWidth(), getHeight(), 20, 20); // Bo góc 20px
+            super.paintComponent(g);
+        }
+
+        private void updateFilter() {
+            String text = txtSearch.getText().trim().toLowerCase();
+            filteredData = allData.stream().filter(row -> {
+                for(Object cell : row) {
+                    if(cell != null && cell.toString().toLowerCase().contains(text)) return true;
+                }
+                return false;
+            }).collect(Collectors.toList());
+            currentPage = 1; 
+            renderPage();
+        }
+
+        private int getTotalPages() {
+            int total = (int) Math.ceil((double)filteredData.size() / rowsPerPage);
+            return total == 0 ? 1 : total;
+        }
+
+        private void renderPage() {
+            model.setRowCount(0); 
+            int start = (currentPage - 1) * rowsPerPage;
+            int end = Math.min(start + rowsPerPage, filteredData.size());
+            
+            for(int i = start; i < end; i++) {
+                model.addRow(filteredData.get(i));
+            }
+            
+            lblPage.setText("Trang " + currentPage + " / " + getTotalPages());
+            btnPrev.setEnabled(currentPage > 1);
+            btnNext.setEnabled(currentPage < getTotalPages());
         }
     }
 }
