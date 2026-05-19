@@ -368,16 +368,30 @@ public class diemCongXetTuyenGUI extends BaseTableGUI {
         for (diemCongETT dc : busDiemCong.ds) {
             boolean matchLoc = true;
             String tenNganhOfDc = getTenNganh(dc.getMaNganh());
-            if (locNganh != null && !locNganh.equals("Tất cả") && !tenNganhOfDc.equals(locNganh)) matchLoc = false;
-            if (locToHop != null && !locToHop.equals("Tất cả") && !dc.getMaToHop().equals(locToHop)) matchLoc = false;
-            if (locPT != null && !locPT.equals("Tất cả") && !dc.getPhuongThuc().equals(locPT)) matchLoc = false;
+            if (locNganh != null && !locNganh.equals("Tất cả")) {
+                if (tenNganhOfDc == null || !tenNganhOfDc.equals(locNganh)) matchLoc = false;
+            }
+            if (locToHop != null && !locToHop.equals("Tất cả")) {
+                if (dc.getMaToHop() == null || !dc.getMaToHop().equals(locToHop)) matchLoc = false;
+            }
+            if (locPT != null && !locPT.equals("Tất cả")) {
+                if (dc.getPhuongThuc() == null || !dc.getPhuongThuc().equals(locPT)) matchLoc = false;
+            }
             if (matchLoc && !tim.isEmpty()) {
                 boolean matchSearch = false;
                 switch (searchIndex) {
-                    case 0: if (dc.getTsCccd().contains(tim)) matchSearch = true; break;
-                    case 1: if (tenNganhOfDc.toLowerCase().contains(tim)) matchSearch = true; break;
-                    case 2: if (dc.getMaToHop().toLowerCase().contains(tim)) matchSearch = true; break;
-                    case 3: if (dc.getPhuongThuc().toLowerCase().contains(tim)) matchSearch = true; break;
+                    case 0: 
+                        if (dc.getTsCccd() != null && dc.getTsCccd().toLowerCase().contains(tim)) matchSearch = true; 
+                        break;
+                    case 1: 
+                        if (tenNganhOfDc != null && tenNganhOfDc.toLowerCase().contains(tim)) matchSearch = true; 
+                        break;
+                    case 2: 
+                        if (dc.getMaToHop() != null && dc.getMaToHop().toLowerCase().contains(tim)) matchSearch = true; 
+                        break;
+                    case 3: 
+                        if (dc.getPhuongThuc() != null && dc.getPhuongThuc().toLowerCase().contains(tim)) matchSearch = true; 
+                        break;
                 }
                 if (!matchSearch) matchLoc = false;
             }

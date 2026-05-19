@@ -21,6 +21,7 @@ import FUNC_GUI.deleteThiSinh;
 import FUNC_GUI.excelNguyenVongSybau;
 import FUNC_GUI.updateNguyenVong;
 import FUNC_GUI.detailThiSinhXetTuyen;
+import FUNC_GUI.timKiemNangCaoThiSinh;
 import java.util.ArrayList;
 import java.util.List;
 import javax.swing.JOptionPane;
@@ -41,6 +42,8 @@ public class thiSinhXetTuyenGUI extends BaseTableGUI {
         btnChiTiet.addActionListener(e -> thucHienChiTiet());
         btnExcel.addActionListener(e -> hienThiExcel());
         btnTimKiem.addActionListener(e -> thucHienTimKiem());
+        btnLoc.setVisible(true); // Hiển thị nút Lọc riêng cho trang Thí Sinh
+        btnLoc.addActionListener(e -> thucHienTimKiemNangCao());
         loadComboBox();
         phanQuyenGiaoDien();
         btnReFresh.addActionListener(e -> thucHienRefresh());
@@ -398,5 +401,40 @@ public class thiSinhXetTuyenGUI extends BaseTableGUI {
 
         thiSinhXetTuyenBUS.ds = null;
         loadDataToTable();
+    }
+    public void thucHienTimKiemNangCao() {
+        JFrame topFrame = (JFrame) SwingUtilities.getWindowAncestor(this);
+        timKiemNangCaoThiSinh dialog = new timKiemNangCaoThiSinh(topFrame, true);
+        dialog.setVisible(true);
+        
+        if (dialog.getXacNhan()) {
+            // Lấy danh sách từ form con về (đã được lọc sẵn theo tiêu chí Thí sinh)
+            ArrayList<thiSinhXetTuyenETT> danhSachDaLoc = dialog.getDanhSachLoc();
+            
+            List<Vector> dsHienThi = new ArrayList<>();
+            for (thiSinhXetTuyenETT ts : danhSachDaLoc) {
+                Vector row = new Vector();
+                row.add(ts.getIdThiSinh());
+                row.add(ts.getCccd());
+                row.add(ts.getSoBaoDanh());
+                row.add(ts.getHo());
+                row.add(ts.getTen());
+                row.add(ts.getNgaySinh());
+                row.add(ts.getGioiTinh());          
+                row.add(ts.getDienThoai());
+                row.add(ts.getEmail());
+                row.add(ts.getNoiSinh());
+                row.add(ts.getDoiTuong());
+                row.add(ts.getKhuVuc());
+                dsHienThi.add(row);
+            }
+            
+            // Gọi hàm render lên bảng
+            setTableData(dsHienThi);
+            
+            if (dsHienThi.isEmpty()) {
+                JOptionPane.showMessageDialog(this, "Không tìm thấy dữ liệu phù hợp với bộ lọc!");
+            }
+        }
     }
 }

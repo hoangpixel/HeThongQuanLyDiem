@@ -80,7 +80,14 @@ public class ThongKeGUI extends JPanel {
         pnlSummary.setMaximumSize(new Dimension(Integer.MAX_VALUE, 110));
         
         pnlSummary.add(createMiniCard("THÍ SINH", tsBus.layDanhSach().size(), "Hồ sơ", new Color(52, 152, 219)));
-        pnlSummary.add(createMiniCard("NGUYỆN VỌNG", nvBus.layDanhSach().size(), "Đăng ký", new Color(46, 204, 113)));
+        
+        // Tính số lượng nguyện vọng đăng ký thực tế (không trùng lặp cccd và thứ tự nguyện vọng)
+        int soLuongNVDangKy = (int) nvBus.layDanhSach().stream()
+                .filter(nv -> nv != null && nv.getNnCccd() != null)
+                .map(nv -> nv.getNnCccd() + "_" + nv.getNvTt())
+                .distinct()
+                .count();
+        pnlSummary.add(createMiniCard("NGUYỆN VỌNG", soLuongNVDangKy, "Đăng ký", new Color(46, 204, 113)));
         pnlSummary.add(createMiniCard("CHỨNG CHỈ", ccBus.layDanhSach().size(), "Văn bằng", new Color(241, 196, 15)));
         pnlSummary.add(createMiniCard("GIẢI THƯỞNG", gtBus.layDanhSach().size(), "Giải thưởng", new Color(231, 76, 60)));
         

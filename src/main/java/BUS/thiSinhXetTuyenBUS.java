@@ -217,16 +217,31 @@ public class thiSinhXetTuyenBUS {
         if (ds == null) layDanhSach();
 
         ArrayList<thiSinhXetTuyenETT> result = new ArrayList<>();
+        String keyLower = key.trim().toLowerCase();
 
         for (thiSinhXetTuyenETT ts : ds) {
             switch (index) {
-                case 0: if (String.valueOf(ts.getIdThiSinh()).contains(key)) result.add(ts); break;
-                case 1: if (ts.getCccd().contains(key)) result.add(ts); break;
-                case 2: if (ts.getSoBaoDanh().contains(key)) result.add(ts); break;
-                case 3: if (ts.getHo().toLowerCase().contains(key.toLowerCase())) result.add(ts); break;
-                case 4: if (ts.getTen().toLowerCase().contains(key.toLowerCase())) result.add(ts); break;
-                case 5: if (ts.getDienThoai().contains(key)) result.add(ts); break;
-                case 6: if (ts.getEmail().toLowerCase().contains(key.toLowerCase())) result.add(ts); break;
+                case 0: 
+                    if (String.valueOf(ts.getIdThiSinh()).toLowerCase().contains(keyLower)) result.add(ts); 
+                    break;
+                case 1: 
+                    if (ts.getCccd() != null && ts.getCccd().toLowerCase().contains(keyLower)) result.add(ts); 
+                    break;
+                case 2: 
+                    if (ts.getSoBaoDanh() != null && ts.getSoBaoDanh().toLowerCase().contains(keyLower)) result.add(ts); 
+                    break;
+                case 3: 
+                    if (ts.getHo() != null && ts.getHo().toLowerCase().contains(keyLower)) result.add(ts); 
+                    break;
+                case 4: 
+                    if (ts.getTen() != null && ts.getTen().toLowerCase().contains(keyLower)) result.add(ts); 
+                    break;
+                case 5: 
+                    if (ts.getDienThoai() != null && ts.getDienThoai().toLowerCase().contains(keyLower)) result.add(ts); 
+                    break;
+                case 6: 
+                    if (ts.getEmail() != null && ts.getEmail().toLowerCase().contains(keyLower)) result.add(ts); 
+                    break;
             }
         }
 

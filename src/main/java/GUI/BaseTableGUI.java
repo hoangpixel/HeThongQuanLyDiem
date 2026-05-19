@@ -15,7 +15,7 @@ import CONFIG.RoundedButton;
 public class BaseTableGUI extends JPanel {
 
     // Khai báo các components
-    public JButton btnThem, btnSua, btnXoa, btnExcel, btnReFresh, btnTimKiem, btnChiTiet;
+    public JButton btnThem, btnSua, btnXoa, btnExcel, btnReFresh, btnTimKiem, btnLoc, btnChiTiet;
     public JComboBox<String> cbxTimKiem;
     public JTextField txtTimKiem;
     public JTable table;
@@ -111,6 +111,8 @@ btnTimKiem = new RoundedButton("TÌM KIẾM");
         cbxTimKiem = new JComboBox<>(new String[]{"abc", "xyz", "Anh 7"});
         txtTimKiem = new JTextField(15);
         btnTimKiem = new JButton("TÌM KIẾM");
+        btnLoc = new JButton("LỌC");
+        btnLoc.setVisible(false); // Ẩn mặc định cho các trang khác
         
         // Tạo một panel con (inner panel) dùng FlowLayout để dàn hàng ngang
         JPanel innerSearch = new JPanel(new FlowLayout(FlowLayout.RIGHT, 10, 0));
@@ -119,6 +121,7 @@ btnTimKiem = new RoundedButton("TÌM KIẾM");
         innerSearch.add(cbxTimKiem);
         innerSearch.add(txtTimKiem);
         innerSearch.add(btnTimKiem);
+        innerSearch.add(btnLoc);
 
         // Thêm panel con vào panel Tìm kiếm
         pnlSearch.add(innerSearch);
@@ -328,6 +331,7 @@ Font mainFont = baseFont.deriveFont(Font.PLAIN, 14f);
     btnReFresh.setIcon(loadAndScaleIcon("refresh.png", iconSize));
     btnChiTiet.setIcon(loadAndScaleIcon("information.png", iconSize));
     btnTimKiem.setIcon(loadAndScaleIcon("search.png", 24));
+    btnLoc.setIcon(loadAndScaleIcon("filter.png", 24));
 
     // Ép chữ nằm phía DƯỚI icon và căn giữa cho 5 nút chức năng
     JButton[] actionBtns = {btnThem, btnSua, btnXoa, btnExcel, btnReFresh,btnChiTiet};
@@ -345,9 +349,13 @@ Font mainFont = baseFont.deriveFont(Font.PLAIN, 14f);
         btnTimKiem.setVerticalTextPosition(SwingConstants.CENTER);
         btnTimKiem.setHorizontalTextPosition(SwingConstants.RIGHT);
     }
+    if (btnLoc.getIcon() != null) {
+        btnLoc.setVerticalTextPosition(SwingConstants.CENTER);
+        btnLoc.setHorizontalTextPosition(SwingConstants.RIGHT);
+    }
 
     // ===== STYLE BUTTON CHUNG =====
-    JButton[] allBtns = {btnThem, btnSua, btnXoa, btnExcel, btnReFresh, btnTimKiem, btnFirst, btnPrev, btnNext, btnLast, btnChiTiet};
+    JButton[] allBtns = {btnThem, btnSua, btnXoa, btnExcel, btnReFresh, btnTimKiem, btnLoc, btnFirst, btnPrev, btnNext, btnLast, btnChiTiet};
     for (JButton btn : allBtns) {
         btn.setFont(mainFont);
         btn.setFocusPainted(false);
