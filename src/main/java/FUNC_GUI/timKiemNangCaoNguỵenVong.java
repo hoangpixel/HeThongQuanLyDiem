@@ -182,7 +182,7 @@ public class timKiemNangCaoNguỵenVong extends javax.swing.JDialog {
         jLabel7.setText("Kết quả : ");
 
         cboKetQua.setFont(new java.awt.Font("Segoe UI", 1, 14)); // NOI18N
-        cboKetQua.setModel(new javax.swing.DefaultComboBoxModel<>(new String[] { "Tất cả", "Chờ xét", "Đã đậu", "Trượt", "Không xét", "Bỏ qua" }));
+        cboKetQua.setModel(new javax.swing.DefaultComboBoxModel<>(new String[] { "Tất cả", "Chờ xét", "Đã đậu", "Đã trượt", "Không xét", "Bỏ qua" }));
 
         javax.swing.GroupLayout jPanel2Layout = new javax.swing.GroupLayout(jPanel2);
         jPanel2.setLayout(jPanel2Layout);
