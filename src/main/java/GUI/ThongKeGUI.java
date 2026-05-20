@@ -454,7 +454,7 @@ public class ThongKeGUI extends JPanel {
         }
 
         // 🚀 Gọi Khuôn thần thánh ra xài
-        return new PaginatedTablePanel("Thống kê Số lượng Trúng tuyển theo Phương thức", cols, dataList);
+        return new PaginatedTablePanel("Thống kê Số lượng Trúng tuyển theo Phương thức", cols, dataList, 6);
     }
 
     // ========================================================================
@@ -480,7 +480,7 @@ public class ThongKeGUI extends JPanel {
         }
 
         // 🚀 Gọi Khuôn thần thánh ra xài
-        return new PaginatedTablePanel("Danh sách Chi tiết Thí sinh Trúng tuyển", cols, dataList);
+        return new PaginatedTablePanel("Danh sách Chi tiết Thí sinh Trúng tuyển", cols, dataList, 3);
     }
 
     // Vẫn giữ lại cái hàm styleTable nha ông
@@ -510,39 +510,36 @@ public class ThongKeGUI extends JPanel {
         });
     }
     
-    // ========================================================================
-    // 🚀 KHUÔN ĐÚC BẢNG NĂNG ĐỘNG (CÓ SEARCH ĐỘNG + PHÂN TRANG)
-    // ========================================================================
-// ========================================================================
-    // 🚀 KHUÔN ĐÚC BẢNG NĂNG ĐỘNG (ĐÃ THÊM VIỀN BO GÓC GIỐNG CHART)
-    // ========================================================================
     private class PaginatedTablePanel extends JPanel {
         private JTable table;
         private javax.swing.table.DefaultTableModel model;
-        private java.util.List<Object[]> allData;
-        private java.util.List<Object[]> filteredData;
+        
+        private java.util.List<Object[]> originalData; // Dữ liệu GỐC (để dành khi Reset)
+        private java.util.List<Object[]> currentData;  // Dữ liệu ĐANG LÀM VIỆC (sau khi Sort/Filter)
+        
         private int currentPage = 1;
-        private int rowsPerPage = 15; // Mỗi trang 15 dòng
+        private int rowsPerPage = 15; 
         private JLabel lblPage;
-        private JButton btnPrev, btnNext;
+        private JButton btnPrev, btnNext, btnSort;
         private JTextField txtSearch;
+        
+        // Trạng thái sort: 0 = Gốc, 1 = Tăng dần, 2 = Giảm dần
+        private int sortState = 0; 
+        private int sortColumnIndex; // Cột dùng để sắp xếp (Vd: cột Điểm)
 
-        public PaginatedTablePanel(String title, String[] columns, java.util.List<Object[]> data) {
-            this.allData = data;
-            this.filteredData = new ArrayList<>(data);
+        public PaginatedTablePanel(String title, String[] columns, java.util.List<Object[]> data, int sortColIndex) {
+            this.originalData = new ArrayList<>(data);
+            this.currentData = new ArrayList<>(data);
+            this.sortColumnIndex = sortColIndex;
 
             setLayout(new BorderLayout(0, 10));
-            
-            // 🚀 TẮT OPAQUE ĐỂ VẼ ĐƯỢC BO GÓC KHÔNG BỊ LẸM TRẮNG
             setOpaque(false);
             setBackground(COLOR_CARD);
-            
-            // 🚀 Chỉnh lại lề cho y chang các biểu đồ khác (20px)
             setBorder(new EmptyBorder(20, 20, 20, 20)); 
             setPreferredSize(new Dimension(0, 450)); 
             setMaximumSize(new Dimension(Integer.MAX_VALUE, 450));
 
-            // --- HEADER: TITLE + THANH TÌM KIẾM ---
+            // --- HEADER: TITLE + THANH TÌM KIẾM & SORT ---
             JPanel pnlTop = new JPanel(new BorderLayout());
             pnlTop.setOpaque(false);
             
@@ -553,6 +550,18 @@ public class ThongKeGUI extends JPanel {
 
             JPanel pnlSearch = new JPanel(new FlowLayout(FlowLayout.RIGHT, 10, 0));
             pnlSearch.setOpaque(false);
+            
+            // 🚀 Nút Sắp xếp thần thánh
+            btnSort = new JButton("Sắp xếp (Gốc)");
+            btnSort.setFont(new Font("Segoe UI", Font.BOLD, 12));
+            btnSort.setCursor(new Cursor(Cursor.HAND_CURSOR));
+            btnSort.setPreferredSize(new Dimension(130, 30));
+            btnSort.addActionListener(e -> {
+                sortState = (sortState + 1) % 3; // Xoay vòng: 0 -> 1 -> 2 -> 0
+                updateSortButtonLabel();
+                applyFilterAndSort(); // Vừa sắp xếp, vừa giữ lại kết quả tìm kiếm
+            });
+            
             JLabel lblLoc = new JLabel("Lọc nhanh:");
             lblLoc.setFont(new Font("Segoe UI", Font.BOLD, 13));
             
@@ -560,9 +569,11 @@ public class ThongKeGUI extends JPanel {
             txtSearch.setPreferredSize(new Dimension(200, 30));
             txtSearch.addKeyListener(new java.awt.event.KeyAdapter() {
                 public void keyReleased(java.awt.event.KeyEvent evt) {
-                    updateFilter();
+                    applyFilterAndSort(); // Gõ phím là cập nhật lại cả Filter lẫn Sort
                 }
             });
+            
+            pnlSearch.add(btnSort);
             pnlSearch.add(lblLoc);
             pnlSearch.add(txtSearch);
             pnlTop.add(pnlSearch, BorderLayout.EAST);
@@ -577,7 +588,7 @@ public class ThongKeGUI extends JPanel {
             styleTable(table); 
             
             JScrollPane scroll = new JScrollPane(table);
-            scroll.setBorder(BorderFactory.createLineBorder(new Color(230, 230, 230))); // Thêm viền nhẹ cho bảng bên trong
+            scroll.setBorder(BorderFactory.createLineBorder(new Color(230, 230, 230))); 
             add(scroll, BorderLayout.CENTER);
 
             // --- BỘ ĐIỀU KHIỂN PHÂN TRANG ---
@@ -605,40 +616,72 @@ public class ThongKeGUI extends JPanel {
             renderPage(); 
         }
 
-        // 🚀 THÊM HÀM VẼ BO GÓC BẰNG GRAPHICS2D (Tương tự CreateChartPanel)
+        // Vẽ bo góc nền
         @Override
         protected void paintComponent(Graphics g) {
             Graphics2D g2 = (Graphics2D) g;
             g2.setRenderingHint(RenderingHints.KEY_ANTIALIASING, RenderingHints.VALUE_ANTIALIAS_ON);
             g2.setColor(getBackground());
-            g2.fillRoundRect(0, 0, getWidth(), getHeight(), 20, 20); // Bo góc 20px
+            g2.fillRoundRect(0, 0, getWidth(), getHeight(), 20, 20); 
             super.paintComponent(g);
         }
 
-        private void updateFilter() {
+        private void updateSortButtonLabel() {
+            if (sortState == 0) btnSort.setText("Sắp xếp (Gốc)");
+            else if (sortState == 1) btnSort.setText("Sắp xếp (Tăng)");
+            else btnSort.setText("Sắp xếp (Giảm)");
+        }
+
+        // 🚀 KẾT HỢP LỌC VÀ SẮP XẾP CÙNG LÚC
+        private void applyFilterAndSort() {
+            // Bước 1: Lấy danh sách GỐC ra lọc trước
             String text = txtSearch.getText().trim().toLowerCase();
-            filteredData = allData.stream().filter(row -> {
+            java.util.List<Object[]> temp = originalData.stream().filter(row -> {
                 for(Object cell : row) {
                     if(cell != null && cell.toString().toLowerCase().contains(text)) return true;
                 }
                 return false;
             }).collect(Collectors.toList());
-            currentPage = 1; 
-            renderPage();
+
+            // Bước 2: Lấy kết quả vừa lọc đem đi Sắp xếp (nếu user yêu cầu)
+            if (sortState != 0) {
+                temp.sort((row1, row2) -> {
+                    // Lấy dữ liệu của cột cần sort ra so sánh
+                    Object val1 = row1[sortColumnIndex];
+                    Object val2 = row2[sortColumnIndex];
+                    
+                    // Nếu là số thì so sánh kiểu số (Double)
+                    if (val1 instanceof Number && val2 instanceof Number) {
+                        Double d1 = ((Number) val1).doubleValue();
+                        Double d2 = ((Number) val2).doubleValue();
+                        return sortState == 1 ? d1.compareTo(d2) : d2.compareTo(d1);
+                    } 
+                    // Nếu là chuỗi thì so sánh kiểu chuỗi
+                    else {
+                        String s1 = val1 != null ? val1.toString() : "";
+                        String s2 = val2 != null ? val2.toString() : "";
+                        return sortState == 1 ? s1.compareTo(s2) : s2.compareTo(s1);
+                    }
+                });
+            }
+
+            currentData = temp; // Cập nhật lại danh sách đang làm việc
+            currentPage = 1;    // Reset về trang 1
+            renderPage();       // Vẽ lại bảng
         }
 
         private int getTotalPages() {
-            int total = (int) Math.ceil((double)filteredData.size() / rowsPerPage);
+            int total = (int) Math.ceil((double)currentData.size() / rowsPerPage);
             return total == 0 ? 1 : total;
         }
 
         private void renderPage() {
             model.setRowCount(0); 
             int start = (currentPage - 1) * rowsPerPage;
-            int end = Math.min(start + rowsPerPage, filteredData.size());
+            int end = Math.min(start + rowsPerPage, currentData.size());
             
             for(int i = start; i < end; i++) {
-                model.addRow(filteredData.get(i));
+                model.addRow(currentData.get(i));
             }
             
             lblPage.setText("Trang " + currentPage + " / " + getTotalPages());
