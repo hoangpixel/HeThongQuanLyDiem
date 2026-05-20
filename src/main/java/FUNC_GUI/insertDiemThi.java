@@ -4,6 +4,7 @@
  */
 package FUNC_GUI;
 
+import BUS.chungChiBUS;
 import Entity.diemThiETT;
 import Entity.thiSinhXetTuyenETT;
 import SELECT_GUI.selectThiSinh;
@@ -23,6 +24,8 @@ public class insertDiemThi extends javax.swing.JDialog {
         initComponents();
         setTitle("Thêm bảng điểm thi");
         setLocationRelativeTo(parent);
+        // Thiết lập hiển thị đúng theo phương thức mặc định
+        txtPhuongThucActionPerformed(null);
     }
 
     public diemThiETT getDiemThi() {
@@ -59,6 +62,8 @@ public class insertDiemThi extends javax.swing.JDialog {
         txtVA = new javax.swing.JTextField();
         lblN1THI = new javax.swing.JLabel();
         txtN1THI = new javax.swing.JTextField();
+        lblN1CC = new javax.swing.JLabel();
+        txtN1CC = new javax.swing.JTextField();
         lblCNCN = new javax.swing.JLabel();
         txtCNCN = new javax.swing.JTextField();
         lblCNNN = new javax.swing.JLabel();
@@ -94,11 +99,10 @@ public class insertDiemThi extends javax.swing.JDialog {
         javax.swing.GroupLayout jPanel3Layout = new javax.swing.GroupLayout(jPanel3);
         jPanel3.setLayout(jPanel3Layout);
         jPanel3Layout.setHorizontalGroup(
-                jPanel3Layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
-                        .addGroup(jPanel3Layout.createSequentialGroup()
-                                .addGap(18, 18, 18)
-                                .addComponent(jLabelTitle)
-                                .addContainerGap(javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE)));
+                jPanel3Layout.createSequentialGroup()
+                        .addContainerGap(javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE)
+                        .addComponent(jLabelTitle)
+                        .addContainerGap(javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE));
 
         btnThem.addActionListener(new java.awt.event.ActionListener() {
             public void actionPerformed(java.awt.event.ActionEvent evt) {
@@ -109,12 +113,6 @@ public class insertDiemThi extends javax.swing.JDialog {
         btnThoat.addActionListener(new java.awt.event.ActionListener() {
             public void actionPerformed(java.awt.event.ActionEvent evt) {
                 btnThoatActionPerformed(evt);
-            }
-        });
-
-        txtCCCD.addMouseListener(new java.awt.event.MouseAdapter() {
-            public void mouseClicked(java.awt.event.MouseEvent evt) {
-                txtCCCDMouseClicked(evt);
             }
         });
         jPanel3Layout.setVerticalGroup(
@@ -197,6 +195,14 @@ public class insertDiemThi extends javax.swing.JDialog {
         lblN1THI.setText("N1_THI :");
 
         txtN1THI.setBackground(new java.awt.Color(246, 246, 246));
+
+        lblN1CC.setFont(new java.awt.Font("Segoe UI", 0, 14)); // NOI18N
+        lblN1CC.setText("N1_CC :");
+        lblN1CC.setVisible(false);
+
+        txtN1CC.setBackground(new java.awt.Color(246, 246, 246));
+        txtN1CC.setEditable(false);
+        txtN1CC.setVisible(false);
 
         lblCNCN.setFont(new java.awt.Font("Segoe UI", 0, 14)); // NOI18N
         lblCNCN.setText("CNCN :");
@@ -284,6 +290,8 @@ public class insertDiemThi extends javax.swing.JDialog {
                                                 javax.swing.GroupLayout.PREFERRED_SIZE)
                                         .addComponent(lblN1THI, javax.swing.GroupLayout.PREFERRED_SIZE, 123,
                                                 javax.swing.GroupLayout.PREFERRED_SIZE)
+                                        .addComponent(lblN1CC, javax.swing.GroupLayout.PREFERRED_SIZE, 123,
+                                                javax.swing.GroupLayout.PREFERRED_SIZE)
                                         .addComponent(lblCNCN, javax.swing.GroupLayout.PREFERRED_SIZE, 123,
                                                 javax.swing.GroupLayout.PREFERRED_SIZE)
                                         .addComponent(lblCNNN, javax.swing.GroupLayout.PREFERRED_SIZE, 123,
@@ -329,6 +337,8 @@ public class insertDiemThi extends javax.swing.JDialog {
                                         .addComponent(txtVA, javax.swing.GroupLayout.PREFERRED_SIZE, 330,
                                                 javax.swing.GroupLayout.PREFERRED_SIZE)
                                         .addComponent(txtN1THI, javax.swing.GroupLayout.PREFERRED_SIZE, 330,
+                                                javax.swing.GroupLayout.PREFERRED_SIZE)
+                                        .addComponent(txtN1CC, javax.swing.GroupLayout.PREFERRED_SIZE, 330,
                                                 javax.swing.GroupLayout.PREFERRED_SIZE)
                                         .addComponent(txtCNCN, javax.swing.GroupLayout.PREFERRED_SIZE, 330,
                                                 javax.swing.GroupLayout.PREFERRED_SIZE)
@@ -420,6 +430,12 @@ public class insertDiemThi extends javax.swing.JDialog {
                                 .addGroup(jPanel1Layout.createParallelGroup(javax.swing.GroupLayout.Alignment.BASELINE)
                                         .addComponent(lblN1THI)
                                         .addComponent(txtN1THI, javax.swing.GroupLayout.PREFERRED_SIZE,
+                                                javax.swing.GroupLayout.DEFAULT_SIZE,
+                                                javax.swing.GroupLayout.PREFERRED_SIZE))
+                                .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.UNRELATED)
+                                .addGroup(jPanel1Layout.createParallelGroup(javax.swing.GroupLayout.Alignment.BASELINE)
+                                        .addComponent(lblN1CC)
+                                        .addComponent(txtN1CC, javax.swing.GroupLayout.PREFERRED_SIZE,
                                                 javax.swing.GroupLayout.DEFAULT_SIZE,
                                                 javax.swing.GroupLayout.PREFERRED_SIZE))
                                 .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.UNRELATED)
@@ -585,6 +601,7 @@ public class insertDiemThi extends javax.swing.JDialog {
             obj.setVa(parseDoubleOrNull(txtVA.getText(), "VA"));
 
             obj.setN1Thi(parseDoubleOrNull(txtN1THI.getText(), "N1_THI"));
+            obj.setN1Cc(parseDoubleOrNull(txtN1CC.getText(), "N1_CC"));
 
             obj.setCncn(parseDoubleOrNull(txtCNCN.getText(), "CNCN"));
             obj.setCnnn(parseDoubleOrNull(txtCNNN.getText(), "CNNN"));
@@ -610,10 +627,15 @@ public class insertDiemThi extends javax.swing.JDialog {
 
     private void txtPhuongThucActionPerformed(java.awt.event.ActionEvent evt) {// GEN-FIRST:event_txtPhuongThucActionPerformed
         String selected = (String) txtPhuongThuc.getSelectedItem();
-        boolean hideFieldsFromN1THI = selected != null && selected.contains("V-SAT");
+        boolean isVSAT = selected != null && selected.contains("V-SAT");
+        boolean hideFieldsFromN1THI = isVSAT;
+        // N1_CC chỉ hiển thị khi Xét THPT hoặc ĐGNL HCM
+        boolean showN1CC = selected != null && (selected.contains("THPT") || selected.contains("ĐGNL"));
 
         lblN1THI.setVisible(!hideFieldsFromN1THI);
         txtN1THI.setVisible(!hideFieldsFromN1THI);
+        lblN1CC.setVisible(showN1CC);
+        txtN1CC.setVisible(showN1CC);
         lblCNCN.setVisible(!hideFieldsFromN1THI);
         txtCNCN.setVisible(!hideFieldsFromN1THI);
         lblCNNN.setVisible(!hideFieldsFromN1THI);
@@ -622,8 +644,8 @@ public class insertDiemThi extends javax.swing.JDialog {
         txtTI.setVisible(!hideFieldsFromN1THI);
         lblKTPL.setVisible(!hideFieldsFromN1THI);
         txtKTPL.setVisible(!hideFieldsFromN1THI);
-        lblNL1.setVisible(!hideFieldsFromN1THI);
-        txtNL1.setVisible(!hideFieldsFromN1THI);
+        lblNL1.setVisible(!hideFieldsFromN1THI || isVSAT);
+        txtNL1.setVisible(!hideFieldsFromN1THI || isVSAT);
         lblNK1.setVisible(!hideFieldsFromN1THI);
         txtNK1.setVisible(!hideFieldsFromN1THI);
         lblNK2.setVisible(!hideFieldsFromN1THI);
@@ -647,6 +669,23 @@ public class insertDiemThi extends javax.swing.JDialog {
             if (selectedThiSinh != null) {
                 txtCCCD.setText(selectedThiSinh.getCccd() != null ? selectedThiSinh.getCccd() : "");
                 txtSBD.setText(selectedThiSinh.getSoBaoDanh() != null ? selectedThiSinh.getSoBaoDanh() : "");
+                // Tự động lấy điểm chứng chỉ từ bảng xt_chungchi
+                String cccd = selectedThiSinh.getCccd();
+                if (cccd != null && !cccd.trim().isEmpty()) {
+                    try {
+                        chungChiBUS ccBus = new chungChiBUS();
+                        double[] diem = ccBus.layDiemIELTS(cccd);
+                        if (diem != null && diem.length > 0 && diem[0] > 0) {
+                            txtN1CC.setText(String.valueOf(diem[0]));
+                        } else {
+                            txtN1CC.setText("");
+                        }
+                    } catch (Exception ex) {
+                        txtN1CC.setText("");
+                    }
+                } else {
+                    txtN1CC.setText("");
+                }
             }
         }
     }// GEN-LAST:event_txtCCCDMouseClicked
@@ -695,6 +734,7 @@ public class insertDiemThi extends javax.swing.JDialog {
     private javax.swing.JLabel lblHO;
     private javax.swing.JLabel lblKTPL;
     private javax.swing.JLabel lblLI;
+    private javax.swing.JLabel lblN1CC;
     private javax.swing.JLabel lblN1THI;
     private javax.swing.JLabel lblNK1;
     private javax.swing.JLabel lblNK2;
@@ -717,6 +757,7 @@ public class insertDiemThi extends javax.swing.JDialog {
     private javax.swing.JTextField txtHO;
     private javax.swing.JTextField txtKTPL;
     private javax.swing.JTextField txtLI;
+    private javax.swing.JTextField txtN1CC;
     private javax.swing.JTextField txtN1THI;
     private javax.swing.JTextField txtNK1;
     private javax.swing.JTextField txtNK2;

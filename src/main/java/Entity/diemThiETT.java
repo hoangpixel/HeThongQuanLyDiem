@@ -28,7 +28,7 @@ public class diemThiETT {
     @Column(name = "sobaodanh")
     private String sobaodanh;
 
-    @Column(name = "d_phuongthuc")
+    @Column(name = "d_phuongthuc", length = 50)
     private String dPhuongthuc;
 
     // --- CÁC CỘT ĐIỂM THÀNH PHẦN ---

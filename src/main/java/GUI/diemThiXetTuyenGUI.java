@@ -41,6 +41,8 @@ public class diemThiXetTuyenGUI extends BaseTableGUI {
         btnExcel.addActionListener(e -> thucHienExcel());
         btnReFresh.addActionListener(e -> thucHienRefresh());
         btnTimKiem.addActionListener(e -> thucHienTimKiem());
+        btnLoc.setVisible(true);
+        btnLoc.addActionListener(e -> thucHienTimKiemNangCao());
         btnChiTiet.addActionListener(e -> thucHienChiTiet());
 
         loadDataToTable();
@@ -356,6 +358,9 @@ public class diemThiXetTuyenGUI extends BaseTableGUI {
     }
 
     private void thucHienRefresh() {
+        txtTimKiem.setText("");
+        cbxTimKiem.setSelectedIndex(0);
+        diemThiBUS.ds = null;
         loadDataToTable();
         JOptionPane.showMessageDialog(this, "Đã đồng bộ dữ liệu mới nhất từ Database");
     }
@@ -406,6 +411,28 @@ public class diemThiXetTuyenGUI extends BaseTableGUI {
         setTableData(filtered);
         if (filtered.isEmpty()) {
             JOptionPane.showMessageDialog(this, "Không tìm thấy dữ liệu phù hợp");
+        }
+    }
+
+    public void thucHienTimKiemNangCao() {
+        JFrame topFrame = (JFrame) SwingUtilities.getWindowAncestor(this);
+        FUNC_GUI.timKiemNangCaoDiemThi dialog = new FUNC_GUI.timKiemNangCaoDiemThi(topFrame, true);
+        dialog.setVisible(true);
+        
+        if (dialog.getXacNhan()) {
+            ArrayList<Entity.diemThiETT> danhSachDaLoc = dialog.getDanhSachLoc();
+            
+            List<Vector> dsHienThi = new ArrayList<>();
+            for (diemThiETT dt : danhSachDaLoc) {
+                if (dt != null) {
+                    dsHienThi.add(toRow(dt));
+                }
+            }
+            
+            setTableData(dsHienThi);
+            if (dsHienThi.isEmpty()) {
+                JOptionPane.showMessageDialog(this, "Không tìm thấy dữ liệu phù hợp với bộ lọc!");
+            }
         }
     }
 

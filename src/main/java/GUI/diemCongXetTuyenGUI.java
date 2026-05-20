@@ -116,7 +116,9 @@ public class diemCongXetTuyenGUI extends BaseTableGUI {
         
         Container searchParent = btnTimKiem.getParent();
         if (searchParent != null) {
-            searchParent.add(btnLoc, 0);
+            searchParent.remove(btnTimKiem);
+            searchParent.add(btnTimKiem, 0);
+            searchParent.add(btnLoc);
             searchParent.revalidate();
         }
 
@@ -146,6 +148,26 @@ public class diemCongXetTuyenGUI extends BaseTableGUI {
         cbxLocPhuongThuc.setPreferredSize(cbSize);
         cbxLocPhuongThuc.setMaximumSize(cbSize);
 
+        // Hướng danh sách xổ xuống sang bên trái để không bị tràn màn hình
+        cbxLocNganh.setComponentOrientation(ComponentOrientation.RIGHT_TO_LEFT);
+        cbxLocToHop.setComponentOrientation(ComponentOrientation.RIGHT_TO_LEFT);
+        cbxLocPhuongThuc.setComponentOrientation(ComponentOrientation.RIGHT_TO_LEFT);
+
+        // Căn lề chữ bên trong danh sách sang trái để hiển thị tự nhiên
+        DefaultListCellRenderer leftRenderer = new DefaultListCellRenderer() {
+            @Override
+            public Component getListCellRendererComponent(JList<?> list, Object value, int index, boolean isSelected, boolean cellHasFocus) {
+                Component c = super.getListCellRendererComponent(list, value, index, isSelected, cellHasFocus);
+                if (c instanceof JLabel) {
+                    ((JLabel) c).setHorizontalAlignment(SwingConstants.LEFT);
+                }
+                return c;
+            }
+        };
+        cbxLocNganh.setRenderer(leftRenderer);
+        cbxLocToHop.setRenderer(leftRenderer);
+        cbxLocPhuongThuc.setRenderer(leftRenderer);
+
         pnlInnerFilter.add(createFilterLabel("Lọc theo Ngành:"));
         pnlInnerFilter.add(cbxLocNganh);
         pnlInnerFilter.add(Box.createVerticalStrut(12));
@@ -169,7 +191,8 @@ public class diemCongXetTuyenGUI extends BaseTableGUI {
                 filterDialog.setVisible(false);
             } else {
                 Point p = btnLoc.getLocationOnScreen();
-                filterDialog.setLocation(p.x, p.y + btnLoc.getHeight());
+                int x = p.x + btnLoc.getWidth() - filterDialog.getWidth();
+                filterDialog.setLocation(Math.max(0, x), p.y + btnLoc.getHeight());
                 filterDialog.setVisible(true);
             }
         });
