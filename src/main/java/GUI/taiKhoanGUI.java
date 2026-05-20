@@ -31,6 +31,8 @@ public class taiKhoanGUI extends BaseTableForNguyenVongGUIonly {
         super();
         setTableNameForTitle("Tài Khoản");
         headerTable();
+        
+        btnLoc.setVisible(false);
 
         btnThem.addActionListener(e -> hienThiDialogThemMoi());
         btnSua.addActionListener(e -> hienThiDialogSua());
