@@ -26,7 +26,7 @@ public class timKiemNangCaoDiemCong extends javax.swing.JDialog {
     
     private static final java.util.logging.Logger logger = java.util.logging.Logger.getLogger(timKiemNangCaoDiemCong.class.getName());
     private boolean xacNhan = false;
-    private ArrayList<Entity.diemThiETT> dskq = new ArrayList<>();
+    private ArrayList<Entity.diemCongETT> dskq = new ArrayList<>();
     private String cccd, maNganh, toHop;
     
     /**
@@ -37,37 +37,101 @@ public class timKiemNangCaoDiemCong extends javax.swing.JDialog {
         initComponents();
         setLocationRelativeTo(parent);
         
-        setTitle("Lọc điểm thi nâng cao");
-        jLabel1.setText("Lọc điểm thi nâng cao");
-        jPanel2.setBorder(javax.swing.BorderFactory.createTitledBorder(null, "Nhập tiêu chí lọc điểm thi", javax.swing.border.TitledBorder.DEFAULT_JUSTIFICATION, javax.swing.border.TitledBorder.DEFAULT_POSITION, new java.awt.Font("Segoe UI", 1, 14)));
+        setTitle("Lọc điểm cộng");
+        jLabel1.setText("Lọc điểm cộng");
+        jLabel1.setHorizontalAlignment(javax.swing.SwingConstants.CENTER);
+        jPanel2.setBorder(javax.swing.BorderFactory.createTitledBorder(null, "Nhập tiêu chí lọc điểm cộng", javax.swing.border.TitledBorder.DEFAULT_JUSTIFICATION, javax.swing.border.TitledBorder.DEFAULT_POSITION, new java.awt.Font("Segoe UI", 1, 14)));
         
-        // Hide CCCD fields
-        jLabel2.setVisible(false);
-        txtCCCD.setVisible(false);
-        btnCCCD.setVisible(false);
+        // Show CCCD fields
+        jLabel2.setText("CCCD : ");
+        jLabel2.setVisible(true);
+        txtCCCD.setVisible(true);
+        txtCCCD.setEditable(false);
+        btnCCCD.setVisible(true);
         
-        // Hide SBD fields
-        jLabel3.setVisible(false);
-        txtMaNganh.setVisible(false);
-        btnMaNganh.setVisible(false);
+        // Show Mã ngành fields
+        jLabel3.setText("Mã ngành :");
+        jLabel3.setVisible(true);
+        txtMaNganh.setVisible(true);
+        txtMaNganh.setEditable(false);
+        btnMaNganh.setVisible(true);
         
-        // 1. Phương thức: keep cboPhuongThuc
+        // Show Tổ hợp fields
+        jLabel6.setText("Tổ hợp : ");
+        jLabel6.setVisible(true);
+        txtToHop.setVisible(true);
+        txtToHop.setEditable(false);
+        btnToHop.setVisible(true);
+        
+        // Phương thức
         jLabel5.setText("Phương thức : ");
+        jLabel5.setVisible(true);
+        cboPhuongThuc.setVisible(true);
         cboPhuongThuc.setModel(new javax.swing.DefaultComboBoxModel<>(new String[] { "Tất cả", "Xét THPT", "ĐGNL HCM", "Đánh giá V-SAT", "Xét tuyển thẳng" }));
         
-        // 2. Điểm liệt (<= 1.0): repurpose cboKetQua
-        jLabel7.setText("Điểm liệt (<= 1.0) : ");
-        jLabel7.setVisible(true);
-        cboKetQua.setVisible(true);
-        cboKetQua.setModel(new javax.swing.DefaultComboBoxModel<>(new String[] { "Tất cả", "Có điểm liệt", "Không có điểm liệt" }));
-        
-        // Hide all other fields (Tổ hợp, Thứ tự)
-        jLabel6.setVisible(false);
-        txtToHop.setVisible(false);
-        btnToHop.setVisible(false);
-        
+        // Hide unused fields (Thứ tự, Kết quả)
         jLabel4.setVisible(false);
         txtThuTu.setVisible(false);
+        
+        jLabel7.setVisible(false);
+        cboKetQua.setVisible(false);
+
+        // Reconstruct layout of jPanel2 to avoid gaps from hidden fields
+        javax.swing.GroupLayout jPanel2Layout = new javax.swing.GroupLayout(jPanel2);
+        jPanel2.setLayout(jPanel2Layout);
+        jPanel2Layout.setHorizontalGroup(
+            jPanel2Layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
+            .addGroup(jPanel2Layout.createSequentialGroup()
+                .addGap(27, 27, 27)
+                .addGroup(jPanel2Layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
+                    .addComponent(jLabel2)
+                    .addComponent(jLabel3)
+                    .addComponent(jLabel6)
+                    .addComponent(jLabel5))
+                .addGap(18, 18, 18)
+                .addGroup(jPanel2Layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
+                    .addComponent(cboPhuongThuc, javax.swing.GroupLayout.PREFERRED_SIZE, 172, javax.swing.GroupLayout.PREFERRED_SIZE)
+                    .addGroup(jPanel2Layout.createSequentialGroup()
+                        .addComponent(txtToHop, javax.swing.GroupLayout.PREFERRED_SIZE, 172, javax.swing.GroupLayout.PREFERRED_SIZE)
+                        .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED)
+                        .addComponent(btnToHop, javax.swing.GroupLayout.PREFERRED_SIZE, 39, javax.swing.GroupLayout.PREFERRED_SIZE))
+                    .addGroup(jPanel2Layout.createSequentialGroup()
+                        .addComponent(txtCCCD, javax.swing.GroupLayout.PREFERRED_SIZE, 172, javax.swing.GroupLayout.PREFERRED_SIZE)
+                        .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED)
+                        .addComponent(btnCCCD, javax.swing.GroupLayout.PREFERRED_SIZE, 39, javax.swing.GroupLayout.PREFERRED_SIZE))
+                    .addGroup(jPanel2Layout.createSequentialGroup()
+                        .addComponent(txtMaNganh, javax.swing.GroupLayout.PREFERRED_SIZE, 172, javax.swing.GroupLayout.PREFERRED_SIZE)
+                        .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED)
+                        .addComponent(btnMaNganh, javax.swing.GroupLayout.PREFERRED_SIZE, 39, javax.swing.GroupLayout.PREFERRED_SIZE)))
+                .addContainerGap(19, Short.MAX_VALUE))
+        );
+        jPanel2Layout.setVerticalGroup(
+            jPanel2Layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
+            .addGroup(jPanel2Layout.createSequentialGroup()
+                .addGap(18, 18, 18)
+                .addGroup(jPanel2Layout.createParallelGroup(javax.swing.GroupLayout.Alignment.BASELINE)
+                    .addComponent(jLabel2)
+                    .addComponent(txtCCCD, javax.swing.GroupLayout.PREFERRED_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.PREFERRED_SIZE)
+                    .addComponent(btnCCCD, javax.swing.GroupLayout.PREFERRED_SIZE, 26, javax.swing.GroupLayout.PREFERRED_SIZE))
+                .addGap(18, 18, 18)
+                .addGroup(jPanel2Layout.createParallelGroup(javax.swing.GroupLayout.Alignment.BASELINE)
+                    .addComponent(jLabel3)
+                    .addComponent(txtMaNganh, javax.swing.GroupLayout.PREFERRED_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.PREFERRED_SIZE)
+                    .addComponent(btnMaNganh, javax.swing.GroupLayout.PREFERRED_SIZE, 26, javax.swing.GroupLayout.PREFERRED_SIZE))
+                .addGap(18, 18, 18)
+                .addGroup(jPanel2Layout.createParallelGroup(javax.swing.GroupLayout.Alignment.BASELINE)
+                    .addComponent(jLabel6)
+                    .addComponent(txtToHop, javax.swing.GroupLayout.PREFERRED_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.PREFERRED_SIZE)
+                    .addComponent(btnToHop, javax.swing.GroupLayout.PREFERRED_SIZE, 26, javax.swing.GroupLayout.PREFERRED_SIZE))
+                .addGap(18, 18, 18)
+                .addGroup(jPanel2Layout.createParallelGroup(javax.swing.GroupLayout.Alignment.BASELINE)
+                    .addComponent(jLabel5)
+                    .addComponent(cboPhuongThuc, javax.swing.GroupLayout.PREFERRED_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.PREFERRED_SIZE))
+                .addContainerGap(18, Short.MAX_VALUE))
+        );
+
+        pack();
+        setLocationRelativeTo(parent);
     }
 
     /**
@@ -150,10 +214,7 @@ public class timKiemNangCaoDiemCong extends javax.swing.JDialog {
         jPanel1.setLayout(jPanel1Layout);
         jPanel1Layout.setHorizontalGroup(
             jPanel1Layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
-            .addGroup(jPanel1Layout.createSequentialGroup()
-                .addGap(100, 100, 100)
-                .addComponent(jLabel1)
-                .addContainerGap(javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE))
+            .addComponent(jLabel1, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE)
         );
         jPanel1Layout.setVerticalGroup(
             jPanel1Layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
@@ -310,55 +371,53 @@ public class timKiemNangCaoDiemCong extends javax.swing.JDialog {
 
     private void btnLocActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_btnLocActionPerformed
         // TODO add your handling code here:
+        String cccdLoc = txtCCCD.getText().trim().toLowerCase();
+        String maNganhLoc = txtMaNganh.getText().trim().toLowerCase();
+        String toHopLoc = txtToHop.getText().trim().toLowerCase();
         String phuongThucLoc = cboPhuongThuc.getSelectedItem().toString();
-        String diemLietLoc = cboKetQua.getSelectedItem().toString();
 
-        BUS.diemThiBUS bus = new BUS.diemThiBUS();
-        bus.layDanhSach();
+        BUS.diemCongBUS bus = new BUS.diemCongBUS();
+        ArrayList<Entity.diemCongETT> dsGoc = bus.layDanhSach();
         
         dskq = new java.util.ArrayList<>();
         
-        if (BUS.diemThiBUS.ds != null) {
-            for (Entity.diemThiETT dt : BUS.diemThiBUS.ds) {
-                // 1. Lọc theo Phương thức
+        if (dsGoc != null) {
+            for (Entity.diemCongETT dc : dsGoc) {
+                // 1. Lọc theo CCCD
+                if (!cccdLoc.isEmpty()) {
+                    if (dc.getTsCccd() == null || !dc.getTsCccd().toLowerCase().contains(cccdLoc)) {
+                        continue;
+                    }
+                }
+                
+                // 2. Lọc theo Mã ngành
+                if (!maNganhLoc.isEmpty()) {
+                    if (dc.getMaNganh() == null || !dc.getMaNganh().toLowerCase().contains(maNganhLoc)) {
+                        continue;
+                    }
+                }
+                
+                // 3. Lọc theo Tổ hợp
+                if (!toHopLoc.isEmpty()) {
+                    if (dc.getMaToHop() == null || !dc.getMaToHop().toLowerCase().contains(toHopLoc)) {
+                        continue;
+                    }
+                }
+                
+                // 4. Lọc theo Phương thức
                 if (!phuongThucLoc.equals("Tất cả")) {
-                    if (dt.getdPhuongthuc() == null || !dt.getdPhuongthuc().equalsIgnoreCase(phuongThucLoc)) {
+                    if (dc.getPhuongThuc() == null || !dc.getPhuongThuc().equalsIgnoreCase(phuongThucLoc)) {
                         continue;
                     }
                 }
                 
-                // 2. Lọc theo Điểm liệt (<= 1.0)
-                if (!diemLietLoc.equals("Tất cả")) {
-                    boolean coDiemLiet = checkCoDiemLiet(dt);
-                    if (diemLietLoc.equals("Có điểm liệt") && !coDiemLiet) {
-                        continue;
-                    }
-                    if (diemLietLoc.equals("Không có điểm liệt") && coDiemLiet) {
-                        continue;
-                    }
-                }
-                
-                dskq.add(dt);
+                dskq.add(dc);
             }
         }
         
         xacNhan = true;
         this.dispose();
     }//GEN-LAST:event_btnLocActionPerformed
-
-    private boolean checkCoDiemLiet(Entity.diemThiETT dt) {
-        Double[] scores = {
-            dt.getTo(), dt.getLi(), dt.getHo(), dt.getSi(), dt.getSu(), dt.getDi(), dt.getVa(),
-            dt.getN1Thi(), dt.getN1Cc(), dt.getCncn(), dt.getCnnn(), dt.getTi(), dt.getKtpl(),
-            dt.getNl1(), dt.getNk1(), dt.getNk2(), dt.getNk3(), dt.getNk4(), dt.getNk5(), dt.getNk6()
-        };
-        for (Double score : scores) {
-            if (score != null && score <= 1.0) {
-                return true;
-            }
-        }
-        return false;
-    }
 
     private void btnCCCDActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_btnCCCDActionPerformed
         // TODO add your handling code here:
@@ -412,7 +471,7 @@ public class timKiemNangCaoDiemCong extends javax.swing.JDialog {
         return xacNhan;
     }
     
-    public ArrayList<Entity.diemThiETT> getDanhSachLoc() 
+    public ArrayList<Entity.diemCongETT> getDanhSachLoc() 
     {
         return dskq;
     }

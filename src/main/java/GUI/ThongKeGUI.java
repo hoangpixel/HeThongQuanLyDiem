@@ -70,7 +70,7 @@ public class ThongKeGUI extends JPanel {
         initDashboard();
     }
 
-    private void initDashboard() {
+    public void initDashboard() {
         mainContent.removeAll();
 
         // 1. Summary Cards

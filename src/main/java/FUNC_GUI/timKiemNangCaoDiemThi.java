@@ -29,6 +29,13 @@ public class timKiemNangCaoDiemThi extends javax.swing.JDialog {
     private ArrayList<Entity.diemThiETT> dskq = new ArrayList<>();
     private String cccd, maNganh, toHop;
     
+    private javax.swing.JComboBox<String> cboMonHoc;
+    private javax.swing.JTextField txtDiemTu;
+    private javax.swing.JTextField txtDiemDen;
+    private javax.swing.JLabel lblMonHoc;
+    private javax.swing.JLabel lblDiemTu;
+    private javax.swing.JLabel lblDiemDen;
+    
     /**
      * Creates new form timKiemNangCao
      */
@@ -37,8 +44,9 @@ public class timKiemNangCaoDiemThi extends javax.swing.JDialog {
         initComponents();
         setLocationRelativeTo(parent);
         
-        setTitle("Lọc điểm thi nâng cao");
-        jLabel1.setText("Lọc điểm thi nâng cao");
+        setTitle("Lọc điểm thi");
+        jLabel1.setText("Lọc điểm thi");
+        jLabel1.setHorizontalAlignment(javax.swing.SwingConstants.CENTER);
         jPanel2.setBorder(javax.swing.BorderFactory.createTitledBorder(null, "Nhập tiêu chí lọc điểm thi", javax.swing.border.TitledBorder.DEFAULT_JUSTIFICATION, javax.swing.border.TitledBorder.DEFAULT_POSITION, new java.awt.Font("Segoe UI", 1, 14)));
         
         // Hide CCCD fields
@@ -68,6 +76,89 @@ public class timKiemNangCaoDiemThi extends javax.swing.JDialog {
         
         jLabel4.setVisible(false);
         txtThuTu.setVisible(false);
+
+        // Reconstruct layout of jPanel2 to avoid gaps from hidden fields and add new filters
+        // Initialize new components
+        lblMonHoc = new javax.swing.JLabel("Môn học : ");
+        lblMonHoc.setFont(new java.awt.Font("Segoe UI", 1, 14));
+        
+        cboMonHoc = new javax.swing.JComboBox<>(new String[] {
+            "Tất cả", "Toán", "Văn", "Lý", "Hóa", "Sinh", "Sử", "Địa", 
+            "Tiếng Anh (Thi)", "Tiếng Anh (CC)", "CN công nghiệp", "CN nông nghiệp", 
+            "Tin học", "GD KTPL", "Đánh giá NL", "Năng khiếu 1", "Năng khiếu 2", 
+            "Năng khiếu 3", "Năng khiếu 4", "Năng khiếu 5", "Năng khiếu 6"
+        });
+        cboMonHoc.setFont(new java.awt.Font("Segoe UI", 1, 14));
+        
+        lblDiemTu = new javax.swing.JLabel("Điểm từ : ");
+        lblDiemTu.setFont(new java.awt.Font("Segoe UI", 1, 14));
+        
+        txtDiemTu = new javax.swing.JTextField();
+        txtDiemTu.setFont(new java.awt.Font("Segoe UI", 1, 14));
+        
+        lblDiemDen = new javax.swing.JLabel("đến : ");
+        lblDiemDen.setFont(new java.awt.Font("Segoe UI", 1, 14));
+        
+        txtDiemDen = new javax.swing.JTextField();
+        txtDiemDen.setFont(new java.awt.Font("Segoe UI", 1, 14));
+        
+        jPanel2.add(lblMonHoc);
+        jPanel2.add(cboMonHoc);
+        jPanel2.add(lblDiemTu);
+        jPanel2.add(txtDiemTu);
+        jPanel2.add(lblDiemDen);
+        jPanel2.add(txtDiemDen);
+
+        javax.swing.GroupLayout jPanel2Layout = new javax.swing.GroupLayout(jPanel2);
+        jPanel2.setLayout(jPanel2Layout);
+        jPanel2Layout.setHorizontalGroup(
+            jPanel2Layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
+            .addGroup(jPanel2Layout.createSequentialGroup()
+                .addGap(27, 27, 27)
+                .addGroup(jPanel2Layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
+                    .addComponent(jLabel5)
+                    .addComponent(jLabel7)
+                    .addComponent(lblMonHoc)
+                    .addComponent(lblDiemTu))
+                .addGap(18, 18, 18)
+                .addGroup(jPanel2Layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
+                    .addComponent(cboPhuongThuc, javax.swing.GroupLayout.PREFERRED_SIZE, 185, javax.swing.GroupLayout.PREFERRED_SIZE)
+                    .addComponent(cboKetQua, javax.swing.GroupLayout.PREFERRED_SIZE, 185, javax.swing.GroupLayout.PREFERRED_SIZE)
+                    .addComponent(cboMonHoc, javax.swing.GroupLayout.PREFERRED_SIZE, 185, javax.swing.GroupLayout.PREFERRED_SIZE)
+                    .addGroup(jPanel2Layout.createSequentialGroup()
+                        .addComponent(txtDiemTu, javax.swing.GroupLayout.PREFERRED_SIZE, 60, javax.swing.GroupLayout.PREFERRED_SIZE)
+                        .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.UNRELATED)
+                        .addComponent(lblDiemDen)
+                        .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED)
+                        .addComponent(txtDiemDen, javax.swing.GroupLayout.PREFERRED_SIZE, 60, javax.swing.GroupLayout.PREFERRED_SIZE)))
+                .addContainerGap(27, Short.MAX_VALUE))
+        );
+        jPanel2Layout.setVerticalGroup(
+            jPanel2Layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
+            .addGroup(jPanel2Layout.createSequentialGroup()
+                .addGap(18, 18, 18)
+                .addGroup(jPanel2Layout.createParallelGroup(javax.swing.GroupLayout.Alignment.BASELINE)
+                    .addComponent(jLabel5)
+                    .addComponent(cboPhuongThuc, javax.swing.GroupLayout.PREFERRED_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.PREFERRED_SIZE))
+                .addGap(18, 18, 18)
+                .addGroup(jPanel2Layout.createParallelGroup(javax.swing.GroupLayout.Alignment.BASELINE)
+                    .addComponent(jLabel7)
+                    .addComponent(cboKetQua, javax.swing.GroupLayout.PREFERRED_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.PREFERRED_SIZE))
+                .addGap(18, 18, 18)
+                .addGroup(jPanel2Layout.createParallelGroup(javax.swing.GroupLayout.Alignment.BASELINE)
+                    .addComponent(lblMonHoc)
+                    .addComponent(cboMonHoc, javax.swing.GroupLayout.PREFERRED_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.PREFERRED_SIZE))
+                .addGap(18, 18, 18)
+                .addGroup(jPanel2Layout.createParallelGroup(javax.swing.GroupLayout.Alignment.BASELINE)
+                    .addComponent(lblDiemTu)
+                    .addComponent(txtDiemTu, javax.swing.GroupLayout.PREFERRED_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.PREFERRED_SIZE)
+                    .addComponent(lblDiemDen)
+                    .addComponent(txtDiemDen, javax.swing.GroupLayout.PREFERRED_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.PREFERRED_SIZE))
+                .addContainerGap(18, Short.MAX_VALUE))
+        );
+
+        pack();
+        setLocationRelativeTo(parent);
     }
 
     /**
@@ -150,10 +241,7 @@ public class timKiemNangCaoDiemThi extends javax.swing.JDialog {
         jPanel1.setLayout(jPanel1Layout);
         jPanel1Layout.setHorizontalGroup(
             jPanel1Layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
-            .addGroup(jPanel1Layout.createSequentialGroup()
-                .addGap(100, 100, 100)
-                .addComponent(jLabel1)
-                .addContainerGap(javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE))
+            .addComponent(jLabel1, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE)
         );
         jPanel1Layout.setVerticalGroup(
             jPanel1Layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
@@ -312,6 +400,48 @@ public class timKiemNangCaoDiemThi extends javax.swing.JDialog {
         // TODO add your handling code here:
         String phuongThucLoc = cboPhuongThuc.getSelectedItem().toString();
         String diemLietLoc = cboKetQua.getSelectedItem().toString();
+        String monHoc = cboMonHoc.getSelectedItem().toString();
+
+        Double diemTu = null;
+        Double diemDen = null;
+        
+        if (!txtDiemTu.getText().trim().isEmpty()) {
+            try {
+                diemTu = Double.parseDouble(txtDiemTu.getText().trim());
+                if (diemTu < 0) {
+                    javax.swing.JOptionPane.showMessageDialog(this, "Điểm từ phải là số không âm!", "Lỗi nhập liệu", javax.swing.JOptionPane.ERROR_MESSAGE);
+                    return;
+                }
+            } catch (NumberFormatException e) {
+                javax.swing.JOptionPane.showMessageDialog(this, "Điểm từ phải là số hợp lệ!", "Lỗi nhập liệu", javax.swing.JOptionPane.ERROR_MESSAGE);
+                return;
+            }
+        }
+        
+        if (!txtDiemDen.getText().trim().isEmpty()) {
+            try {
+                diemDen = Double.parseDouble(txtDiemDen.getText().trim());
+                if (diemDen < 0) {
+                    javax.swing.JOptionPane.showMessageDialog(this, "Điểm đến phải là số không âm!", "Lỗi nhập liệu", javax.swing.JOptionPane.ERROR_MESSAGE);
+                    return;
+                }
+            } catch (NumberFormatException e) {
+                javax.swing.JOptionPane.showMessageDialog(this, "Điểm đến phải là số hợp lệ!", "Lỗi nhập liệu", javax.swing.JOptionPane.ERROR_MESSAGE);
+                return;
+            }
+        }
+        
+        if (diemTu != null && diemDen != null && diemTu > diemDen) {
+            javax.swing.JOptionPane.showMessageDialog(this, "Điểm từ không được lớn hơn điểm đến!", "Lỗi nhập liệu", javax.swing.JOptionPane.ERROR_MESSAGE);
+            return;
+        }
+        
+        if (monHoc.equals("Tất cả")) {
+            if (diemTu != null || diemDen != null) {
+                javax.swing.JOptionPane.showMessageDialog(this, "Vui lòng chọn môn học cụ thể để lọc theo khoảng điểm!", "Thông báo", javax.swing.JOptionPane.WARNING_MESSAGE);
+                return;
+            }
+        }
 
         BUS.diemThiBUS bus = new BUS.diemThiBUS();
         bus.layDanhSach();
@@ -338,6 +468,20 @@ public class timKiemNangCaoDiemThi extends javax.swing.JDialog {
                     }
                 }
                 
+                // 3. Lọc theo Khoảng điểm môn học
+                if (!monHoc.equals("Tất cả")) {
+                    Double score = getScoreBySubject(dt, monHoc);
+                    if (score == null) {
+                        continue; // No score for this subject
+                    }
+                    if (diemTu != null && score < diemTu) {
+                        continue;
+                    }
+                    if (diemDen != null && score > diemDen) {
+                        continue;
+                    }
+                }
+                
                 dskq.add(dt);
             }
         }
@@ -358,6 +502,33 @@ public class timKiemNangCaoDiemThi extends javax.swing.JDialog {
             }
         }
         return false;
+    }
+
+    private Double getScoreBySubject(Entity.diemThiETT dt, String subject) {
+        if (dt == null) return null;
+        switch (subject) {
+            case "Toán": return dt.getTo();
+            case "Văn": return dt.getVa();
+            case "Lý": return dt.getLi();
+            case "Hóa": return dt.getHo();
+            case "Sinh": return dt.getSi();
+            case "Sử": return dt.getSu();
+            case "Địa": return dt.getDi();
+            case "Tiếng Anh (Thi)": return dt.getN1Thi();
+            case "Tiếng Anh (CC)": return dt.getN1Cc();
+            case "CN công nghiệp": return dt.getCncn();
+            case "CN nông nghiệp": return dt.getCnnn();
+            case "Tin học": return dt.getTi();
+            case "GD KTPL": return dt.getKtpl();
+            case "Đánh giá NL": return dt.getNl1();
+            case "Năng khiếu 1": return dt.getNk1();
+            case "Năng khiếu 2": return dt.getNk2();
+            case "Năng khiếu 3": return dt.getNk3();
+            case "Năng khiếu 4": return dt.getNk4();
+            case "Năng khiếu 5": return dt.getNk5();
+            case "Năng khiếu 6": return dt.getNk6();
+            default: return null;
+        }
     }
 
     private void btnCCCDActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_btnCCCDActionPerformed

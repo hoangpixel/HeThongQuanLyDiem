@@ -32,9 +32,7 @@ public class diemCongXetTuyenGUI extends BaseTableGUI {
     nganhBUS busNganh = new nganhBUS();
     private boolean xacNhan = false;
     
-    private JComboBox<String> cbxLocNganh, cbxLocToHop, cbxLocPhuongThuc;
-    private JButton btnLoc; 
-    private JDialog filterDialog; 
+    // Trình quản lý lọc nâng cao qua JDialog đã có sẵn 
     
     private Map<String, String> mapTenNganh = new HashMap<>();
 
@@ -45,13 +43,15 @@ public class diemCongXetTuyenGUI extends BaseTableGUI {
         loadNganhMap();
         headerTable();
         loadComboBox();
-        initFilterDialog();
+
+        btnLoc.setVisible(true);
 
         btnThem.addActionListener(e -> hienThiDialogThem());
         btnSua.addActionListener(e -> hienThiDialogSua());
         btnXoa.addActionListener(e -> hienThiDialogXoa());
         btnExcel.addActionListener(e -> hienThiExcel());
         btnTimKiem.addActionListener(e -> thucHienLocVaTimKiem());
+        btnLoc.addActionListener(e -> thucHienTimKiemNangCao());
         btnReFresh.addActionListener(e -> thucHienRefresh());
         btnChiTiet.addActionListener(e -> hienThiDialogChiTiet());
         
@@ -66,7 +66,6 @@ public class diemCongXetTuyenGUI extends BaseTableGUI {
 
         loadDataToTable();
         phanQuyenGiaoDien();
-        updateFilterComboBoxes();
         setupColumnWidths();
     }
 
@@ -96,154 +95,7 @@ public class diemCongXetTuyenGUI extends BaseTableGUI {
         return mapTenNganh.getOrDefault(maNganh, maNganh);
     }
 
-    private void initFilterDialog() {
-        // 👉 Đổi sang dùng JButton thường thay vì RoundedButton để đồng bộ tuyệt đối với btnTimKiem
-        btnLoc = new JButton("LỌC");
-        btnLoc.setBackground(Color.WHITE);
-        btnLoc.setForeground(Color.BLACK);
-        
-        // Lấy font chuẩn từ hệ thống (giống y hệt nút Tìm Kiếm)
-        Font systemFont = btnTimKiem.getFont();
-        if (systemFont != null) {
-            btnLoc.setFont(systemFont.deriveFont(Font.PLAIN));
-        } else {
-            btnLoc.setFont(new Font("Segoe UI", Font.PLAIN, 14));
-        }
-        
-        btnLoc.setPreferredSize(new Dimension(85, 32));
-        btnLoc.setFocusPainted(false);
-        btnLoc.setCursor(new Cursor(Cursor.HAND_CURSOR));
-        
-        Container searchParent = btnTimKiem.getParent();
-        if (searchParent != null) {
-            searchParent.remove(btnTimKiem);
-            searchParent.add(btnTimKiem, 0);
-            searchParent.add(btnLoc);
-            searchParent.revalidate();
-        }
-
-        JFrame topFrame = (JFrame) SwingUtilities.getWindowAncestor(this);
-        filterDialog = new JDialog(topFrame, false);
-        filterDialog.setUndecorated(true);
-        filterDialog.setLayout(new BorderLayout());
-        filterDialog.setBackground(Color.WHITE);
-
-        JPanel pnlInnerFilter = new JPanel();
-        pnlInnerFilter.setLayout(new BoxLayout(pnlInnerFilter, BoxLayout.Y_AXIS));
-        pnlInnerFilter.setBackground(Color.WHITE);
-        pnlInnerFilter.setBorder(BorderFactory.createCompoundBorder(
-            BorderFactory.createLineBorder(new Color(200, 200, 200), 1),
-            new EmptyBorder(15, 15, 15, 15)
-        ));
-
-        cbxLocNganh = new JComboBox<>(new String[]{"Tất cả"});
-        cbxLocToHop = new JComboBox<>(new String[]{"Tất cả"});
-        cbxLocPhuongThuc = new JComboBox<>(new String[]{"Tất cả"});
-
-        Dimension cbSize = new Dimension(280, 35);
-        cbxLocNganh.setPreferredSize(cbSize);
-        cbxLocNganh.setMaximumSize(cbSize);
-        cbxLocToHop.setPreferredSize(cbSize);
-        cbxLocToHop.setMaximumSize(cbSize);
-        cbxLocPhuongThuc.setPreferredSize(cbSize);
-        cbxLocPhuongThuc.setMaximumSize(cbSize);
-
-        // Hướng danh sách xổ xuống sang bên trái để không bị tràn màn hình
-        cbxLocNganh.setComponentOrientation(ComponentOrientation.RIGHT_TO_LEFT);
-        cbxLocToHop.setComponentOrientation(ComponentOrientation.RIGHT_TO_LEFT);
-        cbxLocPhuongThuc.setComponentOrientation(ComponentOrientation.RIGHT_TO_LEFT);
-
-        // Căn lề chữ bên trong danh sách sang trái để hiển thị tự nhiên
-        DefaultListCellRenderer leftRenderer = new DefaultListCellRenderer() {
-            @Override
-            public Component getListCellRendererComponent(JList<?> list, Object value, int index, boolean isSelected, boolean cellHasFocus) {
-                Component c = super.getListCellRendererComponent(list, value, index, isSelected, cellHasFocus);
-                if (c instanceof JLabel) {
-                    ((JLabel) c).setHorizontalAlignment(SwingConstants.LEFT);
-                }
-                return c;
-            }
-        };
-        cbxLocNganh.setRenderer(leftRenderer);
-        cbxLocToHop.setRenderer(leftRenderer);
-        cbxLocPhuongThuc.setRenderer(leftRenderer);
-
-        pnlInnerFilter.add(createFilterLabel("Lọc theo Ngành:"));
-        pnlInnerFilter.add(cbxLocNganh);
-        pnlInnerFilter.add(Box.createVerticalStrut(12));
-        pnlInnerFilter.add(createFilterLabel("Lọc theo Tổ hợp:"));
-        pnlInnerFilter.add(cbxLocToHop);
-        pnlInnerFilter.add(Box.createVerticalStrut(12));
-        pnlInnerFilter.add(createFilterLabel("Lọc theo Phương thức:"));
-        pnlInnerFilter.add(cbxLocPhuongThuc);
-        
-        JButton btnCloseFilter = new JButton("Đóng");
-        btnCloseFilter.setAlignmentX(Component.CENTER_ALIGNMENT);
-        btnCloseFilter.addActionListener(e -> filterDialog.setVisible(false));
-        pnlInnerFilter.add(Box.createVerticalStrut(15));
-        pnlInnerFilter.add(btnCloseFilter);
-
-        filterDialog.add(pnlInnerFilter);
-        filterDialog.pack();
-
-        btnLoc.addActionListener(e -> {
-            if (filterDialog.isVisible()) {
-                filterDialog.setVisible(false);
-            } else {
-                Point p = btnLoc.getLocationOnScreen();
-                int x = p.x + btnLoc.getWidth() - filterDialog.getWidth();
-                filterDialog.setLocation(Math.max(0, x), p.y + btnLoc.getHeight());
-                filterDialog.setVisible(true);
-            }
-        });
-
-        filterDialog.addWindowFocusListener(new WindowFocusListener() {
-            @Override public void windowGainedFocus(WindowEvent e) {}
-            @Override public void windowLostFocus(WindowEvent e) {
-                SwingUtilities.invokeLater(() -> {
-                    if (filterDialog != null && !filterDialog.isFocused()) filterDialog.setVisible(false);
-                });
-            }
-        });
-
-        cbxLocNganh.addActionListener(e -> thucHienLocVaTimKiem());
-        cbxLocToHop.addActionListener(e -> thucHienLocVaTimKiem());
-        cbxLocPhuongThuc.addActionListener(e -> thucHienLocVaTimKiem());
-    }
-
-    private JLabel createFilterLabel(String text) {
-        JLabel lbl = new JLabel(text);
-        lbl.setFont(new Font("Segoe UI", Font.BOLD, 12));
-        lbl.setForeground(new Color(80, 80, 80));
-        lbl.setBorder(new EmptyBorder(0, 0, 5, 0));
-        return lbl;
-    }
-
-    private void updateFilterComboBoxes() {
-        if (diemCongBUS.ds == null) busDiemCong.layDanhSach();
-        Set<String> nganhs = new HashSet<>();
-        Set<String> toHops = new HashSet<>();
-        Set<String> phuongThucs = new HashSet<>();
-        for (diemCongETT dc : diemCongBUS.ds) {
-            if (dc.getMaNganh() != null && !dc.getMaNganh().isEmpty()) nganhs.add(getTenNganh(dc.getMaNganh()));
-            if (dc.getMaToHop() != null && !dc.getMaToHop().isEmpty()) toHops.add(dc.getMaToHop());
-            if (dc.getPhuongThuc() != null && !dc.getPhuongThuc().isEmpty()) phuongThucs.add(dc.getPhuongThuc());
-        }
-        updateCombo(cbxLocNganh, nganhs);
-        updateCombo(cbxLocToHop, toHops);
-        updateCombo(cbxLocPhuongThuc, phuongThucs);
-    }
-
-    private void updateCombo(JComboBox<String> cbx, Set<String> items) {
-        String current = (String) cbx.getSelectedItem();
-        cbx.removeAllItems();
-        cbx.addItem("Tất cả");
-        ArrayList<String> sortedItems = new ArrayList<>(items);
-        Collections.sort(sortedItems);
-        for (String item : sortedItems) cbx.addItem(item);
-        if (current != null) cbx.setSelectedItem(current);
-        else cbx.setSelectedIndex(0);
-    }
+    // Đã gỡ bỏ toàn bộ code dựng bộ lọc thủ công tại đây để chuyển sang dùng timKiemNangCaoDiemCong chuẩn hóa
 
     private void phanQuyenGiaoDien() {
         String bangHienTai = "xt_diemcongxettuyen";
@@ -304,7 +156,6 @@ public class diemCongXetTuyenGUI extends BaseTableGUI {
             totalPages = (int) Math.ceil((double) fullDataList.size() / rowsPerPage);
             currentPage = totalPages;
             renderCurrentPage();
-            updateFilterComboBoxes();
         }
     }
 
@@ -323,7 +174,6 @@ public class diemCongXetTuyenGUI extends BaseTableGUI {
                 diemCongETT updated = dialog.getDiemCong();
                 fullDataList.set(absoluteIndex, convertEntityToVector(updated));
                 renderCurrentPage();
-                updateFilterComboBoxes();
             }
         }
     }
@@ -344,7 +194,6 @@ public class diemCongXetTuyenGUI extends BaseTableGUI {
                     totalPages = (int) Math.ceil((double) fullDataList.size() / rowsPerPage);
                     if (currentPage > totalPages && totalPages > 0) currentPage = totalPages;
                     renderCurrentPage();
-                    updateFilterComboBoxes();
                 }
             }
         }
@@ -373,7 +222,6 @@ public class diemCongXetTuyenGUI extends BaseTableGUI {
                 JOptionPane.showMessageDialog(this, thongBao);
                 diemCongBUS.ds = null;
                 loadDataToTable();
-                updateFilterComboBoxes();
             }
         } else if (dialog.getXacNhanExport()) {
             ExcelHelper.xuatDanhSachDiemCongRaExcel(busDiemCong.layDanhSach(), this, "DanhSachDiemCong");
@@ -383,25 +231,13 @@ public class diemCongXetTuyenGUI extends BaseTableGUI {
     public void thucHienLocVaTimKiem() {
         String tim = txtTimKiem.getText().trim().toLowerCase();
         int searchIndex = cbxTimKiem.getSelectedIndex();
-        String locNganh = (String) cbxLocNganh.getSelectedItem();
-        String locToHop = (String) cbxLocToHop.getSelectedItem();
-        String locPT = (String) cbxLocPhuongThuc.getSelectedItem();
         if (diemCongBUS.ds == null) busDiemCong.layDanhSach();
         ArrayList<Vector> filteredData = new ArrayList<>();
         for (diemCongETT dc : busDiemCong.ds) {
-            boolean matchLoc = true;
-            String tenNganhOfDc = getTenNganh(dc.getMaNganh());
-            if (locNganh != null && !locNganh.equals("Tất cả")) {
-                if (tenNganhOfDc == null || !tenNganhOfDc.equals(locNganh)) matchLoc = false;
-            }
-            if (locToHop != null && !locToHop.equals("Tất cả")) {
-                if (dc.getMaToHop() == null || !dc.getMaToHop().equals(locToHop)) matchLoc = false;
-            }
-            if (locPT != null && !locPT.equals("Tất cả")) {
-                if (dc.getPhuongThuc() == null || !dc.getPhuongThuc().equals(locPT)) matchLoc = false;
-            }
-            if (matchLoc && !tim.isEmpty()) {
-                boolean matchSearch = false;
+            boolean matchSearch = true;
+            if (!tim.isEmpty()) {
+                matchSearch = false;
+                String tenNganhOfDc = getTenNganh(dc.getMaNganh());
                 switch (searchIndex) {
                     case 0: 
                         if (dc.getTsCccd() != null && dc.getTsCccd().toLowerCase().contains(tim)) matchSearch = true; 
@@ -416,22 +252,37 @@ public class diemCongXetTuyenGUI extends BaseTableGUI {
                         if (dc.getPhuongThuc() != null && dc.getPhuongThuc().toLowerCase().contains(tim)) matchSearch = true; 
                         break;
                 }
-                if (!matchSearch) matchLoc = false;
             }
-            if (matchLoc) filteredData.add(convertEntityToVector(dc));
+            if (matchSearch) filteredData.add(convertEntityToVector(dc));
         }
         setTableData(filteredData);
+    }
+
+    public void thucHienTimKiemNangCao() {
+        JFrame topFrame = (JFrame) SwingUtilities.getWindowAncestor(this);
+        FUNC_GUI.timKiemNangCaoDiemCong dialog = new FUNC_GUI.timKiemNangCaoDiemCong(topFrame, true);
+        dialog.setVisible(true);
+        
+        if (dialog.getXacNhan()) {
+            ArrayList<Entity.diemCongETT> danhSachDaLoc = dialog.getDanhSachLoc();
+            ArrayList<Vector> dsHienThi = new ArrayList<>();
+            for (diemCongETT dc : danhSachDaLoc) {
+                if (dc != null) {
+                    dsHienThi.add(convertEntityToVector(dc));
+                }
+            }
+            setTableData(dsHienThi);
+            if (dsHienThi.isEmpty()) {
+                JOptionPane.showMessageDialog(this, "Không tìm thấy dữ liệu phù hợp với bộ lọc!");
+            }
+        }
     }
 
     public void thucHienRefresh() {
         txtTimKiem.setText("");
         cbxTimKiem.setSelectedIndex(0);
-        cbxLocNganh.setSelectedIndex(0);
-        cbxLocToHop.setSelectedIndex(0);
-        cbxLocPhuongThuc.setSelectedIndex(0);
         diemCongBUS.ds = null;
         loadNganhMap();
         loadDataToTable();
-        updateFilterComboBoxes();
     }
 }

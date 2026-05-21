@@ -124,13 +124,31 @@ public class taiKhoanBUS {
     public boolean khoaTaiKhoan(String username) {
         if (data.layTheoUsername(username) == null)
             throw new IllegalArgumentException("Tài khoản không tồn tại!");
-        return data.doiTrangThai(username, 0);
+        boolean ok = data.doiTrangThai(username, 0);
+        if (ok && ds != null) {
+            for (taiKhoanETT tk : ds) {
+                if (tk.getTenDangNhap().equals(username)) {
+                    tk.setTrangThai(0);
+                    break;
+                }
+            }
+        }
+        return ok;
     }
 
     public boolean moKhoaTaiKhoan(String username) {
         if (data.layTheoUsername(username) == null)
             throw new IllegalArgumentException("Tài khoản không tồn tại!");
-        return data.doiTrangThai(username, 1);
+        boolean ok = data.doiTrangThai(username, 1);
+        if (ok && ds != null) {
+            for (taiKhoanETT tk : ds) {
+                if (tk.getTenDangNhap().equals(username)) {
+                    tk.setTrangThai(1);
+                    break;
+                }
+            }
+        }
+        return ok;
     }
 
     // ========== KIỂM TRA ACTIVE ==========

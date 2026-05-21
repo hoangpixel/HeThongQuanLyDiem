@@ -8,6 +8,7 @@ public class contentGUI extends JFrame {
 
     private JPanel contentPanel;
     private CardLayout cardLayout;
+    private ThongKeGUI thongKePanel;
     boolean isAdmin = false;
 
     public contentGUI() {
@@ -81,7 +82,8 @@ public class contentGUI extends JFrame {
         }
         
         // Thống kê (Mặc định cho Admin hoặc có thể thêm quyền riêng)
-        contentPanel.add(new ThongKeGUI(), "thongke");
+        thongKePanel = new ThongKeGUI();
+        contentPanel.add(thongKePanel, "thongke");
         
         add(contentPanel, BorderLayout.CENTER);
 
@@ -127,6 +129,7 @@ public class contentGUI extends JFrame {
         });  
           
           nav.btnThongKe.addActionListener(e -> {
+            thongKePanel.initDashboard();
             cardLayout.show(contentPanel, "thongke");
         });
     }
