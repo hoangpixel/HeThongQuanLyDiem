@@ -16,6 +16,7 @@ import java.util.Vector;
 import javax.swing.JFrame;
 import javax.swing.SwingUtilities;
 import javax.swing.DefaultComboBoxModel;
+import javax.swing.JFileChooser;
 import javax.swing.JOptionPane;
 import javax.swing.SwingUtilities;
 
@@ -459,13 +460,31 @@ public class diemThiXetTuyenGUI extends BaseTableGUI {
         dialog.setVisible(true);
     }
     
-    private void thucHienExcel() {
+private void thucHienExcel() {
         JFrame topFrame = (JFrame) SwingUtilities.getWindowAncestor(this);
-        excelDiemThi dialog = new excelDiemThi(topFrame, true);
+        excelDiemThi dialog = new excelDiemThi(topFrame, true); 
         dialog.setVisible(true);
 
-        if (dialog.getXacNhanExport()) {
-            ExcelHelper.xuatJTableRaExcel(table, this, "BangDiemThi");
+        if (dialog.getXacNhanImport()) {
+            JFileChooser fileChooser = new javax.swing.JFileChooser();
+            fileChooser.setDialogTitle("Chọn file Excel để nhập dữ liệu Điểm Thi");
+            javax.swing.filechooser.FileNameExtensionFilter filter = new javax.swing.filechooser.FileNameExtensionFilter("Excel Files (*.xls, *.xlsx)", "xls", "xlsx");
+            fileChooser.setFileFilter(filter);
+
+            int result = fileChooser.showOpenDialog(this);
+            if (result == javax.swing.JFileChooser.APPROVE_OPTION) {
+                String filePath = fileChooser.getSelectedFile().getAbsolutePath();
+                String thongBao = bus.nhapDuLieuTuExcel(filePath); 
+                JOptionPane.showMessageDialog(this, thongBao, "Kết quả Nhập Excel", JOptionPane.INFORMATION_MESSAGE);
+                
+                bus.ds = null; // Reset danh sách
+                loadDataToTable();    // Load lại bảng
+            }
+        } 
+        else if (dialog.getXacNhanExport()) {
+            // Lấy TẤT CẢ danh sách từ BUS để xuất
+            ArrayList<Entity.diemThiETT> fullDanhSach = bus.layDanhSach(); 
+            ExcelHelper.xuatDanhSachDiemThiRaExcel(fullDanhSach, this, "DanhSachDiemThi");
         }
     }
     }

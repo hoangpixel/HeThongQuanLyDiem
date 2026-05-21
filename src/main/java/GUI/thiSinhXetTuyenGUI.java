@@ -19,7 +19,6 @@ import FUNC_GUI.insertThiSinh;
 import FUNC_GUI.updateThiSinh;
 import FUNC_GUI.deleteThiSinh;
 import FUNC_GUI.excelNguyenVongSybau;
-import FUNC_GUI.updateNguyenVong;
 import FUNC_GUI.detailThiSinhXetTuyen;
 import FUNC_GUI.timKiemNangCaoThiSinh;
 import java.util.ArrayList;

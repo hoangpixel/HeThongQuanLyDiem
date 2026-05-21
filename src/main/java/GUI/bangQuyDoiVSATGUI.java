@@ -13,6 +13,7 @@ import java.util.ArrayList;
 import java.util.List;
 import java.util.Vector;
 import javax.swing.DefaultComboBoxModel;
+import javax.swing.JFileChooser;
 import javax.swing.JOptionPane;
 import javax.swing.SwingUtilities;
 import javax.swing.JFrame;
@@ -373,13 +374,31 @@ public class bangQuyDoiVSATGUI extends BaseTableGUI {
         return item.getMon();
     }
 
-    private void thucHienExcel() {
+private void thucHienExcel() {
         JFrame topFrame = (JFrame) SwingUtilities.getWindowAncestor(this);
         excelBangQuyDoi dialog = new excelBangQuyDoi(topFrame, true);
         dialog.setVisible(true);
 
-        if (dialog.getXacNhanExport()) {
-            ExcelHelper.xuatJTableRaExcel(table, this, "BangQuyDoiVSAT");
+        if (dialog.getXacNhanImport()) {
+            JFileChooser fileChooser = new javax.swing.JFileChooser();
+            fileChooser.setDialogTitle("Chọn file Excel để nhập dữ liệu Bảng Quy Đổi");
+            javax.swing.filechooser.FileNameExtensionFilter filter = new javax.swing.filechooser.FileNameExtensionFilter("Excel Files (*.xls, *.xlsx)", "xls", "xlsx");
+            fileChooser.setFileFilter(filter);
+
+            int result = fileChooser.showOpenDialog(this);
+            if (result == javax.swing.JFileChooser.APPROVE_OPTION) {
+                String filePath = fileChooser.getSelectedFile().getAbsolutePath();
+                
+                String thongBao = bus.nhapDuLieuTuExcel(filePath); 
+                JOptionPane.showMessageDialog(this, thongBao, "Kết quả Nhập Excel", JOptionPane.INFORMATION_MESSAGE);
+                
+                bus.ds = null;
+                loadDataToTable();
+            }
+        } 
+        else if (dialog.getXacNhanExport()) {
+            ArrayList<Entity.bangQuyDoiETT> fullDanhSach = bus.layDanhSach(); 
+            ExcelHelper.xuatDanhSachBangQuyDoiRaExcel(fullDanhSach, this, "BangQuyDoiDiem");
         }
     }
 }

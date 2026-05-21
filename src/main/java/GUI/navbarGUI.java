@@ -40,7 +40,7 @@ public class navbarGUI extends JPanel {
         title.setFont(baseFont.deriveFont(Font.BOLD, 19f)); 
         title.setAlignmentX(Component.CENTER_ALIGNMENT);
         
-        JLabel subTitle = new JLabel("Tuyển Sinh 2025");
+        JLabel subTitle = new JLabel("Tuyển Sinh 2026");
         subTitle.setForeground(new Color(168, 230, 207)); 
         subTitle.setFont(baseFont.deriveFont(Font.BOLD, 15f)); 
         subTitle.setAlignmentX(Component.CENTER_ALIGNMENT);

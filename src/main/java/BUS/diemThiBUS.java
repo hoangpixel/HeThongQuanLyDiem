@@ -114,22 +114,102 @@ public class diemThiBUS {
         return ok;
     }
 
-    // =======================================================
-    // HÀM QUAN TRỌNG: TÌM BẢNG ĐIỂM CỦA 1 NGƯỜI DỰA VÀO CCCD
-    // =======================================================
     public diemThiETT layDiemTheoCCCD(String cccd) {
         // Đảm bảo dữ liệu đã được load lên
         if (ds == null) {
             layDanhSach();
         }
         
-        // Chạy vòng lặp tìm ông nào có CCCD khớp thì bế điểm ổng ra
         for (diemThiETT dt : ds) {
             if (dt.getCccd() != null && dt.getCccd().equals(cccd)) {
                 return dt;
             }
         }
         
-        return null; // Không tìm thấy (Ông này chưa thi hoặc chưa nhập điểm)
+        return null;
+    }
+    
+    public String nhapDuLieuTuExcel(String filePath) {
+        try {
+            // Lấy ma trận dữ liệu từ Excel
+            ArrayList<ArrayList<String>> dataExcel = EXCEL.ExcelHelper.docFileExcel(filePath);
+            
+            if (dataExcel.size() <= 1) {
+                return "File Excel trống hoặc chỉ có dòng Tiêu đề!";
+            }
+
+            int soDongThanhCong = 0;
+            int soDongThatBai = 0;
+
+            for (int i = 1; i < dataExcel.size(); i++) {
+                ArrayList<String> row = dataExcel.get(i);
+                
+                try {
+                    Entity.diemThiETT dt = new Entity.diemThiETT();
+                    
+                    // Cột 0: CCCD
+                    String cccd = row.get(0).trim();
+                    if (cccd.isEmpty()) {
+                        soDongThatBai++;
+                        continue; 
+                    }
+                    dt.setCccd(cccd);
+
+                    // Cột 1 & 2: SBD và Phương thức
+                    dt.setSobaodanh(row.get(1).trim());
+                    dt.setdPhuongthuc(row.get(2).trim());
+
+                    // Đổ dữ liệu các cột Điểm (Bắt đầu từ index 3)
+                    dt.setTo(parseDoubleSafe(row.get(3)));
+                    dt.setLi(parseDoubleSafe(row.get(4)));
+                    dt.setHo(parseDoubleSafe(row.get(5)));
+                    dt.setSi(parseDoubleSafe(row.get(6)));
+                    dt.setSu(parseDoubleSafe(row.get(7)));
+                    dt.setDi(parseDoubleSafe(row.get(8)));
+                    dt.setVa(parseDoubleSafe(row.get(9)));
+                    dt.setN1Thi(parseDoubleSafe(row.get(10)));
+                    dt.setN1Cc(parseDoubleSafe(row.get(11)));
+                    
+                    dt.setCncn(parseDoubleSafe(row.get(12)));
+                    dt.setCnnn(parseDoubleSafe(row.get(13)));
+                    dt.setTi(parseDoubleSafe(row.get(14)));
+                    dt.setKtpl(parseDoubleSafe(row.get(15)));
+                    dt.setNl1(parseDoubleSafe(row.get(16)));
+
+                    dt.setNk1(parseDoubleSafe(row.get(17)));
+                    dt.setNk2(parseDoubleSafe(row.get(18)));
+                    dt.setNk3(parseDoubleSafe(row.get(19)));
+                    dt.setNk4(parseDoubleSafe(row.get(20)));
+                    dt.setNk5(parseDoubleSafe(row.get(21)));
+                    dt.setNk6(parseDoubleSafe(row.get(22)));
+
+                    // 🚀 THÊM VÀO DATABASE (Nhớ sửa tên DAO cho khớp)
+                    if (data.themDiemThi(dt)) { 
+                        soDongThanhCong++;
+                    } else {
+                        soDongThatBai++;
+                    }
+                } catch (Exception ex) {
+                    soDongThatBai++; 
+                }
+            }
+            return "Nhập thành công: " + soDongThanhCong + " dòng.\nLỗi/Trùng lặp: " + soDongThatBai + " dòng.";
+
+        } catch (Exception e) {
+            e.printStackTrace();
+            return "Lỗi khi đọc file Excel: " + e.getMessage();
+        }
+    }
+
+    // Tiện ích chống lỗi khi Parse Double (Nếu chuỗi rỗng thì gán Null)
+    private Double parseDoubleSafe(String value) {
+        if (value == null || value.trim().isEmpty()) {
+            return null;
+        }
+        try {
+            return Double.parseDouble(value.trim());
+        } catch (NumberFormatException e) {
+            return null;
+        }
     }
 }

@@ -369,4 +369,17 @@ public class thiSinhXetTuyenBUS {
         }
         return map;
     }
+    
+    public thiSinhXetTuyenETT getThiSinh(String cccd)
+    {
+        for(thiSinhXetTuyenETT findTS : ds)
+        {
+            if(findTS.getCccd().equals(cccd))
+            {
+                return findTS;
+            }
+        }
+
+        return null;
+    }
 }

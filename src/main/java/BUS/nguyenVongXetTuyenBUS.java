@@ -3,7 +3,6 @@
  * Click nbfs://nbhost/SystemFileSystem/Templates/Classes/Class.java to edit this template
  */
 package BUS;
-import DAO.nganhDAO;
 import DAO.nguyenVongXetTuyenDAO;
 import Entity.nguyenVongXetTuyenETT;
 import java.util.ArrayList;
@@ -77,45 +76,6 @@ public class nguyenVongXetTuyenBUS {
         }
 
         return isSuccess;
-    }
-    
-    public boolean suaNguyenVong(Entity.nguyenVongXetTuyenETT nvMoi) {
-        // 1. Lưu xuống Database trước
-        if (data.suaNguyenVong(nvMoi)) {
-            
-            // 2. Nếu Database OK, tiến hành cập nhật lại biến ds tĩnh
-            if (ds != null) {
-                for (int i = 0; i < ds.size(); i++) {
-                    // Dùng nv_keys để dò tìm vì nó là duy nhất (Unique)
-                    // (Hồi nãy mình đã khóa ô CCCD và Thứ tự lại nên nv_keys chắc chắn không bị đổi)
-                    if (ds.get(i).getNvKeys().equals(nvMoi.getNvKeys())) {
-                        ds.set(i, nvMoi); // Đè đối tượng mới vào vị trí cũ
-                        break;
-                    }
-                }
-            }
-            return true;
-        }
-        return false;
-    }
-    
-    public boolean xoaNguyenVong(Entity.nguyenVongXetTuyenETT nv) {
-        // 1. Kêu DAO xóa dưới MySQL
-        if (data.xoaNguyenVong(nv)) {
-            
-            // 2. Nếu MySQL xóa thành công, xóa luôn trong RAM
-            if (ds != null) {
-                for (int i = 0; i < ds.size(); i++) {
-                    // Dò đúng cái ID đó thì gạch tên khỏi danh sách
-                    if (ds.get(i).getIdNv() == nv.getIdNv()) {
-                        ds.remove(i); 
-                        break;
-                    }
-                }
-            }
-            return true;
-        }
-        return false;
     }
   
     public void sapXepKetQuaTheoChiTieu() {
@@ -342,277 +302,6 @@ public class nguyenVongXetTuyenBUS {
             System.out.println("LỖI LƯU DATABASE KHI CẮT CHỈ TIÊU!");
         }
     }
-//    public void sapXepKetQuaTheoChiTieu() {
-//        if(ds == null || ds.isEmpty()) {
-//            layDanhSach();
-//        }
-//
-//        nganhBUS busNganh = new nganhBUS();
-//        ArrayList<Entity.nganhETT> dsNganh = busNganh.layDanhSach();
-//        HashMap<String, String> mapToHopGoc = new HashMap<>();
-//
-//        // ====================================================================
-//        // BƯỚC 1: LẤY CHỈ TIÊU TỔNG CỦA NGÀNH (KHÔNG PHÂN BIỆT PHƯƠNG THỨC NỮA)
-//        // ====================================================================
-//        HashMap<String, Integer> mapChiTieuNganh = new HashMap<>();
-//        for (Entity.nganhETT nganh : dsNganh) {
-//            // Gom hết chỉ tiêu của 4 phương thức lại thành 1 cục TỔNG CHỈ TIÊU cho ngành đó
-//            int tongChiTieu = (nganh.getSl_thpt() != null ? nganh.getSl_thpt() : 0) +
-//                              (nganh.getSl_dgnl() != null ? nganh.getSl_dgnl() : 0) +
-//                              (nganh.getSl_vsat() != null ? nganh.getSl_vsat() : 0) +
-//                              (nganh.getSl_xtt() != null ? nganh.getSl_xtt() : 0);
-//                              
-//            mapChiTieuNganh.put(nganh.getManganh(), tongChiTieu);
-//            mapToHopGoc.put(nganh.getManganh(), nganh.getN_tohopgoc());
-//        }
-//        
-//        BUS.giaiThuongBUS gtBus = new BUS.giaiThuongBUS();
-//        BUS.quyTacGiaiThuongBUS qtBus = new BUS.quyTacGiaiThuongBUS();
-//        qtBus.loadQuyTac();
-//        
-//        HashMap<String, Integer> mapUuTienGiai = new HashMap<>();
-//        for (nguyenVongXetTuyenETT nv : ds) {
-//            if (nv.getTtPhuongThuc().equals("Xét tuyển thẳng")) {
-//                String[] ttGiai = gtBus.layCapVaLoaiGiai(nv.getNnCccd());
-//                Entity.quyTacGiaiThuongETT quyTac = qtBus.layQuyTac(ttGiai[0], ttGiai[1]);
-//                if (quyTac != null) {
-//                    mapUuTienGiai.put(nv.getNnCccd(), quyTac.getDoUuTien());
-//                }
-//            }
-//        }
-//        
-//        // ====================================================================
-//        // BƯỚC 2: GOM NHÓM HỌC SINH VÀ LỌC LẤY PHƯƠNG THỨC "HOA HẬU" CỦA MỖI NV
-//        // ====================================================================
-//        LinkedHashMap<String, ArrayList<nguyenVongXetTuyenETT>> mapHocSinh = new java.util.LinkedHashMap<>();
-//        
-//        for (nguyenVongXetTuyenETT nv : ds) {
-//            String cccd = nv.getNnCccd();
-//            if (!mapHocSinh.containsKey(cccd)) {
-//                mapHocSinh.put(cccd, new ArrayList<>());
-//            }
-//            mapHocSinh.get(cccd).add(nv);
-//        }
-//
-//        // Tối ưu hóa: 1 NV (vd NV1) có thể có 3 phương thức. Chọn ra phương thức điểm cao nhất đại diện đi thi đấu.
-//        LinkedHashMap<String, ArrayList<nguyenVongXetTuyenETT>> mapHocSinh_DaLoc = new java.util.LinkedHashMap<>();
-//        
-//        for (String cccd : mapHocSinh.keySet()) {
-//            ArrayList<nguyenVongXetTuyenETT> listGoc = mapHocSinh.get(cccd);
-//            
-//            // Chia list theo Số thứ tự NV
-//            HashMap<Integer, ArrayList<nguyenVongXetTuyenETT>> mapTheoThuTu = new HashMap<>();
-//            for (nguyenVongXetTuyenETT nv : listGoc) {
-//                if (!mapTheoThuTu.containsKey(nv.getNvTt())) {
-//                    mapTheoThuTu.put(nv.getNvTt(), new ArrayList<>());
-//                }
-//                mapTheoThuTu.get(nv.getNvTt()).add(nv);
-//            }
-//            
-//            ArrayList<nguyenVongXetTuyenETT> listDaLoc = new ArrayList<>();
-//            
-//            // Với mỗi Số thứ tự NV (1, 2, 3...), tìm ra 1 thằng điểm cao nhất làm đại diện
-//            for (Integer stt : mapTheoThuTu.keySet()) {
-//                ArrayList<nguyenVongXetTuyenETT> cacPhuongThucCua1NV = mapTheoThuTu.get(stt);
-//                
-//                // Mặc định thằng đầu tiên là tạm giữ chức Hoa hậu
-//                nguyenVongXetTuyenETT nvHoaHau = cacPhuongThucCua1NV.get(0); 
-//                
-//                for (nguyenVongXetTuyenETT pt : cacPhuongThucCua1NV) {
-//                    if (pt.getDiemXetTuyen() > nvHoaHau.getDiemXetTuyen()) {
-//                        nvHoaHau = pt;
-//                    }
-//                    // Đánh dấu "Rớt nội bộ" cho tất cả các thằng trước khi thi đấu vòng ngoài
-//                    pt.setNvKetQua("Bỏ qua"); 
-//                }
-//                
-//                // Thằng Hoa hậu được phục hồi trạng thái để lát nữa đi thi đấu
-//                nvHoaHau.setNvKetQua("Chờ xét");
-//                listDaLoc.add(nvHoaHau);
-//            }
-//            
-//            // Sắp xếp các NV đại diện tăng dần (NV1, NV2...)
-//            listDaLoc.sort(java.util.Comparator.comparingInt(nguyenVongXetTuyenETT::getNvTt));
-//            mapHocSinh_DaLoc.put(cccd, listDaLoc);
-//        }
-//
-//        // Tạo 1 con trỏ cho mỗi học sinh, ban đầu ai cũng trỏ vào NV ĐẠI DIỆN đầu tiên (index = 0)
-//        HashMap<String, Integer> conTroNV = new HashMap<>();
-//        for (String cccd : mapHocSinh_DaLoc.keySet()) {
-//            conTroNV.put(cccd, 0);
-//        }
-//
-//        // ====================================================================
-//        // BƯỚC 3: VÒNG LẶP DOMINO (ĐẤU TRƯỜNG CHUNG CHO TOÀN NGÀNH)
-//        // ====================================================================
-//        boolean coSuThayDoi = true;
-//        LinkedHashMap<String, ArrayList<nguyenVongXetTuyenETT>> mapRoXetTuyen = new java.util.LinkedHashMap<>();
-//
-//        while (coSuThayDoi) {
-//            coSuThayDoi = false; 
-//            mapRoXetTuyen.clear(); 
-//
-//            // 3.1. Nhặt học sinh bỏ vào Rổ NGÀNH (Không quan tâm phương thức nữa)
-//            for (String cccd : mapHocSinh_DaLoc.keySet()) {
-//                int indexNV = conTroNV.get(cccd);
-//                ArrayList<nguyenVongXetTuyenETT> listNV_DaiDien = mapHocSinh_DaLoc.get(cccd);
-//
-//                if (indexNV < listNV_DaiDien.size()) { 
-//                    nguyenVongXetTuyenETT nvHienTai = listNV_DaiDien.get(indexNV);
-//                    // Rổ bây giờ chỉ có Key là Mã Ngành (Ví dụ: "7480201")
-//                    String keyRo_Nganh = nvHienTai.getNvMaNganh(); 
-//
-//                    if (!mapRoXetTuyen.containsKey(keyRo_Nganh)) {
-//                        mapRoXetTuyen.put(keyRo_Nganh, new ArrayList<>());
-//                    }
-//                    mapRoXetTuyen.get(keyRo_Nganh).add(nvHienTai);
-//                }
-//            }
-//
-//            // 3.2. Cắt chỉ tiêu trên Rổ NGÀNH
-//            for (String maNganhHienTai : mapRoXetTuyen.keySet()) {
-//                ArrayList<nguyenVongXetTuyenETT> roHienTai = mapRoXetTuyen.get(maNganhHienTai);
-//                String toHopGoc = mapToHopGoc.getOrDefault(maNganhHienTai, "");
-//
-//                roHienTai.sort((nv1, nv2) -> {
-//                    // Ưu tiên 1: Điểm Xét Tuyển 
-//                    int diemCompare = Double.compare(nv2.getDiemXetTuyen(), nv1.getDiemXetTuyen());
-//                    if (diemCompare != 0) return diemCompare;
-//                    
-//                    // Ưu tiên 1.5 - ĐỘ ƯU TIÊN GIẢI THƯỞNG 
-//                    int uuTien1 = mapUuTienGiai.getOrDefault(nv1.getNnCccd(), 0);
-//                    int uuTien2 = mapUuTienGiai.getOrDefault(nv2.getNnCccd(), 0);
-//                    int uuTienCompare = Integer.compare(uuTien2, uuTien1); 
-//                    if (uuTienCompare != 0) return uuTienCompare;
-//                    
-//                    // Ưu tiên 2: TỔ HỢP GỐC
-//                    boolean isNv1Goc = nv1.getTtThm() != null && nv1.getTtThm().equals(toHopGoc);
-//                    boolean isNv2Goc = nv2.getTtThm() != null && nv2.getTtThm().equals(toHopGoc);
-//                    if (isNv1Goc && !isNv2Goc) return -1; 
-//                    if (!isNv1Goc && isNv2Goc) return 1;  
-//
-//                    // Ưu tiên 3: Điểm Môn 1 (Toán) 
-//                    int diemToanCompare = Double.compare(nv2.getDiemMon1(), nv1.getDiemMon1());
-//                    if (diemToanCompare != 0) return diemToanCompare;
-//
-//                    // Ưu tiên 4: Thứ tự nguyện vọng 
-//                    int nvTtCompare = Integer.compare(nv1.getNvTt(), nv2.getNvTt());
-//                    if (nvTtCompare != 0) return nvTtCompare;
-//
-//                    return Integer.compare(nv1.getIdNv(), nv2.getIdNv()); 
-//                });
-//
-//                // Lấy Tổng chỉ tiêu của Ngành
-//                int chiTieu = mapChiTieuNganh.getOrDefault(maNganhHienTai, 0);
-//
-//                if (chiTieu == 0) {
-//                    for (int i = 0; i < roHienTai.size(); i++) {
-//                        nguyenVongXetTuyenETT nvBiTruot = roHienTai.get(i);
-//                        String cccdBiTruot = nvBiTruot.getNnCccd();
-//                        conTroNV.put(cccdBiTruot, conTroNV.get(cccdBiTruot) + 1);
-//                        coSuThayDoi = true; 
-//                    }
-//                    roHienTai.clear();
-//                } 
-//                else if (roHienTai.size() > chiTieu) {
-//                    int diemCatThucTe = chiTieu;
-//                    nguyenVongXetTuyenETT nguoiCuoiCungDau = roHienTai.get(chiTieu - 1); 
-//                    
-//                    boolean isNguoiCuoiGoc = nguoiCuoiCungDau.getTtThm() != null && nguoiCuoiCungDau.getTtThm().equals(toHopGoc);
-//                    
-//                    while (diemCatThucTe < roHienTai.size()) {
-//                        nguyenVongXetTuyenETT nguoiTiepTheo = roHienTai.get(diemCatThucTe);
-//                        boolean isNguoiTiepTheoGoc = nguoiTiepTheo.getTtThm() != null && nguoiTiepTheo.getTtThm().equals(toHopGoc);
-//                        
-//                        int uuTienNguoiCuoi = mapUuTienGiai.getOrDefault(nguoiCuoiCungDau.getNnCccd(), 0);
-//                        int uuTienNguoiTiepTheo = mapUuTienGiai.getOrDefault(nguoiTiepTheo.getNnCccd(), 0);
-//                        
-//                        if (nguoiTiepTheo.getDiemXetTuyen() == nguoiCuoiCungDau.getDiemXetTuyen() &&
-//                            uuTienNguoiTiepTheo == uuTienNguoiCuoi && 
-//                            isNguoiTiepTheoGoc == isNguoiCuoiGoc && 
-//                            nguoiTiepTheo.getDiemMon1() == nguoiCuoiCungDau.getDiemMon1() &&
-//                            nguoiTiepTheo.getNvTt() == nguoiCuoiCungDau.getNvTt()) {
-//                            
-//                            diemCatThucTe++; 
-//                        } else {
-//                            break; 
-//                        }
-//                    }
-//
-//                    // Chém từ vạch cắt
-//                    for (int i = diemCatThucTe; i < roHienTai.size(); i++) {
-//                        nguyenVongXetTuyenETT nvBiTruot = roHienTai.get(i);
-//                        String cccdBiTruot = nvBiTruot.getNnCccd();
-//                        
-//                        conTroNV.put(cccdBiTruot, conTroNV.get(cccdBiTruot) + 1);
-//                        coSuThayDoi = true; 
-//                    }
-//                    
-//                    roHienTai.subList(diemCatThucTe, roHienTai.size()).clear();
-//                }
-//            }
-//        }
-//
-//        // ====================================================================
-//        // BƯỚC 4: LỌC ẢO XONG - BẮT ĐẦU CHỐT KẾT QUẢ VÀO DANH SÁCH GỐC
-//        // ====================================================================
-//        for (String cccd : mapHocSinh_DaLoc.keySet()) {
-//            int indexDau = conTroNV.get(cccd); 
-//            ArrayList<nguyenVongXetTuyenETT> listNV_DaiDien = mapHocSinh_DaLoc.get(cccd);
-//
-//            for (int i = 0; i < listNV_DaiDien.size(); i++) {
-//                nguyenVongXetTuyenETT nvHoaHau = listNV_DaiDien.get(i);
-//                
-//                if (i < indexDau) {
-//                    nvHoaHau.setNvKetQua("Đã trượt");
-//                } else if (i == indexDau && indexDau < listNV_DaiDien.size()) {
-//                    nvHoaHau.setNvKetQua("Đã đậu");
-//                } else if (i > indexDau) {
-//                    nvHoaHau.setNvKetQua("Không xét");
-//                } else if (indexDau == listNV_DaiDien.size()) {
-//                    nvHoaHau.setNvKetQua("Đã trượt");
-//                }
-//            }
-//        }
-//
-//        // BƯỚC 5: GỌI DAO LƯU MỘT CỤC TOÀN BỘ DANH SÁCH GỐC (Bao gồm cả đứa Hoa hậu và đứa Rớt nội bộ)
-//        if (data.capNhatKetQuaHangLoat(ds)) {
-//            System.out.println("CẮT CHỈ TIÊU & LƯU DATABASE HOÀN TẤT!");
-//        } else {
-//            System.out.println("LỖI LƯU DATABASE KHI CẮT CHỈ TIÊU!");
-//        }
-//    }
-    
-    
-    
-//    public void capNhatDiemChuanTuDong() {
-//        if (ds == null || ds.isEmpty()) return;
-//
-//        // 1. TẠO MAP CHỨA DATA LỌC (LOGIC TẦNG BUS)
-//        HashMap<String, Double> diemChuanMap = new HashMap<>();
-//
-//        // Quét qua để tìm "Kẻ thủ khoa ngược" (Đứa đậu với điểm thấp nhất)
-//        for (nguyenVongXetTuyenETT nv : ds) {
-//            if ("Đã đậu".equals(nv.getNvKetQua())) {
-//                String key = nv.getNvMaNganh() + "_" + nv.getTtPhuongThuc();
-//                double diem = nv.getDiemXetTuyen();
-//
-//                if (!diemChuanMap.containsKey(key) || diem < diemChuanMap.get(key)) {
-//                    diemChuanMap.put(key, diem);
-//                }
-//            }
-//        }
-//
-//        // 2. GIAO VIỆC CHO DAO XUỐNG DATABASE XỬ LÝ (TÁCH BẠCH)
-//        // Gọi nganhDAO vì mình đang update vào bảng Ngành
-//        nganhDAO nDao = new nganhDAO(); 
-//        
-//        if (nDao.capNhatDanhSachDiemChuan(diemChuanMap)) {
-//            System.out.println("Đã chốt điểm chuẩn tự động thành công!");
-//        } else {
-//            System.out.println("Có lỗi xảy ra khi chốt điểm chuẩn!");
-//        }
-//    }
     
     public void capNhatDiemChuanTuDong() {
         if (ds == null || ds.isEmpty()) return;
@@ -749,13 +438,12 @@ public String nhapDuLieuTuExcel(String filePath) {
         }
     }
     
-    // Hàm hỗ trợ ép kiểu an toàn (Boss kiểm tra xem có hàm này chưa nha, nếu chưa thì thêm vô)
     private double parseDoubleSafe(String value) {
         if (value == null || value.trim().isEmpty()) {
             return 0.0;
         }
         try {
-            return Double.parseDouble(value.replace(",", ".")); // Đề phòng Excel xuất dấu phẩy
+            return Double.parseDouble(value.replace(",", "."));
         } catch (NumberFormatException e) {
             return 0.0;
         }
@@ -771,11 +459,9 @@ public String nhapDuLieuTuExcel(String filePath) {
         ArrayList<nguyenVongXetTuyenETT> dskq = new ArrayList<nguyenVongXetTuyenETT>();
         String tuKhoa = tim.trim().toLowerCase();
         
-// 🚀 NẾU TÌM THM CAO NHẤT (Index 11) - THEO TỪNG THÍ SINH VÀ TỪNG NGÀNH
         if (index == 11) {
             
-            // Dùng LinkedHashMap để giữ nguyên thứ tự
-            java.util.LinkedHashMap<String, ArrayList<nguyenVongXetTuyenETT>> mapHocSinh = new java.util.LinkedHashMap<>();
+            LinkedHashMap<String, ArrayList<nguyenVongXetTuyenETT>> mapHocSinh = new LinkedHashMap<>();
             
             for (nguyenVongXetTuyenETT nv : ds) {
                 if (nv != null && nv.getNnCccd() != null) {
@@ -783,7 +469,6 @@ public String nhapDuLieuTuExcel(String filePath) {
                         continue; 
                     }
                     
-                    // 🚀 ĐÃ SỬA: Chìa khóa gom nhóm bây giờ là "CCCD_MãNgành"
                     String keyGomNhom = nv.getNnCccd() + "_" + nv.getNvMaNganh();
                     
                     if (!mapHocSinh.containsKey(keyGomNhom)) {
@@ -793,13 +478,11 @@ public String nhapDuLieuTuExcel(String filePath) {
                 }
             }
 
-            // Quét qua từng cái rổ (mỗi rổ là 1 Ngành của 1 Thí sinh)
             for (String keyGomNhom : mapHocSinh.keySet()) {
                 ArrayList<nguyenVongXetTuyenETT> listNV = mapHocSinh.get(keyGomNhom);
                 double diemMax = -1.0;
                 String thmMax = "";
                 
-                // Tìm tổ hợp có điểm Max trong cùng 1 ngành đó
                 for (nguyenVongXetTuyenETT nv : listNV) {
                     if (nv.getTtThm() != null && !nv.getTtThm().isEmpty() && !nv.getTtThm().equals("Không")) {
                         if (nv.getDiemXetTuyen() > diemMax) {
@@ -809,10 +492,8 @@ public String nhapDuLieuTuExcel(String filePath) {
                     }
                 }
                 
-                // Gom hàng mang ra kết quả
                 if (!thmMax.isEmpty()) {
                     for (nguyenVongXetTuyenETT nv : listNV) {
-                        // Chỉ lấy đúng cái nguyện vọng có tổ hợp bằng với tổ hợp Max và điểm bằng điểm Max
                         if (nv.getTtThm() != null && nv.getTtThm().equalsIgnoreCase(thmMax) && nv.getDiemXetTuyen() == diemMax) {
                             dskq.add(nv);
                         }
@@ -822,13 +503,11 @@ public String nhapDuLieuTuExcel(String filePath) {
             return dskq;
         }
         
-        // 🚀 NẾU TÌM ĐIỂM CAO NHẤT (Index 12) - THEO TỪNG THÍ SINH (Bất chấp ngành/tổ hợp)
+
         if (index == 12) {
             
-            // Dùng LinkedHashMap để phân rổ theo thí sinh
-            java.util.LinkedHashMap<String, ArrayList<nguyenVongXetTuyenETT>> mapHocSinh = new java.util.LinkedHashMap<>();
+            LinkedHashMap<String, ArrayList<nguyenVongXetTuyenETT>> mapHocSinh = new LinkedHashMap<>();
             
-            // BƯỚC 1: Phân rổ. Chìa khóa chỉ là CCCD
             for (nguyenVongXetTuyenETT nv : ds) {
                 if (nv != null && nv.getNnCccd() != null) {
                     if (!tuKhoa.isEmpty() && !nv.getNnCccd().toLowerCase().equals(tuKhoa)) {
@@ -844,21 +523,16 @@ public String nhapDuLieuTuExcel(String filePath) {
                 }
             }
 
-            // BƯỚC 2: Quét từng rổ để tìm ra nguyện vọng có điểm xét tuyển cao nhất
             for (String cccd : mapHocSinh.keySet()) {
                 ArrayList<nguyenVongXetTuyenETT> listNV = mapHocSinh.get(cccd);
                 double diemMax = -1.0;
                 
-                // Tìm Điểm Max
                 for (nguyenVongXetTuyenETT nv : listNV) {
-                    // Không cần loại trừ "Không" vì Tuyển thẳng (30đ) cũng có quyền là điểm cao nhất
                     if (nv.getDiemXetTuyen() > diemMax) {
                         diemMax = nv.getDiemXetTuyen();
                     }
                 }
                 
-                // BƯỚC 3: Xuất hàng. Lấy ra TẤT CẢ các nguyện vọng của đứa đó mà có điểm = điểm Max
-                // (Lấy tất cả đề phòng trường hợp nó nộp 2 ngành khác nhau nhưng điểm xét tuyển bằng y chang nhau)
                 for (nguyenVongXetTuyenETT nv : listNV) {
                     if (nv.getDiemXetTuyen() == diemMax) {
                         dskq.add(nv);
@@ -958,16 +632,13 @@ public String nhapDuLieuTuExcel(String filePath) {
         return maxHienTai + 1;
     }
     
-    // =========================================================
-    // 🔥 BUS: GỌI DAO KIỂM TRA TRÙNG NGUYỆN VỌNG
-    // =========================================================
-    public boolean kiemTraTrungNganh(String cccd, String maNganh) {
-        // Kiểm tra an toàn, nếu rỗng thì bỏ qua
-        if (cccd == null || cccd.trim().isEmpty() || maNganh == null || maNganh.trim().isEmpty()) {
+    public boolean kiemTraTrungNganh(String cccd, String maNganh) 
+    {
+        if (cccd == null || cccd.trim().isEmpty() || maNganh == null || maNganh.trim().isEmpty()) 
+        {
             return false;
         }
         
-        // Gọi DAO (Nhớ check lại tên class DAO nha)
         DAO.nguyenVongXetTuyenDAO dao = new DAO.nguyenVongXetTuyenDAO();
         return dao.kiemTraTrungNganh(cccd, maNganh);
     }
@@ -983,14 +654,12 @@ public ArrayList<nguyenVongXetTuyenETT> timKiemNangCao(String cccd, String maNga
         
         ArrayList<nguyenVongXetTuyenETT> dskq = new ArrayList<>();
         
-        // Chuẩn hóa đầu vào
         String fCccd = (cccd != null) ? cccd.trim().toLowerCase() : "";
         String fMaNganh = (maNganh != null) ? maNganh.trim().toLowerCase() : "";
         String fToHop = (toHop != null) ? toHop.trim().toLowerCase() : "";
         String fPhuongThuc = (phuongThuc != null) ? phuongThuc.trim().toLowerCase() : "";
         String fKetQua = (ketQua != null) ? ketQua.trim().toLowerCase() : "";
 
-        // Xử lý các giá trị mặc định của ComboBox
         if (fPhuongThuc.equals("tất cả")) fPhuongThuc = "";
         if (fKetQua.equals("tất cả")) fKetQua = "";
         if (fToHop.equals("tất cả")) fToHop = "";
@@ -1000,50 +669,42 @@ public ArrayList<nguyenVongXetTuyenETT> timKiemNangCao(String cccd, String maNga
 
             boolean isMatch = true; 
 
-            // 1. Lọc theo CCCD
             if (!fCccd.isEmpty()) {
                 if (ct.getNnCccd() == null || !ct.getNnCccd().toLowerCase().contains(fCccd)) {
                     isMatch = false;
                 }
             }
 
-            // 2. Lọc theo Mã Ngành
             if (isMatch && !fMaNganh.isEmpty()) {
                 if (ct.getNvMaNganh() == null || !ct.getNvMaNganh().toLowerCase().contains(fMaNganh)) {
                     isMatch = false;
                 }
             }
 
-            // 3. Lọc theo Tổ Hợp
             if (isMatch && !fToHop.isEmpty()) {
                 if (ct.getTtThm() == null || !ct.getTtThm().toLowerCase().contains(fToHop)) {
                     isMatch = false;
                 }
             }
 
-            // 4. Lọc theo Thứ tự NV (Tìm chính xác bằng Exact Match)
-            // 🚀 ĐÃ SỬA: Nếu JSpinner là 0 (hoặc số âm) thì coi như "Tất cả" (Không lọc)
             if (isMatch && thuTuNV > 0) {
                 if (ct.getNvTt() != thuTuNV) {
                     isMatch = false;
                 }
             }
 
-            // 5. Lọc theo Phương thức
             if (isMatch && !fPhuongThuc.isEmpty()) {
                 if (ct.getTtPhuongThuc() == null || !ct.getTtPhuongThuc().toLowerCase().equals(fPhuongThuc)) {
                     isMatch = false;
                 }
             }
 
-            // 6. Lọc theo Kết quả
             if (isMatch && !fKetQua.isEmpty()) {
                 if (ct.getNvKetQua() == null || !ct.getNvKetQua().toLowerCase().equals(fKetQua)) {
                     isMatch = false;
                 }
             }
 
-            // Nếu khớp hết thì gom vào
             if (isMatch) {
                 dskq.add(ct);
             }
