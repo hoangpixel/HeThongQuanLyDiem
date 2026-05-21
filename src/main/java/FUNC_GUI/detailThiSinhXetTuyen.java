@@ -35,7 +35,8 @@ public class detailThiSinhXetTuyen extends javax.swing.JDialog {
         txtSBD.setText(nvl(current.getSoBaoDanh()));
         txtHo.setText(nvl(current.getHo()));
         txtTen.setText(nvl(current.getTen()));
-        txtNgaySinh.setText(current.getNgaySinh() != null ? String.valueOf(current.getNgaySinh()) : "");
+        txtNgaySinh.setText(current.getNgaySinh() != null
+                ? new java.text.SimpleDateFormat("dd/MM/yyyy").format(current.getNgaySinh()) : "");
         txtGioiTinh.setText(nvl(current.getGioiTinh()));
         txtDienThoai.setText(nvl(current.getDienThoai()));
         txtEmail.setText(nvl(current.getEmail()));
