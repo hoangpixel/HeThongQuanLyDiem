@@ -51,7 +51,7 @@ public detailNguyenVong(java.awt.Frame parent, boolean modal, nguyenVongXetTuyen
         txtMaNganh.setText(maNganh);
         txtThuTuNV.setValue(data.getNvTt());
         
-        cboPT.setSelectedItem(phuongThuc);
+        txtPhuongThuc.setText(phuongThuc);
         txtToHopMon.setText(toHopMon);
 
         txtDiemCong.setText(data.getDiemCong().toString());
@@ -69,16 +69,42 @@ public detailNguyenVong(java.awt.Frame parent, boolean modal, nguyenVongXetTuyen
             System.err.println("CẢNH BÁO: Không tìm thấy Thí sinh có CCCD " + cccd + " trong Database!");
         }
 
+// ========================================================
+        // 🚀 LOGIC TÍNH ĐỘ LỆCH VÀ XÁC ĐỊNH TỔ HỢP GỐC
+        // ========================================================
         doLechDiem = 0.0; 
-        if (phuongThuc != null && (phuongThuc.equals("Xét THPT") || phuongThuc.equals("Đánh giá V-SAT"))) {
-            if (toHopMon != null && !toHopMon.isEmpty() && !toHopMon.equals("Không")) {
-                nganhToHopBUS nthBus = new nganhToHopBUS();
-                doLechDiem = nthBus.layDoLechDiem(maNganh, toHopMon);
+        boolean isToHopGoc = false; // Cờ đánh dấu tổ hợp gốc
+
+        if (phuongThuc != null) {
+            // 🚀 BỔ SUNG CỦA BOSS: Nếu là ĐGNL thì mặc định độ lệch 0.0 và là Tổ hợp gốc
+            if (phuongThuc.contains("ĐGNL")) {
+                doLechDiem = 0.0;
+                isToHopGoc = true;
+            } 
+            // Nếu là Xét THPT hoặc V-SAT thì mới đi dò bảng Ngành - Tổ hợp
+            else if (phuongThuc.equals("Xét THPT") || phuongThuc.equals("Đánh giá V-SAT")) {
+                if (toHopMon != null && !toHopMon.isEmpty() && !toHopMon.equals("Không")) {
+                    nganhToHopBUS nthBus = new nganhToHopBUS();
+                    
+                    // 1. Kéo độ lệch điểm từ DB lên
+                    doLechDiem = nthBus.layDoLechDiem(maNganh, toHopMon);
+                    
+                    // 2. Kiểm tra xem có phải Tổ hợp gốc không
+                    if (doLechDiem == 0.0) {
+                        isToHopGoc = true;
+                    }
+                }
             }
         }
         
+        // 3. Hiển thị lên giao diện
         if (txtDoLech != null) {
-            txtDoLech.setText(String.valueOf(doLechDiem));
+            if (isToHopGoc) {
+                // Thêm chữ "(Tổ hợp gốc)" để tăng trải nghiệm người dùng
+                txtDoLech.setText("0.0 (Tổ hợp gốc)"); 
+            } else {
+                txtDoLech.setText(String.valueOf(doLechDiem));
+            }
             txtDoLech.setEditable(false); 
         }
     }
@@ -103,7 +129,6 @@ public detailNguyenVong(java.awt.Frame parent, boolean modal, nguyenVongXetTuyen
         jLabel4 = new javax.swing.JLabel();
         txtToHopMon = new javax.swing.JTextField();
         jLabel5 = new javax.swing.JLabel();
-        cboPT = new javax.swing.JComboBox<>();
         jLabel6 = new javax.swing.JLabel();
         txtDiemTHXT = new javax.swing.JTextField();
         jLabel7 = new javax.swing.JLabel();
@@ -122,6 +147,7 @@ public detailNguyenVong(java.awt.Frame parent, boolean modal, nguyenVongXetTuyen
         jLabel14 = new javax.swing.JLabel();
         txtDiemTong = new javax.swing.JTextField();
         btnThoat = new javax.swing.JButton();
+        txtPhuongThuc = new javax.swing.JTextField();
 
         setDefaultCloseOperation(javax.swing.WindowConstants.DISPOSE_ON_CLOSE);
         setTitle("Chi tiết nguyện vọng");
@@ -174,10 +200,6 @@ public detailNguyenVong(java.awt.Frame parent, boolean modal, nguyenVongXetTuyen
         jLabel5.setFont(new java.awt.Font("Segoe UI", 0, 14)); // NOI18N
         jLabel5.setText("Phương thức : ");
 
-        cboPT.setModel(new javax.swing.DefaultComboBoxModel<>(new String[] { "Xét THPT", "Xét Học Bạ", "ĐGNL HCM", "Xét tuyển thẳng" }));
-        cboPT.setEnabled(false);
-        cboPT.addActionListener(this::cboPTActionPerformed);
-
         jLabel6.setFont(new java.awt.Font("Segoe UI", 0, 14)); // NOI18N
         jLabel6.setText("Điểm THXT : ");
 
@@ -226,6 +248,8 @@ public detailNguyenVong(java.awt.Frame parent, boolean modal, nguyenVongXetTuyen
         btnThoat.setCursor(new java.awt.Cursor(java.awt.Cursor.HAND_CURSOR));
         btnThoat.addActionListener(this::btnThoatActionPerformed);
 
+        txtPhuongThuc.setEditable(false);
+
         javax.swing.GroupLayout jPanel1Layout = new javax.swing.GroupLayout(jPanel1);
         jPanel1.setLayout(jPanel1Layout);
         jPanel1Layout.setHorizontalGroup(
@@ -260,7 +284,7 @@ public detailNguyenVong(java.awt.Frame parent, boolean modal, nguyenVongXetTuyen
                                 .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED)
                                 .addGroup(jPanel1Layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
                                     .addComponent(txtToHopMon, javax.swing.GroupLayout.PREFERRED_SIZE, 188, javax.swing.GroupLayout.PREFERRED_SIZE)
-                                    .addComponent(cboPT, javax.swing.GroupLayout.Alignment.TRAILING, javax.swing.GroupLayout.PREFERRED_SIZE, 188, javax.swing.GroupLayout.PREFERRED_SIZE))))
+                                    .addComponent(txtPhuongThuc, javax.swing.GroupLayout.PREFERRED_SIZE, 188, javax.swing.GroupLayout.PREFERRED_SIZE))))
                         .addGap(0, 0, Short.MAX_VALUE))
                     .addGroup(jPanel1Layout.createSequentialGroup()
                         .addGroup(jPanel1Layout.createParallelGroup(javax.swing.GroupLayout.Alignment.TRAILING)
@@ -318,9 +342,9 @@ public detailNguyenVong(java.awt.Frame parent, boolean modal, nguyenVongXetTuyen
                 .addGap(18, 18, 18)
                 .addGroup(jPanel1Layout.createParallelGroup(javax.swing.GroupLayout.Alignment.BASELINE)
                     .addComponent(jLabel5)
-                    .addComponent(cboPT, javax.swing.GroupLayout.PREFERRED_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.PREFERRED_SIZE)
                     .addComponent(jLabel12)
-                    .addComponent(txtHo, javax.swing.GroupLayout.PREFERRED_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.PREFERRED_SIZE))
+                    .addComponent(txtHo, javax.swing.GroupLayout.PREFERRED_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.PREFERRED_SIZE)
+                    .addComponent(txtPhuongThuc, javax.swing.GroupLayout.PREFERRED_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.PREFERRED_SIZE))
                 .addGap(18, 18, 18)
                 .addGroup(jPanel1Layout.createParallelGroup(javax.swing.GroupLayout.Alignment.BASELINE)
                     .addComponent(jLabel13)
@@ -377,14 +401,9 @@ public detailNguyenVong(java.awt.Frame parent, boolean modal, nguyenVongXetTuyen
         dispose();
     }//GEN-LAST:event_btnThoatActionPerformed
 
-    private void cboPTActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_cboPTActionPerformed
-        // TODO add your handling code here:
-    }//GEN-LAST:event_cboPTActionPerformed
-
 
     // Variables declaration - do not modify//GEN-BEGIN:variables
     private javax.swing.JButton btnThoat;
-    private javax.swing.JComboBox<String> cboPT;
     private javax.swing.JLabel jLabel1;
     private javax.swing.JLabel jLabel10;
     private javax.swing.JLabel jLabel11;
@@ -410,6 +429,7 @@ public detailNguyenVong(java.awt.Frame parent, boolean modal, nguyenVongXetTuyen
     private javax.swing.JTextField txtHo;
     private javax.swing.JTextField txtKetQua;
     private javax.swing.JTextField txtMaNganh;
+    private javax.swing.JTextField txtPhuongThuc;
     private javax.swing.JTextField txtTen;
     private javax.swing.JSpinner txtThuTuNV;
     private javax.swing.JTextField txtToHopMon;
