@@ -76,22 +76,25 @@ public detailNguyenVong(java.awt.Frame parent, boolean modal, nguyenVongXetTuyen
         boolean isToHopGoc = false; // Cờ đánh dấu tổ hợp gốc
 
         if (phuongThuc != null) {
-            // 🚀 BỔ SUNG CỦA BOSS: Nếu là ĐGNL thì mặc định độ lệch 0.0 và là Tổ hợp gốc
+            // 1. ĐGNL thì mặc định độ lệch 0.0 và là Tổ hợp gốc
             if (phuongThuc.contains("ĐGNL")) {
                 doLechDiem = 0.0;
                 isToHopGoc = true;
             } 
-            // Nếu là Xét THPT hoặc V-SAT thì mới đi dò bảng Ngành - Tổ hợp
+            // 2. Xét THPT hoặc V-SAT
             else if (phuongThuc.equals("Xét THPT") || phuongThuc.equals("Đánh giá V-SAT")) {
                 if (toHopMon != null && !toHopMon.isEmpty() && !toHopMon.equals("Không")) {
+                    // Lấy độ lệch từ bảng Ngành - Tổ hợp
                     nganhToHopBUS nthBus = new nganhToHopBUS();
-                    
-                    // 1. Kéo độ lệch điểm từ DB lên
                     doLechDiem = nthBus.layDoLechDiem(maNganh, toHopMon);
                     
-                    // 2. Kiểm tra xem có phải Tổ hợp gốc không
-                    if (doLechDiem == 0.0) {
-                        isToHopGoc = true;
+                    // 🚀 GỌI HÀM BUS NGÀNH ĐỂ XÁC ĐỊNH CHÍNH XÁC TỔ HỢP GỐC TỪ DB
+                    BUS.nganhBUS nBus = new BUS.nganhBUS();
+                    isToHopGoc = nBus.kiemTraToHopGoc(maNganh, toHopMon);
+                    
+                    // Bẫy bảo vệ an toàn: Hễ DB đã xác nhận là Tổ hợp gốc thì ép cứng độ lệch về 0.0
+                    if (isToHopGoc) {
+                        doLechDiem = 0.0;
                     }
                 }
             }

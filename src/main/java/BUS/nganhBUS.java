@@ -318,4 +318,27 @@ public class nganhBUS {
         }
         return data.capNhatSoLuongDangKy(maNganh, soLuong);
     }
+    
+    // =========================================================================
+    // 🚀 HÀM KIỂM TRA TỔ HỢP GỐC (DỰA VÀO BẢNG NGÀNH)
+    // =========================================================================
+    public boolean kiemTraToHopGoc(String maNganh, String toHopMon) {
+        if (ds == null) {
+            layDanhSach();
+        }
+        
+        for (Entity.nganhETT ng : ds) {
+            if (ng != null && ng.getManganh().equalsIgnoreCase(maNganh)) {
+                // Tùy theo cách ông Generate code bên Entity mà tên hàm Getter có thể khác xíu.
+                // Nếu Entity của ông đặt là getN_tohopgoc() hoặc getToHopGoc() thì nhớ sửa lại cho khớp nha.
+                String thGoc = ng.getN_tohopgoc(); 
+                
+                if (thGoc != null && thGoc.equalsIgnoreCase(toHopMon)) {
+                    return true; // Khớp 100% với cột n_tohopgoc trong DB
+                }
+                return false; // Đúng mã ngành nhưng sai tổ hợp
+            }
+        }
+        return false; // Không tìm thấy mã ngành
+    }
 }
